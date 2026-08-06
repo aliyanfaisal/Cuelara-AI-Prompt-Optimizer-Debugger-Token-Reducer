@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  // Generating into node_modules is standard for Next.js app router
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String   @db.Text // Markdown content
+  excerpt     String?  @db.Text
+  published   Boolean  @default(false)
+  
+  // SEO Metadata
+  seoTitle    String?
+  seoDesc     String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CookbookCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  prompts     CookbookPrompt[]
+}
+
+model CookbookPrompt {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  categoryId      String
+  category        CookbookCategory @relation(fields: [categoryId], references: [id])
+  
+  // Content Sections (Stored as Markdown)
+  explanation     String   @db.Text
+  whenToUse       String   @db.Text
+  commonMistakes  String   @db.Text
+  bestPractices   String   @db.Text
+  
+  promptTemplate  String   @db.Text
+  exampleInput    String   @db.Text
+  exampleOutput   String   @db.Text
+  
+  faqs            String?  @db.Text // JSON string or Markdown list
+  
+  published       Boolean  @default(false)
+  
+  // SEO Metadata
+  seoTitle        String?
+  seoDesc         String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
