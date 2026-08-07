@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+website_idea.md
+SEO_KEYWORDS.md
 # dependencies
 /node_modules
 /.pnp
@@ -41,3 +42,40 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# AI Assistants & Agents
+.agents/
+.claude/
+.windsurf/
+.cursor/
+.cursorrules
+.cursorignore
+.cody/
+.gemini/
+.ai/
+
+# IDEs & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS Generated Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini

@@ -1,8 +1,8 @@
 # Cuelara
 
-**AI Prompt Optimizer, Debugger & Token Reducer**
+**AI Prompt Engineering Toolkit**
 
-Cuelara is a premium prompt engineering toolkit for developers, creators, and power users. It helps you write clearer, more structured, and more token-efficient prompts — so you get better reasoning from models like ChatGPT, Claude, and Gemini while spending less on API costs.
+Cuelara is a premium, UI-first prompt engineering toolkit for developers, creators, and power users. It helps you write clearer, more structured, and more token-efficient prompts — so you get better reasoning from frontier models like ChatGPT, Claude, and Gemini while spending less on API costs.
 
 > **Better prompts, not longer prompts.**
 
@@ -10,9 +10,12 @@ Cuelara is a premium prompt engineering toolkit for developers, creators, and po
 
 ## ✨ Features
 
-- **Prompt Optimizer & Token Reducer** — Rewrites prompts for clarity and structure while cutting unnecessary tokens, reducing API costs without sacrificing output quality.
-- **Prompt Debugger & Formatter** — Identifies ambiguity, weak structure, and formatting issues in your prompts, then cleans them up automatically.
-- **Prompt Cookbook** — A curated library of high-quality, ready-to-use prompt templates for common developer and creator workflows.
+- **Prompt Optimizer** — Transform vague brain-dumps into precisely structured, professional prompts tailored for any frontier LLM.
+- **Token Optimizer** — Compress your prompt token count by up to 50% without losing meaning, constraints, or functionality. Perfect for high-volume API use cases.
+- **Prompt Debugger** — Identify logical loopholes, bias, and edge-cases before you deploy your prompt to production.
+- **Prompt Formatter** — Clean up, structure, and standardise messy prompts automatically.
+- **Intelligence Score** — Grade the clarity and effectiveness of your prompt.
+- **Compare & Estimate** — Compare prompt costs across different models.
 
 ## 🎯 Why Cuelara
 
@@ -22,8 +25,8 @@ Most prompt tools focus on making prompts *longer* — more context, more instru
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/cuelara.git
-cd cuelara
+git clone https://github.com/aliyanfaisal/Cuelara-AI-Prompt-Optimizer-Debugger-Token-Reducer.git
+cd Cuelara-AI-Prompt-Optimizer-Debugger-Token-Reducer
 
 # Install dependencies
 npm install
@@ -34,25 +37,25 @@ npm run dev
 
 ## 🛠️ Tech Stack
 
-*(Update this section with your actual stack)*
-
-- Frontend: 
-- Backend: 
-- Database: 
-- AI Integrations: 
+- **Frontend Framework:** Next.js (App Router), React 18
+- **Styling:** Tailwind CSS
+- **Animations:** Framer Motion
+- **Icons:** Lucide React
+- **Language:** TypeScript
 
 ## 📖 Usage
 
-1. Paste your existing prompt into the Optimizer.
-2. Review the token-reduction and clarity suggestions.
-3. Apply changes or pull a template from the Prompt Cookbook.
-4. Test your optimized prompt directly against your target model.
+1. Select a tool from the **Prompt Toolkit** sidebar (e.g., Prompt Optimizer, Token Optimizer).
+2. Paste your existing prompt into the distraction-free editor.
+3. Adjust the configurations (Mode, Detail, Strictness) to fit your use case.
+4. Hit the main action button and review your optimized, debugged, or compressed prompt.
+5. Copy the result directly to your clipboard.
 
 ## 🗺️ Roadmap
 
+- [ ] Connect tools to real LLM APIs (OpenAI, Anthropic) for live processing
 - [ ] Multi-model comparison (ChatGPT vs Claude vs Gemini output diffing)
 - [ ] Team workspaces & shared prompt libraries
-- [ ] API access for programmatic prompt optimization
 - [ ] Browser extension
 
 ## 🤝 Contributing
@@ -64,14 +67,10 @@ Contributions are welcome. Please open an issue to discuss major changes before 
 3. Commit your changes (`git commit -m 'Add your feature'`)
 4. Push to the branch (`git push origin feature/your-feature`)
 5. Open a Pull Request
-
-## 📄 License
-
-*(Add your license here — e.g., MIT, Apache 2.0)*
-
+ 
 ## 📬 Contact
 
-For questions, feedback, or partnership inquiries, reach out at *(your contact email)* or open an issue.
+For questions, feedback, or partnership inquiries, reach out or open an issue.
 
 ---
 
