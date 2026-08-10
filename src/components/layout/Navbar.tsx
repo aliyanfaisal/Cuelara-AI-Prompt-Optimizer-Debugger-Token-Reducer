@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 
 const TOOLS_MENU = [
   { name: "Token Optimizer", icon: <Zap className="w-4 h-4 text-amber-500" />, href: "/tools/token-optimizer" },
@@ -15,6 +16,7 @@ const TOOLS_MENU = [
 ];
 
 export function Navbar() {
+  const { data: session, status } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isToolsHovered, setIsToolsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -129,14 +131,41 @@ export function Navbar() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.5 }}
-                className="hidden md:flex items-center"
+                className="hidden md:flex items-center gap-2"
               >
-                <Link
-                  href="/tools"
-                  className="inline-flex h-9 sm:h-10 items-center justify-center rounded-full bg-primary px-5 sm:px-6 text-sm font-bold text-primary-foreground shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] transition-all hover:bg-primary/90 hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] hover:-translate-y-0.5 whitespace-nowrap"
-                >
-                  Optimize Prompt
-                </Link>
+                {status === "loading" ? (
+                  <div className="h-9 w-24 bg-muted animate-pulse rounded-full" />
+                ) : session ? (
+                  <>
+                    <Link
+                      href="/tools"
+                      className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-2"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => signOut()}
+                      className="inline-flex h-9 items-center justify-center rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-all hover:bg-muted/80"
+                    >
+                      Log Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-3"
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="inline-flex h-9 sm:h-10 items-center justify-center rounded-full bg-primary px-5 sm:px-6 text-sm font-bold text-primary-foreground shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] transition-all hover:bg-primary/90 hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] hover:-translate-y-0.5 whitespace-nowrap"
+                    >
+                      Sign up free
+                    </Link>
+                  </>
+                )}
               </motion.div>
 
               {/* Mobile Menu Toggle */}
@@ -195,14 +224,46 @@ export function Navbar() {
               </Link>
             </div>
 
-            <div className="mt-8 mb-12">
-              <Link
-                href="/tools"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex w-full h-12 items-center justify-center rounded-full bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg transition-all active:scale-95"
-              >
-                Optimize Your First Prompt
-              </Link>
+            <div className="mt-8 mb-12 flex flex-col gap-3">
+              {status === "loading" ? (
+                <div className="h-12 w-full bg-muted animate-pulse rounded-full" />
+              ) : session ? (
+                <>
+                  <Link
+                    href="/tools"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex w-full h-12 items-center justify-center rounded-full bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg transition-all active:scale-95"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex w-full h-12 items-center justify-center rounded-full bg-muted px-8 text-base font-bold text-foreground transition-all active:scale-95"
+                  >
+                    Log Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex w-full h-12 items-center justify-center rounded-full bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg transition-all active:scale-95"
+                  >
+                    Sign up free
+                  </Link>
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex w-full h-12 items-center justify-center rounded-full bg-muted px-8 text-base font-bold text-foreground transition-all active:scale-95"
+                  >
+                    Log in
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}

@@ -404,6 +404,7 @@ export const ModelName = {
   Account: 'Account',
   Session: 'Session',
   User: 'User',
+  ActivationToken: 'ActivationToken',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
   Prompt: 'Prompt'
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "blogPost" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "verificationToken" | "workspace" | "prompt"
+    modelProps: "setting" | "blogPost" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "activationToken" | "verificationToken" | "workspace" | "prompt"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -944,6 +945,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ActivationToken: {
+      payload: Prisma.$ActivationTokenPayload<ExtArgs>
+      fields: Prisma.ActivationTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ActivationTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ActivationTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.ActivationTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ActivationTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>
+        }
+        findMany: {
+          args: Prisma.ActivationTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>[]
+        }
+        create: {
+          args: Prisma.ActivationTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>
+        }
+        createMany: {
+          args: Prisma.ActivationTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ActivationTokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>[]
+        }
+        delete: {
+          args: Prisma.ActivationTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>
+        }
+        update: {
+          args: Prisma.ActivationTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.ActivationTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ActivationTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ActivationTokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.ActivationTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivationTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.ActivationTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateActivationToken>
+        }
+        groupBy: {
+          args: Prisma.ActivationTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ActivationTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ActivationTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ActivationTokenCountAggregateOutputType> | number
+        }
+      }
+    }
     VerificationToken: {
       payload: Prisma.$VerificationTokenPayload<ExtArgs>
       fields: Prisma.VerificationTokenFieldRefs
@@ -1298,10 +1373,24 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  password: 'password',
+  role: 'role',
+  isActive: 'isActive',
   createdAt: 'createdAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const ActivationTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type ActivationTokenScalarFieldEnum = (typeof ActivationTokenScalarFieldEnum)[keyof typeof ActivationTokenScalarFieldEnum]
 
 
 export const VerificationTokenScalarFieldEnum = {
@@ -1591,6 +1680,7 @@ export type GlobalOmitConfig = {
   account?: Prisma.AccountOmit
   session?: Prisma.SessionOmit
   user?: Prisma.UserOmit
+  activationToken?: Prisma.ActivationTokenOmit
   verificationToken?: Prisma.VerificationTokenOmit
   workspace?: Prisma.WorkspaceOmit
   prompt?: Prisma.PromptOmit

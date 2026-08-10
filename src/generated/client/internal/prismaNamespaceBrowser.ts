@@ -58,6 +58,7 @@ export const ModelName = {
   Account: 'Account',
   Session: 'Session',
   User: 'User',
+  ActivationToken: 'ActivationToken',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
   Prompt: 'Prompt'
@@ -172,10 +173,24 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  password: 'password',
+  role: 'role',
+  isActive: 'isActive',
   createdAt: 'createdAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const ActivationTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type ActivationTokenScalarFieldEnum = (typeof ActivationTokenScalarFieldEnum)[keyof typeof ActivationTokenScalarFieldEnum]
 
 
 export const VerificationTokenScalarFieldEnum = {

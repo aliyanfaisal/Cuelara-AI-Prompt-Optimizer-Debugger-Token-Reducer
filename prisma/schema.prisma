@@ -108,12 +108,25 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  password      String?
+  role          String    @default("USER") // "USER" or "ADMIN"
+  isActive      Boolean   @default(false)  // For magic link activation
   createdAt     DateTime  @default(now())
   
-  accounts      Account[]
-  sessions      Session[]
-  workspaces    Workspace[]
-  prompts       Prompt[]
+  accounts          Account[]
+  sessions          Session[]
+  workspaces        Workspace[]
+  prompts           Prompt[]
+  activationTokens  ActivationToken[]
+}
+
+model ActivationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }
 
 model VerificationToken {

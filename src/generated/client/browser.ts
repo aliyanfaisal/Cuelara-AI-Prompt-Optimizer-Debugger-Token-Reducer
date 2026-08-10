@@ -53,6 +53,11 @@ export type Session = Prisma.SessionModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model ActivationToken
+ * 
+ */
+export type ActivationToken = Prisma.ActivationTokenModel
+/**
  * Model VerificationToken
  * 
  */
