@@ -3,13 +3,16 @@
 
 generator client {
   provider = "prisma-client"
-  // Generating into node_modules is standard for Next.js app router
+  output   = "../src/generated/client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
+
+// -----------------------------------------
+// Existing Models (Blog, Cookbook, Settings)
+// -----------------------------------------
 
 model Setting {
   id        String   @id @default(cuid())
@@ -22,11 +25,10 @@ model BlogPost {
   id          String   @id @default(cuid())
   title       String
   slug        String   @unique
-  content     String   @db.Text // Markdown content
+  content     String   @db.Text
   excerpt     String?  @db.Text
   published   Boolean  @default(false)
   
-  // SEO Metadata
   seoTitle    String?
   seoDesc     String?
 
@@ -49,7 +51,6 @@ model CookbookPrompt {
   categoryId      String
   category        CookbookCategory @relation(fields: [categoryId], references: [id])
   
-  // Content Sections (Stored as Markdown)
   explanation     String   @db.Text
   whenToUse       String   @db.Text
   commonMistakes  String   @db.Text
@@ -59,14 +60,101 @@ model CookbookPrompt {
   exampleInput    String   @db.Text
   exampleOutput   String   @db.Text
   
-  faqs            String?  @db.Text // JSON string or Markdown list
+  faqs            String?  @db.Text
   
   published       Boolean  @default(false)
   
-  // SEO Metadata
   seoTitle        String?
   seoDesc         String?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+// -----------------------------------------
+// NextAuth Models
+// -----------------------------------------
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  
+  accounts      Account[]
+  sessions      Session[]
+  workspaces    Workspace[]
+  prompts       Prompt[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// -----------------------------------------
+// App Data Models (Cuelara Pro)
+// -----------------------------------------
+
+model Workspace {
+  id          String    @id @default(cuid())
+  name        String
+  createdAt   DateTime  @default(now())
+  
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  prompts     Prompt[]
+}
+
+model Prompt {
+  id          String    @id @default(cuid())
+  title       String
+  content     String    @db.Text
+  model       String?   
+  tokens      Int?
+  cost        Float?    // Added based on user feedback
+  isPublic    Boolean   @default(false) // Added based on user feedback
+  tags        String[]  // Added based on user feedback
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  workspaceId String?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
 }

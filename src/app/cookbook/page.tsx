@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Code, PenTool, BarChart, Image as ImageIcon, Settings, Copy, ArrowRight } from "lucide-react";
+import { Search, Code, PenTool, BarChart, Image as ImageIcon, Settings, Copy, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 const CATEGORIES = [

@@ -1,304 +1,196 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Zap, Code2, ShieldCheck, Terminal, Sparkles, ArrowRight,
-  ChevronLeft, ChevronRight, ExternalLink, BookOpen, Clock, ShieldAlert, Cpu
+  ExternalLink, BookOpen, Clock, ShieldAlert, Cpu
 } from "lucide-react";
 
 const TOOLS = [
-  {
-    name: "Token Optimizer",
-    href: "/tools/token-optimizer",
-    docs: "/cookbook",
-    icon: Zap,
-    description: "Compress your prompt token count by up to 50% without losing meaning, constraints, or functionality. Perfect for high-volume API use cases.",
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/20",
-    glow: "0 0 60px rgba(245,158,11,0.25), 0 0 20px rgba(245,158,11,0.1)",
-  },
   {
     name: "Prompt Optimizer",
     href: "/tools/prompt-optimizer",
     docs: "/cookbook",
     icon: Code2,
-    description: "Transform vague brain-dumps into precisely structured, professional prompts. Choose from Coding, Writing, Business, Research or General modes.",
+    description: "Transform vague brain-dumps into precisely structured, professional prompts. Choose from Coding, Writing, Business, Research or General modes to generate the perfect instruction set for any LLM.",
     color: "text-primary",
     bg: "bg-primary/10",
     border: "border-primary/20",
-    glow: "0 0 60px rgba(79,70,229,0.25), 0 0 20px rgba(79,70,229,0.1)",
+    isLarge: true,
   },
   {
-    name: "Prompt Debugger",
-    href: "/tools/prompt-debugger",
+    name: "Token Optimizer",
+    href: "/tools/token-optimizer",
     docs: "/cookbook",
-    icon: ShieldCheck,
-    description: "Scan prompts for vague wording, contradictions, missing context and conflicting requirements before you spend tokens on bad outputs.",
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/20",
-    glow: "0 0 60px rgba(16,185,129,0.25), 0 0 20px rgba(16,185,129,0.1)",
-  },
-  {
-    name: "Prompt Formatter",
-    href: "/tools/prompt-formatter",
-    docs: "/cookbook",
-    icon: Terminal,
-    description: "Convert unstructured text into standardized sections — Role, Task, Requirements, Constraints, Output Format — ready for any frontier LLM.",
-    color: "text-pink-500",
-    bg: "bg-pink-500/10",
-    border: "border-pink-500/20",
-    glow: "0 0 60px rgba(236,72,153,0.25), 0 0 20px rgba(236,72,153,0.1)",
-  },
-  {
-    name: "Intelligence Score",
-    href: "/tools/intelligence-score",
-    docs: "/cookbook",
-    icon: Sparkles,
-    description: "Get a 0–100 score measuring your prompt's clarity, specificity, structure and AI-readiness with concrete, actionable improvement suggestions.",
-    color: "text-violet-500",
-    bg: "bg-violet-500/10",
-    border: "border-violet-500/20",
-    glow: "0 0 60px rgba(139,92,246,0.25), 0 0 20px rgba(139,92,246,0.1)",
+    icon: Zap,
+    description: "Compress your prompt token count by up to 50% without losing meaning or constraints.",
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
+    isLarge: false,
   },
   {
     name: "Diff & Cost Estimate",
     href: "/tools/compare-estimate",
     docs: "/cookbook",
     icon: ArrowRight,
-    description: "Side-by-side visual diffs of original vs optimized prompts with precise token counts and API cost savings estimates per 1,000 requests.",
+    description: "Side-by-side visual diffs with precise token counts and API cost savings estimates.",
     color: "text-blue-500",
     bg: "bg-blue-500/10",
     border: "border-blue-500/20",
-    glow: "0 0 60px rgba(59,130,246,0.25), 0 0 20px rgba(59,130,246,0.1)",
+    isLarge: false,
+  },
+  {
+    name: "Prompt Debugger",
+    href: "/tools/prompt-debugger",
+    docs: "/cookbook",
+    icon: ShieldCheck,
+    description: "Scan prompts for vague wording, contradictions, and logical traps before production.",
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
+    isLarge: false,
+  },
+  {
+    name: "Intelligence Score",
+    href: "/tools/intelligence-score",
+    docs: "/cookbook",
+    icon: Sparkles,
+    description: "Get a 0–100 score measuring your prompt's clarity, specificity, and AI-readiness.",
+    color: "text-violet-500",
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/20",
+    isLarge: false,
+  },
+  {
+    name: "Prompt Formatter",
+    href: "/tools/prompt-formatter",
+    docs: "/cookbook",
+    icon: Terminal,
+    description: "Convert unstructured text into standardized Markdown or JSON sections.",
+    color: "text-pink-500",
+    bg: "bg-pink-500/10",
+    border: "border-pink-500/20",
+    isLarge: false,
   },
 ];
 
-const CARD_RATIO = 0.75; 
-const GAP = 12;
-
 export default function ToolsOverviewPage() {
-  const [active, setActive] = useState(0);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const N = TOOLS.length;
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    setContainerWidth(el.getBoundingClientRect().width);
-    const ro = new ResizeObserver(([entry]) => {
-      setContainerWidth(entry.contentRect.width);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  const prev = useCallback(() => setActive((a) => (a - 1 + N) % N), [N]);
-  const next = useCallback(() => setActive((a) => (a + 1) % N), [N]);
-
-  // Auto-move slider
-  useEffect(() => {
-    const interval = setInterval(next, 5000);
-    return () => clearInterval(interval);
-  }, [next]);
-
-  // Responsive calculations
-  const isMobile = containerWidth < 768;
-  const cardWidth = containerWidth > 0 
-    ? (isMobile ? Math.min(containerWidth * 0.85, 320) : containerWidth * CARD_RATIO) 
-    : 550;
-  
-  // Taller cards on mobile so buttons can stack
-  const cardHeight = isMobile ? 340 : 340;
-  
-  const slot = cardWidth + GAP;
-  const sideAvailable = (containerWidth - cardWidth) / 2;
-  const visibleRadius = Math.ceil(sideAvailable / slot) + 1;
-
-  function getNormalizedOffset(i: number) {
-    let d = i - active;
-    const half = Math.floor(N / 2);
-    if (d > half) d -= N;
-    if (d < -half) d += N;
-    return d;
-  }
-
   return (
-    <div className="flex flex-col w-full overflow-x-hidden">
+    <div className="flex flex-col w-full min-h-screen bg-background">
+      
+      {/* 1. Premium Hero Section */}
+      <section className="relative w-full pt-0 pb-12 md:pt-4 md:pb-16 flex flex-col items-center">
+        {/* Glow Effects */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
+        
+        <div className="max-w-5xl mx-auto px-6 relative z-10 text-center w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/30 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-6 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-primary" /> Command Center
+            </div>
+            <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mb-6">
+              AI Prompt Engineering <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">Toolkit</span>
+            </h1>
+            <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
+              Standardizing your prompt structure directly reduces API response latency, minimizes token costs, and halts logical hallucinations before production.
+            </p>
 
-      {/* SEO & User Attracting Content Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="px-6 md:px-8 border-b border-border/60 pb-8 mb-4 mt-8 md:mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 bg-background"
-      >
-        <div>
-          <h2 className="text-base font-bold text-foreground mb-3">
-            Build High-Performance, Production-Ready Instructions
-          </h2>
-          <p className="text-xs text-muted-foreground leading-relaxed mb-4">
-            In generative AI, your prompt is the absolute blueprint of your LLM application's behavior. Standardizing your prompt structure directly reduces API response latency, minimizes token costs, and halts logical hallucinations before production.
-          </p>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Our toolkit offers system engineers and developers a suite of granular diagnostic tools to measure instruction density, refine formatting patterns, and estimate token efficiency seamlessly.
-          </p>
+            {/* Feature Badges */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-3xl mx-auto">
+              <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border/60 rounded-xl shadow-sm">
+                <Clock className="w-4 h-4 text-amber-500" />
+                <span className="text-xs font-semibold text-foreground">Optimized Latency</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border/60 rounded-xl shadow-sm">
+                <ShieldAlert className="w-4 h-4 text-emerald-500" />
+                <span className="text-xs font-semibold text-foreground">Prevent Collisions</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border/60 rounded-xl shadow-sm">
+                <Cpu className="w-4 h-4 text-primary" />
+                <span className="text-xs font-semibold text-foreground">Structure Layouts</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
+      </section>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex items-start gap-3.5">
-            <div className="p-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-lg mt-0.5 shrink-0">
-              <Clock className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-xs font-semibold text-foreground mb-0.5">Optimized Latency & Expenses</h3>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Compress instructional redundancy up to 50% without compromising system rules or constraints.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3.5">
-            <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-lg mt-0.5 shrink-0">
-              <ShieldAlert className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-xs font-semibold text-foreground mb-0.5">Prevent Rule Collisions</h3>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Analyze and detect conflicting instruction rules, logical traps, and vague definitions.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3.5">
-            <div className="p-2 bg-primary/10 border border-primary/20 text-primary rounded-lg mt-0.5 shrink-0">
-              <Cpu className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-xs font-semibold text-foreground mb-0.5">Structure Layout Pipelines</h3>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Automatically generate valid XML frameworks, JSON formatting schemas, or standardized Markdown.
-              </p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Slider Container */}
-      <div
-        ref={containerRef}
-        className="relative w-full"
-        style={{ height: cardHeight + 120 }} 
-      >
-        <div className="absolute inset-0 overflow-hidden rounded-xl">
-          {containerWidth > 0 &&
-            TOOLS.map((tool, i) => {
-              const d = getNormalizedOffset(i);
-              const isCenter = d === 0;
-              const absD = Math.abs(d);
-
-              const scale = isCenter ? 1 : Math.max(0.82, 1 - absD * 0.06);
-              const opacity = absD <= visibleRadius ? 1 : 0;
-              const zIndex = isCenter ? 20 : Math.max(1, 18 - absD * 2);
-              const Icon = tool.icon;
-
-              return (
-                <motion.div
-                  key={tool.name}
-                  className="absolute"
-                  style={{
-                    width: cardWidth,
-                    height: cardHeight,
-                    left: "50%",
-                    marginLeft: -(cardWidth / 2),
-                    top: 60, // Vertically center within taller container for shadow space
-                  }}
-                  animate={{ x: d * slot, scale, opacity, zIndex }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 350,
-                    damping: 35,
-                    mass: 0.85,
-                  }}
-                >
-                  <div
-                    className="w-full h-full rounded-2xl border border-border bg-card flex flex-col items-center text-center p-6 sm:p-8 transition-all duration-300"
-                    style={{
-                      boxShadow: isCenter ? tool.glow : "0 2px 10px rgba(0,0,0,0.03)",
-                    }}
-                  >
-                    <div className={`p-3 sm:p-4 bg-card border border-border text-foreground rounded-xl sm:rounded-2xl w-fit mb-4 sm:mb-5 flex items-center justify-center`}>
-                      <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${tool.color}`} />
+      {/* 2. Bento Grid */}
+      <div className="max-w-6xl mx-auto px-6 w-full pb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 auto-rows-[220px]">
+          {TOOLS.map((tool, i) => {
+            const Icon = tool.icon;
+            return (
+              <motion.div
+                key={tool.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                className={`group relative bg-card border border-border/60 rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-500 hover:border-primary/30 flex flex-col ${
+                  tool.isLarge ? "md:col-span-2 lg:row-span-2 lg:col-span-2" : "col-span-1 row-span-1"
+                }`}
+              >
+                {/* Subtle Hover Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <div className={`p-6 md:p-8 relative z-10 flex flex-col h-full ${tool.isLarge ? 'justify-between' : ''}`}>
+                  
+                  {/* Header Row */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`p-3 rounded-2xl ${tool.bg} ${tool.border} border shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className={`w-6 h-6 ${tool.color}`} />
                     </div>
+                    <Link href={tool.href} className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300 shadow-sm">
+                      <ArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform" />
+                    </Link>
+                  </div>
 
-                    <h3 className={`font-bold text-foreground mb-2 sm:mb-3 ${isCenter ? "text-lg sm:text-xl" : "text-base sm:text-lg"}`}>
-                      {tool.name}
-                    </h3>
-
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6">
+                  {/* Text Content */}
+                  <div>
+                    <Link href={tool.href} className="block w-fit">
+                      <h3 className={`font-bold text-foreground mb-2 group-hover:text-primary transition-colors ${
+                        tool.isLarge ? "text-2xl md:text-3xl" : "text-lg"
+                      }`}>
+                        {tool.name}
+                      </h3>
+                    </Link>
+                    <p className={`text-muted-foreground leading-relaxed ${
+                      tool.isLarge ? "text-sm md:text-base max-w-xl" : "text-xs line-clamp-2"
+                    }`}>
                       {tool.description}
                     </p>
+                  </div>
 
-                    {/* Responsive Buttons - Stack vertically on small screens to prevent overflow */}
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-md mt-auto">
+                  {/* Action Buttons (Only for the large featured card to draw attention) */}
+                  {tool.isLarge && (
+                    <div className="flex items-center gap-3 mt-8">
                       <Link
                         href={tool.href}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary text-primary-foreground text-[13px] sm:text-sm font-bold hover:bg-primary/90 transition-colors shadow-sm"
+                        className="flex items-center gap-2 py-3 px-6 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg hover:-translate-y-0.5"
                       >
-                        <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        Try it
+                        <ExternalLink className="w-4 h-4" />
+                        Launch Optimizer
                       </Link>
                       <Link
                         href={tool.docs}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-border bg-background text-foreground text-[13px] sm:text-sm font-medium hover:bg-muted transition-colors shadow-sm"
+                        className="flex items-center gap-2 py-3 px-6 rounded-xl border border-border bg-background text-foreground text-sm font-bold hover:bg-muted transition-colors shadow-sm"
                       >
-                        <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        Docs
+                        <BookOpen className="w-4 h-4" />
+                        Read Docs
                       </Link>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  )}
+
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
-
-        {/* Carousel Navigation Arrows - Moved closer to edges for mobile */}
-        <button
-          onClick={prev}
-          className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:scale-105 active:scale-95"
-          aria-label="Previous tool"
-        >
-          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
-
-        <button
-          onClick={next}
-          className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:scale-105 active:scale-95"
-          aria-label="Next tool"
-        >
-          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
-      </div>
-
-      {/* Dot indicators */}
-      <div className="pb-6 flex items-center justify-center gap-1.5 -mt-4">
-        {TOOLS.map((tool, i) => (
-          <button
-            key={i}
-            onClick={() => setActive(i)}
-            aria-label={`Jump to ${tool.name}`}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: i === active ? 20 : 6,
-              height: 6,
-              backgroundColor: i === active ? "hsl(var(--primary))" : "hsl(var(--border))",
-            }}
-          />
-        ))}
       </div>
       
     </div>

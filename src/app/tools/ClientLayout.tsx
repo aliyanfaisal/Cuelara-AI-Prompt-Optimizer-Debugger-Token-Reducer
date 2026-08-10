@@ -34,7 +34,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
   const [activeSidebar, setActiveSidebar] = useState<'left' | 'right' | null>(null);
 
   return (
-    <div className="flex min-h-screen bg-background relative overflow-x-hidden">
+    <div className="flex min-h-screen bg-background relative">
       
       {/* Mobile Backdrops */}
       {activeSidebar === 'left' && (
