@@ -65,7 +65,7 @@ const TOOLS = [
     glow: "0 0 60px rgba(139,92,246,0.25), 0 0 20px rgba(139,92,246,0.1)",
   },
   {
-    name: "Compare & Estimate",
+    name: "Diff & Cost Estimate",
     href: "/tools/compare-estimate",
     docs: "/cookbook",
     icon: ArrowRight,

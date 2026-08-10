@@ -310,7 +310,7 @@ export default function Home() {
             <FeatureCard 
               href="/tools/compare-estimate"
               icon={<ArrowRight className="h-6 w-6 text-blue-500" />}
-              title="Compare & Estimate"
+              title="Diff & Cost Estimate"
               description="Visual diffs showing exactly what changed, alongside precise token and API cost estimations."
             />
             </motion.div>

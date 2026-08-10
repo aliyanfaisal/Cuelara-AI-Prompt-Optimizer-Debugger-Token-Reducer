@@ -6,12 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight } from "lucide-react";
 
 const TOOLS_MENU = [
-  { name: "Token Optimizer", icon: <Zap className="w-4 h-4 text-amber-500" />, href: "/tools" },
-  { name: "Prompt Optimizer", icon: <Code2 className="w-4 h-4 text-primary" />, href: "/tools" },
-  { name: "Prompt Debugger", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, href: "/tools" },
-  { name: "Prompt Formatter", icon: <Terminal className="w-4 h-4 text-pink-500" />, href: "/tools" },
-  { name: "Intelligence Score", icon: <Sparkles className="w-4 h-4 text-violet-500" />, href: "/tools" },
-  { name: "Compare & Estimate", icon: <ArrowRight className="w-4 h-4 text-blue-500" />, href: "/tools" },
+  { name: "Token Optimizer", icon: <Zap className="w-4 h-4 text-amber-500" />, href: "/tools/token-optimizer" },
+  { name: "Prompt Optimizer", icon: <Code2 className="w-4 h-4 text-primary" />, href: "/tools/prompt-optimizer" },
+  { name: "Prompt Debugger", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, href: "/tools/prompt-debugger" },
+  { name: "Prompt Formatter", icon: <Terminal className="w-4 h-4 text-pink-500" />, href: "/tools/prompt-formatter" },
+  { name: "Intelligence Score", icon: <Sparkles className="w-4 h-4 text-violet-500" />, href: "/tools/intelligence-score" },
+  { name: "Diff & Cost Estimate", icon: <ArrowRight className="w-4 h-4 text-blue-500" />, href: "/tools/compare-estimate" },
 ];
 
 export function Navbar() {

@@ -15,7 +15,7 @@ const NAVIGATION = [
   { name: "Prompt Debugger", href: "/tools/prompt-debugger", icon: ShieldCheck },
   { name: "Prompt Formatter", href: "/tools/prompt-formatter", icon: Terminal },
   { name: "Intelligence Score", href: "/tools/intelligence-score", icon: Sparkles },
-  { name: "Compare & Estimate", href: "/tools/compare-estimate", icon: ArrowRight },
+  { name: "Diff & Cost Estimate", href: "/tools/compare-estimate", icon: ArrowRight },
 ];
 
 const QUICK_LINKS = [
