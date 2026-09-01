@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
+import { PublicLayoutWrapper } from "@/components/layout/PublicLayoutWrapper";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,11 +37,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AuthProvider>
-            <Navbar />
-            <main className="flex-1">
+            <PublicLayoutWrapper>
               {children}
-            </main>
-            <Footer />
+            </PublicLayoutWrapper>
             <ThemeSwitcher />
           </AuthProvider>
         </ThemeProvider>

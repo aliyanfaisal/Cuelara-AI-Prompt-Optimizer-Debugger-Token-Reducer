@@ -28,6 +28,7 @@ export type CookbookPromptMinAggregateOutputType = {
   id: string | null
   title: string | null
   slug: string | null
+  image: string | null
   categoryId: string | null
   explanation: string | null
   whenToUse: string | null
@@ -48,6 +49,7 @@ export type CookbookPromptMaxAggregateOutputType = {
   id: string | null
   title: string | null
   slug: string | null
+  image: string | null
   categoryId: string | null
   explanation: string | null
   whenToUse: string | null
@@ -68,6 +70,7 @@ export type CookbookPromptCountAggregateOutputType = {
   id: number
   title: number
   slug: number
+  image: number
   categoryId: number
   explanation: number
   whenToUse: number
@@ -90,6 +93,7 @@ export type CookbookPromptMinAggregateInputType = {
   id?: true
   title?: true
   slug?: true
+  image?: true
   categoryId?: true
   explanation?: true
   whenToUse?: true
@@ -110,6 +114,7 @@ export type CookbookPromptMaxAggregateInputType = {
   id?: true
   title?: true
   slug?: true
+  image?: true
   categoryId?: true
   explanation?: true
   whenToUse?: true
@@ -130,6 +135,7 @@ export type CookbookPromptCountAggregateInputType = {
   id?: true
   title?: true
   slug?: true
+  image?: true
   categoryId?: true
   explanation?: true
   whenToUse?: true
@@ -223,6 +229,7 @@ export type CookbookPromptGroupByOutputType = {
   id: string
   title: string
   slug: string
+  image: string | null
   categoryId: string
   explanation: string
   whenToUse: string
@@ -264,6 +271,7 @@ export type CookbookPromptWhereInput = {
   id?: Prisma.StringFilter<"CookbookPrompt"> | string
   title?: Prisma.StringFilter<"CookbookPrompt"> | string
   slug?: Prisma.StringFilter<"CookbookPrompt"> | string
+  image?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
   categoryId?: Prisma.StringFilter<"CookbookPrompt"> | string
   explanation?: Prisma.StringFilter<"CookbookPrompt"> | string
   whenToUse?: Prisma.StringFilter<"CookbookPrompt"> | string
@@ -285,6 +293,7 @@ export type CookbookPromptOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
   whenToUse?: Prisma.SortOrder
@@ -309,6 +318,7 @@ export type CookbookPromptWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CookbookPromptWhereInput[]
   NOT?: Prisma.CookbookPromptWhereInput | Prisma.CookbookPromptWhereInput[]
   title?: Prisma.StringFilter<"CookbookPrompt"> | string
+  image?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
   categoryId?: Prisma.StringFilter<"CookbookPrompt"> | string
   explanation?: Prisma.StringFilter<"CookbookPrompt"> | string
   whenToUse?: Prisma.StringFilter<"CookbookPrompt"> | string
@@ -330,6 +340,7 @@ export type CookbookPromptOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
   whenToUse?: Prisma.SortOrder
@@ -356,6 +367,7 @@ export type CookbookPromptScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
   title?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
   slug?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
+  image?: Prisma.StringNullableWithAggregatesFilter<"CookbookPrompt"> | string | null
   categoryId?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
   explanation?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
   whenToUse?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
@@ -376,6 +388,7 @@ export type CookbookPromptCreateInput = {
   id?: string
   title: string
   slug: string
+  image?: string | null
   explanation: string
   whenToUse: string
   commonMistakes: string
@@ -396,6 +409,7 @@ export type CookbookPromptUncheckedCreateInput = {
   id?: string
   title: string
   slug: string
+  image?: string | null
   categoryId: string
   explanation: string
   whenToUse: string
@@ -416,6 +430,7 @@ export type CookbookPromptUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
   whenToUse?: Prisma.StringFieldUpdateOperationsInput | string
   commonMistakes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -436,6 +451,7 @@ export type CookbookPromptUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
   whenToUse?: Prisma.StringFieldUpdateOperationsInput | string
@@ -456,6 +472,7 @@ export type CookbookPromptCreateManyInput = {
   id?: string
   title: string
   slug: string
+  image?: string | null
   categoryId: string
   explanation: string
   whenToUse: string
@@ -476,6 +493,7 @@ export type CookbookPromptUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
   whenToUse?: Prisma.StringFieldUpdateOperationsInput | string
   commonMistakes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -495,6 +513,7 @@ export type CookbookPromptUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
   whenToUse?: Prisma.StringFieldUpdateOperationsInput | string
@@ -525,6 +544,7 @@ export type CookbookPromptCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
   whenToUse?: Prisma.SortOrder
@@ -545,6 +565,7 @@ export type CookbookPromptMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
   whenToUse?: Prisma.SortOrder
@@ -565,6 +586,7 @@ export type CookbookPromptMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
   whenToUse?: Prisma.SortOrder
@@ -627,6 +649,7 @@ export type CookbookPromptCreateWithoutCategoryInput = {
   id?: string
   title: string
   slug: string
+  image?: string | null
   explanation: string
   whenToUse: string
   commonMistakes: string
@@ -646,6 +669,7 @@ export type CookbookPromptUncheckedCreateWithoutCategoryInput = {
   id?: string
   title: string
   slug: string
+  image?: string | null
   explanation: string
   whenToUse: string
   commonMistakes: string
@@ -694,6 +718,7 @@ export type CookbookPromptScalarWhereInput = {
   id?: Prisma.StringFilter<"CookbookPrompt"> | string
   title?: Prisma.StringFilter<"CookbookPrompt"> | string
   slug?: Prisma.StringFilter<"CookbookPrompt"> | string
+  image?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
   categoryId?: Prisma.StringFilter<"CookbookPrompt"> | string
   explanation?: Prisma.StringFilter<"CookbookPrompt"> | string
   whenToUse?: Prisma.StringFilter<"CookbookPrompt"> | string
@@ -714,6 +739,7 @@ export type CookbookPromptCreateManyCategoryInput = {
   id?: string
   title: string
   slug: string
+  image?: string | null
   explanation: string
   whenToUse: string
   commonMistakes: string
@@ -733,6 +759,7 @@ export type CookbookPromptUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
   whenToUse?: Prisma.StringFieldUpdateOperationsInput | string
   commonMistakes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -752,6 +779,7 @@ export type CookbookPromptUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
   whenToUse?: Prisma.StringFieldUpdateOperationsInput | string
   commonMistakes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -771,6 +799,7 @@ export type CookbookPromptUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
   whenToUse?: Prisma.StringFieldUpdateOperationsInput | string
   commonMistakes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -792,6 +821,7 @@ export type CookbookPromptSelect<ExtArgs extends runtime.Types.Extensions.Intern
   id?: boolean
   title?: boolean
   slug?: boolean
+  image?: boolean
   categoryId?: boolean
   explanation?: boolean
   whenToUse?: boolean
@@ -813,6 +843,7 @@ export type CookbookPromptSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   title?: boolean
   slug?: boolean
+  image?: boolean
   categoryId?: boolean
   explanation?: boolean
   whenToUse?: boolean
@@ -834,6 +865,7 @@ export type CookbookPromptSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   title?: boolean
   slug?: boolean
+  image?: boolean
   categoryId?: boolean
   explanation?: boolean
   whenToUse?: boolean
@@ -855,6 +887,7 @@ export type CookbookPromptSelectScalar = {
   id?: boolean
   title?: boolean
   slug?: boolean
+  image?: boolean
   categoryId?: boolean
   explanation?: boolean
   whenToUse?: boolean
@@ -871,7 +904,7 @@ export type CookbookPromptSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CookbookPromptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "categoryId" | "explanation" | "whenToUse" | "commonMistakes" | "bestPractices" | "promptTemplate" | "exampleInput" | "exampleOutput" | "faqs" | "published" | "seoTitle" | "seoDesc" | "createdAt" | "updatedAt", ExtArgs["result"]["cookbookPrompt"]>
+export type CookbookPromptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "image" | "categoryId" | "explanation" | "whenToUse" | "commonMistakes" | "bestPractices" | "promptTemplate" | "exampleInput" | "exampleOutput" | "faqs" | "published" | "seoTitle" | "seoDesc" | "createdAt" | "updatedAt", ExtArgs["result"]["cookbookPrompt"]>
 export type CookbookPromptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CookbookCategoryDefaultArgs<ExtArgs>
 }
@@ -891,6 +924,7 @@ export type $CookbookPromptPayload<ExtArgs extends runtime.Types.Extensions.Inte
     id: string
     title: string
     slug: string
+    image: string | null
     categoryId: string
     explanation: string
     whenToUse: string
@@ -1332,6 +1366,7 @@ export interface CookbookPromptFieldRefs {
   readonly id: Prisma.FieldRef<"CookbookPrompt", 'String'>
   readonly title: Prisma.FieldRef<"CookbookPrompt", 'String'>
   readonly slug: Prisma.FieldRef<"CookbookPrompt", 'String'>
+  readonly image: Prisma.FieldRef<"CookbookPrompt", 'String'>
   readonly categoryId: Prisma.FieldRef<"CookbookPrompt", 'String'>
   readonly explanation: Prisma.FieldRef<"CookbookPrompt", 'String'>
   readonly whenToUse: Prisma.FieldRef<"CookbookPrompt", 'String'>

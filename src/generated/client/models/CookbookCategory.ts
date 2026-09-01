@@ -29,6 +29,7 @@ export type CookbookCategoryMinAggregateOutputType = {
   name: string | null
   slug: string | null
   description: string | null
+  parentId: string | null
 }
 
 export type CookbookCategoryMaxAggregateOutputType = {
@@ -36,6 +37,7 @@ export type CookbookCategoryMaxAggregateOutputType = {
   name: string | null
   slug: string | null
   description: string | null
+  parentId: string | null
 }
 
 export type CookbookCategoryCountAggregateOutputType = {
@@ -43,6 +45,7 @@ export type CookbookCategoryCountAggregateOutputType = {
   name: number
   slug: number
   description: number
+  parentId: number
   _all: number
 }
 
@@ -52,6 +55,7 @@ export type CookbookCategoryMinAggregateInputType = {
   name?: true
   slug?: true
   description?: true
+  parentId?: true
 }
 
 export type CookbookCategoryMaxAggregateInputType = {
@@ -59,6 +63,7 @@ export type CookbookCategoryMaxAggregateInputType = {
   name?: true
   slug?: true
   description?: true
+  parentId?: true
 }
 
 export type CookbookCategoryCountAggregateInputType = {
@@ -66,6 +71,7 @@ export type CookbookCategoryCountAggregateInputType = {
   name?: true
   slug?: true
   description?: true
+  parentId?: true
   _all?: true
 }
 
@@ -146,6 +152,7 @@ export type CookbookCategoryGroupByOutputType = {
   name: string
   slug: string
   description: string | null
+  parentId: string | null
   _count: CookbookCategoryCountAggregateOutputType | null
   _min: CookbookCategoryMinAggregateOutputType | null
   _max: CookbookCategoryMaxAggregateOutputType | null
@@ -174,6 +181,9 @@ export type CookbookCategoryWhereInput = {
   name?: Prisma.StringFilter<"CookbookCategory"> | string
   slug?: Prisma.StringFilter<"CookbookCategory"> | string
   description?: Prisma.StringNullableFilter<"CookbookCategory"> | string | null
+  parentId?: Prisma.StringNullableFilter<"CookbookCategory"> | string | null
+  parent?: Prisma.XOR<Prisma.CookbookCategoryNullableScalarRelationFilter, Prisma.CookbookCategoryWhereInput> | null
+  children?: Prisma.CookbookCategoryListRelationFilter
   prompts?: Prisma.CookbookPromptListRelationFilter
 }
 
@@ -182,6 +192,9 @@ export type CookbookCategoryOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  parent?: Prisma.CookbookCategoryOrderByWithRelationInput
+  children?: Prisma.CookbookCategoryOrderByRelationAggregateInput
   prompts?: Prisma.CookbookPromptOrderByRelationAggregateInput
 }
 
@@ -193,6 +206,9 @@ export type CookbookCategoryWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CookbookCategoryWhereInput | Prisma.CookbookCategoryWhereInput[]
   name?: Prisma.StringFilter<"CookbookCategory"> | string
   description?: Prisma.StringNullableFilter<"CookbookCategory"> | string | null
+  parentId?: Prisma.StringNullableFilter<"CookbookCategory"> | string | null
+  parent?: Prisma.XOR<Prisma.CookbookCategoryNullableScalarRelationFilter, Prisma.CookbookCategoryWhereInput> | null
+  children?: Prisma.CookbookCategoryListRelationFilter
   prompts?: Prisma.CookbookPromptListRelationFilter
 }, "id" | "slug">
 
@@ -201,6 +217,7 @@ export type CookbookCategoryOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CookbookCategoryCountOrderByAggregateInput
   _max?: Prisma.CookbookCategoryMaxOrderByAggregateInput
   _min?: Prisma.CookbookCategoryMinOrderByAggregateInput
@@ -214,6 +231,7 @@ export type CookbookCategoryScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"CookbookCategory"> | string
   slug?: Prisma.StringWithAggregatesFilter<"CookbookCategory"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"CookbookCategory"> | string | null
+  parentId?: Prisma.StringNullableWithAggregatesFilter<"CookbookCategory"> | string | null
 }
 
 export type CookbookCategoryCreateInput = {
@@ -221,6 +239,8 @@ export type CookbookCategoryCreateInput = {
   name: string
   slug: string
   description?: string | null
+  parent?: Prisma.CookbookCategoryCreateNestedOneWithoutChildrenInput
+  children?: Prisma.CookbookCategoryCreateNestedManyWithoutParentInput
   prompts?: Prisma.CookbookPromptCreateNestedManyWithoutCategoryInput
 }
 
@@ -229,6 +249,8 @@ export type CookbookCategoryUncheckedCreateInput = {
   name: string
   slug: string
   description?: string | null
+  parentId?: string | null
+  children?: Prisma.CookbookCategoryUncheckedCreateNestedManyWithoutParentInput
   prompts?: Prisma.CookbookPromptUncheckedCreateNestedManyWithoutCategoryInput
 }
 
@@ -237,6 +259,8 @@ export type CookbookCategoryUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parent?: Prisma.CookbookCategoryUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.CookbookCategoryUpdateManyWithoutParentNestedInput
   prompts?: Prisma.CookbookPromptUpdateManyWithoutCategoryNestedInput
 }
 
@@ -245,6 +269,8 @@ export type CookbookCategoryUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.CookbookCategoryUncheckedUpdateManyWithoutParentNestedInput
   prompts?: Prisma.CookbookPromptUncheckedUpdateManyWithoutCategoryNestedInput
 }
 
@@ -253,6 +279,7 @@ export type CookbookCategoryCreateManyInput = {
   name: string
   slug: string
   description?: string | null
+  parentId?: string | null
 }
 
 export type CookbookCategoryUpdateManyMutationInput = {
@@ -267,6 +294,22 @@ export type CookbookCategoryUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type CookbookCategoryNullableScalarRelationFilter = {
+  is?: Prisma.CookbookCategoryWhereInput | null
+  isNot?: Prisma.CookbookCategoryWhereInput | null
+}
+
+export type CookbookCategoryListRelationFilter = {
+  every?: Prisma.CookbookCategoryWhereInput
+  some?: Prisma.CookbookCategoryWhereInput
+  none?: Prisma.CookbookCategoryWhereInput
+}
+
+export type CookbookCategoryOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type CookbookCategoryCountOrderByAggregateInput = {
@@ -274,6 +317,7 @@ export type CookbookCategoryCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
 }
 
 export type CookbookCategoryMaxOrderByAggregateInput = {
@@ -281,6 +325,7 @@ export type CookbookCategoryMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
 }
 
 export type CookbookCategoryMinOrderByAggregateInput = {
@@ -288,11 +333,70 @@ export type CookbookCategoryMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
 }
 
 export type CookbookCategoryScalarRelationFilter = {
   is?: Prisma.CookbookCategoryWhereInput
   isNot?: Prisma.CookbookCategoryWhereInput
+}
+
+export type CookbookCategoryCreateNestedOneWithoutChildrenInput = {
+  create?: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutChildrenInput, Prisma.CookbookCategoryUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.CookbookCategoryCreateOrConnectWithoutChildrenInput
+  connect?: Prisma.CookbookCategoryWhereUniqueInput
+}
+
+export type CookbookCategoryCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutParentInput, Prisma.CookbookCategoryUncheckedCreateWithoutParentInput> | Prisma.CookbookCategoryCreateWithoutParentInput[] | Prisma.CookbookCategoryUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.CookbookCategoryCreateOrConnectWithoutParentInput | Prisma.CookbookCategoryCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.CookbookCategoryCreateManyParentInputEnvelope
+  connect?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+}
+
+export type CookbookCategoryUncheckedCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutParentInput, Prisma.CookbookCategoryUncheckedCreateWithoutParentInput> | Prisma.CookbookCategoryCreateWithoutParentInput[] | Prisma.CookbookCategoryUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.CookbookCategoryCreateOrConnectWithoutParentInput | Prisma.CookbookCategoryCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.CookbookCategoryCreateManyParentInputEnvelope
+  connect?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+}
+
+export type CookbookCategoryUpdateOneWithoutChildrenNestedInput = {
+  create?: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutChildrenInput, Prisma.CookbookCategoryUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.CookbookCategoryCreateOrConnectWithoutChildrenInput
+  upsert?: Prisma.CookbookCategoryUpsertWithoutChildrenInput
+  disconnect?: Prisma.CookbookCategoryWhereInput | boolean
+  delete?: Prisma.CookbookCategoryWhereInput | boolean
+  connect?: Prisma.CookbookCategoryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CookbookCategoryUpdateToOneWithWhereWithoutChildrenInput, Prisma.CookbookCategoryUpdateWithoutChildrenInput>, Prisma.CookbookCategoryUncheckedUpdateWithoutChildrenInput>
+}
+
+export type CookbookCategoryUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutParentInput, Prisma.CookbookCategoryUncheckedCreateWithoutParentInput> | Prisma.CookbookCategoryCreateWithoutParentInput[] | Prisma.CookbookCategoryUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.CookbookCategoryCreateOrConnectWithoutParentInput | Prisma.CookbookCategoryCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.CookbookCategoryUpsertWithWhereUniqueWithoutParentInput | Prisma.CookbookCategoryUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.CookbookCategoryCreateManyParentInputEnvelope
+  set?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+  disconnect?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+  delete?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+  connect?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+  update?: Prisma.CookbookCategoryUpdateWithWhereUniqueWithoutParentInput | Prisma.CookbookCategoryUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.CookbookCategoryUpdateManyWithWhereWithoutParentInput | Prisma.CookbookCategoryUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.CookbookCategoryScalarWhereInput | Prisma.CookbookCategoryScalarWhereInput[]
+}
+
+export type CookbookCategoryUncheckedUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutParentInput, Prisma.CookbookCategoryUncheckedCreateWithoutParentInput> | Prisma.CookbookCategoryCreateWithoutParentInput[] | Prisma.CookbookCategoryUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.CookbookCategoryCreateOrConnectWithoutParentInput | Prisma.CookbookCategoryCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.CookbookCategoryUpsertWithWhereUniqueWithoutParentInput | Prisma.CookbookCategoryUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.CookbookCategoryCreateManyParentInputEnvelope
+  set?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+  disconnect?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+  delete?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+  connect?: Prisma.CookbookCategoryWhereUniqueInput | Prisma.CookbookCategoryWhereUniqueInput[]
+  update?: Prisma.CookbookCategoryUpdateWithWhereUniqueWithoutParentInput | Prisma.CookbookCategoryUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.CookbookCategoryUpdateManyWithWhereWithoutParentInput | Prisma.CookbookCategoryUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.CookbookCategoryScalarWhereInput | Prisma.CookbookCategoryScalarWhereInput[]
 }
 
 export type CookbookCategoryCreateNestedOneWithoutPromptsInput = {
@@ -309,11 +413,120 @@ export type CookbookCategoryUpdateOneRequiredWithoutPromptsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CookbookCategoryUpdateToOneWithWhereWithoutPromptsInput, Prisma.CookbookCategoryUpdateWithoutPromptsInput>, Prisma.CookbookCategoryUncheckedUpdateWithoutPromptsInput>
 }
 
+export type CookbookCategoryCreateWithoutChildrenInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  parent?: Prisma.CookbookCategoryCreateNestedOneWithoutChildrenInput
+  prompts?: Prisma.CookbookPromptCreateNestedManyWithoutCategoryInput
+}
+
+export type CookbookCategoryUncheckedCreateWithoutChildrenInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  parentId?: string | null
+  prompts?: Prisma.CookbookPromptUncheckedCreateNestedManyWithoutCategoryInput
+}
+
+export type CookbookCategoryCreateOrConnectWithoutChildrenInput = {
+  where: Prisma.CookbookCategoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutChildrenInput, Prisma.CookbookCategoryUncheckedCreateWithoutChildrenInput>
+}
+
+export type CookbookCategoryCreateWithoutParentInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  children?: Prisma.CookbookCategoryCreateNestedManyWithoutParentInput
+  prompts?: Prisma.CookbookPromptCreateNestedManyWithoutCategoryInput
+}
+
+export type CookbookCategoryUncheckedCreateWithoutParentInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  children?: Prisma.CookbookCategoryUncheckedCreateNestedManyWithoutParentInput
+  prompts?: Prisma.CookbookPromptUncheckedCreateNestedManyWithoutCategoryInput
+}
+
+export type CookbookCategoryCreateOrConnectWithoutParentInput = {
+  where: Prisma.CookbookCategoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutParentInput, Prisma.CookbookCategoryUncheckedCreateWithoutParentInput>
+}
+
+export type CookbookCategoryCreateManyParentInputEnvelope = {
+  data: Prisma.CookbookCategoryCreateManyParentInput | Prisma.CookbookCategoryCreateManyParentInput[]
+  skipDuplicates?: boolean
+}
+
+export type CookbookCategoryUpsertWithoutChildrenInput = {
+  update: Prisma.XOR<Prisma.CookbookCategoryUpdateWithoutChildrenInput, Prisma.CookbookCategoryUncheckedUpdateWithoutChildrenInput>
+  create: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutChildrenInput, Prisma.CookbookCategoryUncheckedCreateWithoutChildrenInput>
+  where?: Prisma.CookbookCategoryWhereInput
+}
+
+export type CookbookCategoryUpdateToOneWithWhereWithoutChildrenInput = {
+  where?: Prisma.CookbookCategoryWhereInput
+  data: Prisma.XOR<Prisma.CookbookCategoryUpdateWithoutChildrenInput, Prisma.CookbookCategoryUncheckedUpdateWithoutChildrenInput>
+}
+
+export type CookbookCategoryUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parent?: Prisma.CookbookCategoryUpdateOneWithoutChildrenNestedInput
+  prompts?: Prisma.CookbookPromptUpdateManyWithoutCategoryNestedInput
+}
+
+export type CookbookCategoryUncheckedUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prompts?: Prisma.CookbookPromptUncheckedUpdateManyWithoutCategoryNestedInput
+}
+
+export type CookbookCategoryUpsertWithWhereUniqueWithoutParentInput = {
+  where: Prisma.CookbookCategoryWhereUniqueInput
+  update: Prisma.XOR<Prisma.CookbookCategoryUpdateWithoutParentInput, Prisma.CookbookCategoryUncheckedUpdateWithoutParentInput>
+  create: Prisma.XOR<Prisma.CookbookCategoryCreateWithoutParentInput, Prisma.CookbookCategoryUncheckedCreateWithoutParentInput>
+}
+
+export type CookbookCategoryUpdateWithWhereUniqueWithoutParentInput = {
+  where: Prisma.CookbookCategoryWhereUniqueInput
+  data: Prisma.XOR<Prisma.CookbookCategoryUpdateWithoutParentInput, Prisma.CookbookCategoryUncheckedUpdateWithoutParentInput>
+}
+
+export type CookbookCategoryUpdateManyWithWhereWithoutParentInput = {
+  where: Prisma.CookbookCategoryScalarWhereInput
+  data: Prisma.XOR<Prisma.CookbookCategoryUpdateManyMutationInput, Prisma.CookbookCategoryUncheckedUpdateManyWithoutParentInput>
+}
+
+export type CookbookCategoryScalarWhereInput = {
+  AND?: Prisma.CookbookCategoryScalarWhereInput | Prisma.CookbookCategoryScalarWhereInput[]
+  OR?: Prisma.CookbookCategoryScalarWhereInput[]
+  NOT?: Prisma.CookbookCategoryScalarWhereInput | Prisma.CookbookCategoryScalarWhereInput[]
+  id?: Prisma.StringFilter<"CookbookCategory"> | string
+  name?: Prisma.StringFilter<"CookbookCategory"> | string
+  slug?: Prisma.StringFilter<"CookbookCategory"> | string
+  description?: Prisma.StringNullableFilter<"CookbookCategory"> | string | null
+  parentId?: Prisma.StringNullableFilter<"CookbookCategory"> | string | null
+}
+
 export type CookbookCategoryCreateWithoutPromptsInput = {
   id?: string
   name: string
   slug: string
   description?: string | null
+  parent?: Prisma.CookbookCategoryCreateNestedOneWithoutChildrenInput
+  children?: Prisma.CookbookCategoryCreateNestedManyWithoutParentInput
 }
 
 export type CookbookCategoryUncheckedCreateWithoutPromptsInput = {
@@ -321,6 +534,8 @@ export type CookbookCategoryUncheckedCreateWithoutPromptsInput = {
   name: string
   slug: string
   description?: string | null
+  parentId?: string | null
+  children?: Prisma.CookbookCategoryUncheckedCreateNestedManyWithoutParentInput
 }
 
 export type CookbookCategoryCreateOrConnectWithoutPromptsInput = {
@@ -344,9 +559,45 @@ export type CookbookCategoryUpdateWithoutPromptsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parent?: Prisma.CookbookCategoryUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.CookbookCategoryUpdateManyWithoutParentNestedInput
 }
 
 export type CookbookCategoryUncheckedUpdateWithoutPromptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.CookbookCategoryUncheckedUpdateManyWithoutParentNestedInput
+}
+
+export type CookbookCategoryCreateManyParentInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+}
+
+export type CookbookCategoryUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.CookbookCategoryUpdateManyWithoutParentNestedInput
+  prompts?: Prisma.CookbookPromptUpdateManyWithoutCategoryNestedInput
+}
+
+export type CookbookCategoryUncheckedUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.CookbookCategoryUncheckedUpdateManyWithoutParentNestedInput
+  prompts?: Prisma.CookbookPromptUncheckedUpdateManyWithoutCategoryNestedInput
+}
+
+export type CookbookCategoryUncheckedUpdateManyWithoutParentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
@@ -359,10 +610,12 @@ export type CookbookCategoryUncheckedUpdateWithoutPromptsInput = {
  */
 
 export type CookbookCategoryCountOutputType = {
+  children: number
   prompts: number
 }
 
 export type CookbookCategoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  children?: boolean | CookbookCategoryCountOutputTypeCountChildrenArgs
   prompts?: boolean | CookbookCategoryCountOutputTypeCountPromptsArgs
 }
 
@@ -379,6 +632,13 @@ export type CookbookCategoryCountOutputTypeDefaultArgs<ExtArgs extends runtime.T
 /**
  * CookbookCategoryCountOutputType without action
  */
+export type CookbookCategoryCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CookbookCategoryWhereInput
+}
+
+/**
+ * CookbookCategoryCountOutputType without action
+ */
 export type CookbookCategoryCountOutputTypeCountPromptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CookbookPromptWhereInput
 }
@@ -389,6 +649,9 @@ export type CookbookCategorySelect<ExtArgs extends runtime.Types.Extensions.Inte
   name?: boolean
   slug?: boolean
   description?: boolean
+  parentId?: boolean
+  parent?: boolean | Prisma.CookbookCategory$parentArgs<ExtArgs>
+  children?: boolean | Prisma.CookbookCategory$childrenArgs<ExtArgs>
   prompts?: boolean | Prisma.CookbookCategory$promptsArgs<ExtArgs>
   _count?: boolean | Prisma.CookbookCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cookbookCategory"]>
@@ -398,6 +661,8 @@ export type CookbookCategorySelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   name?: boolean
   slug?: boolean
   description?: boolean
+  parentId?: boolean
+  parent?: boolean | Prisma.CookbookCategory$parentArgs<ExtArgs>
 }, ExtArgs["result"]["cookbookCategory"]>
 
 export type CookbookCategorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -405,6 +670,8 @@ export type CookbookCategorySelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   name?: boolean
   slug?: boolean
   description?: boolean
+  parentId?: boolean
+  parent?: boolean | Prisma.CookbookCategory$parentArgs<ExtArgs>
 }, ExtArgs["result"]["cookbookCategory"]>
 
 export type CookbookCategorySelectScalar = {
@@ -412,19 +679,28 @@ export type CookbookCategorySelectScalar = {
   name?: boolean
   slug?: boolean
   description?: boolean
+  parentId?: boolean
 }
 
-export type CookbookCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description", ExtArgs["result"]["cookbookCategory"]>
+export type CookbookCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "parentId", ExtArgs["result"]["cookbookCategory"]>
 export type CookbookCategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.CookbookCategory$parentArgs<ExtArgs>
+  children?: boolean | Prisma.CookbookCategory$childrenArgs<ExtArgs>
   prompts?: boolean | Prisma.CookbookCategory$promptsArgs<ExtArgs>
   _count?: boolean | Prisma.CookbookCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type CookbookCategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type CookbookCategoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type CookbookCategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.CookbookCategory$parentArgs<ExtArgs>
+}
+export type CookbookCategoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.CookbookCategory$parentArgs<ExtArgs>
+}
 
 export type $CookbookCategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CookbookCategory"
   objects: {
+    parent: Prisma.$CookbookCategoryPayload<ExtArgs> | null
+    children: Prisma.$CookbookCategoryPayload<ExtArgs>[]
     prompts: Prisma.$CookbookPromptPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -432,6 +708,7 @@ export type $CookbookCategoryPayload<ExtArgs extends runtime.Types.Extensions.In
     name: string
     slug: string
     description: string | null
+    parentId: string | null
   }, ExtArgs["result"]["cookbookCategory"]>
   composites: {}
 }
@@ -826,6 +1103,8 @@ readonly fields: CookbookCategoryFieldRefs;
  */
 export interface Prisma__CookbookCategoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  parent<T extends Prisma.CookbookCategory$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CookbookCategory$parentArgs<ExtArgs>>): Prisma.Prisma__CookbookCategoryClient<runtime.Types.Result.GetResult<Prisma.$CookbookCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  children<T extends Prisma.CookbookCategory$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CookbookCategory$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CookbookCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   prompts<T extends Prisma.CookbookCategory$promptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CookbookCategory$promptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CookbookPromptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -860,6 +1139,7 @@ export interface CookbookCategoryFieldRefs {
   readonly name: Prisma.FieldRef<"CookbookCategory", 'String'>
   readonly slug: Prisma.FieldRef<"CookbookCategory", 'String'>
   readonly description: Prisma.FieldRef<"CookbookCategory", 'String'>
+  readonly parentId: Prisma.FieldRef<"CookbookCategory", 'String'>
 }
     
 
@@ -1114,6 +1394,10 @@ export type CookbookCategoryCreateManyAndReturnArgs<ExtArgs extends runtime.Type
    */
   data: Prisma.CookbookCategoryCreateManyInput | Prisma.CookbookCategoryCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CookbookCategoryIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1184,6 +1468,10 @@ export type CookbookCategoryUpdateManyAndReturnArgs<ExtArgs extends runtime.Type
    * Limit how many CookbookCategories to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CookbookCategoryIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1250,6 +1538,49 @@ export type CookbookCategoryDeleteManyArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many CookbookCategories to delete.
    */
   limit?: number
+}
+
+/**
+ * CookbookCategory.parent
+ */
+export type CookbookCategory$parentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CookbookCategory
+   */
+  select?: Prisma.CookbookCategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CookbookCategory
+   */
+  omit?: Prisma.CookbookCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CookbookCategoryInclude<ExtArgs> | null
+  where?: Prisma.CookbookCategoryWhereInput
+}
+
+/**
+ * CookbookCategory.children
+ */
+export type CookbookCategory$childrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CookbookCategory
+   */
+  select?: Prisma.CookbookCategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CookbookCategory
+   */
+  omit?: Prisma.CookbookCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CookbookCategoryInclude<ExtArgs> | null
+  where?: Prisma.CookbookCategoryWhereInput
+  orderBy?: Prisma.CookbookCategoryOrderByWithRelationInput | Prisma.CookbookCategoryOrderByWithRelationInput[]
+  cursor?: Prisma.CookbookCategoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CookbookCategoryScalarFieldEnum | Prisma.CookbookCategoryScalarFieldEnum[]
 }
 
 /**

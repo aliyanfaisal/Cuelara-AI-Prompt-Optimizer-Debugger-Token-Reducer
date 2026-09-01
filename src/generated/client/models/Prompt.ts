@@ -39,6 +39,7 @@ export type PromptSumAggregateOutputType = {
 export type PromptMinAggregateOutputType = {
   id: string | null
   title: string | null
+  image: string | null
   content: string | null
   model: string | null
   tokens: number | null
@@ -53,6 +54,7 @@ export type PromptMinAggregateOutputType = {
 export type PromptMaxAggregateOutputType = {
   id: string | null
   title: string | null
+  image: string | null
   content: string | null
   model: string | null
   tokens: number | null
@@ -67,6 +69,7 @@ export type PromptMaxAggregateOutputType = {
 export type PromptCountAggregateOutputType = {
   id: number
   title: number
+  image: number
   content: number
   model: number
   tokens: number
@@ -94,6 +97,7 @@ export type PromptSumAggregateInputType = {
 export type PromptMinAggregateInputType = {
   id?: true
   title?: true
+  image?: true
   content?: true
   model?: true
   tokens?: true
@@ -108,6 +112,7 @@ export type PromptMinAggregateInputType = {
 export type PromptMaxAggregateInputType = {
   id?: true
   title?: true
+  image?: true
   content?: true
   model?: true
   tokens?: true
@@ -122,6 +127,7 @@ export type PromptMaxAggregateInputType = {
 export type PromptCountAggregateInputType = {
   id?: true
   title?: true
+  image?: true
   content?: true
   model?: true
   tokens?: true
@@ -224,6 +230,7 @@ export type PromptGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type PromptGroupByOutputType = {
   id: string
   title: string
+  image: string | null
   content: string
   model: string | null
   tokens: number | null
@@ -262,6 +269,7 @@ export type PromptWhereInput = {
   NOT?: Prisma.PromptWhereInput | Prisma.PromptWhereInput[]
   id?: Prisma.StringFilter<"Prompt"> | string
   title?: Prisma.StringFilter<"Prompt"> | string
+  image?: Prisma.StringNullableFilter<"Prompt"> | string | null
   content?: Prisma.StringFilter<"Prompt"> | string
   model?: Prisma.StringNullableFilter<"Prompt"> | string | null
   tokens?: Prisma.IntNullableFilter<"Prompt"> | number | null
@@ -279,6 +287,7 @@ export type PromptWhereInput = {
 export type PromptOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrderInput | Prisma.SortOrder
   tokens?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -299,6 +308,7 @@ export type PromptWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.PromptWhereInput[]
   NOT?: Prisma.PromptWhereInput | Prisma.PromptWhereInput[]
   title?: Prisma.StringFilter<"Prompt"> | string
+  image?: Prisma.StringNullableFilter<"Prompt"> | string | null
   content?: Prisma.StringFilter<"Prompt"> | string
   model?: Prisma.StringNullableFilter<"Prompt"> | string | null
   tokens?: Prisma.IntNullableFilter<"Prompt"> | number | null
@@ -316,6 +326,7 @@ export type PromptWhereUniqueInput = Prisma.AtLeast<{
 export type PromptOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrderInput | Prisma.SortOrder
   tokens?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -339,6 +350,7 @@ export type PromptScalarWhereWithAggregatesInput = {
   NOT?: Prisma.PromptScalarWhereWithAggregatesInput | Prisma.PromptScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Prompt"> | string
   title?: Prisma.StringWithAggregatesFilter<"Prompt"> | string
+  image?: Prisma.StringNullableWithAggregatesFilter<"Prompt"> | string | null
   content?: Prisma.StringWithAggregatesFilter<"Prompt"> | string
   model?: Prisma.StringNullableWithAggregatesFilter<"Prompt"> | string | null
   tokens?: Prisma.IntNullableWithAggregatesFilter<"Prompt"> | number | null
@@ -354,6 +366,7 @@ export type PromptScalarWhereWithAggregatesInput = {
 export type PromptCreateInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -369,6 +382,7 @@ export type PromptCreateInput = {
 export type PromptUncheckedCreateInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -384,6 +398,7 @@ export type PromptUncheckedCreateInput = {
 export type PromptUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -399,6 +414,7 @@ export type PromptUpdateInput = {
 export type PromptUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -414,6 +430,7 @@ export type PromptUncheckedUpdateInput = {
 export type PromptCreateManyInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -429,6 +446,7 @@ export type PromptCreateManyInput = {
 export type PromptUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -442,6 +460,7 @@ export type PromptUpdateManyMutationInput = {
 export type PromptUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -475,6 +494,7 @@ export type StringNullableListFilter<$PrismaModel = never> = {
 export type PromptCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrder
   tokens?: Prisma.SortOrder
@@ -495,6 +515,7 @@ export type PromptAvgOrderByAggregateInput = {
 export type PromptMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrder
   tokens?: Prisma.SortOrder
@@ -509,6 +530,7 @@ export type PromptMaxOrderByAggregateInput = {
 export type PromptMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrder
   tokens?: Prisma.SortOrder
@@ -629,6 +651,7 @@ export type PromptUpdatetagsInput = {
 export type PromptCreateWithoutUserInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -643,6 +666,7 @@ export type PromptCreateWithoutUserInput = {
 export type PromptUncheckedCreateWithoutUserInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -686,6 +710,7 @@ export type PromptScalarWhereInput = {
   NOT?: Prisma.PromptScalarWhereInput | Prisma.PromptScalarWhereInput[]
   id?: Prisma.StringFilter<"Prompt"> | string
   title?: Prisma.StringFilter<"Prompt"> | string
+  image?: Prisma.StringNullableFilter<"Prompt"> | string | null
   content?: Prisma.StringFilter<"Prompt"> | string
   model?: Prisma.StringNullableFilter<"Prompt"> | string | null
   tokens?: Prisma.IntNullableFilter<"Prompt"> | number | null
@@ -701,6 +726,7 @@ export type PromptScalarWhereInput = {
 export type PromptCreateWithoutWorkspaceInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -715,6 +741,7 @@ export type PromptCreateWithoutWorkspaceInput = {
 export type PromptUncheckedCreateWithoutWorkspaceInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -755,6 +782,7 @@ export type PromptUpdateManyWithWhereWithoutWorkspaceInput = {
 export type PromptCreateManyUserInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -769,6 +797,7 @@ export type PromptCreateManyUserInput = {
 export type PromptUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -783,6 +812,7 @@ export type PromptUpdateWithoutUserInput = {
 export type PromptUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -797,6 +827,7 @@ export type PromptUncheckedUpdateWithoutUserInput = {
 export type PromptUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -811,6 +842,7 @@ export type PromptUncheckedUpdateManyWithoutUserInput = {
 export type PromptCreateManyWorkspaceInput = {
   id?: string
   title: string
+  image?: string | null
   content: string
   model?: string | null
   tokens?: number | null
@@ -825,6 +857,7 @@ export type PromptCreateManyWorkspaceInput = {
 export type PromptUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -839,6 +872,7 @@ export type PromptUpdateWithoutWorkspaceInput = {
 export type PromptUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -853,6 +887,7 @@ export type PromptUncheckedUpdateWithoutWorkspaceInput = {
 export type PromptUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -869,6 +904,7 @@ export type PromptUncheckedUpdateManyWithoutWorkspaceInput = {
 export type PromptSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
+  image?: boolean
   content?: boolean
   model?: boolean
   tokens?: boolean
@@ -886,6 +922,7 @@ export type PromptSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type PromptSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
+  image?: boolean
   content?: boolean
   model?: boolean
   tokens?: boolean
@@ -903,6 +940,7 @@ export type PromptSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type PromptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
+  image?: boolean
   content?: boolean
   model?: boolean
   tokens?: boolean
@@ -920,6 +958,7 @@ export type PromptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type PromptSelectScalar = {
   id?: boolean
   title?: boolean
+  image?: boolean
   content?: boolean
   model?: boolean
   tokens?: boolean
@@ -932,7 +971,7 @@ export type PromptSelectScalar = {
   workspaceId?: boolean
 }
 
-export type PromptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "model" | "tokens" | "cost" | "isPublic" | "tags" | "createdAt" | "updatedAt" | "userId" | "workspaceId", ExtArgs["result"]["prompt"]>
+export type PromptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "image" | "content" | "model" | "tokens" | "cost" | "isPublic" | "tags" | "createdAt" | "updatedAt" | "userId" | "workspaceId", ExtArgs["result"]["prompt"]>
 export type PromptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   workspace?: boolean | Prisma.Prompt$workspaceArgs<ExtArgs>
@@ -955,6 +994,7 @@ export type $PromptPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
+    image: string | null
     content: string
     model: string | null
     tokens: number | null
@@ -1392,6 +1432,7 @@ export interface Prisma__PromptClient<T, Null = never, ExtArgs extends runtime.T
 export interface PromptFieldRefs {
   readonly id: Prisma.FieldRef<"Prompt", 'String'>
   readonly title: Prisma.FieldRef<"Prompt", 'String'>
+  readonly image: Prisma.FieldRef<"Prompt", 'String'>
   readonly content: Prisma.FieldRef<"Prompt", 'String'>
   readonly model: Prisma.FieldRef<"Prompt", 'String'>
   readonly tokens: Prisma.FieldRef<"Prompt", 'Int'>

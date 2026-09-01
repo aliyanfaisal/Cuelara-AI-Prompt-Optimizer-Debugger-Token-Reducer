@@ -6,10 +6,10 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const { token } = req.nextauth;
 
-    // Protect admin routes
-    if (pathname.startsWith("/admin/dashboard")) {
-      if (token?.role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/admin/login?error=Unauthorized+Access", req.url));
+    // Protect all admin routes
+    if (pathname.startsWith("/admin")) {
+      if (!(token?.roles as string[])?.includes("ADMIN")) {
+        return NextResponse.redirect(new URL("/login?error=Unauthorized+Access", req.url));
       }
     }
 
@@ -20,12 +20,8 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
         
-        // Only require auth for specific paths right now
-        // For example, if we want to protect /tools/saved later:
-        // if (pathname.startsWith("/tools/saved")) return !!token;
-        
         // Admin routes always require auth
-        if (pathname.startsWith("/admin/dashboard")) return !!token;
+        if (pathname.startsWith("/admin")) return !!token;
 
         return true; // Allow public access by default
       },
@@ -38,7 +34,7 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/admin/dashboard/:path*",
+    "/admin/:path*",
     // Add other protected routes here later
   ],
 };

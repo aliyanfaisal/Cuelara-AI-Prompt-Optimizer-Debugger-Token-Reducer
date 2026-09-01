@@ -138,10 +138,10 @@ export function Navbar() {
                 ) : session ? (
                   <>
                     <Link
-                      href="/tools"
+                      href={(session.user as any)?.roles?.includes("ADMIN") ? "/admin/dashboard" : "/tools"}
                       className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-2"
                     >
-                      Dashboard
+                      {(session.user as any)?.roles?.includes("ADMIN") ? "Admin Dashboard" : "Dashboard"}
                     </Link>
                     <button
                       onClick={() => signOut()}
@@ -230,11 +230,11 @@ export function Navbar() {
               ) : session ? (
                 <>
                   <Link
-                    href="/tools"
+                    href={(session.user as any)?.roles?.includes("ADMIN") ? "/admin/dashboard" : "/tools"}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex w-full h-12 items-center justify-center rounded-full bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg transition-all active:scale-95"
                   >
-                    Dashboard
+                    {(session.user as any)?.roles?.includes("ADMIN") ? "Admin Dashboard" : "Dashboard"}
                   </Link>
                   <button
                     onClick={() => {

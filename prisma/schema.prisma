@@ -41,6 +41,11 @@ model CookbookCategory {
   name        String
   slug        String   @unique
   description String?  @db.Text
+  
+  parentId    String?
+  parent      CookbookCategory?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children    CookbookCategory[] @relation("CategoryToCategory")
+
   prompts     CookbookPrompt[]
 }
 
@@ -48,6 +53,7 @@ model CookbookPrompt {
   id              String   @id @default(cuid())
   title           String
   slug            String   @unique
+  image           String?
   categoryId      String
   category        CookbookCategory @relation(fields: [categoryId], references: [id])
   
@@ -109,7 +115,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  role          String    @default("USER") // "USER" or "ADMIN"
+  roles         Role[]    @relation("UserRoles")
   isActive      Boolean   @default(false)  // For magic link activation
   createdAt     DateTime  @default(now())
   
@@ -118,6 +124,16 @@ model User {
   workspaces        Workspace[]
   prompts           Prompt[]
   activationTokens  ActivationToken[]
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  users       User[]   @relation("UserRoles")
 }
 
 model ActivationToken {
@@ -155,6 +171,7 @@ model Workspace {
 model Prompt {
   id          String    @id @default(cuid())
   title       String
+  image       String?   // Featured image URL
   content     String    @db.Text
   model       String?   
   tokens      Int?

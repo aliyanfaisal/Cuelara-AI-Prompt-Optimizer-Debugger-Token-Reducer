@@ -32,7 +32,14 @@ export default function LoginPage() {
       if (res?.error) {
         router.replace(`/login?error=${encodeURIComponent(res.error)}`);
       } else if (res?.ok) {
-        router.push("/tools");
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+        
+        if (session?.user?.roles?.includes("ADMIN")) {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/tools");
+        }
         router.refresh();
       }
     } finally {

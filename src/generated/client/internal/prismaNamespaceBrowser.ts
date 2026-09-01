@@ -58,6 +58,7 @@ export const ModelName = {
   Account: 'Account',
   Session: 'Session',
   User: 'User',
+  Role: 'Role',
   ActivationToken: 'ActivationToken',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
@@ -110,7 +111,8 @@ export const CookbookCategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  description: 'description'
+  description: 'description',
+  parentId: 'parentId'
 } as const
 
 export type CookbookCategoryScalarFieldEnum = (typeof CookbookCategoryScalarFieldEnum)[keyof typeof CookbookCategoryScalarFieldEnum]
@@ -120,6 +122,7 @@ export const CookbookPromptScalarFieldEnum = {
   id: 'id',
   title: 'title',
   slug: 'slug',
+  image: 'image',
   categoryId: 'categoryId',
   explanation: 'explanation',
   whenToUse: 'whenToUse',
@@ -174,12 +177,22 @@ export const UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   password: 'password',
-  role: 'role',
   isActive: 'isActive',
   createdAt: 'createdAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const RoleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
 
 
 export const ActivationTokenScalarFieldEnum = {
@@ -215,6 +228,7 @@ export type WorkspaceScalarFieldEnum = (typeof WorkspaceScalarFieldEnum)[keyof t
 export const PromptScalarFieldEnum = {
   id: 'id',
   title: 'title',
+  image: 'image',
   content: 'content',
   model: 'model',
   tokens: 'tokens',
