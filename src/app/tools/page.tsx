@@ -89,14 +89,14 @@ const TOOLS = [
 
 export default function ToolsOverviewPage() {
   return (
-    <div className="flex flex-col w-full min-h-screen bg-background">
+    <div className="flex flex-col w-full">
       
       {/* 1. Premium Hero Section */}
-      <section className="relative w-full pt-0 pb-12 md:pt-4 md:pb-16 flex flex-col items-center">
+      <section className="relative w-full pt-0 pb-8 md:pt-4 md:pb-12 flex flex-col items-center">
         {/* Glow Effects */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
         
-        <div className="max-w-5xl mx-auto px-6 relative z-10 text-center w-full">
+        <div className="w-full relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -108,15 +108,14 @@ export default function ToolsOverviewPage() {
             <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mb-6">
               AI Prompt Engineering <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">Toolkit</span>
             </h1>
-            <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-              Standardizing your prompt structure directly reduces API response latency, minimizes token costs, and halts logical hallucinations before production.
+            <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
+              Professional utilities to compress tokens, extract targeted context, format schemas, and eliminate hallucinations across OpenAI, Claude, and Gemini.
             </p>
-
-            {/* Feature Badges */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-3xl mx-auto">
+            
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border/60 rounded-xl shadow-sm">
                 <Clock className="w-4 h-4 text-amber-500" />
-                <span className="text-xs font-semibold text-foreground">Optimized Latency</span>
+                <span className="text-xs font-semibold text-foreground">Save 40%+ Tokens</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border/60 rounded-xl shadow-sm">
                 <ShieldAlert className="w-4 h-4 text-emerald-500" />
@@ -124,7 +123,7 @@ export default function ToolsOverviewPage() {
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border/60 rounded-xl shadow-sm">
                 <Cpu className="w-4 h-4 text-primary" />
-                <span className="text-xs font-semibold text-foreground">Structure Layouts</span>
+                <span className="text-xs font-semibold text-foreground">Schema Formatter</span>
               </div>
             </div>
           </motion.div>
@@ -132,7 +131,7 @@ export default function ToolsOverviewPage() {
       </section>
 
       {/* 2. Bento Grid */}
-      <div className="max-w-6xl mx-auto px-6 w-full pb-24">
+      <div className="w-full pb-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 auto-rows-[220px]">
           {TOOLS.map((tool, i) => {
             const Icon = tool.icon;

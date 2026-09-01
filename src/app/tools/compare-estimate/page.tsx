@@ -82,7 +82,7 @@ export default function CompareEstimatePage() {
   const newTokens = Math.max(0, Math.floor(newPrompt.length / 4));
 
   return (
-    <article className="flex flex-col w-full max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <article className="flex flex-col w-full py-8">
       
       {/* 1. Header */}
       <motion.div 

@@ -129,7 +129,7 @@ export default function PromptOptimizerPage() {
   };
 
   return (
-    <article className="flex flex-col w-full max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <article className="flex flex-col w-full py-8">
       
       {/* 1. Header */}
       <motion.div 

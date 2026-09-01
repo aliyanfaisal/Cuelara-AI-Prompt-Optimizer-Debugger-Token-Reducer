@@ -2,11 +2,13 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Moon, Sun } from "lucide-react";
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   // Avoid hydration mismatch by only rendering after mount
   useEffect(() => {
@@ -14,6 +16,11 @@ export function ThemeSwitcher() {
   }, []);
 
   if (!mounted) {
+    return null;
+  }
+
+  // The /tools pages have an integrated floating toolbar with theme + fullscreen controls
+  if (pathname?.startsWith("/tools")) {
     return null;
   }
 
