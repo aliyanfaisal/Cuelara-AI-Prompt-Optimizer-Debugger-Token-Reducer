@@ -5,12 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, Zap, Code2, ShieldCheck, 
-  Terminal, Sparkles, ArrowRight, ChevronLeft, ChevronRight 
+  Terminal, Sparkles, ArrowRight, ChevronLeft, ChevronRight, FileText
 } from "lucide-react";
 
 const NAVIGATION = [
   { name: "Overview", href: "/tools", icon: LayoutDashboard },
   { name: "Token Optimizer", href: "/tools/token-optimizer", icon: Zap },
+  { name: "Context Extractor", href: "/tools/context-extractor", icon: FileText },
   { name: "Prompt Optimizer", href: "/tools/prompt-optimizer", icon: Code2 },
   { name: "Prompt Debugger", href: "/tools/prompt-debugger", icon: ShieldCheck },
   { name: "Prompt Formatter", href: "/tools/prompt-formatter", icon: Terminal },

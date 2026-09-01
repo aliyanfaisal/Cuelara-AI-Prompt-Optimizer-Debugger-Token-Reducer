@@ -55,12 +55,13 @@ export function Footer() {
           
           <div className="flex flex-col gap-4">
             <h3 className="font-bold text-foreground uppercase tracking-wider text-xs mb-2">Platform</h3>
-            <Link href="/tools" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Optimizer</Link>
-            <Link href="/tools" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Token Reducer</Link>
-            <Link href="/tools" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Debugger</Link>
-            <Link href="/tools" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Formatter</Link>
-            <Link href="/tools" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Compare & Diff</Link>
-            <Link href="/tools" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Intelligence Score</Link>
+            <Link href="/tools/token-optimizer" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Token Optimizer</Link>
+            <Link href="/tools/context-extractor" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Context Extractor</Link>
+            <Link href="/tools/prompt-optimizer" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Optimizer</Link>
+            <Link href="/tools/prompt-debugger" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Debugger</Link>
+            <Link href="/tools/prompt-formatter" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Formatter</Link>
+            <Link href="/tools/compare-estimate" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Compare & Diff</Link>
+            <Link href="/tools/intelligence-score" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Intelligence Score</Link>
           </div>
           
           <div className="flex flex-col gap-4">

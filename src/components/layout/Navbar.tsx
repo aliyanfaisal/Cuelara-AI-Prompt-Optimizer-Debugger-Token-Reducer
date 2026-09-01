@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight } from "lucide-react";
+import { Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 const TOOLS_MENU = [
   { name: "Token Optimizer", icon: <Zap className="w-4 h-4 text-amber-500" />, href: "/tools/token-optimizer" },
+  { name: "Context Extractor", icon: <FileText className="w-4 h-4 text-primary" />, href: "/tools/context-extractor" },
   { name: "Prompt Optimizer", icon: <Code2 className="w-4 h-4 text-primary" />, href: "/tools/prompt-optimizer" },
   { name: "Prompt Debugger", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, href: "/tools/prompt-debugger" },
   { name: "Prompt Formatter", icon: <Terminal className="w-4 h-4 text-pink-500" />, href: "/tools/prompt-formatter" },

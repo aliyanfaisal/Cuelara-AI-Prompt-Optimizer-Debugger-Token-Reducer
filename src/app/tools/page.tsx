@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Zap, Code2, ShieldCheck, Terminal, Sparkles, ArrowRight,
-  ExternalLink, BookOpen, Clock, ShieldAlert, Cpu
+  ExternalLink, BookOpen, Clock, ShieldAlert, Cpu, FileText
 } from "lucide-react";
 
 const TOOLS = [
@@ -18,6 +18,17 @@ const TOOLS = [
     bg: "bg-primary/10",
     border: "border-primary/20",
     isLarge: true,
+  },
+  {
+    name: "Context Extractor",
+    href: "/tools/context-extractor",
+    docs: "/cookbook",
+    icon: FileText,
+    description: "Extract only the relevant data from large PDFs and documents via RAG to slash token usage and eliminate hallucinations in your LLM.",
+    color: "text-primary",
+    bg: "bg-primary/10",
+    border: "border-primary/20",
+    isLarge: false,
   },
   {
     name: "Token Optimizer",

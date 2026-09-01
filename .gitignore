@@ -82,3 +82,6 @@ ehthumbs.db
 ehthumbs_vista.db
 *.stackdump
 [Dd]esktop.ini
+
+# Tool Workflows
+tool-workflows/

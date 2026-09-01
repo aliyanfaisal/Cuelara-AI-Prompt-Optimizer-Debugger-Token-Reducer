@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2, FileText } from "lucide-react";
 
 export default function Home() {
   return (
@@ -282,6 +282,12 @@ export default function Home() {
               icon={<Zap className="h-6 w-6 text-amber-500" />}
               title="Token Optimizer"
               description="Reduce prompt token usage by up to 50% without sacrificing meaning, saving you thousands on API costs."
+            />
+            <FeatureCard 
+              href="/tools/context-extractor"
+              icon={<FileText className="h-6 w-6 text-primary" />}
+              title="Context Extractor"
+              description="Extract only the relevant data from large documents via RAG to slash token usage and eliminate hallucinations in your LLM."
             />
             <FeatureCard 
               href="/tools/prompt-optimizer"
