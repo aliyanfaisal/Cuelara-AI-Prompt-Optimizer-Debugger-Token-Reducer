@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { hashIp } from "@/lib/rate-limit";
 import { Chunk } from "@/lib/rag/chunk";
 
 export const DOCUMENT_TOOL = "context-extractor-document";
@@ -8,22 +7,20 @@ export const PROMPT_TOOL = "context-extractor-prompt";
 const DOCUMENT_TTL_HOURS = 24;
 
 export async function saveDocument(
-  ip: string,
+  subjectKey: string,
   filename: string,
   totalTokens: number,
   chunks: Chunk[],
   chunkEmbeddings: number[][]
 ): Promise<string> {
-  const ipHash = hashIp(ip);
-
-  // Self-cleaning: expire this IP's own stale documents whenever it uploads a new one,
-  // so uploaded content doesn't sit around forever for visitors who never come back.
+  // Self-cleaning: expire this subject's own stale documents whenever it uploads a new
+  // one, so uploaded content doesn't sit around forever for visitors who never come back.
   const cutoff = new Date(Date.now() - DOCUMENT_TTL_HOURS * 60 * 60 * 1000);
-  await prisma.extractedDocument.deleteMany({ where: { ipHash, createdAt: { lt: cutoff } } });
+  await prisma.extractedDocument.deleteMany({ where: { subjectKey, createdAt: { lt: cutoff } } });
 
   const document = await prisma.extractedDocument.create({
     data: {
-      ipHash,
+      subjectKey,
       filename,
       totalTokens,
       chunks: {
@@ -40,15 +37,14 @@ export async function saveDocument(
   return document.id;
 }
 
-export async function loadDocumentForIp(
+export async function loadDocumentForSubject(
   documentId: string,
-  ip: string
+  subjectKey: string
 ): Promise<{ totalTokens: number; chunks: Chunk[]; chunkEmbeddings: number[][] } | null> {
-  const ipHash = hashIp(ip);
   const cutoff = new Date(Date.now() - DOCUMENT_TTL_HOURS * 60 * 60 * 1000);
 
   const document = await prisma.extractedDocument.findFirst({
-    where: { id: documentId, ipHash, createdAt: { gte: cutoff } },
+    where: { id: documentId, subjectKey, createdAt: { gte: cutoff } },
     include: { chunks: { orderBy: { position: "asc" } } },
   });
 

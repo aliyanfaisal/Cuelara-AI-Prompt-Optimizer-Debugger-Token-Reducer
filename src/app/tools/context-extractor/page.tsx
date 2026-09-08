@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { 
-  FileText, Upload, Check, Copy, AlertCircle, 
+import {
+  FileText, Upload, Check, Copy, AlertCircle,
   Sparkles, Layers, RefreshCcw, Download,
   CheckCircle2, XCircle, Info, ChevronDown, ChevronUp, FileCode,
   Sliders, Database, Search, Cpu, FileCheck2, Trash2,
@@ -143,7 +143,7 @@ export default function ContextExtractorPage() {
   const [aiTask, setAiTask] = useState("");
   const [depth, setDepth] = useState<"top3" | "top5">("top3");
   const [formatStyle, setFormatStyle] = useState<"markdown" | "xml" | "json">("markdown");
-  
+
   const [wantsPrompt, setWantsPrompt] = useState(true);
   const [activeTab, setActiveTab] = useState<"prompt" | "data">("prompt");
   const [isCopied, setIsCopied] = useState(false);
@@ -151,7 +151,7 @@ export default function ContextExtractorPage() {
   const [showDosDonts, setShowDosDonts] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
+
   const [extractedData, setExtractedData] = useState<ExtractedDataSnippet[]>([]);
   const outputRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -331,16 +331,28 @@ export default function ContextExtractorPage() {
   const originalTokens = serverOriginalTokens ?? (file
     ? file.tokenCount
     : (rawText.trim() ? Math.max(800, Math.floor(rawText.length / 4)) : 30000));
-    
-  const extractedTokens = extractedData.reduce((acc, c) => acc + Math.floor(c.content.length / 4), 0) + 
+
+  const extractedTokens = extractedData.reduce((acc, c) => acc + Math.floor(c.content.length / 4), 0) +
     Math.floor((searchQuery.length + aiTask.length) / 4) + 80;
-    
+
   const savedTokens = originalTokens - extractedTokens;
   const percentSavedRaw = originalTokens > 0 ? (savedTokens / originalTokens) * 100 : 0;
   const percentSaved = Math.max(0, Math.min(99.2, percentSavedRaw)).toFixed(1);
   const hasMeaningfulSavings = percentSavedRaw >= 10;
 
   const formatOutputPrompt = () => {
+    if (!wantsPrompt) {
+      // Data-only mode: just the matched excerpts, no task wrapper.
+      if (formatStyle === "xml") {
+        return `<context>\n${extractedData.map(c => `[${c.section}]\n${c.content}`).join("\n\n")}\n</context>`;
+      }
+      if (formatStyle === "json") {
+        return JSON.stringify({
+          extracted_data: extractedData.map(c => ({ section: c.section, relevance: c.relevance, text: c.content }))
+        }, null, 2);
+      }
+      return extractedData.map((c) => `> **${c.section}** (Relevance: ${c.relevance}%)\n> ${c.content}`).join("\n\n");
+    }
     if (formatStyle === "xml") {
       return `<instruction>\n${aiTask}\n</instruction>\n\n<context>\n${extractedData.map(c => `[${c.section}]\n${c.content}`).join("\n\n")}\n</context>\n\n<constraint>\nAnswer strictly using the verified data provided in <context>. Do not assume or extrapolate unconfirmed details.\n</constraint>`;
     }
@@ -372,19 +384,19 @@ export default function ContextExtractorPage() {
     document.body.removeChild(element);
   };
 
-  const isFormValid = ((sourceMode === "file" && file) || (sourceMode === "text" && rawText.trim())) && 
-    searchQuery.trim() && 
-    aiTask.trim();
+  const isFormValid = ((sourceMode === "file" && file) || (sourceMode === "text" && rawText.trim())) &&
+    searchQuery.trim() &&
+    (!wantsPrompt || aiTask.trim());
 
   return (
     <article className="flex flex-col w-full py-8">
-      
+
       {/* 1. Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="mb-8"
+        className="mb-3"
       >
         <div className="flex items-center gap-3 mb-2">
           <div className="p-2.5 bg-primary/10 border border-primary/20 text-primary rounded-xl shrink-0">
@@ -400,7 +412,7 @@ export default function ContextExtractorPage() {
 
         {/* Informative helper drawer */}
         <div className="mt-4 rounded-xl border border-border/70 bg-card/40 overflow-hidden text-xs">
-          <button 
+          <button
             onClick={() => setShowDosDonts(!showDosDonts)}
             className="w-full px-4 py-2.5 flex items-center justify-between text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -410,10 +422,10 @@ export default function ContextExtractorPage() {
             </span>
             {showDosDonts ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
-          
+
           <AnimatePresence>
             {showDosDonts && (
-              <motion.div 
+              <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -445,13 +457,13 @@ export default function ContextExtractorPage() {
       </motion.div>
 
       {/* 2. Main Studio Card */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="bg-card border border-border/80 shadow-sm rounded-2xl overflow-hidden flex flex-col mb-8"
       >
-        
+
         {/* Step 1: Source Document Ingestion */}
         <div className="p-6 md:p-7 border-b border-border/60">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -470,21 +482,19 @@ export default function ContextExtractorPage() {
               <div className="flex p-0.5 bg-muted/60 rounded-lg border border-border/70 text-xs">
                 <button
                   onClick={() => setSourceMode("file")}
-                  className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-                    sourceMode === "file" 
-                      ? "bg-card text-foreground shadow-sm" 
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`px-2.5 py-1 rounded-md font-medium transition-all ${sourceMode === "file"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
                 >
                   File Upload
                 </button>
                 <button
                   onClick={() => { setSourceMode("text"); setIsSample(false); setServerOriginalTokens(null); setDocumentId(null); }}
-                  className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-                    sourceMode === "text"
-                      ? "bg-card text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`px-2.5 py-1 rounded-md font-medium transition-all ${sourceMode === "text"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
                 >
                   Raw Text
                 </button>
@@ -508,16 +518,16 @@ export default function ContextExtractorPage() {
           {/* Source Mode: File Upload */}
           {sourceMode === "file" && (
             <>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleFileUpload} 
-                accept=".pdf,.txt,.csv,.md,.json,.docx" 
-                className="hidden" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept=".pdf,.txt,.csv,.md,.json,.docx"
+                className="hidden"
               />
 
               {!file ? (
-                <div 
+                <div
                   onClick={() => fileInputRef.current?.click()}
                   className="border border-dashed border-border/80 hover:border-primary/50 bg-muted/10 hover:bg-muted/30 rounded-xl p-7 text-center cursor-pointer transition-all flex flex-col items-center justify-center group"
                 >
@@ -546,7 +556,7 @@ export default function ContextExtractorPage() {
                       </div>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={handleClearSource}
                     className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                     title="Remove file"
@@ -571,7 +581,7 @@ export default function ContextExtractorPage() {
               <div className="flex justify-between items-center text-[11px] text-muted-foreground mt-1 px-1">
                 <span>Estimated tokens: ~{Math.floor(rawText.length / 4).toLocaleString()}</span>
                 {rawText && (
-                  <button 
+                  <button
                     onClick={() => setRawText("")}
                     className="text-[11px] hover:text-foreground transition-colors"
                   >
@@ -606,7 +616,7 @@ export default function ContextExtractorPage() {
 
             {/* Warning if user enters summary keywords */}
             {isSummarizeQuery && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mt-2 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2"
@@ -678,21 +688,19 @@ export default function ContextExtractorPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setDepth("top3")}
-                      className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium border transition-all ${
-                        depth === "top3"
-                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                          : "bg-card border-border/70 text-muted-foreground hover:text-foreground"
-                      }`}
+                      className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium border transition-all ${depth === "top3"
+                        ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                        : "bg-card border-border/70 text-muted-foreground hover:text-foreground"
+                        }`}
                     >
                       Top 3 Snippets (Max Savings)
                     </button>
                     <button
                       onClick={() => setDepth("top5")}
-                      className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium border transition-all ${
-                        depth === "top5"
-                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                          : "bg-card border-border/70 text-muted-foreground hover:text-foreground"
-                      }`}
+                      className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium border transition-all ${depth === "top5"
+                        ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                        : "bg-card border-border/70 text-muted-foreground hover:text-foreground"
+                        }`}
                     >
                       Top 5 Snippets (Broader Context)
                     </button>
@@ -708,11 +716,10 @@ export default function ContextExtractorPage() {
                       <button
                         key={fmt}
                         onClick={() => setFormatStyle(fmt)}
-                        className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium uppercase border transition-all ${
-                          formatStyle === fmt
-                            ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                            : "bg-card border-border/70 text-muted-foreground hover:text-foreground"
-                        }`}
+                        className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium uppercase border transition-all ${formatStyle === fmt
+                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                          : "bg-card border-border/70 text-muted-foreground hover:text-foreground"
+                          }`}
                       >
                         {fmt}
                       </button>
@@ -735,12 +742,12 @@ export default function ContextExtractorPage() {
                 "documents today"
               )}
             </span>
-            <span className="flex items-center gap-1.5" title="Prompts you can generate today, including reruns on documents already uploaded">
+            <span className="flex items-center gap-1.5" title={wantsPrompt ? "Prompts you can generate today, including reruns on documents already uploaded" : "Extractions you can run today, including reruns on documents already uploaded"}>
               <Sparkles className="w-3.5 h-3.5 text-primary" />
               {promptsRemaining !== null && promptsLimit !== null ? (
-                <><strong className="text-foreground">{promptsRemaining}</strong> / {promptsLimit} prompts today</>
+                <><strong className="text-foreground">{promptsRemaining}</strong> / {promptsLimit} {wantsPrompt ? "prompts" : "extractions"} today</>
               ) : (
-                "prompts today"
+                wantsPrompt ? "prompts today" : "extractions today"
               )}
             </span>
           </div>
@@ -753,17 +760,14 @@ export default function ContextExtractorPage() {
             {state === "loading" ? (
               <>
                 <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
-                {willReuseDocument ? "Generating Prompt..." : "Extracting Data..."}
-              </>
-            ) : willReuseDocument ? (
-              <>
-                <Sparkles className="w-3.5 h-3.5" />
-                Generate Another Prompt
+                {wantsPrompt ? (willReuseDocument ? "Generating Prompt..." : "Extracting Data...") : "Extracting..."}
               </>
             ) : (
               <>
                 <Sparkles className="w-3.5 h-3.5" />
-                Extract Data & Build Prompt
+                {wantsPrompt
+                  ? (willReuseDocument ? "Generate Another Prompt" : "Extract Data & Build Prompt")
+                  : (willReuseDocument ? "Run Another Extraction" : "Extract Data")}
               </>
             )}
           </button>
@@ -772,7 +776,7 @@ export default function ContextExtractorPage() {
         {willReuseDocument && state !== "loading" && (
           <div className="px-6 md:px-7 py-2.5 bg-primary/5 border-t border-border/60 text-[11px] text-muted-foreground flex items-center gap-1.5">
             <FileCheck2 className="w-3.5 h-3.5 text-primary shrink-0" />
-            Reusing <strong className="text-foreground">{file?.name}</strong> — this only spends a prompt, not another document.
+            Reusing <strong className="text-foreground">{file?.name}</strong> — this only spends {wantsPrompt ? "a prompt" : "an extraction"}, not another document.
           </div>
         )}
 
@@ -791,7 +795,7 @@ export default function ContextExtractorPage() {
       {/* 3. Output Section */}
       <div ref={outputRef} className="scroll-mt-24 mb-16">
         <AnimatePresence mode="wait">
-          
+
           {/* Loading Animation Stage */}
           {state === "loading" && (
             <motion.div
@@ -809,7 +813,7 @@ export default function ContextExtractorPage() {
               </div>
 
               <AnimatePresence mode="wait">
-                <motion.h3 
+                <motion.h3
                   key={currentStep}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -825,11 +829,10 @@ export default function ContextExtractorPage() {
               {/* Step indicator progress pills */}
               <div className="flex justify-center gap-1.5 max-w-xs mx-auto">
                 {PROCESSING_STEPS.map((_, idx) => (
-                  <div 
+                  <div
                     key={idx}
-                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                      idx <= currentStep ? "bg-primary" : "bg-muted"
-                    }`}
+                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${idx <= currentStep ? "bg-primary" : "bg-muted"
+                      }`}
                   />
                 ))}
               </div>
@@ -844,15 +847,14 @@ export default function ContextExtractorPage() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              
+
               {/* Token Savings Summary Widget */}
               <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl shrink-0 ${
-                    hasMeaningfulSavings
-                      ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                      : "bg-primary/10 border border-primary/20 text-primary"
-                  }`}>
+                  <div className={`p-3 rounded-xl shrink-0 ${hasMeaningfulSavings
+                    ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                    : "bg-primary/10 border border-primary/20 text-primary"
+                    }`}>
                     {hasMeaningfulSavings ? <Sparkles className="w-6 h-6" /> : <Info className="w-6 h-6" />}
                   </div>
                   <div>
@@ -884,24 +886,24 @@ export default function ContextExtractorPage() {
               <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
                 <div className="flex items-center justify-between border-b border-border px-5 bg-muted/20">
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => setActiveTab("prompt")}
-                      className={`py-3 px-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${
-                        activeTab === "prompt"
+                    {wantsPrompt && (
+                      <button
+                        onClick={() => setActiveTab("prompt")}
+                        className={`py-3 px-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${activeTab === "prompt"
                           ? "border-primary text-primary"
                           : "border-transparent text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      <FileCode className="w-4 h-4" />
-                      Ready-to-Paste Prompt
-                    </button>
+                          }`}
+                      >
+                        <FileCode className="w-4 h-4" />
+                        Ready-to-Paste Prompt
+                      </button>
+                    )}
                     <button
                       onClick={() => setActiveTab("data")}
-                      className={`py-3 px-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${
-                        activeTab === "data"
-                          ? "border-primary text-primary"
-                          : "border-transparent text-muted-foreground hover:text-foreground"
-                      }`}
+                      className={`py-3 px-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${activeTab === "data" || !wantsPrompt
+                        ? "border-primary text-primary"
+                        : "border-transparent text-muted-foreground hover:text-foreground"
+                        }`}
                     >
                       <Layers className="w-4 h-4" />
                       Extracted Data ({extractedData.length})
@@ -914,7 +916,7 @@ export default function ContextExtractorPage() {
                 </div>
 
                 {/* Tab 1: Assembled Ready Prompt */}
-                {activeTab === "prompt" && (
+                {activeTab === "prompt" && wantsPrompt && (
                   <div className="p-5">
                     {/* Action bar: task + data are already embedded below — copy it as a prompt, or save it as a document */}
                     <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-4 border-b border-border/60">
@@ -999,8 +1001,40 @@ export default function ContextExtractorPage() {
                 )}
 
                 {/* Tab 2: Extracted Data Snippets Preview */}
-                {activeTab === "data" && (
+                {(activeTab === "data" || !wantsPrompt) && (
                   <div className="p-5 space-y-3">
+                    {!wantsPrompt && (
+                      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-border/60">
+                        <p className="text-[11px] text-muted-foreground max-w-xs">
+                          Just the matching excerpts — no prompt built around them.
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={handleCopyPrompt}
+                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
+                          >
+                            {isCopied ? (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                Copied!
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                Copy Data
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={handleDownload}
+                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-semibold transition-colors"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            Download
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     {extractedData.map((snippet) => (
                       <div
                         key={snippet.id}
@@ -1032,7 +1066,7 @@ export default function ContextExtractorPage() {
 
       {/* 4. Comprehensive Explanatory Guide & SEO Knowledge Section */}
       <section className="border-t border-border pt-12 space-y-12 text-foreground">
-        
+
         {/* Section 1: Overview / What is RAG Pre-Processing */}
         <div className="space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-semibold">
@@ -1180,32 +1214,32 @@ export default function ContextExtractorPage() {
         <div className="p-6 rounded-2xl border border-border bg-muted/20 space-y-4">
           <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Explore More AI Prompt Engineering Tools</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <Link 
-              href="/tools/token-optimizer" 
+            <Link
+              href="/tools/token-optimizer"
               className="p-3 rounded-xl border border-border bg-card hover:border-primary/40 hover:text-primary transition-all flex items-center gap-2 group"
             >
               <Zap className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
               <span className="font-semibold">Token Optimizer</span>
             </Link>
 
-            <Link 
-              href="/tools/prompt-optimizer" 
+            <Link
+              href="/tools/prompt-optimizer"
               className="p-3 rounded-xl border border-border bg-card hover:border-primary/40 hover:text-primary transition-all flex items-center gap-2 group"
             >
               <Code2 className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
               <span className="font-semibold">Prompt Optimizer</span>
             </Link>
 
-            <Link 
-              href="/tools/compare-estimate" 
+            <Link
+              href="/tools/compare-estimate"
               className="p-3 rounded-xl border border-border bg-card hover:border-primary/40 hover:text-primary transition-all flex items-center gap-2 group"
             >
               <ArrowRight className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" />
               <span className="font-semibold">Diff & Cost Estimate</span>
             </Link>
 
-            <Link 
-              href="/cookbook" 
+            <Link
+              href="/cookbook"
               className="p-3 rounded-xl border border-border bg-card hover:border-primary/40 hover:text-primary transition-all flex items-center gap-2 group"
             >
               <BookOpen className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />

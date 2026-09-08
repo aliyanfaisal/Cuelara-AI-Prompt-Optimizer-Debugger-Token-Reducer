@@ -4,20 +4,21 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  LayoutDashboard, Zap, Code2, ShieldCheck, 
-  Terminal, Sparkles, ArrowRight, ChevronLeft, ChevronRight, 
-  FileText, Maximize2, Minimize2, Sun, Moon, 
+import {
+  LayoutDashboard, Zap, Code2, ShieldCheck,
+  Terminal, Sparkles, ArrowRight, ChevronLeft, ChevronRight,
+  FileText, Maximize2, Minimize2, Sun, Moon,
   PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen,
-  X
+  X, LogIn
 } from "lucide-react";
 
 const NAVIGATION = [
   { name: "Overview", href: "/tools", icon: LayoutDashboard },
+  { name: "Prompt Optimizer", href: "/tools/prompt-optimizer", icon: Code2 },
   { name: "Context Extractor", href: "/tools/context-extractor", icon: FileText },
   { name: "Token Optimizer", href: "/tools/token-optimizer", icon: Zap },
-  { name: "Prompt Optimizer", href: "/tools/prompt-optimizer", icon: Code2 },
   { name: "Prompt Debugger", href: "/tools/prompt-debugger", icon: ShieldCheck },
   { name: "Prompt Formatter", href: "/tools/prompt-formatter", icon: Terminal },
   { name: "Intelligence Score", href: "/tools/intelligence-score", icon: Sparkles },
@@ -35,9 +36,38 @@ const QUICK_LINKS = [
 const SIDEBAR_W = 260; 
 const RIGHT_SIDEBAR_W = 260; 
 
+interface ContextExtractorUsage {
+  isAuthenticated: boolean;
+  documentsRemaining: number;
+  documentsLimit: number;
+  promptsRemaining: number;
+  promptsLimit: number;
+}
+
+function getInitials(name?: string | null, email?: string | null): string {
+  if (name) {
+    const parts = name.trim().split(/\s+/);
+    return parts.length > 1 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+  }
+  if (email) return email.slice(0, 2).toUpperCase();
+  return "?";
+}
+
 export default function ToolsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { data: session, status: sessionStatus } = useSession();
+  const [usage, setUsage] = useState<ContextExtractorUsage | null>(null);
+
+  useEffect(() => {
+    if (sessionStatus === "loading") return;
+    fetch("/api/tools/context-extractor/usage")
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data.documentsLimit === "number") setUsage(data);
+      })
+      .catch(() => {});
+  }, [sessionStatus]);
 
   // Desktop sidebar collapse states
   const [isLeftOpen, setIsLeftOpen] = useState(true);
@@ -379,32 +409,64 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
 
               <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
                 {/* User Snapshot */}
-                <section className="bg-muted/30 p-3.5 rounded-xl border border-border/60">
-                  <div className="flex items-center gap-2.5 mb-3">
-                    <div className="relative w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                      AR
-                      <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border-2 border-card rounded-full" />
+                {sessionStatus === "authenticated" ? (
+                  <section className="bg-muted/30 p-3.5 rounded-xl border border-border/60">
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <div className="relative w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                        {getInitials(session?.user?.name, session?.user?.email)}
+                        <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border-2 border-card rounded-full" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-foreground truncate">{session?.user?.name || session?.user?.email}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">Signed in</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-foreground truncate">Alex Rivera</p>
-                      <p className="text-[10px] text-muted-foreground truncate">Pro Engineer</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1.5 border-t border-border/50 pt-2.5 text-[10px]">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Monthly Tokens</span>
-                      <span className="font-semibold text-foreground">42.8k / 100k</span>
-                    </div>
-                    <div className="w-full bg-border rounded-full h-1">
-                      <div className="bg-primary h-1 rounded-full" style={{ width: "42.8%" }} />
-                    </div>
-                    <div className="flex justify-between items-center pt-0.5">
-                      <span className="text-muted-foreground">Avg Prompt Score</span>
-                      <span className="font-bold text-emerald-500">92 / 100</span>
-                    </div>
-                  </div>
-                </section>
+
+                    {usage && (
+                      <div className="space-y-2 border-t border-border/50 pt-2.5 text-[10px]">
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-muted-foreground">Documents today</span>
+                            <span className="font-semibold text-foreground">{usage.documentsRemaining} / {usage.documentsLimit} left</span>
+                          </div>
+                          <div className="w-full bg-border rounded-full h-1">
+                            <div className="bg-primary h-1 rounded-full" style={{ width: `${(usage.documentsRemaining / usage.documentsLimit) * 100}%` }} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-muted-foreground">Prompts today</span>
+                            <span className="font-semibold text-foreground">{usage.promptsRemaining} / {usage.promptsLimit} left</span>
+                          </div>
+                          <div className="w-full bg-border rounded-full h-1">
+                            <div className="bg-primary h-1 rounded-full" style={{ width: `${(usage.promptsRemaining / usage.promptsLimit) * 100}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </section>
+                ) : sessionStatus === "unauthenticated" ? (
+                  <section className="bg-primary/5 p-3.5 rounded-xl border border-primary/20">
+                    <p className="text-xs font-bold text-foreground mb-1">Sign in for higher limits</p>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
+                      {usage ? (
+                        <>Signed out: {usage.documentsLimit} documents &amp; {usage.promptsLimit} prompts/day. Sign in for {" "}
+                          <strong className="text-foreground">more</strong>.</>
+                      ) : (
+                        "Get more documents & prompts per day on Context Extractor."
+                      )}
+                    </p>
+                    <Link
+                      href="/login"
+                      className="flex items-center justify-center gap-1.5 w-full py-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
+                    >
+                      <LogIn className="w-3.5 h-3.5" />
+                      Sign in
+                    </Link>
+                  </section>
+                ) : (
+                  <section className="bg-muted/30 p-3.5 rounded-xl border border-border/60 animate-pulse h-[74px]" />
+                )}
 
                 {/* Getting Started Steps */}
                 <section>

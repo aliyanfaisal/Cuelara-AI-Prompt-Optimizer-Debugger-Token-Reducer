@@ -1,22 +1,19 @@
 import { NextResponse } from "next/server";
 import { embedTexts, getGeminiApiKey } from "@/lib/rag/embed";
 import { rankTopK } from "@/lib/rag/similarity";
-import { loadDocumentForIp, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
-import { hasReachedDailyLimit, consumeDailyLimit, getDailyLimit, getUsedToday, getClientIp } from "@/lib/rate-limit";
-import { CONTEXT_EXTRACTOR_DOCUMENT_DAILY_LIMIT_KEY, CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY } from "@/lib/tool-settings-keys";
-
-const DEFAULT_DOCUMENT_DAILY_LIMIT = 2;
-const DEFAULT_PROMPT_DAILY_LIMIT = 50;
+import { loadDocumentForSubject, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
+import { getContextExtractorLimits } from "@/lib/rag/limits";
+import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubject } from "@/lib/rate-limit";
 
 // Re-runs a different query against a document that was already uploaded, parsed,
 // chunked and embedded — only the new query gets embedded here, so this only ever
 // spends a "prompt" slot, never a "document" slot.
 export async function POST(req: Request) {
   try {
-    const ip = getClientIp(req);
+    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
+    const { documentLimit, promptLimit } = await getContextExtractorLimits(isAuthenticated);
 
-    const promptLimit = await getDailyLimit(CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY, DEFAULT_PROMPT_DAILY_LIMIT);
-    if (await hasReachedDailyLimit(ip, PROMPT_TOOL, promptLimit)) {
+    if (await hasReachedDailyLimit(subjectKey, PROMPT_TOOL, promptLimit)) {
       return NextResponse.json(
         { error: `You've used your ${promptLimit} free prompts for today. Please try again tomorrow.` },
         { status: 429 }
@@ -24,7 +21,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { documentId, searchQuery, aiTask, depth } = body ?? {};
+    const { documentId, searchQuery, depth } = body ?? {};
 
     if (typeof documentId !== "string" || !documentId) {
       return NextResponse.json({ error: "Missing document reference." }, { status: 400 });
@@ -32,11 +29,9 @@ export async function POST(req: Request) {
     if (typeof searchQuery !== "string" || !searchQuery.trim()) {
       return NextResponse.json({ error: "A search target is required." }, { status: 400 });
     }
-    if (typeof aiTask !== "string" || !aiTask.trim()) {
-      return NextResponse.json({ error: "An AI task instruction is required." }, { status: 400 });
-    }
+    // aiTask is optional — only used client-side to build the prompt wrapper.
 
-    const document = await loadDocumentForIp(documentId, ip);
+    const document = await loadDocumentForSubject(documentId, subjectKey);
     if (!document) {
       return NextResponse.json(
         { error: "This document is no longer available — please re-upload it to try another prompt.", expired: true },
@@ -54,18 +49,18 @@ export async function POST(req: Request) {
     const queryEmbeddings = await embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey);
     const snippets = rankTopK(document.chunks, document.chunkEmbeddings, queryEmbeddings[0], Math.min(k, document.chunks.length));
 
-    await consumeDailyLimit(ip, PROMPT_TOOL);
+    await consumeDailyLimit(subjectKey, PROMPT_TOOL);
 
-    const [documentLimit, documentsUsed, promptsUsed] = await Promise.all([
-      getDailyLimit(CONTEXT_EXTRACTOR_DOCUMENT_DAILY_LIMIT_KEY, DEFAULT_DOCUMENT_DAILY_LIMIT),
-      getUsedToday(ip, DOCUMENT_TOOL),
-      getUsedToday(ip, PROMPT_TOOL),
+    const [documentsUsed, promptsUsed] = await Promise.all([
+      getUsedToday(subjectKey, DOCUMENT_TOOL),
+      getUsedToday(subjectKey, PROMPT_TOOL),
     ]);
 
     return NextResponse.json({
       documentId,
       originalTokens: document.totalTokens,
       snippets,
+      isAuthenticated,
       documentsRemaining: Math.max(0, documentLimit - documentsUsed),
       documentsLimit: documentLimit,
       promptsRemaining: Math.max(0, promptLimit - promptsUsed),

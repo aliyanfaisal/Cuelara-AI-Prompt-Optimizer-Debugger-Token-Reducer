@@ -36,7 +36,7 @@ export type ToolUsageDailySumAggregateOutputType = {
 
 export type ToolUsageDailyMinAggregateOutputType = {
   id: string | null
-  ipHash: string | null
+  subjectKey: string | null
   tool: string | null
   date: string | null
   count: number | null
@@ -45,7 +45,7 @@ export type ToolUsageDailyMinAggregateOutputType = {
 
 export type ToolUsageDailyMaxAggregateOutputType = {
   id: string | null
-  ipHash: string | null
+  subjectKey: string | null
   tool: string | null
   date: string | null
   count: number | null
@@ -54,7 +54,7 @@ export type ToolUsageDailyMaxAggregateOutputType = {
 
 export type ToolUsageDailyCountAggregateOutputType = {
   id: number
-  ipHash: number
+  subjectKey: number
   tool: number
   date: number
   count: number
@@ -73,7 +73,7 @@ export type ToolUsageDailySumAggregateInputType = {
 
 export type ToolUsageDailyMinAggregateInputType = {
   id?: true
-  ipHash?: true
+  subjectKey?: true
   tool?: true
   date?: true
   count?: true
@@ -82,7 +82,7 @@ export type ToolUsageDailyMinAggregateInputType = {
 
 export type ToolUsageDailyMaxAggregateInputType = {
   id?: true
-  ipHash?: true
+  subjectKey?: true
   tool?: true
   date?: true
   count?: true
@@ -91,7 +91,7 @@ export type ToolUsageDailyMaxAggregateInputType = {
 
 export type ToolUsageDailyCountAggregateInputType = {
   id?: true
-  ipHash?: true
+  subjectKey?: true
   tool?: true
   date?: true
   count?: true
@@ -187,7 +187,7 @@ export type ToolUsageDailyGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type ToolUsageDailyGroupByOutputType = {
   id: string
-  ipHash: string
+  subjectKey: string
   tool: string
   date: string
   count: number
@@ -219,7 +219,7 @@ export type ToolUsageDailyWhereInput = {
   OR?: Prisma.ToolUsageDailyWhereInput[]
   NOT?: Prisma.ToolUsageDailyWhereInput | Prisma.ToolUsageDailyWhereInput[]
   id?: Prisma.StringFilter<"ToolUsageDaily"> | string
-  ipHash?: Prisma.StringFilter<"ToolUsageDaily"> | string
+  subjectKey?: Prisma.StringFilter<"ToolUsageDaily"> | string
   tool?: Prisma.StringFilter<"ToolUsageDaily"> | string
   date?: Prisma.StringFilter<"ToolUsageDaily"> | string
   count?: Prisma.IntFilter<"ToolUsageDaily"> | number
@@ -228,7 +228,7 @@ export type ToolUsageDailyWhereInput = {
 
 export type ToolUsageDailyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   date?: Prisma.SortOrder
   count?: Prisma.SortOrder
@@ -237,20 +237,20 @@ export type ToolUsageDailyOrderByWithRelationInput = {
 
 export type ToolUsageDailyWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  ipHash_tool_date?: Prisma.ToolUsageDailyIpHashToolDateCompoundUniqueInput
+  subjectKey_tool_date?: Prisma.ToolUsageDailySubjectKeyToolDateCompoundUniqueInput
   AND?: Prisma.ToolUsageDailyWhereInput | Prisma.ToolUsageDailyWhereInput[]
   OR?: Prisma.ToolUsageDailyWhereInput[]
   NOT?: Prisma.ToolUsageDailyWhereInput | Prisma.ToolUsageDailyWhereInput[]
-  ipHash?: Prisma.StringFilter<"ToolUsageDaily"> | string
+  subjectKey?: Prisma.StringFilter<"ToolUsageDaily"> | string
   tool?: Prisma.StringFilter<"ToolUsageDaily"> | string
   date?: Prisma.StringFilter<"ToolUsageDaily"> | string
   count?: Prisma.IntFilter<"ToolUsageDaily"> | number
   updatedAt?: Prisma.DateTimeFilter<"ToolUsageDaily"> | Date | string
-}, "id" | "ipHash_tool_date">
+}, "id" | "subjectKey_tool_date">
 
 export type ToolUsageDailyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   date?: Prisma.SortOrder
   count?: Prisma.SortOrder
@@ -267,7 +267,7 @@ export type ToolUsageDailyScalarWhereWithAggregatesInput = {
   OR?: Prisma.ToolUsageDailyScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ToolUsageDailyScalarWhereWithAggregatesInput | Prisma.ToolUsageDailyScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ToolUsageDaily"> | string
-  ipHash?: Prisma.StringWithAggregatesFilter<"ToolUsageDaily"> | string
+  subjectKey?: Prisma.StringWithAggregatesFilter<"ToolUsageDaily"> | string
   tool?: Prisma.StringWithAggregatesFilter<"ToolUsageDaily"> | string
   date?: Prisma.StringWithAggregatesFilter<"ToolUsageDaily"> | string
   count?: Prisma.IntWithAggregatesFilter<"ToolUsageDaily"> | number
@@ -276,7 +276,7 @@ export type ToolUsageDailyScalarWhereWithAggregatesInput = {
 
 export type ToolUsageDailyCreateInput = {
   id?: string
-  ipHash: string
+  subjectKey: string
   tool: string
   date: string
   count?: number
@@ -285,7 +285,7 @@ export type ToolUsageDailyCreateInput = {
 
 export type ToolUsageDailyUncheckedCreateInput = {
   id?: string
-  ipHash: string
+  subjectKey: string
   tool: string
   date: string
   count?: number
@@ -294,7 +294,7 @@ export type ToolUsageDailyUncheckedCreateInput = {
 
 export type ToolUsageDailyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.StringFieldUpdateOperationsInput | string
   count?: Prisma.IntFieldUpdateOperationsInput | number
@@ -303,7 +303,7 @@ export type ToolUsageDailyUpdateInput = {
 
 export type ToolUsageDailyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.StringFieldUpdateOperationsInput | string
   count?: Prisma.IntFieldUpdateOperationsInput | number
@@ -312,7 +312,7 @@ export type ToolUsageDailyUncheckedUpdateInput = {
 
 export type ToolUsageDailyCreateManyInput = {
   id?: string
-  ipHash: string
+  subjectKey: string
   tool: string
   date: string
   count?: number
@@ -321,7 +321,7 @@ export type ToolUsageDailyCreateManyInput = {
 
 export type ToolUsageDailyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.StringFieldUpdateOperationsInput | string
   count?: Prisma.IntFieldUpdateOperationsInput | number
@@ -330,22 +330,22 @@ export type ToolUsageDailyUpdateManyMutationInput = {
 
 export type ToolUsageDailyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.StringFieldUpdateOperationsInput | string
   count?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type ToolUsageDailyIpHashToolDateCompoundUniqueInput = {
-  ipHash: string
+export type ToolUsageDailySubjectKeyToolDateCompoundUniqueInput = {
+  subjectKey: string
   tool: string
   date: string
 }
 
 export type ToolUsageDailyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   date?: Prisma.SortOrder
   count?: Prisma.SortOrder
@@ -358,7 +358,7 @@ export type ToolUsageDailyAvgOrderByAggregateInput = {
 
 export type ToolUsageDailyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   date?: Prisma.SortOrder
   count?: Prisma.SortOrder
@@ -367,7 +367,7 @@ export type ToolUsageDailyMaxOrderByAggregateInput = {
 
 export type ToolUsageDailyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   date?: Prisma.SortOrder
   count?: Prisma.SortOrder
@@ -390,7 +390,7 @@ export type IntFieldUpdateOperationsInput = {
 
 export type ToolUsageDailySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  ipHash?: boolean
+  subjectKey?: boolean
   tool?: boolean
   date?: boolean
   count?: boolean
@@ -399,7 +399,7 @@ export type ToolUsageDailySelect<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type ToolUsageDailySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  ipHash?: boolean
+  subjectKey?: boolean
   tool?: boolean
   date?: boolean
   count?: boolean
@@ -408,7 +408,7 @@ export type ToolUsageDailySelectCreateManyAndReturn<ExtArgs extends runtime.Type
 
 export type ToolUsageDailySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  ipHash?: boolean
+  subjectKey?: boolean
   tool?: boolean
   date?: boolean
   count?: boolean
@@ -417,21 +417,21 @@ export type ToolUsageDailySelectUpdateManyAndReturn<ExtArgs extends runtime.Type
 
 export type ToolUsageDailySelectScalar = {
   id?: boolean
-  ipHash?: boolean
+  subjectKey?: boolean
   tool?: boolean
   date?: boolean
   count?: boolean
   updatedAt?: boolean
 }
 
-export type ToolUsageDailyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ipHash" | "tool" | "date" | "count" | "updatedAt", ExtArgs["result"]["toolUsageDaily"]>
+export type ToolUsageDailyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "subjectKey" | "tool" | "date" | "count" | "updatedAt", ExtArgs["result"]["toolUsageDaily"]>
 
 export type $ToolUsageDailyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ToolUsageDaily"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    ipHash: string
+    subjectKey: string
     tool: string
     date: string
     count: number
@@ -860,7 +860,7 @@ export interface Prisma__ToolUsageDailyClient<T, Null = never, ExtArgs extends r
  */
 export interface ToolUsageDailyFieldRefs {
   readonly id: Prisma.FieldRef<"ToolUsageDaily", 'String'>
-  readonly ipHash: Prisma.FieldRef<"ToolUsageDaily", 'String'>
+  readonly subjectKey: Prisma.FieldRef<"ToolUsageDaily", 'String'>
   readonly tool: Prisma.FieldRef<"ToolUsageDaily", 'String'>
   readonly date: Prisma.FieldRef<"ToolUsageDaily", 'String'>
   readonly count: Prisma.FieldRef<"ToolUsageDaily", 'Int'>

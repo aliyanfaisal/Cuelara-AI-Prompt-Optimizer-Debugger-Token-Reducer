@@ -36,7 +36,7 @@ export type ExtractedDocumentSumAggregateOutputType = {
 
 export type ExtractedDocumentMinAggregateOutputType = {
   id: string | null
-  ipHash: string | null
+  subjectKey: string | null
   filename: string | null
   totalTokens: number | null
   createdAt: Date | null
@@ -44,7 +44,7 @@ export type ExtractedDocumentMinAggregateOutputType = {
 
 export type ExtractedDocumentMaxAggregateOutputType = {
   id: string | null
-  ipHash: string | null
+  subjectKey: string | null
   filename: string | null
   totalTokens: number | null
   createdAt: Date | null
@@ -52,7 +52,7 @@ export type ExtractedDocumentMaxAggregateOutputType = {
 
 export type ExtractedDocumentCountAggregateOutputType = {
   id: number
-  ipHash: number
+  subjectKey: number
   filename: number
   totalTokens: number
   createdAt: number
@@ -70,7 +70,7 @@ export type ExtractedDocumentSumAggregateInputType = {
 
 export type ExtractedDocumentMinAggregateInputType = {
   id?: true
-  ipHash?: true
+  subjectKey?: true
   filename?: true
   totalTokens?: true
   createdAt?: true
@@ -78,7 +78,7 @@ export type ExtractedDocumentMinAggregateInputType = {
 
 export type ExtractedDocumentMaxAggregateInputType = {
   id?: true
-  ipHash?: true
+  subjectKey?: true
   filename?: true
   totalTokens?: true
   createdAt?: true
@@ -86,7 +86,7 @@ export type ExtractedDocumentMaxAggregateInputType = {
 
 export type ExtractedDocumentCountAggregateInputType = {
   id?: true
-  ipHash?: true
+  subjectKey?: true
   filename?: true
   totalTokens?: true
   createdAt?: true
@@ -181,7 +181,7 @@ export type ExtractedDocumentGroupByArgs<ExtArgs extends runtime.Types.Extension
 
 export type ExtractedDocumentGroupByOutputType = {
   id: string
-  ipHash: string
+  subjectKey: string
   filename: string
   totalTokens: number
   createdAt: Date
@@ -212,7 +212,7 @@ export type ExtractedDocumentWhereInput = {
   OR?: Prisma.ExtractedDocumentWhereInput[]
   NOT?: Prisma.ExtractedDocumentWhereInput | Prisma.ExtractedDocumentWhereInput[]
   id?: Prisma.StringFilter<"ExtractedDocument"> | string
-  ipHash?: Prisma.StringFilter<"ExtractedDocument"> | string
+  subjectKey?: Prisma.StringFilter<"ExtractedDocument"> | string
   filename?: Prisma.StringFilter<"ExtractedDocument"> | string
   totalTokens?: Prisma.IntFilter<"ExtractedDocument"> | number
   createdAt?: Prisma.DateTimeFilter<"ExtractedDocument"> | Date | string
@@ -221,7 +221,7 @@ export type ExtractedDocumentWhereInput = {
 
 export type ExtractedDocumentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   filename?: Prisma.SortOrder
   totalTokens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -233,7 +233,7 @@ export type ExtractedDocumentWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ExtractedDocumentWhereInput | Prisma.ExtractedDocumentWhereInput[]
   OR?: Prisma.ExtractedDocumentWhereInput[]
   NOT?: Prisma.ExtractedDocumentWhereInput | Prisma.ExtractedDocumentWhereInput[]
-  ipHash?: Prisma.StringFilter<"ExtractedDocument"> | string
+  subjectKey?: Prisma.StringFilter<"ExtractedDocument"> | string
   filename?: Prisma.StringFilter<"ExtractedDocument"> | string
   totalTokens?: Prisma.IntFilter<"ExtractedDocument"> | number
   createdAt?: Prisma.DateTimeFilter<"ExtractedDocument"> | Date | string
@@ -242,7 +242,7 @@ export type ExtractedDocumentWhereUniqueInput = Prisma.AtLeast<{
 
 export type ExtractedDocumentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   filename?: Prisma.SortOrder
   totalTokens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -258,7 +258,7 @@ export type ExtractedDocumentScalarWhereWithAggregatesInput = {
   OR?: Prisma.ExtractedDocumentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ExtractedDocumentScalarWhereWithAggregatesInput | Prisma.ExtractedDocumentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ExtractedDocument"> | string
-  ipHash?: Prisma.StringWithAggregatesFilter<"ExtractedDocument"> | string
+  subjectKey?: Prisma.StringWithAggregatesFilter<"ExtractedDocument"> | string
   filename?: Prisma.StringWithAggregatesFilter<"ExtractedDocument"> | string
   totalTokens?: Prisma.IntWithAggregatesFilter<"ExtractedDocument"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ExtractedDocument"> | Date | string
@@ -266,7 +266,7 @@ export type ExtractedDocumentScalarWhereWithAggregatesInput = {
 
 export type ExtractedDocumentCreateInput = {
   id?: string
-  ipHash: string
+  subjectKey: string
   filename: string
   totalTokens: number
   createdAt?: Date | string
@@ -275,7 +275,7 @@ export type ExtractedDocumentCreateInput = {
 
 export type ExtractedDocumentUncheckedCreateInput = {
   id?: string
-  ipHash: string
+  subjectKey: string
   filename: string
   totalTokens: number
   createdAt?: Date | string
@@ -284,7 +284,7 @@ export type ExtractedDocumentUncheckedCreateInput = {
 
 export type ExtractedDocumentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   totalTokens?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -293,7 +293,7 @@ export type ExtractedDocumentUpdateInput = {
 
 export type ExtractedDocumentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   totalTokens?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -302,7 +302,7 @@ export type ExtractedDocumentUncheckedUpdateInput = {
 
 export type ExtractedDocumentCreateManyInput = {
   id?: string
-  ipHash: string
+  subjectKey: string
   filename: string
   totalTokens: number
   createdAt?: Date | string
@@ -310,7 +310,7 @@ export type ExtractedDocumentCreateManyInput = {
 
 export type ExtractedDocumentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   totalTokens?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -318,7 +318,7 @@ export type ExtractedDocumentUpdateManyMutationInput = {
 
 export type ExtractedDocumentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   totalTokens?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -326,7 +326,7 @@ export type ExtractedDocumentUncheckedUpdateManyInput = {
 
 export type ExtractedDocumentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   filename?: Prisma.SortOrder
   totalTokens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -338,7 +338,7 @@ export type ExtractedDocumentAvgOrderByAggregateInput = {
 
 export type ExtractedDocumentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   filename?: Prisma.SortOrder
   totalTokens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -346,7 +346,7 @@ export type ExtractedDocumentMaxOrderByAggregateInput = {
 
 export type ExtractedDocumentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  ipHash?: Prisma.SortOrder
+  subjectKey?: Prisma.SortOrder
   filename?: Prisma.SortOrder
   totalTokens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -377,7 +377,7 @@ export type ExtractedDocumentUpdateOneRequiredWithoutChunksNestedInput = {
 
 export type ExtractedDocumentCreateWithoutChunksInput = {
   id?: string
-  ipHash: string
+  subjectKey: string
   filename: string
   totalTokens: number
   createdAt?: Date | string
@@ -385,7 +385,7 @@ export type ExtractedDocumentCreateWithoutChunksInput = {
 
 export type ExtractedDocumentUncheckedCreateWithoutChunksInput = {
   id?: string
-  ipHash: string
+  subjectKey: string
   filename: string
   totalTokens: number
   createdAt?: Date | string
@@ -409,7 +409,7 @@ export type ExtractedDocumentUpdateToOneWithWhereWithoutChunksInput = {
 
 export type ExtractedDocumentUpdateWithoutChunksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   totalTokens?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -417,7 +417,7 @@ export type ExtractedDocumentUpdateWithoutChunksInput = {
 
 export type ExtractedDocumentUncheckedUpdateWithoutChunksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ipHash?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectKey?: Prisma.StringFieldUpdateOperationsInput | string
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   totalTokens?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -456,7 +456,7 @@ export type ExtractedDocumentCountOutputTypeCountChunksArgs<ExtArgs extends runt
 
 export type ExtractedDocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  ipHash?: boolean
+  subjectKey?: boolean
   filename?: boolean
   totalTokens?: boolean
   createdAt?: boolean
@@ -466,7 +466,7 @@ export type ExtractedDocumentSelect<ExtArgs extends runtime.Types.Extensions.Int
 
 export type ExtractedDocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  ipHash?: boolean
+  subjectKey?: boolean
   filename?: boolean
   totalTokens?: boolean
   createdAt?: boolean
@@ -474,7 +474,7 @@ export type ExtractedDocumentSelectCreateManyAndReturn<ExtArgs extends runtime.T
 
 export type ExtractedDocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  ipHash?: boolean
+  subjectKey?: boolean
   filename?: boolean
   totalTokens?: boolean
   createdAt?: boolean
@@ -482,13 +482,13 @@ export type ExtractedDocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.T
 
 export type ExtractedDocumentSelectScalar = {
   id?: boolean
-  ipHash?: boolean
+  subjectKey?: boolean
   filename?: boolean
   totalTokens?: boolean
   createdAt?: boolean
 }
 
-export type ExtractedDocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ipHash" | "filename" | "totalTokens" | "createdAt", ExtArgs["result"]["extractedDocument"]>
+export type ExtractedDocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "subjectKey" | "filename" | "totalTokens" | "createdAt", ExtArgs["result"]["extractedDocument"]>
 export type ExtractedDocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   chunks?: boolean | Prisma.ExtractedDocument$chunksArgs<ExtArgs>
   _count?: boolean | Prisma.ExtractedDocumentCountOutputTypeDefaultArgs<ExtArgs>
@@ -503,7 +503,7 @@ export type $ExtractedDocumentPayload<ExtArgs extends runtime.Types.Extensions.I
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    ipHash: string
+    subjectKey: string
     filename: string
     totalTokens: number
     createdAt: Date
@@ -932,7 +932,7 @@ export interface Prisma__ExtractedDocumentClient<T, Null = never, ExtArgs extend
  */
 export interface ExtractedDocumentFieldRefs {
   readonly id: Prisma.FieldRef<"ExtractedDocument", 'String'>
-  readonly ipHash: Prisma.FieldRef<"ExtractedDocument", 'String'>
+  readonly subjectKey: Prisma.FieldRef<"ExtractedDocument", 'String'>
   readonly filename: Prisma.FieldRef<"ExtractedDocument", 'String'>
   readonly totalTokens: Prisma.FieldRef<"ExtractedDocument", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ExtractedDocument", 'DateTime'>

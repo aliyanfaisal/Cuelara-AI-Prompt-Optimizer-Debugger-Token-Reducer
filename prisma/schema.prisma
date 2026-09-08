@@ -21,30 +21,32 @@ model Setting {
   updatedAt DateTime @updatedAt
 }
 
+// subjectKey identifies who is being rate-limited: "user:<id>" for a signed-in
+// user (so their quota follows their account, not their network), else "ip:<hash>".
 model ToolUsageDaily {
-  id        String   @id @default(cuid())
-  ipHash    String
-  tool      String
-  date      String   // YYYY-MM-DD (UTC)
-  count     Int      @default(0)
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  subjectKey String
+  tool       String
+  date       String   // YYYY-MM-DD (UTC)
+  count      Int      @default(0)
+  updatedAt  DateTime @updatedAt
 
-  @@unique([ipHash, tool, date])
+  @@unique([subjectKey, tool, date])
 }
 
 // A parsed + chunked + embedded upload, kept around so the same visitor can
 // run more than one prompt against it without re-uploading (and re-paying
-// for) the document. Scoped to the uploading IP; lazily expired.
+// for) the document. Scoped to the uploading subject; lazily expired.
 model ExtractedDocument {
   id          String   @id @default(cuid())
-  ipHash      String
+  subjectKey  String
   filename    String
   totalTokens Int
   createdAt   DateTime @default(now())
 
   chunks      ExtractedDocumentChunk[]
 
-  @@index([ipHash, createdAt])
+  @@index([subjectKey, createdAt])
 }
 
 model ExtractedDocumentChunk {

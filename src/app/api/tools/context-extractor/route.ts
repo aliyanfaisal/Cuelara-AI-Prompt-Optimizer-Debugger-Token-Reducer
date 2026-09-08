@@ -5,16 +5,11 @@ import { chunkText } from "@/lib/rag/chunk";
 import { embedTexts, getGeminiApiKey } from "@/lib/rag/embed";
 import { rankTopK } from "@/lib/rag/similarity";
 import { saveDocument, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
-import { hasReachedDailyLimit, consumeDailyLimit, getDailyLimit, getUsedToday, getClientIp } from "@/lib/rate-limit";
-import {
-  CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY,
-  CONTEXT_EXTRACTOR_DOCUMENT_DAILY_LIMIT_KEY,
-  CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY,
-} from "@/lib/tool-settings-keys";
+import { getContextExtractorLimits } from "@/lib/rag/limits";
+import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubject } from "@/lib/rate-limit";
+import { CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } from "@/lib/tool-settings-keys";
 
 const DEFAULT_MAX_FILE_MB = 5;
-const DEFAULT_DOCUMENT_DAILY_LIMIT = 2;
-const DEFAULT_PROMPT_DAILY_LIMIT = 50;
 
 async function getMaxFileBytes(): Promise<number> {
   const setting = await prisma.setting.findUnique({ where: { key: CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } });
@@ -25,20 +20,16 @@ async function getMaxFileBytes(): Promise<number> {
 
 export async function POST(req: Request) {
   try {
-    const ip = getClientIp(req);
+    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
+    const { documentLimit, promptLimit } = await getContextExtractorLimits(isAuthenticated);
 
-    const [documentLimit, promptLimit] = await Promise.all([
-      getDailyLimit(CONTEXT_EXTRACTOR_DOCUMENT_DAILY_LIMIT_KEY, DEFAULT_DOCUMENT_DAILY_LIMIT),
-      getDailyLimit(CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY, DEFAULT_PROMPT_DAILY_LIMIT),
-    ]);
-
-    if (await hasReachedDailyLimit(ip, DOCUMENT_TOOL, documentLimit)) {
+    if (await hasReachedDailyLimit(subjectKey, DOCUMENT_TOOL, documentLimit)) {
       return NextResponse.json(
         { error: `You've used your ${documentLimit} free document${documentLimit === 1 ? "" : "s"} for today. Please try again tomorrow.` },
         { status: 429 }
       );
     }
-    if (await hasReachedDailyLimit(ip, PROMPT_TOOL, promptLimit)) {
+    if (await hasReachedDailyLimit(subjectKey, PROMPT_TOOL, promptLimit)) {
       return NextResponse.json(
         { error: `You've used your ${promptLimit} free prompts for today. Please try again tomorrow.` },
         { status: 429 }
@@ -49,15 +40,13 @@ export async function POST(req: Request) {
     const file = formData.get("file");
     const rawText = formData.get("rawText");
     const searchQuery = formData.get("searchQuery");
-    const aiTask = formData.get("aiTask");
     const depth = formData.get("depth");
 
     if (typeof searchQuery !== "string" || !searchQuery.trim()) {
       return NextResponse.json({ error: "A search target is required." }, { status: 400 });
     }
-    if (typeof aiTask !== "string" || !aiTask.trim()) {
-      return NextResponse.json({ error: "An AI task instruction is required." }, { status: 400 });
-    }
+    // aiTask is optional — the client omits it in "data only" mode, since it's only
+    // used to build the prompt wrapper on the client, not for retrieval itself.
 
     const hasFile = file instanceof File && file.size > 0;
     const hasRawText = typeof rawText === "string" && rawText.trim().length > 0;
@@ -119,21 +108,22 @@ export async function POST(req: Request) {
     const snippets = rankTopK(chunks, chunkEmbeddings, queryEmbeddings[0], Math.min(k, chunks.length));
     const originalTokens = Math.max(1, Math.floor(sourceText.length / 4));
 
-    const documentId = await saveDocument(ip, filename, originalTokens, chunks, chunkEmbeddings);
+    const documentId = await saveDocument(subjectKey, filename, originalTokens, chunks, chunkEmbeddings);
 
     // Only counts against quota once the costly work has actually happened — uploading
     // a document spends both a "document" slot and a "prompt" slot (this first query).
-    await Promise.all([consumeDailyLimit(ip, DOCUMENT_TOOL), consumeDailyLimit(ip, PROMPT_TOOL)]);
+    await Promise.all([consumeDailyLimit(subjectKey, DOCUMENT_TOOL), consumeDailyLimit(subjectKey, PROMPT_TOOL)]);
 
     const [documentsUsed, promptsUsed] = await Promise.all([
-      getUsedToday(ip, DOCUMENT_TOOL),
-      getUsedToday(ip, PROMPT_TOOL),
+      getUsedToday(subjectKey, DOCUMENT_TOOL),
+      getUsedToday(subjectKey, PROMPT_TOOL),
     ]);
 
     return NextResponse.json({
       documentId,
       originalTokens,
       snippets,
+      isAuthenticated,
       documentsRemaining: Math.max(0, documentLimit - documentsUsed),
       documentsLimit: documentLimit,
       promptsRemaining: Math.max(0, promptLimit - promptsUsed),

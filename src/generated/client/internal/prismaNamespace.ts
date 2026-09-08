@@ -1592,7 +1592,7 @@ export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeo
 
 export const ToolUsageDailyScalarFieldEnum = {
   id: 'id',
-  ipHash: 'ipHash',
+  subjectKey: 'subjectKey',
   tool: 'tool',
   date: 'date',
   count: 'count',
@@ -1604,7 +1604,7 @@ export type ToolUsageDailyScalarFieldEnum = (typeof ToolUsageDailyScalarFieldEnu
 
 export const ExtractedDocumentScalarFieldEnum = {
   id: 'id',
-  ipHash: 'ipHash',
+  subjectKey: 'subjectKey',
   filename: 'filename',
   totalTokens: 'totalTokens',
   createdAt: 'createdAt'
