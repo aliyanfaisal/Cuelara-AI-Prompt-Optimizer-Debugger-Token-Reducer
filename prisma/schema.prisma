@@ -21,6 +21,45 @@ model Setting {
   updatedAt DateTime @updatedAt
 }
 
+model ToolUsageDaily {
+  id        String   @id @default(cuid())
+  ipHash    String
+  tool      String
+  date      String   // YYYY-MM-DD (UTC)
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([ipHash, tool, date])
+}
+
+// A parsed + chunked + embedded upload, kept around so the same visitor can
+// run more than one prompt against it without re-uploading (and re-paying
+// for) the document. Scoped to the uploading IP; lazily expired.
+model ExtractedDocument {
+  id          String   @id @default(cuid())
+  ipHash      String
+  filename    String
+  totalTokens Int
+  createdAt   DateTime @default(now())
+
+  chunks      ExtractedDocumentChunk[]
+
+  @@index([ipHash, createdAt])
+}
+
+model ExtractedDocumentChunk {
+  id         String   @id @default(cuid())
+  documentId String
+  document   ExtractedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  position   Int
+  section    String
+  content    String   @db.Text
+  embedding  Json     // number[]
+
+  @@index([documentId])
+}
+
 model BlogPost {
   id          String   @id @default(cuid())
   title       String

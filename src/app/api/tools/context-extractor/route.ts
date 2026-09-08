@@ -1,0 +1,146 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { extractText, isSupportedFile, UnsupportedFileTypeError } from "@/lib/rag/parse";
+import { chunkText } from "@/lib/rag/chunk";
+import { embedTexts, getGeminiApiKey } from "@/lib/rag/embed";
+import { rankTopK } from "@/lib/rag/similarity";
+import { saveDocument, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
+import { hasReachedDailyLimit, consumeDailyLimit, getDailyLimit, getUsedToday, getClientIp } from "@/lib/rate-limit";
+import {
+  CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY,
+  CONTEXT_EXTRACTOR_DOCUMENT_DAILY_LIMIT_KEY,
+  CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY,
+} from "@/lib/tool-settings-keys";
+
+const DEFAULT_MAX_FILE_MB = 5;
+const DEFAULT_DOCUMENT_DAILY_LIMIT = 2;
+const DEFAULT_PROMPT_DAILY_LIMIT = 50;
+
+async function getMaxFileBytes(): Promise<number> {
+  const setting = await prisma.setting.findUnique({ where: { key: CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } });
+  const parsed = setting?.value ? parseInt(setting.value, 10) : NaN;
+  const mb = Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_MAX_FILE_MB;
+  return mb * 1024 * 1024;
+}
+
+export async function POST(req: Request) {
+  try {
+    const ip = getClientIp(req);
+
+    const [documentLimit, promptLimit] = await Promise.all([
+      getDailyLimit(CONTEXT_EXTRACTOR_DOCUMENT_DAILY_LIMIT_KEY, DEFAULT_DOCUMENT_DAILY_LIMIT),
+      getDailyLimit(CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY, DEFAULT_PROMPT_DAILY_LIMIT),
+    ]);
+
+    if (await hasReachedDailyLimit(ip, DOCUMENT_TOOL, documentLimit)) {
+      return NextResponse.json(
+        { error: `You've used your ${documentLimit} free document${documentLimit === 1 ? "" : "s"} for today. Please try again tomorrow.` },
+        { status: 429 }
+      );
+    }
+    if (await hasReachedDailyLimit(ip, PROMPT_TOOL, promptLimit)) {
+      return NextResponse.json(
+        { error: `You've used your ${promptLimit} free prompts for today. Please try again tomorrow.` },
+        { status: 429 }
+      );
+    }
+
+    const formData = await req.formData();
+    const file = formData.get("file");
+    const rawText = formData.get("rawText");
+    const searchQuery = formData.get("searchQuery");
+    const aiTask = formData.get("aiTask");
+    const depth = formData.get("depth");
+
+    if (typeof searchQuery !== "string" || !searchQuery.trim()) {
+      return NextResponse.json({ error: "A search target is required." }, { status: 400 });
+    }
+    if (typeof aiTask !== "string" || !aiTask.trim()) {
+      return NextResponse.json({ error: "An AI task instruction is required." }, { status: 400 });
+    }
+
+    const hasFile = file instanceof File && file.size > 0;
+    const hasRawText = typeof rawText === "string" && rawText.trim().length > 0;
+    if (!hasFile && !hasRawText) {
+      return NextResponse.json({ error: "Provide a document or paste raw text." }, { status: 400 });
+    }
+
+    let sourceText: string;
+    let filename: string;
+
+    if (hasFile) {
+      const uploadedFile = file as File;
+      if (!isSupportedFile(uploadedFile.name)) {
+        return NextResponse.json({ error: "Unsupported file type. Use PDF, TXT, CSV, MD, JSON, or DOCX." }, { status: 400 });
+      }
+
+      const maxBytes = await getMaxFileBytes();
+      if (uploadedFile.size > maxBytes) {
+        return NextResponse.json({ error: `File exceeds the ${Math.round(maxBytes / (1024 * 1024))}MB limit.` }, { status: 413 });
+      }
+
+      const buffer = Buffer.from(await uploadedFile.arrayBuffer());
+      try {
+        sourceText = await extractText(buffer, uploadedFile.name);
+      } catch (err) {
+        if (err instanceof UnsupportedFileTypeError) {
+          return NextResponse.json({ error: "Unsupported file type." }, { status: 400 });
+        }
+        console.error("Context Extractor parse error:", err);
+        return NextResponse.json({ error: "Could not read this document. It may be corrupted or password-protected." }, { status: 400 });
+      }
+      filename = uploadedFile.name;
+    } else {
+      sourceText = rawText as string;
+      filename = "raw-text.txt";
+    }
+
+    if (!sourceText.trim()) {
+      return NextResponse.json({ error: "No extractable text was found in the source." }, { status: 400 });
+    }
+
+    const chunks = chunkText(sourceText);
+    if (chunks.length === 0) {
+      return NextResponse.json({ error: "No extractable text was found in the source." }, { status: 400 });
+    }
+
+    const apiKey = await getGeminiApiKey();
+    if (!apiKey) {
+      return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
+    }
+
+    const k = depth === "top5" ? 5 : 3;
+
+    const [chunkEmbeddings, queryEmbeddings] = await Promise.all([
+      embedTexts(chunks.map((c) => c.content), "RETRIEVAL_DOCUMENT", apiKey),
+      embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey),
+    ]);
+
+    const snippets = rankTopK(chunks, chunkEmbeddings, queryEmbeddings[0], Math.min(k, chunks.length));
+    const originalTokens = Math.max(1, Math.floor(sourceText.length / 4));
+
+    const documentId = await saveDocument(ip, filename, originalTokens, chunks, chunkEmbeddings);
+
+    // Only counts against quota once the costly work has actually happened — uploading
+    // a document spends both a "document" slot and a "prompt" slot (this first query).
+    await Promise.all([consumeDailyLimit(ip, DOCUMENT_TOOL), consumeDailyLimit(ip, PROMPT_TOOL)]);
+
+    const [documentsUsed, promptsUsed] = await Promise.all([
+      getUsedToday(ip, DOCUMENT_TOOL),
+      getUsedToday(ip, PROMPT_TOOL),
+    ]);
+
+    return NextResponse.json({
+      documentId,
+      originalTokens,
+      snippets,
+      documentsRemaining: Math.max(0, documentLimit - documentsUsed),
+      documentsLimit: documentLimit,
+      promptsRemaining: Math.max(0, promptLimit - promptsUsed),
+      promptsLimit: promptLimit,
+    });
+  } catch (error) {
+    console.error("Context Extractor error:", error);
+    return NextResponse.json({ error: "Something went wrong while processing your document." }, { status: 500 });
+  }
+}

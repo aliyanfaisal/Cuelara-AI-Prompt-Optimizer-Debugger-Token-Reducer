@@ -398,6 +398,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Setting: 'Setting',
+  ToolUsageDaily: 'ToolUsageDaily',
+  ExtractedDocument: 'ExtractedDocument',
+  ExtractedDocumentChunk: 'ExtractedDocumentChunk',
   BlogPost: 'BlogPost',
   CookbookCategory: 'CookbookCategory',
   CookbookPrompt: 'CookbookPrompt',
@@ -424,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "blogPost" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "verificationToken" | "workspace" | "prompt"
+    modelProps: "setting" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "verificationToken" | "workspace" | "prompt"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -499,6 +502,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SettingCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SettingCountAggregateOutputType> | number
+        }
+      }
+    }
+    ToolUsageDaily: {
+      payload: Prisma.$ToolUsageDailyPayload<ExtArgs>
+      fields: Prisma.ToolUsageDailyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ToolUsageDailyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ToolUsageDailyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>
+        }
+        findFirst: {
+          args: Prisma.ToolUsageDailyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ToolUsageDailyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>
+        }
+        findMany: {
+          args: Prisma.ToolUsageDailyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>[]
+        }
+        create: {
+          args: Prisma.ToolUsageDailyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>
+        }
+        createMany: {
+          args: Prisma.ToolUsageDailyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ToolUsageDailyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>[]
+        }
+        delete: {
+          args: Prisma.ToolUsageDailyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>
+        }
+        update: {
+          args: Prisma.ToolUsageDailyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>
+        }
+        deleteMany: {
+          args: Prisma.ToolUsageDailyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ToolUsageDailyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ToolUsageDailyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>[]
+        }
+        upsert: {
+          args: Prisma.ToolUsageDailyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolUsageDailyPayload>
+        }
+        aggregate: {
+          args: Prisma.ToolUsageDailyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateToolUsageDaily>
+        }
+        groupBy: {
+          args: Prisma.ToolUsageDailyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ToolUsageDailyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ToolUsageDailyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ToolUsageDailyCountAggregateOutputType> | number
+        }
+      }
+    }
+    ExtractedDocument: {
+      payload: Prisma.$ExtractedDocumentPayload<ExtArgs>
+      fields: Prisma.ExtractedDocumentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExtractedDocumentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExtractedDocumentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>
+        }
+        findFirst: {
+          args: Prisma.ExtractedDocumentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExtractedDocumentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>
+        }
+        findMany: {
+          args: Prisma.ExtractedDocumentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>[]
+        }
+        create: {
+          args: Prisma.ExtractedDocumentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>
+        }
+        createMany: {
+          args: Prisma.ExtractedDocumentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExtractedDocumentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>[]
+        }
+        delete: {
+          args: Prisma.ExtractedDocumentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>
+        }
+        update: {
+          args: Prisma.ExtractedDocumentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExtractedDocumentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExtractedDocumentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExtractedDocumentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExtractedDocumentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentPayload>
+        }
+        aggregate: {
+          args: Prisma.ExtractedDocumentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExtractedDocument>
+        }
+        groupBy: {
+          args: Prisma.ExtractedDocumentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractedDocumentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExtractedDocumentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractedDocumentCountAggregateOutputType> | number
+        }
+      }
+    }
+    ExtractedDocumentChunk: {
+      payload: Prisma.$ExtractedDocumentChunkPayload<ExtArgs>
+      fields: Prisma.ExtractedDocumentChunkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExtractedDocumentChunkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExtractedDocumentChunkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>
+        }
+        findFirst: {
+          args: Prisma.ExtractedDocumentChunkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExtractedDocumentChunkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>
+        }
+        findMany: {
+          args: Prisma.ExtractedDocumentChunkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>[]
+        }
+        create: {
+          args: Prisma.ExtractedDocumentChunkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>
+        }
+        createMany: {
+          args: Prisma.ExtractedDocumentChunkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExtractedDocumentChunkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>[]
+        }
+        delete: {
+          args: Prisma.ExtractedDocumentChunkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>
+        }
+        update: {
+          args: Prisma.ExtractedDocumentChunkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExtractedDocumentChunkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExtractedDocumentChunkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExtractedDocumentChunkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExtractedDocumentChunkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractedDocumentChunkPayload>
+        }
+        aggregate: {
+          args: Prisma.ExtractedDocumentChunkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExtractedDocumentChunk>
+        }
+        groupBy: {
+          args: Prisma.ExtractedDocumentChunkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractedDocumentChunkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExtractedDocumentChunkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractedDocumentChunkCountAggregateOutputType> | number
         }
       }
     }
@@ -1365,6 +1590,41 @@ export const SettingScalarFieldEnum = {
 export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeof SettingScalarFieldEnum]
 
 
+export const ToolUsageDailyScalarFieldEnum = {
+  id: 'id',
+  ipHash: 'ipHash',
+  tool: 'tool',
+  date: 'date',
+  count: 'count',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ToolUsageDailyScalarFieldEnum = (typeof ToolUsageDailyScalarFieldEnum)[keyof typeof ToolUsageDailyScalarFieldEnum]
+
+
+export const ExtractedDocumentScalarFieldEnum = {
+  id: 'id',
+  ipHash: 'ipHash',
+  filename: 'filename',
+  totalTokens: 'totalTokens',
+  createdAt: 'createdAt'
+} as const
+
+export type ExtractedDocumentScalarFieldEnum = (typeof ExtractedDocumentScalarFieldEnum)[keyof typeof ExtractedDocumentScalarFieldEnum]
+
+
+export const ExtractedDocumentChunkScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  position: 'position',
+  section: 'section',
+  content: 'content',
+  embedding: 'embedding'
+} as const
+
+export type ExtractedDocumentChunkScalarFieldEnum = (typeof ExtractedDocumentChunkScalarFieldEnum)[keyof typeof ExtractedDocumentChunkScalarFieldEnum]
+
+
 export const BlogPostScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -1526,12 +1786,28 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 export const NullsOrder = {
@@ -1577,13 +1853,6 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1594,6 +1863,27 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -1762,6 +2052,9 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
   setting?: Prisma.SettingOmit
+  toolUsageDaily?: Prisma.ToolUsageDailyOmit
+  extractedDocument?: Prisma.ExtractedDocumentOmit
+  extractedDocumentChunk?: Prisma.ExtractedDocumentChunkOmit
   blogPost?: Prisma.BlogPostOmit
   cookbookCategory?: Prisma.CookbookCategoryOmit
   cookbookPrompt?: Prisma.CookbookPromptOmit

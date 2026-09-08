@@ -47,6 +47,21 @@ export { Prisma }
  */
 export type Setting = Prisma.SettingModel
 /**
+ * Model ToolUsageDaily
+ * 
+ */
+export type ToolUsageDaily = Prisma.ToolUsageDailyModel
+/**
+ * Model ExtractedDocument
+ * 
+ */
+export type ExtractedDocument = Prisma.ExtractedDocumentModel
+/**
+ * Model ExtractedDocumentChunk
+ * 
+ */
+export type ExtractedDocumentChunk = Prisma.ExtractedDocumentChunkModel
+/**
  * Model BlogPost
  * 
  */

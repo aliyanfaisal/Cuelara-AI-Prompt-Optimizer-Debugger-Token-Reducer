@@ -78,10 +78,12 @@ const SAMPLE_DOCS = [
   }
 ];
 
+const MAX_FILE_MB = 5;
+
 const PROCESSING_STEPS = [
   { text: "Ingesting and chunking document data...", icon: Layers },
-  { text: "Generating vector embeddings with text-embedding-004...", icon: Cpu },
-  { text: "Searching and scoring relevant data snippets in pgvector...", icon: Database },
+  { text: "Generating vector embeddings with gemini-embedding-001...", icon: Cpu },
+  { text: "Searching and scoring relevant data snippets...", icon: Database },
   { text: "Filtering out non-essential document bloat...", icon: Search },
   { text: "Assembling your optimized, model-ready prompt...", icon: Sparkles }
 ];
@@ -97,7 +99,7 @@ const FAQS = [
   },
   {
     question: "What document file types are supported?",
-    answer: "Context Extractor supports PDFs, CSVs, TXT files, Markdown (.md), JSON, and Microsoft Word (.docx) documents up to 100MB. You can also paste unstructured raw text directly into the studio."
+    answer: "Context Extractor supports PDFs, CSVs, TXT files, Markdown (.md), JSON, and Microsoft Word (.docx) documents up to 5MB. You can also paste unstructured raw text directly into the studio."
   },
   {
     question: "Is Context Extractor compatible with all frontier AI models?",
@@ -127,12 +129,22 @@ export default function ContextExtractorPage() {
   const [state, setState] = useState<ProcessingState>("idle");
   const [sourceMode, setSourceMode] = useState<"file" | "text">("file");
   const [file, setFile] = useState<{ name: string; size: string; tokenCount: number } | null>(null);
+  const [fileObj, setFileObj] = useState<File | null>(null);
+  const [isSample, setIsSample] = useState(false);
+  const [serverOriginalTokens, setServerOriginalTokens] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [documentId, setDocumentId] = useState<string | null>(null);
+  const [documentsRemaining, setDocumentsRemaining] = useState<number | null>(null);
+  const [documentsLimit, setDocumentsLimit] = useState<number | null>(null);
+  const [promptsRemaining, setPromptsRemaining] = useState<number | null>(null);
+  const [promptsLimit, setPromptsLimit] = useState<number | null>(null);
   const [rawText, setRawText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [aiTask, setAiTask] = useState("");
   const [depth, setDepth] = useState<"top3" | "top5">("top3");
   const [formatStyle, setFormatStyle] = useState<"markdown" | "xml" | "json">("markdown");
   
+  const [wantsPrompt, setWantsPrompt] = useState(true);
   const [activeTab, setActiveTab] = useState<"prompt" | "data">("prompt");
   const [isCopied, setIsCopied] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -169,9 +181,33 @@ export default function ContextExtractorPage() {
     }
   }, [state]);
 
+  const refreshUsage = async () => {
+    try {
+      const res = await fetch("/api/tools/context-extractor/usage");
+      const data = await res.json();
+      if (res.ok) {
+        setDocumentsRemaining(data.documentsRemaining);
+        setDocumentsLimit(data.documentsLimit);
+        setPromptsRemaining(data.promptsRemaining);
+        setPromptsLimit(data.promptsLimit);
+      }
+    } catch {
+      // Quota display is informational only — silently skip on failure.
+    }
+  };
+
+  useEffect(() => {
+    refreshUsage();
+  }, []);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
+      if (selected.size > MAX_FILE_MB * 1024 * 1024) {
+        setErrorMessage(`This file is over the ${MAX_FILE_MB}MB limit. Please upload a smaller document.`);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
       const sizeMB = (selected.size / (1024 * 1024)).toFixed(1) + " MB";
       const estimatedTokens = Math.max(15000, Math.floor(selected.size / 28));
       setFile({
@@ -179,7 +215,12 @@ export default function ContextExtractorPage() {
         size: sizeMB,
         tokenCount: estimatedTokens
       });
+      setFileObj(selected);
+      setIsSample(false);
+      setServerOriginalTokens(null);
+      setErrorMessage(null);
       setExtractedData([]);
+      setDocumentId(null);
     }
   };
 
@@ -190,6 +231,11 @@ export default function ContextExtractorPage() {
       size: sample.size,
       tokenCount: sample.tokenCount
     });
+    setFileObj(null);
+    setIsSample(true);
+    setServerOriginalTokens(null);
+    setErrorMessage(null);
+    setDocumentId(null);
     setSearchQuery(sample.defaultQuery);
     setAiTask(sample.defaultTask);
     setExtractedData(sample.snippets);
@@ -197,56 +243,102 @@ export default function ContextExtractorPage() {
 
   const handleClearSource = () => {
     setFile(null);
+    setFileObj(null);
+    setIsSample(false);
+    setServerOriginalTokens(null);
+    setErrorMessage(null);
+    setDocumentId(null);
     setRawText("");
     setExtractedData([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleExtract = () => {
+  // Once a document has been uploaded, chunked and embedded, its id lets us run more
+  // prompts against it without re-uploading — that only spends a "prompt" slot, not
+  // a "document" slot. Any change to the source (new file, edited text, sample) clears it.
+  const willReuseDocument = !!documentId && !isSample;
+
+  const applyUsage = (data: { documentsRemaining?: number; documentsLimit?: number; promptsRemaining?: number; promptsLimit?: number }) => {
+    if (typeof data.documentsRemaining === "number") setDocumentsRemaining(data.documentsRemaining);
+    if (typeof data.documentsLimit === "number") setDocumentsLimit(data.documentsLimit);
+    if (typeof data.promptsRemaining === "number") setPromptsRemaining(data.promptsRemaining);
+    if (typeof data.promptsLimit === "number") setPromptsLimit(data.promptsLimit);
+  };
+
+  const handleExtract = async () => {
     const hasSource = (sourceMode === "file" && file) || (sourceMode === "text" && rawText.trim().length > 0);
     if (!hasSource || !searchQuery.trim() || !aiTask.trim()) return;
 
+    setErrorMessage(null);
     setState("loading");
 
-    setTimeout(() => {
-      if (extractedData.length === 0) {
-        setExtractedData([
-          {
-            id: 1,
-            relevance: 96,
-            section: "Extracted Data - Primary Match",
-            content: `Isolated data matching "${searchQuery}": Verified specific clauses, key numeric parameters, and direct operational references retrieved with high semantic accuracy.`
-          },
-          {
-            id: 2,
-            relevance: 89,
-            section: "Extracted Data - Supporting Context",
-            content: `Secondary context related to "${searchQuery}": Exceptions, timeline constraints, workflow criteria, and prerequisite conditions necessary to fulfill the request.`
-          },
-          {
-            id: 3,
-            relevance: 83,
-            section: "Extracted Data - Reference Notes",
-            content: `Cross-referenced documentation identifiers, compliance terms, and baseline definitions directly tied to the target query.`
-          }
-        ]);
+    // Sample documents stay a canned demo — no API call, no quota used.
+    if (isSample) {
+      setTimeout(() => {
+        setState("success");
+      }, 1500);
+      return;
+    }
+
+    try {
+      let response: Response;
+
+      if (willReuseDocument) {
+        response = await fetch("/api/tools/context-extractor/prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ documentId, searchQuery, aiTask, depth }),
+        });
+      } else {
+        const formData = new FormData();
+        if (sourceMode === "file" && fileObj) {
+          formData.append("file", fileObj);
+        } else {
+          formData.append("rawText", rawText);
+        }
+        formData.append("searchQuery", searchQuery);
+        formData.append("aiTask", aiTask);
+        formData.append("depth", depth);
+
+        response = await fetch("/api/tools/context-extractor", {
+          method: "POST",
+          body: formData,
+        });
       }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // A reused document that expired or no longer belongs to this session — drop
+        // it so the next attempt falls through to a fresh upload instead of looping.
+        if (data.expired) setDocumentId(null);
+        await refreshUsage();
+        throw new Error(data.error || "Something went wrong while processing your document.");
+      }
+
+      setExtractedData(data.snippets);
+      setServerOriginalTokens(data.originalTokens);
+      setDocumentId(data.documentId);
+      applyUsage(data);
       setState("success");
-    }, 3000);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setState("idle");
+    }
   };
 
   // Calculations for token metrics
-  const originalTokens = file 
-    ? file.tokenCount 
-    : (rawText.trim() ? Math.max(800, Math.floor(rawText.length / 4)) : 30000);
+  const originalTokens = serverOriginalTokens ?? (file
+    ? file.tokenCount
+    : (rawText.trim() ? Math.max(800, Math.floor(rawText.length / 4)) : 30000));
     
   const extractedTokens = extractedData.reduce((acc, c) => acc + Math.floor(c.content.length / 4), 0) + 
     Math.floor((searchQuery.length + aiTask.length) / 4) + 80;
     
-  const savedTokens = Math.max(0, originalTokens - extractedTokens);
-  const percentSaved = originalTokens > 0 
-    ? Math.min(99.2, Math.max(75, ((savedTokens / originalTokens) * 100))).toFixed(1)
-    : "95.0";
+  const savedTokens = originalTokens - extractedTokens;
+  const percentSavedRaw = originalTokens > 0 ? (savedTokens / originalTokens) * 100 : 0;
+  const percentSaved = Math.max(0, Math.min(99.2, percentSavedRaw)).toFixed(1);
+  const hasMeaningfulSavings = percentSavedRaw >= 10;
 
   const formatOutputPrompt = () => {
     if (formatStyle === "xml") {
@@ -269,10 +361,12 @@ export default function ContextExtractorPage() {
   };
 
   const handleDownload = () => {
+    const extension = formatStyle === "xml" ? "xml" : formatStyle === "json" ? "json" : "md";
+    const mimeType = formatStyle === "json" ? "application/json" : formatStyle === "xml" ? "application/xml" : "text/markdown";
     const element = document.createElement("a");
-    const fileBlob = new Blob([formatOutputPrompt()], { type: 'text/plain' });
+    const fileBlob = new Blob([formatOutputPrompt()], { type: mimeType });
     element.href = URL.createObjectURL(fileBlob);
-    element.download = "optimized_context_prompt.txt";
+    element.download = `optimized-context-prompt.${extension}`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -301,7 +395,7 @@ export default function ContextExtractorPage() {
           </div>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Extract only the relevant data from large documents via RAG. Drastically cut prompt token costs and eliminate AI hallucinations.
+          Upload a large document and get back one optimized, ready-to-paste prompt — your instructions paired with only the matching extracted data, cutting token costs and hallucinations.
         </p>
 
         {/* Informative helper drawer */}
@@ -361,9 +455,14 @@ export default function ContextExtractorPage() {
         {/* Step 1: Source Document Ingestion */}
         <div className="p-6 md:p-7 border-b border-border/60">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">1</span>
-              Source Document
+            <div>
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">1</span>
+                Source Document
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-1 ml-7">
+                One upload, unlimited angles — generate multiple prompts from this document without re-uploading it.
+              </p>
             </div>
 
             {/* Ingestion Mode & Samples */}
@@ -380,10 +479,10 @@ export default function ContextExtractorPage() {
                   File Upload
                 </button>
                 <button
-                  onClick={() => setSourceMode("text")}
+                  onClick={() => { setSourceMode("text"); setIsSample(false); setServerOriginalTokens(null); setDocumentId(null); }}
                   className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-                    sourceMode === "text" 
-                      ? "bg-card text-foreground shadow-sm" 
+                    sourceMode === "text"
+                      ? "bg-card text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -429,7 +528,7 @@ export default function ContextExtractorPage() {
                     Click to upload or drag & drop document
                   </p>
                   <p className="text-[11px] text-muted-foreground/60">
-                    PDF, CSV, TXT, MD, DOCX up to 100MB
+                    PDF, CSV, TXT, MD, DOCX up to {MAX_FILE_MB}MB
                   </p>
                 </div>
               ) : (
@@ -464,7 +563,7 @@ export default function ContextExtractorPage() {
             <div>
               <textarea
                 value={rawText}
-                onChange={(e) => setRawText(e.target.value)}
+                onChange={(e) => { setRawText(e.target.value); setDocumentId(null); }}
                 placeholder="Paste document text, logs, policies, or data records here..."
                 rows={4}
                 className="w-full p-3.5 rounded-xl bg-background border border-border/70 text-xs text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-y"
@@ -522,17 +621,41 @@ export default function ContextExtractorPage() {
 
           {/* Input 2: AI Action / Prompt Instruction */}
           <div className="space-y-2">
-            <label className="flex items-center text-xs font-semibold text-foreground">
-              <span>AI Goal & Prompt Instruction</span>
-              <FieldTooltip text="The actual prompt instructions that will wrap around the extracted data when delivered to your AI model." />
-            </label>
-            <textarea
-              rows={3}
-              value={aiTask}
-              onChange={(e) => setAiTask(e.target.value)}
-              placeholder="e.g., Draft a welcoming email for a new hire explaining how to claim their equipment stipend."
-              className="w-full px-4 py-3 rounded-xl bg-background border border-border/80 text-sm text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y"
-            />
+            <div className="flex items-center justify-between">
+              <label className="flex items-center text-xs font-semibold text-foreground">
+                <span>AI Goal & Prompt Instruction</span>
+                <FieldTooltip text="The actual prompt instructions that will wrap around the extracted data when delivered to your AI model." />
+              </label>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={wantsPrompt}
+                onClick={() => setWantsPrompt(!wantsPrompt)}
+                className="flex items-center gap-2 shrink-0"
+                title={wantsPrompt ? "Turn off to get just the extracted data, no prompt" : "Turn on to build a ready-to-paste prompt"}
+              >
+                <span className="text-[11px] font-medium text-muted-foreground">
+                  {wantsPrompt ? "Build prompt" : "Data only"}
+                </span>
+                <span className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${wantsPrompt ? "bg-primary" : "bg-muted-foreground/30"}`}>
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${wantsPrompt ? "translate-x-[18px]" : "translate-x-[3px]"}`} />
+                </span>
+              </button>
+            </div>
+
+            {wantsPrompt ? (
+              <textarea
+                rows={3}
+                value={aiTask}
+                onChange={(e) => setAiTask(e.target.value)}
+                placeholder="e.g., Draft a welcoming email for a new hire explaining how to claim their equipment stipend."
+                className="w-full px-4 py-3 rounded-xl bg-background border border-border/80 text-sm text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y"
+              />
+            ) : (
+              <p className="text-[11px] text-muted-foreground px-1">
+                Off — we'll just show you the matching excerpts, no prompt built around them.
+              </p>
+            )}
           </div>
 
           {/* Advanced Settings Toggle */}
@@ -603,20 +726,39 @@ export default function ContextExtractorPage() {
 
         {/* Action Bar Footer */}
         <div className="px-6 md:px-7 py-4 bg-muted/15 border-t border-border/60 flex flex-wrap items-center justify-between gap-4">
-          <div className="text-xs text-muted-foreground flex items-center gap-2">
-            <Database className="w-4 h-4 text-primary" />
-            <span>Embedding: <strong className="text-foreground">text-embedding-004</strong> (via pgvector)</span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5" title="New documents you can upload &amp; embed today">
+              <FileText className="w-3.5 h-3.5 text-primary" />
+              {documentsRemaining !== null && documentsLimit !== null ? (
+                <><strong className="text-foreground">{documentsRemaining}</strong> / {documentsLimit} documents today</>
+              ) : (
+                "documents today"
+              )}
+            </span>
+            <span className="flex items-center gap-1.5" title="Prompts you can generate today, including reruns on documents already uploaded">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              {promptsRemaining !== null && promptsLimit !== null ? (
+                <><strong className="text-foreground">{promptsRemaining}</strong> / {promptsLimit} prompts today</>
+              ) : (
+                "prompts today"
+              )}
+            </span>
           </div>
 
           <button
             onClick={handleExtract}
-            disabled={!isFormValid || state === "loading"}
+            disabled={!isFormValid || state === "loading" || promptsRemaining === 0 || (!willReuseDocument && documentsRemaining === 0)}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {state === "loading" ? (
               <>
                 <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
-                Extracting Data...
+                {willReuseDocument ? "Generating Prompt..." : "Extracting Data..."}
+              </>
+            ) : willReuseDocument ? (
+              <>
+                <Sparkles className="w-3.5 h-3.5" />
+                Generate Another Prompt
               </>
             ) : (
               <>
@@ -626,6 +768,24 @@ export default function ContextExtractorPage() {
             )}
           </button>
         </div>
+
+        {willReuseDocument && state !== "loading" && (
+          <div className="px-6 md:px-7 py-2.5 bg-primary/5 border-t border-border/60 text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <FileCheck2 className="w-3.5 h-3.5 text-primary shrink-0" />
+            Reusing <strong className="text-foreground">{file?.name}</strong> — this only spends a prompt, not another document.
+          </div>
+        )}
+
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="px-6 md:px-7 py-3 bg-red-500/10 border-t border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-2"
+          >
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMessage}</span>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* 3. Output Section */}
@@ -687,48 +847,35 @@ export default function ContextExtractorPage() {
               
               {/* Token Savings Summary Widget */}
               <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl shrink-0">
-                      <Sparkles className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl sm:text-2xl font-bold text-foreground">🔥 {percentSaved}% Tokens Saved</span>
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase">
-                          Optimized
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Compressed from <strong className="text-foreground">{originalTokens.toLocaleString()} tokens</strong> down to <strong className="text-primary">{extractedTokens.toLocaleString()} tokens</strong>.
-                      </p>
-                    </div>
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-xl shrink-0 ${
+                    hasMeaningfulSavings
+                      ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                      : "bg-primary/10 border border-primary/20 text-primary"
+                  }`}>
+                    {hasMeaningfulSavings ? <Sparkles className="w-6 h-6" /> : <Info className="w-6 h-6" />}
                   </div>
-
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <button
-                      onClick={handleCopyPrompt}
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
-                    >
-                      {isCopied ? (
-                        <>
-                          <Check className="w-3.5 h-3.5" />
-                          Copied to Clipboard!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          Copy Ready Prompt
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={handleDownload}
-                      className="p-2.5 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                      title="Download as .txt"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                    </button>
+                  <div>
+                    {hasMeaningfulSavings ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl sm:text-2xl font-bold text-foreground">🔥 {percentSaved}% Tokens Saved</span>
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase">
+                            Optimized
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Compressed from <strong className="text-foreground">{originalTokens.toLocaleString()} tokens</strong> down to <strong className="text-primary">{extractedTokens.toLocaleString()} tokens</strong>.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-base sm:text-lg font-bold text-foreground">Minimal token savings on this one</span>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Source was <strong className="text-foreground">{originalTokens.toLocaleString()} tokens</strong>; the matched excerpts plus prompt structure came to <strong className="text-foreground">{extractedTokens.toLocaleString()} tokens</strong>. For a document this short, extraction mainly adds precision and sourcing — not a size cut. Consider pasting the original directly instead.
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -769,9 +916,85 @@ export default function ContextExtractorPage() {
                 {/* Tab 1: Assembled Ready Prompt */}
                 {activeTab === "prompt" && (
                   <div className="p-5">
-                    <pre className="p-4 rounded-xl bg-muted/30 border border-border text-xs font-mono text-foreground whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[380px]">
-                      {formatOutputPrompt()}
-                    </pre>
+                    {/* Action bar: task + data are already embedded below — copy it as a prompt, or save it as a document */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-4 border-b border-border/60">
+                      <p className="text-[11px] text-muted-foreground max-w-xs">
+                        Task instructions and matching data, embedded into one prompt.
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handleCopyPrompt}
+                          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              Copied!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              Copy Prompt
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={handleDownload}
+                          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-semibold transition-colors"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          Download as Document
+                        </button>
+                      </div>
+                    </div>
+
+                    {formatStyle === "markdown" ? (
+                      <div className="space-y-5">
+                        <div>
+                          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-primary mb-2">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Task Instruction
+                          </div>
+                          <p className="text-sm text-foreground leading-relaxed p-3.5 rounded-xl bg-muted/30 border border-border whitespace-pre-wrap break-words">
+                            {aiTask}
+                          </p>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-primary mb-2">
+                            <Layers className="w-3.5 h-3.5" />
+                            Relevant Extracted Data
+                          </div>
+                          <div className="space-y-3">
+                            {extractedData.map((snippet) => (
+                              <div key={snippet.id} className="pl-3.5 border-l-2 border-primary/30">
+                                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                  <span className="text-xs font-semibold text-foreground">{snippet.section}</span>
+                                  <span className="text-[10px] text-muted-foreground">Relevance: {snippet.relevance}%</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
+                                  {snippet.content}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
+                            Constraints
+                          </div>
+                          <ul className="text-xs text-muted-foreground leading-relaxed list-disc pl-4 space-y-1">
+                            <li>Rely strictly on the extracted data provided above.</li>
+                            <li>Do not extrapolate or assume facts outside this context.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <pre className="p-4 rounded-xl bg-muted/30 border border-border text-xs font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed overflow-x-auto max-h-[380px]">
+                        {formatOutputPrompt()}
+                      </pre>
+                    )}
                   </div>
                 )}
 
@@ -779,20 +1002,20 @@ export default function ContextExtractorPage() {
                 {activeTab === "data" && (
                   <div className="p-5 space-y-3">
                     {extractedData.map((snippet) => (
-                      <div 
-                        key={snippet.id} 
+                      <div
+                        key={snippet.id}
                         className="p-4 rounded-xl border border-border bg-muted/20"
                       >
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
                           <span className="font-semibold text-xs text-foreground flex items-center gap-2">
-                            <Layers className="w-3.5 h-3.5 text-primary" />
+                            <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
                             {snippet.section}
                           </span>
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-primary/10 text-primary border border-primary/20">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-primary/10 text-primary border border-primary/20 shrink-0">
                             {snippet.relevance}% Match
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
+                        <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
                           {snippet.content}
                         </p>
                       </div>

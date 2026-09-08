@@ -52,6 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Setting: 'Setting',
+  ToolUsageDaily: 'ToolUsageDaily',
+  ExtractedDocument: 'ExtractedDocument',
+  ExtractedDocumentChunk: 'ExtractedDocumentChunk',
   BlogPost: 'BlogPost',
   CookbookCategory: 'CookbookCategory',
   CookbookPrompt: 'CookbookPrompt',
@@ -89,6 +92,41 @@ export const SettingScalarFieldEnum = {
 } as const
 
 export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeof SettingScalarFieldEnum]
+
+
+export const ToolUsageDailyScalarFieldEnum = {
+  id: 'id',
+  ipHash: 'ipHash',
+  tool: 'tool',
+  date: 'date',
+  count: 'count',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ToolUsageDailyScalarFieldEnum = (typeof ToolUsageDailyScalarFieldEnum)[keyof typeof ToolUsageDailyScalarFieldEnum]
+
+
+export const ExtractedDocumentScalarFieldEnum = {
+  id: 'id',
+  ipHash: 'ipHash',
+  filename: 'filename',
+  totalTokens: 'totalTokens',
+  createdAt: 'createdAt'
+} as const
+
+export type ExtractedDocumentScalarFieldEnum = (typeof ExtractedDocumentScalarFieldEnum)[keyof typeof ExtractedDocumentScalarFieldEnum]
+
+
+export const ExtractedDocumentChunkScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  position: 'position',
+  section: 'section',
+  content: 'content',
+  embedding: 'embedding'
+} as const
+
+export type ExtractedDocumentChunkScalarFieldEnum = (typeof ExtractedDocumentChunkScalarFieldEnum)[keyof typeof ExtractedDocumentChunkScalarFieldEnum]
 
 
 export const BlogPostScalarFieldEnum = {
@@ -252,12 +290,28 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 export const NullsOrder = {
