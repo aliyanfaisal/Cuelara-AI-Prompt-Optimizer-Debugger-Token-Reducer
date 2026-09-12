@@ -3,18 +3,16 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { 
-  Wand2, Code2, Copy, Check, ChevronDown, 
+import {
+  Wand2, Code2, Copy, Check, ChevronDown,
   Settings2, Sparkles, RefreshCcw, Save, Zap,
   FileText, ArrowRight, BookOpen, CheckCircle2,
   Layers, Sliders, Cpu, Download, ShieldCheck,
   Target, Terminal, AlertTriangle
 } from "lucide-react";
+import { MODES, LEVELS, type OptimizerMode, type OptimizerLevel } from "@/lib/prompt-optimizer/constants";
 
 type GenerationState = "idle" | "loading" | "success";
-
-const MODES = ["General", "Coding", "Writing", "Business", "Research"];
-const LEVELS = ["Concise", "Balanced", "Detailed", "Comprehensive"];
 
 const LOADING_PHRASES = [
   "Structuring role persona and domain context...",
@@ -46,18 +44,43 @@ const FAQS = [
   }
 ];
 
+interface OptimizerUsage {
+  isAuthenticated: boolean;
+  promptsRemaining: number;
+  promptsLimit: number;
+}
+
 export default function PromptOptimizerPage() {
   const [state, setState] = useState<GenerationState>("idle");
   const [input, setInput] = useState("");
-  const [mode, setMode] = useState(MODES[0]);
-  const [level, setLevel] = useState(LEVELS[1]);
+  const [mode, setMode] = useState<OptimizerMode>(MODES[0]);
+  const [level, setLevel] = useState<OptimizerLevel>(LEVELS[1]);
   const [isModeOpen, setIsModeOpen] = useState(false);
   const [isLevelOpen, setIsLevelOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
+  const [optimizedPrompt, setOptimizedPrompt] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [usage, setUsage] = useState<OptimizerUsage | null>(null);
+
   const outputRef = useRef<HTMLDivElement>(null);
+
+  const refreshUsage = async () => {
+    try {
+      const res = await fetch("/api/tools/prompt-optimizer/usage");
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data.promptsLimit === "number") setUsage(data);
+      }
+    } catch {
+      // Usage display is best-effort — a failed fetch just hides the pill.
+    }
+  };
+
+  useEffect(() => {
+    refreshUsage();
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -78,54 +101,55 @@ export default function PromptOptimizerPage() {
     }
   }, [state]);
 
-  const handleOptimize = () => {
-    if (!input.trim()) return;
-    
+  const handleOptimize = async () => {
+    if (!input.trim() || state === "loading") return;
+
     setState("loading");
-    
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/tools/prompt-optimizer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawInput: input, mode, level }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMessage(data.error || "Something went wrong. Please try again.");
+        setState("idle");
+        return;
+      }
+
+      setOptimizedPrompt(data.optimizedPrompt);
+      if (typeof data.promptsLimit === "number") {
+        setUsage({
+          isAuthenticated: data.isAuthenticated,
+          promptsRemaining: data.promptsRemaining,
+          promptsLimit: data.promptsLimit,
+        });
+      }
       setState("success");
-    }, 2800);
+    } catch {
+      setErrorMessage("Network error — please check your connection and try again.");
+      setState("idle");
+    }
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(generateOptimizedPrompt());
+    navigator.clipboard.writeText(optimizedPrompt);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownload = () => {
     const element = document.createElement("a");
-    const fileBlob = new Blob([generateOptimizedPrompt()], { type: 'text/plain' });
+    const fileBlob = new Blob([optimizedPrompt], { type: 'text/plain' });
     element.href = URL.createObjectURL(fileBlob);
     element.download = "optimized_prompt.txt";
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
-  };
-
-  // Generate customized prompt template based on mode and level
-  const generateOptimizedPrompt = () => {
-    const cleanInput = input.trim() || "Perform the requested objective with high accuracy.";
-
-    if (mode === "Coding") {
-      return `### ROLE\nYou are a Senior Staff Software Engineer and Technical Architect with deep expertise in clean, maintainable, and type-safe systems.\n\n### OBJECTIVE\n${cleanInput}\n\n### TECHNICAL REQUIREMENTS & ARCHITECTURE\n1. Write clean, idiomatic code adhering to modern standards and DRY principles.\n2. Implement robust error handling, defensive edge-case checking, and exhaustive type definitions.\n3. Prioritize high-performance patterns, modular composition, and readability.\n\n### NEGATIVE CONSTRAINTS\n- Do not output legacy syntax, deprecated APIs, or unnecessary external dependencies.\n- Avoid placeholder comments (e.g. "// implement here"); return fully functional, complete implementations.\n- Do not include conversational preambles or post-code pleasantries.\n\n### OUTPUT FORMAT\nProvide the complete code solution enclosed in a clean markdown code block, followed only by a concise bulleted list explaining architectural decisions and complexity trade-offs.`;
-    }
-
-    if (mode === "Writing") {
-      return `### ROLE\nYou are an Elite Copywriter, Editor, and Communications Strategist known for crisp, compelling, and human-centric prose.\n\n### OBJECTIVE\n${cleanInput}\n\n### STYLE & TONE GUIDELINES\n- Tone: Authoritative, engaging, authentic, and direct.\n- Hook the reader immediately; eliminate boring introductions and generic filler.\n- Emphasize active verbs, concrete examples, and rhythm.\n\n### NEGATIVE CONSTRAINTS\n- Strictly ban generic AI cliches: Avoid words like "delve", "tapestry", "revolutionize", "beacon", "in conclusion", and "paramount".\n- Avoid passive voice, fluffy transitions, and repetitive adjectives.\n\n### OUTPUT STRUCTURE\nDeliver the finished copy formatted with clear headlines, bulleted highlights for scannability, and a clear call-to-action (CTA).`;
-    }
-
-    if (mode === "Business") {
-      return `### ROLE\nYou are a Senior Executive Strategy Consultant and Operations Leader advising C-suite leadership.\n\n### OBJECTIVE\n${cleanInput}\n\n### FRAMEWORK & REQUIREMENTS\n1. Executive Summary: High-level synthesis of core insights and strategic impact.\n2. Strategic Breakdown: Structured analysis utilizing standard frameworks (ROI, Risk Mitigation, SWOT, KPI Drivers).\n3. Actionable Roadmap: Concrete, prioritized next steps with suggested milestone timelines and resource allocation.\n\n### NEGATIVE CONSTRAINTS\n- Do not provide vague, non-actionable advice or theoretical fluff.\n- Ensure all recommendations are quantifiable and practical for implementation.\n\n### OUTPUT FORMAT\nUse professional corporate memo format with bold section headers and key takeaway callout boxes.`;
-    }
-
-    if (mode === "Research") {
-      return `### ROLE\nYou are a Principal Research Scientist and Subject-Matter Investigator committed to rigorous, evidence-based inquiry.\n\n### RESEARCH OBJECTIVE\n${cleanInput}\n\n### METHODOLOGY & STANDARDS\n1. Provide an objective, balanced synthesis of empirical data, historical precedents, and prevailing expert consensus.\n2. Explicitly distinguish between proven facts, consensus theories, and speculative hypotheses.\n3. Address counter-arguments, known limitations, and methodological blind spots.\n\n### NEGATIVE CONSTRAINTS\n- Avoid bias, emotional language, and unverified assumptions.\n- If certainty is low on a point, explicitly state the confidence level.\n\n### OUTPUT FORMAT\nStructure findings into Abstract, Key Mechanisms, Empirical Evidence, Limitations, and Analytical Synthesis.`;
-    }
-
-    // General Mode
-    return `### ROLE & PERSONA\nYou are an expert specialist in this domain, providing precise, comprehensive, and actionable guidance.\n\n### OBJECTIVE & TASK\n${cleanInput}\n\n### EXECUTION GUIDELINES\n1. Break down complex steps logically and address edge-case considerations.\n2. Ensure all instructions are direct, practical, and immediately actionable.\n3. Maintain high clarity, precision, and structural rigor.\n\n### NEGATIVE CONSTRAINTS\n- Do not include conversational filler ("Sure, I can help with that!").\n- Avoid vague generalizations; ground answers in specific details.\n\n### OUTPUT FORMAT\nPresent the solution using clear Markdown headings, ordered steps, and bulleted takeaways.`;
   };
 
   return (
@@ -235,14 +259,24 @@ export default function PromptOptimizerPage() {
 
         {/* Action Footer */}
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-amber-500" />
-            <span>Estimated Prompt Size: <strong className="text-foreground">~{Math.max(1, Math.floor(input.length / 4)).toLocaleString()} tokens</strong></span>
+          <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-amber-500" />
+              <span>Estimated Prompt Size: <strong className="text-foreground">~{Math.max(1, Math.floor(input.length / 4)).toLocaleString()} tokens</strong></span>
+            </div>
+            {usage && (
+              <span>
+                <strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} optimizations left today
+                {!usage.isAuthenticated && (
+                  <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>
+                )}
+              </span>
+            )}
           </div>
 
           <button
             onClick={handleOptimize}
-            disabled={!input.trim() || state === "loading"}
+            disabled={!input.trim() || state === "loading" || usage?.promptsRemaining === 0}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {state === "loading" ? (
@@ -353,8 +387,22 @@ export default function PromptOptimizerPage() {
               </div>
 
               <div className="p-5 md:p-6 bg-muted/10 font-mono text-xs leading-relaxed text-foreground overflow-x-auto whitespace-pre-wrap max-h-[420px]">
-                {generateOptimizedPrompt()}
+                {optimizedPrompt}
               </div>
+            </motion.div>
+          )}
+
+          {/* Error State */}
+          {state === "idle" && errorMessage && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex items-start gap-3 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400 text-sm"
+            >
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{errorMessage}</span>
             </motion.div>
           )}
 

@@ -36,13 +36,40 @@ const QUICK_LINKS = [
 const SIDEBAR_W = 260; 
 const RIGHT_SIDEBAR_W = 260; 
 
-interface ContextExtractorUsage {
+interface ToolUsage {
   isAuthenticated: boolean;
-  documentsRemaining: number;
-  documentsLimit: number;
-  promptsRemaining: number;
-  promptsLimit: number;
+  [key: string]: number | boolean;
 }
+
+interface ToolUsageMetric {
+  label: string;
+  unit: string;
+  remainingKey: string;
+  limitKey: string;
+}
+
+interface ToolUsageConfig {
+  endpoint: string;
+  metrics: ToolUsageMetric[];
+}
+
+// Only tools with a real backend quota show usage in the Assistant Hub — every
+// other page (including the Overview) falls back to generic, tool-agnostic content.
+const TOOL_USAGE_CONFIG: Record<string, ToolUsageConfig> = {
+  "/tools/context-extractor": {
+    endpoint: "/api/tools/context-extractor/usage",
+    metrics: [
+      { label: "Documents today", unit: "documents", remainingKey: "documentsRemaining", limitKey: "documentsLimit" },
+      { label: "Prompts today", unit: "prompts", remainingKey: "promptsRemaining", limitKey: "promptsLimit" },
+    ],
+  },
+  "/tools/prompt-optimizer": {
+    endpoint: "/api/tools/prompt-optimizer/usage",
+    metrics: [
+      { label: "Optimizations today", unit: "optimizations", remainingKey: "promptsRemaining", limitKey: "promptsLimit" },
+    ],
+  },
+};
 
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) {
@@ -57,17 +84,26 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { data: session, status: sessionStatus } = useSession();
-  const [usage, setUsage] = useState<ContextExtractorUsage | null>(null);
+  const [usage, setUsage] = useState<ToolUsage | null>(null);
+  const toolUsageConfig = TOOL_USAGE_CONFIG[pathname];
 
   useEffect(() => {
     if (sessionStatus === "loading") return;
-    fetch("/api/tools/context-extractor/usage")
+    if (!toolUsageConfig) {
+      setUsage(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(toolUsageConfig.endpoint)
       .then((res) => res.json())
       .then((data) => {
-        if (typeof data.documentsLimit === "number") setUsage(data);
+        if (!cancelled && typeof data.isAuthenticated === "boolean") setUsage(data);
       })
       .catch(() => {});
-  }, [sessionStatus]);
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionStatus, toolUsageConfig]);
 
   // Desktop sidebar collapse states
   const [isLeftOpen, setIsLeftOpen] = useState(true);
@@ -422,38 +458,41 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
                       </div>
                     </div>
 
-                    {usage && (
+                    {toolUsageConfig && usage ? (
                       <div className="space-y-2 border-t border-border/50 pt-2.5 text-[10px]">
-                        <div>
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-muted-foreground">Documents today</span>
-                            <span className="font-semibold text-foreground">{usage.documentsRemaining} / {usage.documentsLimit} left</span>
-                          </div>
-                          <div className="w-full bg-border rounded-full h-1">
-                            <div className="bg-primary h-1 rounded-full" style={{ width: `${(usage.documentsRemaining / usage.documentsLimit) * 100}%` }} />
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-muted-foreground">Prompts today</span>
-                            <span className="font-semibold text-foreground">{usage.promptsRemaining} / {usage.promptsLimit} left</span>
-                          </div>
-                          <div className="w-full bg-border rounded-full h-1">
-                            <div className="bg-primary h-1 rounded-full" style={{ width: `${(usage.promptsRemaining / usage.promptsLimit) * 100}%` }} />
-                          </div>
-                        </div>
+                        {toolUsageConfig.metrics.map((metric) => {
+                          const remaining = usage[metric.remainingKey] as number;
+                          const limit = usage[metric.limitKey] as number;
+                          return (
+                            <div key={metric.remainingKey}>
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="text-muted-foreground">{metric.label}</span>
+                                <span className="font-semibold text-foreground">{remaining} / {limit} left</span>
+                              </div>
+                              <div className="w-full bg-border rounded-full h-1">
+                                <div className="bg-primary h-1 rounded-full" style={{ width: `${(remaining / limit) * 100}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
+                    ) : (
+                      <p className="text-[10px] text-muted-foreground border-t border-border/50 pt-2.5">
+                        Pick a tool from the left toolkit to see its daily usage here.
+                      </p>
                     )}
                   </section>
                 ) : sessionStatus === "unauthenticated" ? (
                   <section className="bg-primary/5 p-3.5 rounded-xl border border-primary/20">
-                    <p className="text-xs font-bold text-foreground mb-1">Sign in for higher limits</p>
+                    <p className="text-xs font-bold text-foreground mb-1">
+                      {toolUsageConfig ? "Sign in for higher limits" : "Sign in to save your work"}
+                    </p>
                     <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
-                      {usage ? (
-                        <>Signed out: {usage.documentsLimit} documents &amp; {usage.promptsLimit} prompts/day. Sign in for {" "}
+                      {toolUsageConfig && usage ? (
+                        <>Signed out: {toolUsageConfig.metrics.map((m) => `${usage[m.limitKey]} ${m.unit}`).join(" & ")}/day. Sign in for{" "}
                           <strong className="text-foreground">more</strong>.</>
                       ) : (
-                        "Get more documents & prompts per day on Context Extractor."
+                        "Sign in to unlock higher daily limits across every tool."
                       )}
                     </p>
                     <Link
