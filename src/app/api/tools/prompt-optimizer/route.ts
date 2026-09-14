@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { GoogleGenAI, Type } from "@google/genai";
 import { prisma } from "@/lib/prisma";
 import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToday } from "@/lib/rate-limit";
+import { GENAI_TIMEOUT_MS, isGenAITimeout } from "@/lib/genai-timeout";
 import { getPromptOptimizerLimit } from "@/lib/prompt-optimizer/limits";
 import { isOptimizerMode, isOptimizerLevel, MODE_EXEMPLARS, LEVEL_GUIDANCE } from "@/lib/prompt-optimizer/constants";
 
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
 
     const metaPrompt = `You are an expert prompt engineer. Rewrite the user's rough request below into a single, production-ready prompt they can paste directly into any frontier AI model (ChatGPT, Claude, Gemini).
 
@@ -100,6 +101,12 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
     });
   } catch (error) {
     console.error("Prompt Optimizer error:", error);
+    if (isGenAITimeout(error)) {
+      return NextResponse.json(
+        { error: "The AI is taking too long to respond. Please try again." },
+        { status: 504 }
+      );
+    }
     return NextResponse.json({ error: "Something went wrong while optimizing your prompt." }, { status: 500 });
   }
 }

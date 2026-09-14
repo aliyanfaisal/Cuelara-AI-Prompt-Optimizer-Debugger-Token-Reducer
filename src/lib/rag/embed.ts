@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { prisma } from "@/lib/prisma";
+import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
 
 const EMBEDDING_MODEL = "gemini-embedding-001";
 const BATCH_SIZE = 100;
@@ -16,7 +17,7 @@ export async function embedTexts(
 ): Promise<number[][]> {
   if (texts.length === 0) return [];
 
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
   const results: number[][] = [];
 
   for (let i = 0; i < texts.length; i += BATCH_SIZE) {

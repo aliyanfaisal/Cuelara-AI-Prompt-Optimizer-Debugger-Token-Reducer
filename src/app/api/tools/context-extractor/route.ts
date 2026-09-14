@@ -8,6 +8,7 @@ import { saveDocument, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
 import { getContextExtractorLimits } from "@/lib/rag/limits";
 import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubject } from "@/lib/rate-limit";
 import { CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } from "@/lib/tool-settings-keys";
+import { isGenAITimeout } from "@/lib/genai-timeout";
 
 const DEFAULT_MAX_FILE_MB = 5;
 
@@ -131,6 +132,12 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Context Extractor error:", error);
+    if (isGenAITimeout(error)) {
+      return NextResponse.json(
+        { error: "The AI is taking too long to respond. Please try again." },
+        { status: 504 }
+      );
+    }
     return NextResponse.json({ error: "Something went wrong while processing your document." }, { status: 500 });
   }
 }

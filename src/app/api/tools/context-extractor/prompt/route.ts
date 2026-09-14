@@ -4,6 +4,7 @@ import { rankTopK } from "@/lib/rag/similarity";
 import { loadDocumentForSubject, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
 import { getContextExtractorLimits } from "@/lib/rag/limits";
 import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubject } from "@/lib/rate-limit";
+import { isGenAITimeout } from "@/lib/genai-timeout";
 
 // Re-runs a different query against a document that was already uploaded, parsed,
 // chunked and embedded — only the new query gets embedded here, so this only ever
@@ -68,6 +69,12 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Context Extractor prompt error:", error);
+    if (isGenAITimeout(error)) {
+      return NextResponse.json(
+        { error: "The AI is taking too long to respond. Please try again." },
+        { status: 504 }
+      );
+    }
     return NextResponse.json({ error: "Something went wrong while generating this prompt." }, { status: 500 });
   }
 }
