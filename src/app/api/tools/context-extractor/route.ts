@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { extractText, isSupportedFile, UnsupportedFileTypeError } from "@/lib/rag/parse";
 import { chunkText } from "@/lib/rag/chunk";
-import { embedTexts, getGeminiApiKey } from "@/lib/rag/embed";
+import { embedTexts } from "@/lib/rag/embed";
+import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { rankTopK } from "@/lib/rag/similarity";
 import { saveDocument, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
 import { getContextExtractorLimits } from "@/lib/rag/limits";
@@ -95,17 +96,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No extractable text was found in the source." }, { status: 400 });
     }
 
-    const apiKey = await getGeminiApiKey();
-    if (!apiKey) {
-      return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
-    }
-
     const k = depth === "top5" ? 5 : 3;
 
-    const [chunkEmbeddings, queryEmbeddings] = await Promise.all([
-      embedTexts(chunks.map((c) => c.content), "RETRIEVAL_DOCUMENT", apiKey),
-      embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey),
-    ]);
+    let chunkEmbeddings: number[][];
+    let queryEmbeddings: number[][];
+    try {
+      [chunkEmbeddings, queryEmbeddings] = await callWithKeyRotation("gemini", (apiKey) =>
+        Promise.all([
+          embedTexts(chunks.map((c) => c.content), "RETRIEVAL_DOCUMENT", apiKey),
+          embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey),
+        ])
+      );
+    } catch (error) {
+      if (error instanceof NoApiKeysConfiguredError) {
+        return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
+      }
+      throw error;
+    }
 
     const snippets = rankTopK(chunks, chunkEmbeddings, queryEmbeddings[0], Math.min(k, chunks.length));
     const originalTokens = Math.max(1, countPromptTokens(sourceText));
@@ -137,6 +144,13 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },
         { status: 504 }
+      );
+    }
+    // Every key in the rotation pool was tried and all hit a rate limit/quota error.
+    if (isRetryableProviderError(error)) {
+      return NextResponse.json(
+        { error: "All configured API keys are currently rate-limited. Please try again shortly." },
+        { status: 429 }
       );
     }
     return NextResponse.json({ error: "Something went wrong while processing your document." }, { status: 500 });

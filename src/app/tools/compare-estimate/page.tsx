@@ -4,28 +4,20 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
-  ArrowRightLeft, FileCode, Check,
+  ArrowRightLeft, FileCode,
   Settings2, ArrowRight, DollarSign, TrendingDown,
-  Zap, Code2, FileText, ShieldCheck, BookOpen,
-  ChevronDown, HelpCircle, Layers, Scale, Sparkles,
-  RefreshCcw, Clock, Cpu
+  Zap, Code2, FileText, BookOpen,
+  ChevronDown, Clock
 } from "lucide-react";
 import { PromptComparison } from "@/components/tools/PromptComparison";
 import { countPromptTokens } from "@/lib/token-count";
 
-type GenerationState = "idle" | "loading" | "success";
-
-const LOADING_PHRASES = [
-  "Calculating token count diffs and compression deltas...",
-  "Running multi-model cost estimation heuristics...",
-  "Formatting side-by-side visual diffs...",
-  "Finalizing financial comparison report..."
-];
+type GenerationState = "idle" | "success";
 
 const FAQS = [
   {
     question: "How does the Diff & Cost Estimate tool calculate savings?",
-    answer: "The tool analyzes the token delta between your base prompt and optimized prompt using Byte-Pair Encoding (BPE) tokenization rules. It then applies the current pricing tiers of major models (e.g. GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro) to project exact per-call and scaled monthly cost reductions."
+    answer: "The tool tokenizes both prompts with the same encoding frontier models use, then applies published per-model input-token pricing (GPT-4o, Claude Sonnet 5, Gemini 3.6 Flash, and more) to project exact per-call and scaled monthly cost reductions."
   },
   {
     question: "Why does reducing prompt tokens improve AI response latency?",
@@ -45,21 +37,9 @@ export default function CompareEstimatePage() {
   const [state, setState] = useState<GenerationState>("idle");
   const [basePrompt, setBasePrompt] = useState("");
   const [newPrompt, setNewPrompt] = useState("");
-  const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
-  const outputRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (state === "loading") {
-      setLoadingStep(0);
-      interval = setInterval(() => {
-        setLoadingStep((prev) => (prev + 1) % LOADING_PHRASES.length);
-      }, 650);
-    }
-    return () => clearInterval(interval);
-  }, [state]);
+  const outputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (state !== "idle" && outputRef.current) {
@@ -71,12 +51,7 @@ export default function CompareEstimatePage() {
 
   const handleCompare = () => {
     if (!basePrompt.trim() && !newPrompt.trim()) return;
-    
-    setState("loading");
-    
-    setTimeout(() => {
-      setState("success");
-    }, 2800);
+    setState("success");
   };
 
   const baseTokens = useMemo(() => countPromptTokens(basePrompt), [basePrompt]);
@@ -166,20 +141,11 @@ export default function CompareEstimatePage() {
 
           <button
             onClick={handleCompare}
-            disabled={(!basePrompt.trim() && !newPrompt.trim()) || state === "loading"}
+            disabled={!basePrompt.trim() && !newPrompt.trim()}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            {state === "loading" ? (
-              <>
-                <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
-                Comparing Prompts...
-              </>
-            ) : (
-              <>
-                <ArrowRight className="w-3.5 h-3.5" />
-                Compare & Estimate Cost
-              </>
-            )}
+            <ArrowRight className="w-3.5 h-3.5" />
+            Compare & Estimate Cost
           </button>
         </div>
       </motion.div>
@@ -187,46 +153,6 @@ export default function CompareEstimatePage() {
       {/* 3. Output Section */}
       <div ref={outputRef} className="scroll-mt-24 mb-16">
         <AnimatePresence mode="wait">
-          
-          {/* Loading Animation Stage */}
-          {state === "loading" && (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="bg-card border border-border rounded-2xl p-8 shadow-sm text-center"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-500 flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <ArrowRightLeft className="w-6 h-6 animate-spin" />
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.h3 
-                  key={loadingStep}
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -2 }}
-                  transition={{ duration: 0.2 }}
-                  className="font-semibold text-sm text-foreground mb-1.5"
-                >
-                  {LOADING_PHRASES[loadingStep]}
-                </motion.h3>
-              </AnimatePresence>
-              <p className="text-xs text-muted-foreground mb-6">Evaluating token diffs, latency benefits, and cost projections...</p>
-
-              <div className="flex justify-center gap-1.5 max-w-xs mx-auto">
-                {LOADING_PHRASES.map((_, idx) => (
-                  <div 
-                    key={idx}
-                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                      idx <= loadingStep ? "bg-blue-500" : "bg-muted"
-                    }`}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          )}
 
           {/* Success Comparison View */}
           {state === "success" && (
@@ -283,7 +209,7 @@ export default function CompareEstimatePage() {
               </div>
               <h4 className="font-semibold text-sm text-foreground">Multi-Model Cost Projections</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Calculates real dollar savings across OpenAI GPT-4o, Anthropic Claude 3.5 Sonnet, Google Gemini 1.5 Pro, and DeepSeek.
+                Calculates real dollar savings across OpenAI GPT-4o, Anthropic Claude Sonnet 5, Google Gemini 3.6 Flash, and DeepSeek.
               </p>
             </div>
 
@@ -303,6 +229,7 @@ export default function CompareEstimatePage() {
         {/* Section 3: Token Cost Comparison Table */}
         <div className="space-y-4">
           <h3 className="text-xl font-bold text-foreground">Estimated Monthly Savings by Model Tier (100k API Calls)</h3>
+          <p className="text-xs text-muted-foreground">Based on published input-token pricing as of September 2026 — use the live calculator above for current rates and your own prompt.</p>
           <div className="rounded-2xl border border-border overflow-hidden bg-card">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -322,16 +249,16 @@ export default function CompareEstimatePage() {
                     <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$187.50 / mo</td>
                   </tr>
                   <tr>
-                    <td className="p-4 font-semibold text-foreground">Anthropic Claude 3.5 Sonnet</td>
-                    <td className="p-4 text-muted-foreground">$450.00</td>
-                    <td className="p-4 font-semibold text-primary">$225.00</td>
-                    <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$225.00 / mo</td>
+                    <td className="p-4 font-semibold text-foreground">Anthropic Claude Sonnet 5</td>
+                    <td className="p-4 text-muted-foreground">$300.00</td>
+                    <td className="p-4 font-semibold text-primary">$150.00</td>
+                    <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$150.00 / mo</td>
                   </tr>
                   <tr>
-                    <td className="p-4 font-semibold text-foreground">Google Gemini 1.5 Pro</td>
-                    <td className="p-4 text-muted-foreground">$525.00</td>
-                    <td className="p-4 font-semibold text-primary">$262.50</td>
-                    <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$262.50 / mo</td>
+                    <td className="p-4 font-semibold text-foreground">Google Gemini 3.6 Flash</td>
+                    <td className="p-4 text-muted-foreground">$112.50</td>
+                    <td className="p-4 font-semibold text-primary">$56.25</td>
+                    <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$56.25 / mo</td>
                   </tr>
                   <tr>
                     <td className="p-4 font-semibold text-foreground">OpenAI GPT-4o-mini</td>

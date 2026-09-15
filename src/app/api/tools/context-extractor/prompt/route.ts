@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { embedTexts, getGeminiApiKey } from "@/lib/rag/embed";
+import { embedTexts } from "@/lib/rag/embed";
 import { rankTopK } from "@/lib/rag/similarity";
 import { loadDocumentForSubject, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
 import { getContextExtractorLimits } from "@/lib/rag/limits";
 import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubject } from "@/lib/rate-limit";
 import { isGenAITimeout } from "@/lib/genai-timeout";
+import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 
 // Re-runs a different query against a document that was already uploaded, parsed,
 // chunked and embedded — only the new query gets embedded here, so this only ever
@@ -40,14 +41,19 @@ export async function POST(req: Request) {
       );
     }
 
-    const apiKey = await getGeminiApiKey();
-    if (!apiKey) {
-      return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
-    }
-
     const k = depth === "top5" ? 5 : 3;
 
-    const queryEmbeddings = await embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey);
+    let queryEmbeddings: number[][];
+    try {
+      queryEmbeddings = await callWithKeyRotation("gemini", (apiKey) =>
+        embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey)
+      );
+    } catch (error) {
+      if (error instanceof NoApiKeysConfiguredError) {
+        return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
+      }
+      throw error;
+    }
     const snippets = rankTopK(document.chunks, document.chunkEmbeddings, queryEmbeddings[0], Math.min(k, document.chunks.length));
 
     await consumeDailyLimit(subjectKey, PROMPT_TOOL);
@@ -73,6 +79,13 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },
         { status: 504 }
+      );
+    }
+    // Every key in the rotation pool was tried and all hit a rate limit/quota error.
+    if (isRetryableProviderError(error)) {
+      return NextResponse.json(
+        { error: "All configured API keys are currently rate-limited. Please try again shortly." },
+        { status: 429 }
       );
     }
     return NextResponse.json({ error: "Something went wrong while generating this prompt." }, { status: 500 });

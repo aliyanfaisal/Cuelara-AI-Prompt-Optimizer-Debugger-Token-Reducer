@@ -65,6 +65,8 @@ export async function getToolSettings() {
   }
 }
 
+export type ToolSettings = Awaited<ReturnType<typeof getToolSettings>>;
+
 export async function updateToolSettings(data: {
   maxFileMb: string;
   documentDailyLimit: string;

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { prisma } from "@/lib/prisma";
 import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToday } from "@/lib/rate-limit";
 import { GENAI_TIMEOUT_MS, isGenAITimeout } from "@/lib/genai-timeout";
 import { getTokenOptimizerLimit } from "@/lib/token-optimizer/limits";
 import { isCompressionLevel, isPreserveOption, LEVEL_GUIDANCE, type CompressionLevel, type PreserveOption } from "@/lib/token-optimizer/constants";
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
+import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 
 const TOOL = "token-optimizer";
 const MODEL = "gemini-3.6-flash";
@@ -86,41 +86,48 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid formatting preference." }, { status: 400 });
     }
 
-    const setting = await prisma.setting.findUnique({ where: { key: "GEMINI_API_KEY" } });
-    const apiKey = setting?.value || process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
-    }
-
-    const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
     const trimmedInput = rawInput.trim();
     const originalTokenCount = countPromptTokens(trimmedInput);
 
-    // Gemini's own claim of "compressed" isn't trustworthy on its own — verify with the
-    // same tokenizer the UI uses before trusting the result.
-    const firstAttempt = await ai.models.generateContent({
-      model: MODEL,
-      contents: buildCompressionPrompt(trimmedInput, level, preserveFormatting),
-    });
-    let compressed = (firstAttempt.text ?? "").trim();
+    let compressed: string;
+    try {
+      compressed = await callWithKeyRotation("gemini", async (apiKey) => {
+        const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
 
-    // One retry when the first pass didn't actually shrink it — but on a short, fixed
-    // budget of its own, so a slow/failing retry falls back to the first result instead
-    // of blowing past the route's overall timeout.
-    if (compressed && countPromptTokens(compressed) >= originalTokenCount) {
-      try {
-        const retry = await ai.models.generateContent({
+        // Gemini's own claim of "compressed" isn't trustworthy on its own — verify with
+        // the same tokenizer the UI uses before trusting the result.
+        const firstAttempt = await ai.models.generateContent({
           model: MODEL,
-          contents: buildRetryPrompt(trimmedInput, compressed),
-          config: { httpOptions: { timeout: RETRY_TIMEOUT_MS } },
+          contents: buildCompressionPrompt(trimmedInput, level, preserveFormatting),
         });
-        const retryText = (retry.text ?? "").trim();
-        if (retryText && countPromptTokens(retryText) < countPromptTokens(compressed)) {
-          compressed = retryText;
+        let result = (firstAttempt.text ?? "").trim();
+
+        // One retry when the first pass didn't actually shrink it — but on a short, fixed
+        // budget of its own, so a slow/failing retry falls back to the first result instead
+        // of blowing past the route's overall timeout.
+        if (result && countPromptTokens(result) >= originalTokenCount) {
+          try {
+            const retry = await ai.models.generateContent({
+              model: MODEL,
+              contents: buildRetryPrompt(trimmedInput, result),
+              config: { httpOptions: { timeout: RETRY_TIMEOUT_MS } },
+            });
+            const retryText = (retry.text ?? "").trim();
+            if (retryText && countPromptTokens(retryText) < countPromptTokens(result)) {
+              result = retryText;
+            }
+          } catch (retryError) {
+            console.warn("Token Optimizer retry skipped:", retryError);
+          }
         }
-      } catch (retryError) {
-        console.warn("Token Optimizer retry skipped:", retryError);
+
+        return result;
+      });
+    } catch (error) {
+      if (error instanceof NoApiKeysConfiguredError) {
+        return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
       }
+      throw error;
     }
 
     if (!compressed) {
@@ -167,6 +174,13 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },
         { status: 504 }
+      );
+    }
+    // Every key in the rotation pool was tried and all hit a rate limit/quota error.
+    if (isRetryableProviderError(error)) {
+      return NextResponse.json(
+        { error: "All configured API keys are currently rate-limited. Please try again shortly." },
+        { status: 429 }
       );
     }
     return NextResponse.json({ error: "Something went wrong while compressing your prompt." }, { status: 500 });

@@ -9,6 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Setting'
+export type * from './models/ApiKey'
 export type * from './models/ToolUsageDaily'
 export type * from './models/ExtractedDocument'
 export type * from './models/ExtractedDocumentChunk'

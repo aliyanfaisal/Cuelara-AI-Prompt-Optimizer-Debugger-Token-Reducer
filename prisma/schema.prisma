@@ -21,6 +21,21 @@ model Setting {
   updatedAt DateTime @updatedAt
 }
 
+// A pool of API keys per LLM provider. Tools that call a provider pick one at
+// random from its active keys (see src/lib/api-keys.ts) so free-tier per-key
+// rate limits are spread across the pool instead of exhausting a single key.
+model ApiKey {
+  id        String   @id @default(cuid())
+  provider  String   // "gemini" | "grok" | "openai" | "claude"
+  key       String
+  label     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([provider, isActive])
+}
+
 // subjectKey identifies who is being rate-limited: "user:<id>" for a signed-in
 // user (so their quota follows their account, not their network), else "ip:<hash>".
 model ToolUsageDaily {

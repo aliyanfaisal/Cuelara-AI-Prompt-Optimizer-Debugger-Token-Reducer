@@ -1,30 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Coins, Scissors, Type, ArrowRight, Wallet } from "lucide-react";
+import { ChevronDown, Coins, Scissors, Type, Wallet, Info } from "lucide-react";
+import { countPromptTokens } from "@/lib/token-count";
+import { diffPrompts } from "@/lib/text-diff";
 
 interface PromptComparisonProps {
   basePrompt: string;
   newPrompt: string;
 }
 
+// Published input-token rates, per 1M tokens, as of September 2026 — check each
+// provider's own pricing page before budgeting off these, rates change often.
 const PRICING_MODELS = [
-  { name: "GPT-4o", costPer1M: 5.00 },
-  { name: "Claude 3.5 Sonnet", costPer1M: 3.00 },
-  { name: "GPT-4o Mini", costPer1M: 0.15 },
-  { name: "Claude 3 Haiku", costPer1M: 0.25 },
+  { name: "GPT-4o", provider: "OpenAI", costPer1M: 2.5 },
+  { name: "GPT-4o mini", provider: "OpenAI", costPer1M: 0.15 },
+  { name: "Claude Sonnet 5", provider: "Anthropic", costPer1M: 2.0 },
+  { name: "Claude Haiku 4.5", provider: "Anthropic", costPer1M: 1.0 },
+  { name: "Gemini 3.6 Flash", provider: "Google", costPer1M: 0.75 },
+  { name: "Gemini 3.1 Pro", provider: "Google", costPer1M: 2.0 },
+  { name: "DeepSeek V4-Flash", provider: "DeepSeek", costPer1M: 0.15 },
 ];
 
 export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProps) {
   const [selectedModel, setSelectedModel] = useState(PRICING_MODELS[0]);
   const [isModelOpen, setIsModelOpen] = useState(false);
 
-  // Rough estimation: 1 word ~ 1.3 tokens
-  const getTokens = (text: string) => Math.ceil((text.trim().split(/\s+/).length || 0) * 1.3);
-  
-  const baseTokens = getTokens(basePrompt);
-  const newTokens = getTokens(newPrompt);
+  const baseTokens = useMemo(() => countPromptTokens(basePrompt), [basePrompt]);
+  const newTokens = useMemo(() => countPromptTokens(newPrompt), [newPrompt]);
+  const diffParts = useMemo(() => diffPrompts(basePrompt, newPrompt), [basePrompt, newPrompt]);
+
   const tokenDiff = newTokens - baseTokens;
   const tokenReductionPercent = baseTokens > 0 ? Math.round((tokenDiff / baseTokens) * 100) : 0;
 
@@ -34,7 +40,7 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
   const savings10k = baseCost10k - newCost10k;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm flex flex-col mt-8"
@@ -47,24 +53,27 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
         </h3>
 
         <div className="relative">
-          <button 
+          <button
             onClick={() => setIsModelOpen(!isModelOpen)}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-background text-xs font-medium hover:bg-muted transition-all"
           >
             Model Pricing: <span className="text-foreground">{selectedModel.name}</span>
             <ChevronDown className="w-3.5 h-3.5 opacity-50" />
           </button>
-          
+
           {isModelOpen && (
-            <div className="absolute top-full right-0 mt-1 w-48 bg-card border border-border rounded-xl shadow-lg z-20 py-1 overflow-hidden">
+            <div className="absolute top-full right-0 mt-1 w-56 bg-card border border-border rounded-xl shadow-lg z-20 py-1 overflow-hidden">
               {PRICING_MODELS.map(model => (
                 <button
                   key={model.name}
                   onClick={() => { setSelectedModel(model); setIsModelOpen(false); }}
-                  className="w-full text-left px-3 py-2 text-xs hover:bg-muted transition-colors text-foreground flex justify-between items-center"
+                  className="w-full text-left px-3 py-2 text-xs hover:bg-muted transition-colors text-foreground flex justify-between items-center gap-3"
                 >
-                  <span>{model.name}</span>
-                  <span className="text-muted-foreground">${model.costPer1M.toFixed(2)}/1M</span>
+                  <span>
+                    {model.name}
+                    <span className="text-muted-foreground ml-1.5">· {model.provider}</span>
+                  </span>
+                  <span className="text-muted-foreground shrink-0">${model.costPer1M.toFixed(2)}/1M</span>
                 </button>
               ))}
             </div>
@@ -74,7 +83,7 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
 
       {/* Top Level Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/40 bg-background">
-        
+
         {/* Token Diff */}
         <div className="p-5">
           <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-3">
@@ -123,7 +132,7 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
 
       {/* Graphical Charts Section */}
       <div className="border-t border-border/60 bg-background p-5 grid grid-cols-1 md:grid-cols-2 gap-8">
-        
+
         {/* Token Chart */}
         <div className="space-y-4">
           <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Token Usage</h4>
@@ -134,7 +143,7 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
                 <span className="text-foreground">{baseTokens} tokens</span>
               </div>
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                <motion.div 
+                <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.max((baseTokens / (Math.max(baseTokens, newTokens) || 1)) * 100, 2)}%` }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
@@ -148,7 +157,7 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
                 <span className="text-foreground">{newTokens} tokens</span>
               </div>
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                <motion.div 
+                <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.max((newTokens / (Math.max(baseTokens, newTokens) || 1)) * 100, 2)}%` }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
@@ -169,7 +178,7 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
                 <span className="text-foreground">${baseCost10k.toFixed(2)}</span>
               </div>
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                <motion.div 
+                <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.max((baseCost10k / (Math.max(baseCost10k, newCost10k) || 1)) * 100, 2)}%` }}
                   transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
@@ -183,7 +192,7 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
                 <span className="text-foreground">${newCost10k.toFixed(2)}</span>
               </div>
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                <motion.div 
+                <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.max((newCost10k / (Math.max(baseCost10k, newCost10k) || 1)) * 100, 2)}%` }}
                   transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
@@ -196,37 +205,49 @@ export function PromptComparison({ basePrompt, newPrompt }: PromptComparisonProp
 
       </div>
 
-      {/* Side-by-Side Diff View */}
+      {/* Inline Word-Level Diff */}
       <div className="border-t border-border/60 bg-muted/5 p-5">
-        <h4 className="text-xs font-bold text-foreground mb-4 uppercase tracking-wider">Side-by-Side Diff</h4>
-        
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Base Prompt */}
-          <div className="flex-1 bg-rose-500/5 border border-rose-500/20 rounded-xl overflow-hidden flex flex-col">
-            <div className="bg-rose-500/10 px-3 py-1.5 border-b border-rose-500/20 text-[10px] font-bold text-rose-600 uppercase tracking-wider">
-              Original Prompt
-            </div>
-            <div className="p-4 text-xs font-mono text-rose-700/80 leading-relaxed whitespace-pre-wrap overflow-y-auto max-h-[300px]">
-              {basePrompt || <span className="italic opacity-50">No original prompt provided.</span>}
-            </div>
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Word-Level Diff</h4>
+          <div className="flex items-center gap-3 text-[10px] font-semibold text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <span className="w-2.5 h-2.5 rounded-sm bg-rose-500/20 border border-rose-500/40" /> Removed
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500/20 border border-emerald-500/40" /> Added
+            </span>
           </div>
+        </div>
 
-          {/* Icon Separator (Desktop only) */}
-          <div className="hidden md:flex items-center justify-center shrink-0">
-            <div className="p-2 bg-background border border-border rounded-full shadow-sm text-muted-foreground">
-              <ArrowRight className="w-4 h-4" />
-            </div>
+        {basePrompt.trim() || newPrompt.trim() ? (
+          <div className="p-4 rounded-xl border border-border bg-background text-xs font-mono leading-relaxed whitespace-pre-wrap overflow-y-auto max-h-[360px]">
+            {diffParts.map((part, idx) => {
+              if (part.removed) {
+                return (
+                  <span key={idx} className="bg-rose-500/15 text-rose-600 dark:text-rose-400 line-through decoration-rose-500/60">
+                    {part.value}
+                  </span>
+                );
+              }
+              if (part.added) {
+                return (
+                  <span key={idx} className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                    {part.value}
+                  </span>
+                );
+              }
+              return <span key={idx} className="text-foreground/80">{part.value}</span>;
+            })}
           </div>
+        ) : (
+          <div className="p-4 rounded-xl border border-border bg-background text-xs italic text-muted-foreground">
+            Paste a base and optimized prompt above to see the word-level diff.
+          </div>
+        )}
 
-          {/* New Prompt */}
-          <div className="flex-1 bg-emerald-500/5 border border-emerald-500/20 rounded-xl overflow-hidden flex flex-col">
-            <div className="bg-emerald-500/10 px-3 py-1.5 border-b border-emerald-500/20 text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
-              New Prompt
-            </div>
-            <div className="p-4 text-xs font-mono text-emerald-700/80 leading-relaxed whitespace-pre-wrap overflow-y-auto max-h-[300px]">
-              {newPrompt || <span className="italic opacity-50">No new prompt provided.</span>}
-            </div>
-          </div>
+        <div className="flex items-start gap-1.5 mt-3 text-[10px] text-muted-foreground">
+          <Info className="w-3 h-3 shrink-0 mt-0.5" />
+          <span>Pricing shown is per published input-token rates as of September 2026 — verify against each provider&rsquo;s current pricing page before budgeting.</span>
         </div>
       </div>
 

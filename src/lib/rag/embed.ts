@@ -1,14 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
-import { prisma } from "@/lib/prisma";
 import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
 
 const EMBEDDING_MODEL = "gemini-embedding-001";
 const BATCH_SIZE = 100;
-
-export async function getGeminiApiKey(): Promise<string | null> {
-  const setting = await prisma.setting.findUnique({ where: { key: "GEMINI_API_KEY" } });
-  return setting?.value || process.env.GEMINI_API_KEY || null;
-}
 
 export async function embedTexts(
   texts: string[],

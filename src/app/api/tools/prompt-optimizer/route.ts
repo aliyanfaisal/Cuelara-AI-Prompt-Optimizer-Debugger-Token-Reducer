@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { prisma } from "@/lib/prisma";
 import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToday } from "@/lib/rate-limit";
 import { GENAI_TIMEOUT_MS, isGenAITimeout } from "@/lib/genai-timeout";
 import { getPromptOptimizerLimit } from "@/lib/prompt-optimizer/limits";
 import { isOptimizerMode, isOptimizerLevel, MODE_EXEMPLARS, LEVEL_GUIDANCE } from "@/lib/prompt-optimizer/constants";
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
+import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 
 const TOOL = "prompt-optimizer";
 
@@ -36,14 +36,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid detail level." }, { status: 400 });
     }
 
-    const setting = await prisma.setting.findUnique({ where: { key: "GEMINI_API_KEY" } });
-    const apiKey = setting?.value || process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
-    }
-
-    const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
-
     const metaPrompt = `You are an expert prompt engineer. Rewrite the user's rough request below into a single, production-ready prompt they can paste directly into any frontier AI model (ChatGPT, Claude, Gemini).
 
 USER'S RAW REQUEST:
@@ -61,16 +53,24 @@ ${MODE_EXEMPLARS[mode]}
 
 Return only the finished, ready-to-paste prompt text — no meta-commentary, no markdown fences around the whole thing, no explanation of what you did.`;
 
+    let responseStream: Awaited<ReturnType<GoogleGenAI["models"]["generateContentStream"]>>;
+    try {
+      responseStream = await callWithKeyRotation("gemini", (apiKey) => {
+        const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
+        return ai.models.generateContentStream({ model: "gemini-3.6-flash", contents: metaPrompt });
+      });
+    } catch (error) {
+      if (error instanceof NoApiKeysConfiguredError) {
+        return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
+      }
+      throw error;
+    }
+
     const encoder = new TextEncoder();
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         let fullText = "";
         try {
-          const responseStream = await ai.models.generateContentStream({
-            model: "gemini-3.6-flash",
-            contents: metaPrompt,
-          });
-
           for await (const chunk of responseStream) {
             if (chunk.text) {
               fullText += chunk.text;
@@ -116,6 +116,13 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },
         { status: 504 }
+      );
+    }
+    // Every key in the rotation pool was tried and all hit a rate limit/quota error.
+    if (isRetryableProviderError(error)) {
+      return NextResponse.json(
+        { error: "All configured API keys are currently rate-limited. Please try again shortly." },
+        { status: 429 }
       );
     }
     return NextResponse.json({ error: "Something went wrong while optimizing your prompt." }, { status: 500 });

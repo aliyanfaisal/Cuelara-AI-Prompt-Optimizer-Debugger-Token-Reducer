@@ -46,12 +46,11 @@ const TOOLS = [
     href: "/tools/compare-estimate",
     docs: "/cookbook",
     icon: ArrowRight,
-    description: "Side-by-side visual diffs with precise token counts and API cost savings estimates.",
+    description: "Side-by-side visual diffs with precise token counts and real API cost savings estimates.",
     color: "text-blue-500",
     bg: "bg-blue-500/10",
     border: "border-blue-500/20",
     isLarge: false,
-    comingSoon: true,
   },
   {
     name: "Prompt Debugger",
