@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToday } from "@/lib/rate-limit";
-import { GENAI_TIMEOUT_MS, isGenAITimeout } from "@/lib/genai-timeout";
+import { isGenAITimeout } from "@/lib/genai-timeout";
 import { getTokenOptimizerLimit } from "@/lib/token-optimizer/limits";
 import { isCompressionLevel, isPreserveOption, LEVEL_GUIDANCE, type CompressionLevel, type PreserveOption } from "@/lib/token-optimizer/constants";
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
-import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
+import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
+import { generateWithFallback } from "@/lib/llm-generate";
+import { TEXT_GENERATION_CHAIN } from "@/lib/model-chain";
 
 const TOOL = "token-optimizer";
-const MODEL = "gemini-3.6-flash";
-const RETRY_TIMEOUT_MS = 8_000;
 
 const QUALITY_RULES = `Priority order (most important first):
 1. The result must remain fully correct, grammatical, and immediately understandable — a professional prompt engineer would still find it clear and unambiguous.
@@ -91,38 +90,27 @@ export async function POST(req: Request) {
 
     let compressed: string;
     try {
-      compressed = await callWithKeyRotation("gemini", async (apiKey) => {
-        const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
+      // Gemini's own claim of "compressed" isn't trustworthy on its own — verify with
+      // the same tokenizer the UI uses before trusting the result.
+      const firstAttempt = await generateWithFallback(
+        TEXT_GENERATION_CHAIN,
+        buildCompressionPrompt(trimmedInput, level, preserveFormatting)
+      );
+      compressed = firstAttempt.text.trim();
 
-        // Gemini's own claim of "compressed" isn't trustworthy on its own — verify with
-        // the same tokenizer the UI uses before trusting the result.
-        const firstAttempt = await ai.models.generateContent({
-          model: MODEL,
-          contents: buildCompressionPrompt(trimmedInput, level, preserveFormatting),
-        });
-        let result = (firstAttempt.text ?? "").trim();
-
-        // One retry when the first pass didn't actually shrink it — but on a short, fixed
-        // budget of its own, so a slow/failing retry falls back to the first result instead
-        // of blowing past the route's overall timeout.
-        if (result && countPromptTokens(result) >= originalTokenCount) {
-          try {
-            const retry = await ai.models.generateContent({
-              model: MODEL,
-              contents: buildRetryPrompt(trimmedInput, result),
-              config: { httpOptions: { timeout: RETRY_TIMEOUT_MS } },
-            });
-            const retryText = (retry.text ?? "").trim();
-            if (retryText && countPromptTokens(retryText) < countPromptTokens(result)) {
-              result = retryText;
-            }
-          } catch (retryError) {
-            console.warn("Token Optimizer retry skipped:", retryError);
+      // One retry when the first pass didn't actually shrink it — swallowed on failure
+      // so a slow/failing retry falls back to the first result instead of failing outright.
+      if (compressed && countPromptTokens(compressed) >= originalTokenCount) {
+        try {
+          const retry = await generateWithFallback(TEXT_GENERATION_CHAIN, buildRetryPrompt(trimmedInput, compressed));
+          const retryText = retry.text.trim();
+          if (retryText && countPromptTokens(retryText) < countPromptTokens(compressed)) {
+            compressed = retryText;
           }
+        } catch (retryError) {
+          console.warn("Token Optimizer retry skipped:", retryError);
         }
-
-        return result;
-      });
+      }
     } catch (error) {
       if (error instanceof NoApiKeysConfiguredError) {
         return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });

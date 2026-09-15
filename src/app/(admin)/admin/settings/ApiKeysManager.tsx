@@ -11,7 +11,9 @@ function maskKey(key: string): string {
 }
 
 const PROVIDER_HINTS: Record<Provider, string> = {
-  gemini: "Used by Prompt Optimizer, Token Optimizer, and Context Extractor.",
+  gemini: "Primary model for Prompt Optimizer, Token Optimizer, and Context Extractor.",
+  groq: "Free-tier overflow for Prompt Optimizer and Token Optimizer — used only when Gemini's pool is exhausted.",
+  openrouter: "Free-tier overflow, tried after Gemini and Groq are exhausted.",
   grok: "Not wired into any tool yet — stored for future use.",
   openai: "Not wired into any tool yet — stored for future use.",
   claude: "Not wired into any tool yet — stored for future use.",

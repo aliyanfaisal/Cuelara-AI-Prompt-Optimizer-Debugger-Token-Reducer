@@ -12,6 +12,8 @@ import {
   PROMPT_OPTIMIZER_DAILY_LIMIT_AUTH_KEY,
   TOKEN_OPTIMIZER_DAILY_LIMIT_KEY,
   TOKEN_OPTIMIZER_DAILY_LIMIT_AUTH_KEY,
+  PROMPT_DEBUGGER_DAILY_LIMIT_KEY,
+  PROMPT_DEBUGGER_DAILY_LIMIT_AUTH_KEY,
 } from "@/lib/tool-settings-keys";
 
 const DEFAULTS = {
@@ -24,11 +26,13 @@ const DEFAULTS = {
   promptOptimizerDailyLimitAuth: "15",
   tokenOptimizerDailyLimit: "5",
   tokenOptimizerDailyLimitAuth: "15",
+  promptDebuggerDailyLimit: "5",
+  promptDebuggerDailyLimitAuth: "15",
 };
 
 export async function getToolSettings() {
   try {
-    const [maxFileMb, documentDailyLimit, promptDailyLimit, documentDailyLimitAuth, promptDailyLimitAuth, promptOptimizerDailyLimit, promptOptimizerDailyLimitAuth, tokenOptimizerDailyLimit, tokenOptimizerDailyLimitAuth] = await Promise.all([
+    const [maxFileMb, documentDailyLimit, promptDailyLimit, documentDailyLimitAuth, promptDailyLimitAuth, promptOptimizerDailyLimit, promptOptimizerDailyLimitAuth, tokenOptimizerDailyLimit, tokenOptimizerDailyLimitAuth, promptDebuggerDailyLimit, promptDebuggerDailyLimitAuth] = await Promise.all([
       prisma.setting.findUnique({ where: { key: CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } }),
       prisma.setting.findUnique({ where: { key: CONTEXT_EXTRACTOR_DOCUMENT_DAILY_LIMIT_KEY } }),
       prisma.setting.findUnique({ where: { key: CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY } }),
@@ -38,6 +42,8 @@ export async function getToolSettings() {
       prisma.setting.findUnique({ where: { key: PROMPT_OPTIMIZER_DAILY_LIMIT_AUTH_KEY } }),
       prisma.setting.findUnique({ where: { key: TOKEN_OPTIMIZER_DAILY_LIMIT_KEY } }),
       prisma.setting.findUnique({ where: { key: TOKEN_OPTIMIZER_DAILY_LIMIT_AUTH_KEY } }),
+      prisma.setting.findUnique({ where: { key: PROMPT_DEBUGGER_DAILY_LIMIT_KEY } }),
+      prisma.setting.findUnique({ where: { key: PROMPT_DEBUGGER_DAILY_LIMIT_AUTH_KEY } }),
     ]);
     return {
       contextExtractorMaxFileMb: maxFileMb?.value || DEFAULTS.maxFileMb,
@@ -49,6 +55,8 @@ export async function getToolSettings() {
       promptOptimizerDailyLimitAuth: promptOptimizerDailyLimitAuth?.value || DEFAULTS.promptOptimizerDailyLimitAuth,
       tokenOptimizerDailyLimit: tokenOptimizerDailyLimit?.value || DEFAULTS.tokenOptimizerDailyLimit,
       tokenOptimizerDailyLimitAuth: tokenOptimizerDailyLimitAuth?.value || DEFAULTS.tokenOptimizerDailyLimitAuth,
+      promptDebuggerDailyLimit: promptDebuggerDailyLimit?.value || DEFAULTS.promptDebuggerDailyLimit,
+      promptDebuggerDailyLimitAuth: promptDebuggerDailyLimitAuth?.value || DEFAULTS.promptDebuggerDailyLimitAuth,
     };
   } catch (error) {
     return {
@@ -61,6 +69,8 @@ export async function getToolSettings() {
       promptOptimizerDailyLimitAuth: DEFAULTS.promptOptimizerDailyLimitAuth,
       tokenOptimizerDailyLimit: DEFAULTS.tokenOptimizerDailyLimit,
       tokenOptimizerDailyLimitAuth: DEFAULTS.tokenOptimizerDailyLimitAuth,
+      promptDebuggerDailyLimit: DEFAULTS.promptDebuggerDailyLimit,
+      promptDebuggerDailyLimitAuth: DEFAULTS.promptDebuggerDailyLimitAuth,
     };
   }
 }
@@ -77,6 +87,8 @@ export async function updateToolSettings(data: {
   promptOptimizerDailyLimitAuth: string;
   tokenOptimizerDailyLimit: string;
   tokenOptimizerDailyLimitAuth: string;
+  promptDebuggerDailyLimit: string;
+  promptDebuggerDailyLimitAuth: string;
 }) {
   const parsed = {
     maxFileMb: parseInt(data.maxFileMb, 10),
@@ -88,6 +100,8 @@ export async function updateToolSettings(data: {
     promptOptimizerDailyLimitAuth: parseInt(data.promptOptimizerDailyLimitAuth, 10),
     tokenOptimizerDailyLimit: parseInt(data.tokenOptimizerDailyLimit, 10),
     tokenOptimizerDailyLimitAuth: parseInt(data.tokenOptimizerDailyLimitAuth, 10),
+    promptDebuggerDailyLimit: parseInt(data.promptDebuggerDailyLimit, 10),
+    promptDebuggerDailyLimitAuth: parseInt(data.promptDebuggerDailyLimitAuth, 10),
   };
 
   const labels: Record<keyof typeof parsed, string> = {
@@ -100,6 +114,8 @@ export async function updateToolSettings(data: {
     promptOptimizerDailyLimitAuth: "Prompt Optimizer optimizations per day (signed in)",
     tokenOptimizerDailyLimit: "Token Optimizer compressions per day (anonymous)",
     tokenOptimizerDailyLimitAuth: "Token Optimizer compressions per day (signed in)",
+    promptDebuggerDailyLimit: "Prompt Debugger audits per day (anonymous)",
+    promptDebuggerDailyLimitAuth: "Prompt Debugger audits per day (signed in)",
   };
 
   for (const key of Object.keys(parsed) as (keyof typeof parsed)[]) {
@@ -149,6 +165,16 @@ export async function updateToolSettings(data: {
         where: { key: TOKEN_OPTIMIZER_DAILY_LIMIT_KEY },
         update: { value: String(parsed.tokenOptimizerDailyLimit) },
         create: { key: TOKEN_OPTIMIZER_DAILY_LIMIT_KEY, value: String(parsed.tokenOptimizerDailyLimit) },
+      }),
+      prisma.setting.upsert({
+        where: { key: PROMPT_DEBUGGER_DAILY_LIMIT_KEY },
+        update: { value: String(parsed.promptDebuggerDailyLimit) },
+        create: { key: PROMPT_DEBUGGER_DAILY_LIMIT_KEY, value: String(parsed.promptDebuggerDailyLimit) },
+      }),
+      prisma.setting.upsert({
+        where: { key: PROMPT_DEBUGGER_DAILY_LIMIT_AUTH_KEY },
+        update: { value: String(parsed.promptDebuggerDailyLimitAuth) },
+        create: { key: PROMPT_DEBUGGER_DAILY_LIMIT_AUTH_KEY, value: String(parsed.promptDebuggerDailyLimitAuth) },
       }),
       prisma.setting.upsert({
         where: { key: TOKEN_OPTIMIZER_DAILY_LIMIT_AUTH_KEY },

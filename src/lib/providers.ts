@@ -3,11 +3,13 @@
 // components (like the admin API Keys UI) can import provider metadata here
 // without dragging Node-only modules (pg, dns, ...) into the browser bundle.
 
-export const PROVIDERS = ["gemini", "grok", "openai", "claude"] as const;
+export const PROVIDERS = ["gemini", "groq", "openrouter", "grok", "openai", "claude"] as const;
 export type Provider = (typeof PROVIDERS)[number];
 
 export const PROVIDER_LABELS: Record<Provider, string> = {
   gemini: "Gemini",
+  groq: "Groq",
+  openrouter: "OpenRouter",
   grok: "Grok",
   openai: "ChatGPT",
   claude: "Claude",

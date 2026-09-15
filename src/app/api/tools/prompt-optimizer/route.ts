@@ -6,6 +6,8 @@ import { getPromptOptimizerLimit } from "@/lib/prompt-optimizer/limits";
 import { isOptimizerMode, isOptimizerLevel, MODE_EXEMPLARS, LEVEL_GUIDANCE } from "@/lib/prompt-optimizer/constants";
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
 import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
+import { generateWithFallback } from "@/lib/llm-generate";
+import { TEXT_GENERATION_CHAIN } from "@/lib/model-chain";
 
 const TOOL = "prompt-optimizer";
 
@@ -53,17 +55,21 @@ ${MODE_EXEMPLARS[mode]}
 
 Return only the finished, ready-to-paste prompt text — no meta-commentary, no markdown fences around the whole thing, no explanation of what you did.`;
 
-    let responseStream: Awaited<ReturnType<GoogleGenAI["models"]["generateContentStream"]>>;
+    let responseStream: Awaited<ReturnType<GoogleGenAI["models"]["generateContentStream"]>> | null = null;
+    let fallbackText: string | null = null;
+
     try {
       responseStream = await callWithKeyRotation("gemini", (apiKey) => {
         const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
         return ai.models.generateContentStream({ model: "gemini-3.6-flash", contents: metaPrompt });
       });
     } catch (error) {
-      if (error instanceof NoApiKeysConfiguredError) {
-        return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
-      }
-      throw error;
+      if (!(error instanceof NoApiKeysConfiguredError) && !isRetryableProviderError(error)) throw error;
+      // Gemini is unconfigured or its whole pool is rate-limited — fall back to the
+      // free-tier overflow providers (Groq, then OpenRouter). This propagates out of
+      // the route (to the outer catch) if those are exhausted too.
+      const fallback = await generateWithFallback(TEXT_GENERATION_CHAIN.slice(1), metaPrompt);
+      fallbackText = fallback.text;
     }
 
     const encoder = new TextEncoder();
@@ -71,10 +77,22 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
       async start(controller) {
         let fullText = "";
         try {
-          for await (const chunk of responseStream) {
-            if (chunk.text) {
-              fullText += chunk.text;
-              controller.enqueue(encoder.encode(chunk.text));
+          if (responseStream) {
+            for await (const chunk of responseStream) {
+              if (chunk.text) {
+                fullText += chunk.text;
+                controller.enqueue(encoder.encode(chunk.text));
+              }
+            }
+          } else if (fallbackText) {
+            // Reveal the fallback provider's full response progressively so the UI
+            // keeps its live-streaming feel even though this path isn't truly streamed.
+            const CHUNK_SIZE = 24;
+            for (let i = 0; i < fallbackText.length; i += CHUNK_SIZE) {
+              const piece = fallbackText.slice(i, i + CHUNK_SIZE);
+              fullText += piece;
+              controller.enqueue(encoder.encode(piece));
+              await new Promise((resolve) => setTimeout(resolve, 12));
             }
           }
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { updateToolSettings } from "./actions";
-import { FileText, ShieldAlert, Wand2, Zap } from "lucide-react";
+import { FileText, ShieldAlert, Wand2, Zap, Bug } from "lucide-react";
 
 export default function SettingsManager({
   initialSettings,
@@ -17,6 +17,8 @@ export default function SettingsManager({
     promptOptimizerDailyLimitAuth: string;
     tokenOptimizerDailyLimit: string;
     tokenOptimizerDailyLimitAuth: string;
+    promptDebuggerDailyLimit: string;
+    promptDebuggerDailyLimitAuth: string;
   };
 }) {
   const [maxFileMb, setMaxFileMb] = useState(initialSettings.contextExtractorMaxFileMb);
@@ -28,6 +30,8 @@ export default function SettingsManager({
   const [promptOptimizerDailyLimitAuth, setPromptOptimizerDailyLimitAuth] = useState(initialSettings.promptOptimizerDailyLimitAuth);
   const [tokenOptimizerDailyLimit, setTokenOptimizerDailyLimit] = useState(initialSettings.tokenOptimizerDailyLimit);
   const [tokenOptimizerDailyLimitAuth, setTokenOptimizerDailyLimitAuth] = useState(initialSettings.tokenOptimizerDailyLimitAuth);
+  const [promptDebuggerDailyLimit, setPromptDebuggerDailyLimit] = useState(initialSettings.promptDebuggerDailyLimit);
+  const [promptDebuggerDailyLimitAuth, setPromptDebuggerDailyLimitAuth] = useState(initialSettings.promptDebuggerDailyLimitAuth);
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
@@ -44,6 +48,8 @@ export default function SettingsManager({
       promptOptimizerDailyLimitAuth,
       tokenOptimizerDailyLimit,
       tokenOptimizerDailyLimitAuth,
+      promptDebuggerDailyLimit,
+      promptDebuggerDailyLimitAuth,
     });
 
     if (result.error) {
@@ -275,6 +281,66 @@ export default function SettingsManager({
               />
               <p className="text-xs text-muted-foreground mt-2">
                 How many prompts a logged-in account may compress per UTC day — tracked by account, not IP.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <Bug className="w-5 h-5 text-emerald-500" />
+            Prompt Debugger
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Limits applied to the Prompt Debugger tool.
+          </p>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 flex gap-3 text-amber-600 dark:text-amber-400">
+            <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-semibold">Cost control</p>
+              <p>Each audit is one AI generation call. Anonymous visitors are tracked by IP; signed-in users get their own, higher limit that follows their account instead.</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Anonymous visitors</p>
+
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Audits per day</label>
+              <input
+                type="number"
+                min={1}
+                value={promptDebuggerDailyLimit}
+                onChange={(e) => setPromptDebuggerDailyLimit(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="5"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                How many prompts a single IP address may audit per UTC day.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-2 border-t border-border">
+            <p className="text-xs font-bold uppercase tracking-wider text-primary pt-4">Signed-in users</p>
+
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Audits per day</label>
+              <input
+                type="number"
+                min={1}
+                value={promptDebuggerDailyLimitAuth}
+                onChange={(e) => setPromptDebuggerDailyLimitAuth(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="15"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                How many prompts a logged-in account may audit per UTC day — tracked by account, not IP.
               </p>
             </div>
           </div>
