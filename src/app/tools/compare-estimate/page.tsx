@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { 
-  ArrowRightLeft, FileCode, Check, 
+import {
+  ArrowRightLeft, FileCode, Check,
   Settings2, ArrowRight, DollarSign, TrendingDown,
   Zap, Code2, FileText, ShieldCheck, BookOpen,
   ChevronDown, HelpCircle, Layers, Scale, Sparkles,
   RefreshCcw, Clock, Cpu
 } from "lucide-react";
 import { PromptComparison } from "@/components/tools/PromptComparison";
+import { countPromptTokens } from "@/lib/token-count";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -78,8 +79,8 @@ export default function CompareEstimatePage() {
     }, 2800);
   };
 
-  const baseTokens = Math.max(0, Math.floor(basePrompt.length / 4));
-  const newTokens = Math.max(0, Math.floor(newPrompt.length / 4));
+  const baseTokens = useMemo(() => countPromptTokens(basePrompt), [basePrompt]);
+  const newTokens = useMemo(() => countPromptTokens(newPrompt), [newPrompt]);
 
   return (
     <article className="flex flex-col w-full py-8">

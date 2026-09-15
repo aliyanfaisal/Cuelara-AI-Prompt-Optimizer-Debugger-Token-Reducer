@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
     "framer-motion": "^12.43.0",
+    "gpt-tokenizer": "^4.0.0",
     "lucide-react": "^1.28.0",
     "mammoth": "^1.12.2",
     "next": "16.2.12",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
@@ -11,6 +11,8 @@ import {
   Target, Terminal, AlertTriangle
 } from "lucide-react";
 import { MODES, LEVELS, type OptimizerMode, type OptimizerLevel } from "@/lib/prompt-optimizer/constants";
+import { splitStreamTrailer } from "@/lib/stream-protocol";
+import { countPromptTokens } from "@/lib/token-count";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -63,6 +65,9 @@ export default function PromptOptimizerPage() {
   const [optimizedPrompt, setOptimizedPrompt] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [usage, setUsage] = useState<OptimizerUsage | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  const estimatedTokens = useMemo(() => countPromptTokens(input), [input]);
 
   const outputRef = useRef<HTMLDivElement>(null);
 
@@ -102,10 +107,11 @@ export default function PromptOptimizerPage() {
   }, [state]);
 
   const handleOptimize = async () => {
-    if (!input.trim() || state === "loading") return;
+    if (!input.trim() || state === "loading" || isStreaming) return;
 
     setState("loading");
     setErrorMessage(null);
+    setOptimizedPrompt("");
 
     try {
       const res = await fetch("/api/tools/prompt-optimizer", {
@@ -113,24 +119,55 @@ export default function PromptOptimizerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rawInput: input, mode, level }),
       });
-      const data = await res.json();
 
-      if (!res.ok) {
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
         setErrorMessage(data.error || "Something went wrong. Please try again.");
         setState("idle");
         return;
       }
 
-      setOptimizedPrompt(data.optimizedPrompt);
-      if (typeof data.promptsLimit === "number") {
-        setUsage({
-          isAuthenticated: data.isAuthenticated,
-          promptsRemaining: data.promptsRemaining,
-          promptsLimit: data.promptsLimit,
-        });
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let revealed = false;
+      setIsStreaming(true);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const { text } = splitStreamTrailer(buffer);
+        setOptimizedPrompt(text);
+        if (!revealed && text) {
+          revealed = true;
+          setState("success");
+        }
       }
-      setState("success");
+
+      setIsStreaming(false);
+      const { text, meta, error } = splitStreamTrailer<OptimizerUsage>(buffer);
+      setOptimizedPrompt(text);
+
+      if (error) {
+        setErrorMessage(error);
+        setState("idle");
+        return;
+      }
+      if (!revealed) {
+        if (!text.trim()) {
+          setErrorMessage("The AI did not return a result. Please try again.");
+          setState("idle");
+          return;
+        }
+        setState("success");
+      }
+      if (meta && typeof meta.promptsLimit === "number") {
+        setUsage(meta);
+      }
     } catch {
+      setIsStreaming(false);
       setErrorMessage("Network error — please check your connection and try again.");
       setState("idle");
     }
@@ -262,7 +299,7 @@ export default function PromptOptimizerPage() {
           <div className="flex flex-col gap-1 text-xs text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
-              <span>Estimated Prompt Size: <strong className="text-foreground">~{Math.max(1, Math.floor(input.length / 4)).toLocaleString()} tokens</strong></span>
+              <span>Estimated Prompt Size: <strong className="text-foreground">~{estimatedTokens.toLocaleString()} tokens</strong></span>
             </div>
             {usage && (
               <span>
@@ -276,10 +313,10 @@ export default function PromptOptimizerPage() {
 
           <button
             onClick={handleOptimize}
-            disabled={!input.trim() || state === "loading" || usage?.promptsRemaining === 0}
+            disabled={!input.trim() || state === "loading" || isStreaming || usage?.promptsRemaining === 0}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            {state === "loading" ? (
+            {state === "loading" || isStreaming ? (
               <>
                 <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
                 Optimizing Prompt...
@@ -362,7 +399,8 @@ export default function PromptOptimizerPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm"
+                    disabled={isStreaming}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {copied ? (
                       <>
@@ -378,7 +416,8 @@ export default function PromptOptimizerPage() {
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                    disabled={isStreaming}
+                    className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Download as .txt"
                   >
                     <Download className="w-4 h-4" />
@@ -388,6 +427,7 @@ export default function PromptOptimizerPage() {
 
               <div className="p-5 md:p-6 bg-muted/10 font-mono text-xs leading-relaxed text-foreground overflow-x-auto whitespace-pre-wrap max-h-[420px]">
                 {optimizedPrompt}
+                {isStreaming && <span className="inline-block w-1.5 h-3.5 bg-primary/70 ml-0.5 animate-pulse align-middle" />}
               </div>
             </motion.div>
           )}

@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { 
-  Zap, Copy, Check, ChevronDown, 
-  Settings2, Sparkles, RefreshCcw, Save, Scissors,
-  DollarSign, Scale, ArrowRight, BookOpen, Code2, FileText,
-  HelpCircle, ShieldCheck, CheckCircle2, TrendingDown, Cpu
+import {
+  Zap, Copy, Check, ChevronDown,
+  Settings2, RefreshCcw, Scissors,
+  ArrowRight, BookOpen, Code2, FileText,
+  TrendingDown,
+  AlertTriangle
 } from "lucide-react";
+import { COMPRESSION_LEVELS, PRESERVE_OPTIONS, type CompressionLevel, type PreserveOption } from "@/lib/token-optimizer/constants";
+import { splitStreamTrailer } from "@/lib/stream-protocol";
+import { countPromptTokens } from "@/lib/token-count";
 
 type GenerationState = "idle" | "loading" | "success";
-
-const COMPRESSION_LEVELS = ["Low (Safest)", "Medium (Balanced)", "Aggressive (Max Savings)"];
-const PRESERVE_OPTIONS = ["Yes", "No"];
 
 const LOADING_PHRASES = [
   "Removing conversational fluff and politeness tokens...",
@@ -45,19 +46,45 @@ const FAQS = [
   }
 ];
 
+interface OptimizerUsage {
+  isAuthenticated: boolean;
+  promptsRemaining: number;
+  promptsLimit: number;
+}
+
 export default function TokenOptimizerPage() {
   const [state, setState] = useState<GenerationState>("idle");
   const [input, setInput] = useState("");
-  const [level, setLevel] = useState(COMPRESSION_LEVELS[1]);
-  const [preserve, setPreserve] = useState(PRESERVE_OPTIONS[0]);
-  
+  const [level, setLevel] = useState<CompressionLevel>(COMPRESSION_LEVELS[1]);
+  const [preserve, setPreserve] = useState<PreserveOption>(PRESERVE_OPTIONS[0]);
+
   const [isLevelOpen, setIsLevelOpen] = useState(false);
   const [isPreserveOpen, setIsPreserveOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
+  const [compressedText, setCompressedText] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [usage, setUsage] = useState<OptimizerUsage | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+
   const outputRef = useRef<HTMLDivElement>(null);
+
+  const refreshUsage = async () => {
+    try {
+      const res = await fetch("/api/tools/token-optimizer/usage");
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data.promptsLimit === "number") setUsage(data);
+      }
+    } catch {
+      // Usage display is best-effort — a failed fetch just hides the pill.
+    }
+  };
+
+  useEffect(() => {
+    refreshUsage();
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -78,38 +105,83 @@ export default function TokenOptimizerPage() {
     }
   }, [state]);
 
-  const handleCompress = () => {
-    if (!input.trim()) return;
-    
+  const handleCompress = async () => {
+    if (!input.trim() || state === "loading" || isStreaming) return;
+
     setState("loading");
-    
-    // Simulate API compression delay
-    setTimeout(() => {
-      setState("success");
-    }, 2800);
+    setErrorMessage(null);
+    setCompressedText("");
+
+    try {
+      const res = await fetch("/api/tools/token-optimizer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input, level, preserveFormatting: preserve }),
+      });
+
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        setErrorMessage(data.error || "Something went wrong. Please try again.");
+        setState("idle");
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let revealed = false;
+      setIsStreaming(true);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const { text } = splitStreamTrailer(buffer);
+        setCompressedText(text);
+        if (!revealed && text) {
+          revealed = true;
+          setState("success");
+        }
+      }
+
+      setIsStreaming(false);
+      const { text, meta, error } = splitStreamTrailer<OptimizerUsage>(buffer);
+      setCompressedText(text);
+
+      if (error) {
+        setErrorMessage(error);
+        setState("idle");
+        return;
+      }
+      if (!revealed) {
+        if (!text.trim()) {
+          setErrorMessage("The AI did not return a result. Please try again.");
+          setState("idle");
+          return;
+        }
+        setState("success");
+      }
+      if (meta && typeof meta.promptsLimit === "number") {
+        setUsage(meta);
+      }
+    } catch {
+      setIsStreaming(false);
+      setErrorMessage("Network error — please check your connection and try again.");
+      setState("idle");
+    }
   };
 
   const handleCopy = () => {
+    navigator.clipboard.writeText(compressedText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   // Dynamic token calculations
-  const originalTokens = Math.max(1, Math.floor(input.length / 4));
-  const compressionRatio = level.startsWith("Low") ? 0.78 : level.startsWith("Medium") ? 0.58 : 0.44;
-  const optimizedTokens = Math.max(1, Math.floor(originalTokens * compressionRatio));
-  const tokensSaved = originalTokens - optimizedTokens;
-  const percentSaved = Math.round((1 - compressionRatio) * 100);
-
-  const getCompressedText = () => {
-    return input
-      .replace(/please (could you|make sure to|ensure that you)/gi, "Must")
-      .replace(/I would like you to/gi, "")
-      .replace(/I am looking for you to/gi, "")
-      .replace(/It is very important that you/gi, "Constraint:")
-      .replace(/Thank you very much/gi, "")
-      .trim();
-  };
+  const originalTokens = useMemo(() => Math.max(1, countPromptTokens(input)), [input]);
+  const optimizedTokens = useMemo(() => Math.max(1, countPromptTokens(compressedText || input)), [compressedText, input]);
+  const percentSaved = compressedText ? Math.max(0, Math.round((1 - optimizedTokens / originalTokens) * 100)) : 0;
 
   return (
     <article className="flex flex-col w-full py-8">
@@ -212,17 +284,27 @@ export default function TokenOptimizerPage() {
 
         {/* Action Footer */}
         <div className="px-5 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-            <Zap className="w-4 h-4 text-amber-500" />
-            Current Input: <strong className="text-foreground">~{originalTokens.toLocaleString()} tokens</strong>
+          <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <Zap className="w-4 h-4 text-amber-500" />
+              Current Input: <strong className="text-foreground">~{originalTokens.toLocaleString()} tokens</strong>
+            </div>
+            {usage && (
+              <span>
+                <strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} compressions left today
+                {!usage.isAuthenticated && (
+                  <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>
+                )}
+              </span>
+            )}
           </div>
 
           <button
             onClick={handleCompress}
-            disabled={!input.trim() || state === "loading"}
+            disabled={!input.trim() || state === "loading" || isStreaming || usage?.promptsRemaining === 0}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            {state === "loading" ? (
+            {state === "loading" || isStreaming ? (
               <>
                 <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
                 Compressing Tokens...
@@ -293,9 +375,10 @@ export default function TokenOptimizerPage() {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm"
+                    disabled={isStreaming}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {copied ? (
                       <>
@@ -312,9 +395,23 @@ export default function TokenOptimizerPage() {
                 </div>
               </div>
 
-              <div className="p-5 bg-muted/10 font-mono text-xs leading-relaxed text-foreground overflow-x-auto whitespace-pre-wrap">
-                {getCompressedText()}
+              <div className="p-5 bg-muted/10 font-mono text-xs leading-relaxed text-foreground overflow-x-auto whitespace-pre-wrap max-h-[420px]">
+                {compressedText}
+                {isStreaming && <span className="inline-block w-1.5 h-3.5 bg-amber-500/70 ml-0.5 animate-pulse align-middle" />}
               </div>
+            </motion.div>
+          )}
+
+          {state === "idle" && errorMessage && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex items-start gap-3 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400 text-sm mt-4"
+            >
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{errorMessage}</span>
             </motion.div>
           )}
         </AnimatePresence>

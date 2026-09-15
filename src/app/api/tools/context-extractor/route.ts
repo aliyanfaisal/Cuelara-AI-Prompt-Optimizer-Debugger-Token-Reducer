@@ -9,6 +9,7 @@ import { getContextExtractorLimits } from "@/lib/rag/limits";
 import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubject } from "@/lib/rate-limit";
 import { CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } from "@/lib/tool-settings-keys";
 import { isGenAITimeout } from "@/lib/genai-timeout";
+import { countPromptTokens } from "@/lib/token-count";
 
 const DEFAULT_MAX_FILE_MB = 5;
 
@@ -107,7 +108,7 @@ export async function POST(req: Request) {
     ]);
 
     const snippets = rankTopK(chunks, chunkEmbeddings, queryEmbeddings[0], Math.min(k, chunks.length));
-    const originalTokens = Math.max(1, Math.floor(sourceText.length / 4));
+    const originalTokens = Math.max(1, countPromptTokens(sourceText));
 
     const documentId = await saveDocument(subjectKey, filename, originalTokens, chunks, chunkEmbeddings);
 

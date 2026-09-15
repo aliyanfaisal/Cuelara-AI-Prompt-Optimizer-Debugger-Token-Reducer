@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
@@ -11,6 +11,7 @@ import {
   HelpCircle, ArrowRight, ShieldCheck, Zap, Code2, Terminal,
   BookOpen, Lock, Scale, DollarSign
 } from "lucide-react";
+import { countPromptTokens } from "@/lib/token-count";
 
 type ProcessingState = "idle" | "loading" | "success";
 
@@ -328,12 +329,17 @@ export default function ContextExtractorPage() {
   };
 
   // Calculations for token metrics
+  const rawTextTokens = useMemo(() => countPromptTokens(rawText), [rawText]);
   const originalTokens = serverOriginalTokens ?? (file
     ? file.tokenCount
-    : (rawText.trim() ? Math.max(800, Math.floor(rawText.length / 4)) : 30000));
+    : (rawText.trim() ? Math.max(800, rawTextTokens) : 30000));
 
-  const extractedTokens = extractedData.reduce((acc, c) => acc + Math.floor(c.content.length / 4), 0) +
-    Math.floor((searchQuery.length + aiTask.length) / 4) + 80;
+  const extractedTokens = useMemo(
+    () =>
+      extractedData.reduce((acc, c) => acc + countPromptTokens(c.content), 0) +
+      countPromptTokens(searchQuery) + countPromptTokens(aiTask) + 80,
+    [extractedData, searchQuery, aiTask]
+  );
 
   const savedTokens = originalTokens - extractedTokens;
   const percentSavedRaw = originalTokens > 0 ? (savedTokens / originalTokens) * 100 : 0;
@@ -579,7 +585,7 @@ export default function ContextExtractorPage() {
                 className="w-full p-3.5 rounded-xl bg-background border border-border/70 text-xs text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-y"
               />
               <div className="flex justify-between items-center text-[11px] text-muted-foreground mt-1 px-1">
-                <span>Estimated tokens: ~{Math.floor(rawText.length / 4).toLocaleString()}</span>
+                <span>Estimated tokens: ~{rawTextTokens.toLocaleString()}</span>
                 {rawText && (
                   <button
                     onClick={() => setRawText("")}
