@@ -2,11 +2,11 @@ import { Metadata } from "next";
 import ClientLayout from "./ClientLayout";
 
 export const metadata: Metadata = {
-  title: "AI Prompt Engineering Toolkit | Cuelara",
-  description: "A comprehensive suite of tools to write, optimize, debug, and analyze your AI prompts for frontier LLMs.",
+  title: "Prompt Optimizer & Context Extractor Tools | Cuelara",
+  description: "Free tools to turn rough prompts into structured, production-ready instructions and extract only the relevant context from large documents for ChatGPT, Claude, and Gemini.",
   openGraph: {
-    title: "AI Prompt Engineering Toolkit | Cuelara",
-    description: "Write, optimize, and debug your AI prompts for maximum efficiency.",
+    title: "Prompt Optimizer & Context Extractor Tools | Cuelara",
+    description: "Structure your prompts and cut document token usage with Cuelara's core AI prompt engineering tools.",
     type: "website",
   },
 };

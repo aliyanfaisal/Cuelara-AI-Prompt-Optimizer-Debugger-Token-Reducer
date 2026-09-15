@@ -7,7 +7,7 @@ import {
   Zap, Copy, Check, ChevronDown,
   Settings2, RefreshCcw, Scissors,
   ArrowRight, BookOpen, Code2, FileText,
-  TrendingDown,
+  TrendingDown, CheckCircle2,
   AlertTriangle
 } from "lucide-react";
 import { COMPRESSION_LEVELS, PRESERVE_OPTIONS, type CompressionLevel, type PreserveOption } from "@/lib/token-optimizer/constants";
@@ -202,7 +202,7 @@ export default function TokenOptimizerPage() {
           </div>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Compress your prompt token count by up to 50% without losing meaning, constraints, or instruction logic. Cut API bills across all frontier models.
+          Compress verbose prompts by up to 50% without losing meaning, constraints, or instruction logic — verified against real token counts, not estimates.
         </p>
       </motion.div>
 
@@ -363,17 +363,33 @@ export default function TokenOptimizerPage() {
               {/* Savings Banner */}
               <div className="px-5 py-4 border-b border-border bg-muted/20 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3 text-sm font-bold text-foreground">
-                  <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg">
-                    <TrendingDown className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold text-base">🔥 -{percentSaved}% Tokens Saved</span>
-                    <span className="text-muted-foreground ml-2 text-xs font-normal">
-                      ({originalTokens} → {optimizedTokens} tokens)
-                    </span>
-                  </div>
+                  {isStreaming || percentSaved > 0 ? (
+                    <>
+                      <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg">
+                        <TrendingDown className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold text-base">🔥 -{percentSaved}% Tokens Saved</span>
+                        <span className="text-muted-foreground ml-2 text-xs font-normal">
+                          ({originalTokens} → {optimizedTokens} tokens)
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="p-2 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 rounded-lg">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-amber-600 dark:text-amber-400 font-bold text-base">Already Token-Efficient</span>
+                        <span className="text-muted-foreground ml-2 text-xs font-normal">
+                          ({originalTokens} tokens, no further reduction possible)
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopy}

@@ -107,7 +107,7 @@ export default function Home() {
           className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-8 shadow-sm"
         >
           <Sparkles className="mr-2 h-4 w-4" />
-          <span>The professional AI prompt toolkit</span>
+          <span>Prompt Optimizer & Context Extractor</span>
         </motion.div>
 
         <motion.h1
@@ -126,7 +126,7 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-2xl text-lg text-muted-foreground md:text-xl mb-12 leading-relaxed"
         >
-          Stop wasting API costs on bloated prompts. Cuelara optimizes your instructions for maximum AI understanding, structural clarity, and token efficiency.
+          Cuelara turns rough prompts into structured, production-ready instructions, and extracts only the relevant context from your documents — so every token you send to GPT-4o, Claude, or Gemini actually matters.
         </motion.p>
 
         <motion.div
@@ -266,8 +266,8 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">The Complete Prompt Toolkit</h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Everything you need to write production-ready, highly efficient AI instructions without the guesswork.</p>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">Prompt Optimizer & Context Extractor</h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Two focused, fully-working tools to write production-ready prompts and cut document token usage — plus more on the way.</p>
           </motion.div>
           
           <motion.div 
@@ -277,47 +277,51 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            <FeatureCard 
-              href="/tools/token-optimizer"
-              icon={<Zap className="h-6 w-6 text-amber-500" />}
-              title="Token Optimizer"
-              description="Reduce prompt token usage by up to 50% without sacrificing meaning, saving you thousands on API costs."
-            />
-            <FeatureCard 
-              href="/tools/context-extractor"
-              icon={<FileText className="h-6 w-6 text-primary" />}
-              title="Context Extractor"
-              description="Extract only the relevant data from large documents via RAG to slash token usage and eliminate hallucinations in your LLM."
-            />
-            <FeatureCard 
+            <FeatureCard
               href="/tools/prompt-optimizer"
               icon={<Code2 className="h-6 w-6 text-primary" />}
               title="Prompt Optimizer"
               description="Rewrites your messy instructions for maximum AI understanding. Tailored modes for coding, writing, and business."
             />
-            <FeatureCard 
-              href="/tools/prompt-debugger"
-              icon={<ShieldCheck className="h-6 w-6 text-emerald-500" />}
-              title="Prompt Debugger"
-              description="Automatically detects vague wording, contradictory constraints, and missing context before you hit send."
+            <FeatureCard
+              href="/tools/context-extractor"
+              icon={<FileText className="h-6 w-6 text-primary" />}
+              title="Context Extractor"
+              description="Extract only the relevant data from large documents via RAG to slash token usage and eliminate hallucinations in your LLM."
             />
-            <FeatureCard 
-              href="/tools/prompt-formatter"
-              icon={<Terminal className="h-6 w-6 text-pink-500" />}
-              title="Prompt Formatter"
-              description="Instantly converts unstructured walls of text into standardized, model-friendly sections (Role, Task, Constraints)."
+            <FeatureCard
+              href="/tools/token-optimizer"
+              icon={<Zap className="h-6 w-6 text-amber-500" />}
+              title="Token Optimizer"
+              description="Compress verbose prompts by up to 50%, verified against real token counts — not estimates."
             />
-            <FeatureCard 
-              href="/tools/intelligence-score"
-              icon={<Sparkles className="h-6 w-6 text-violet-500" />}
-              title="Intelligence Score"
-              description="Get a 1-100 score analyzing your prompt's clarity, specificity, and AI-readiness with actionable suggestions."
-            />
-            <FeatureCard 
+            <FeatureCard
               href="/tools/compare-estimate"
               icon={<ArrowRight className="h-6 w-6 text-blue-500" />}
               title="Diff & Cost Estimate"
               description="Visual diffs showing exactly what changed, alongside precise token and API cost estimations."
+              comingSoon
+            />
+            <FeatureCard
+              href="/tools/prompt-debugger"
+              icon={<ShieldCheck className="h-6 w-6 text-emerald-500" />}
+              title="Prompt Debugger"
+              description="Automatically detects vague wording, contradictory constraints, and missing context before you hit send."
+              comingSoon
+            />
+            <FeatureCard
+              href="/tools/intelligence-score"
+              icon={<Sparkles className="h-6 w-6 text-violet-500" />}
+              title="Intelligence Score"
+              description="Get a 1-100 score analyzing your prompt's clarity, specificity, and AI-readiness with actionable suggestions."
+              comingSoon
+            />
+            <FeatureCard
+              href="/tools/prompt-formatter"
+              icon={<Terminal className="h-6 w-6 text-pink-500" />}
+              title="Prompt Formatter"
+              description="Instantly converts unstructured walls of text into standardized, model-friendly sections (Role, Task, Constraints)."
+              comingSoon
             />
             </motion.div>
         </div>
@@ -418,29 +422,29 @@ export default function Home() {
               question="Does shortening the prompt make the AI dumber?" 
               answer="No! In fact, it often makes it smarter. Long, bloated prompts often confuse LLMs by burying the core instruction in filler words. Cuelara removes the 'fluff' while preserving the exact constraints and requirements, leading to more accurate outputs."
             />
-            <FaqItem 
-              question="Do I need to pay to use Cuelara?" 
-              answer="The core Prompt Optimizer and Debugger are completely free to use. We offer premium plans for teams who need API access, saved prompt workspaces, and advanced multi-model diffing."
+            <FaqItem
+              question="Do I need to pay to use Cuelara?"
+              answer="The core Prompt Optimizer and Context Extractor are completely free to use, with a daily usage limit. We offer premium plans for teams who need higher limits, API access, and saved prompt workspaces."
             />
             <FaqItem 
               question="What models do you optimize for?" 
               answer="Cuelara generates structurally sound prompts that work excellently across all major frontier models including GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro."
             />
-            <FaqItem 
-              question="Can I use Cuelara to write prompts from scratch?" 
-              answer="Yes! We have a Prompt Formatter tool that takes your loose ideas and automatically structures them into a professional prompt. You can also explore our Cookbook for pre-made, highly optimized templates."
+            <FaqItem
+              question="Can I use Cuelara to write prompts from scratch?"
+              answer="Yes! Prompt Optimizer takes your loose ideas — even a single rough sentence — and structures them into a professional, production-ready prompt. You can also explore our Cookbook for pre-made, highly optimized templates."
             />
             <FaqItem 
               question="Can it handle complex JSON schemas or code formatting?" 
               answer="Absolutely. Cuelara is heavily optimized for developers. It will preserve your strict JSON structures, XML tags, and code blocks while rewriting the conversational filler around them."
             />
-            <FaqItem 
-              question="What is the Prompt Intelligence Score?" 
-              answer="It's an automated metric (0-100) that analyzes your prompt's clarity, specificity, and how easily an AI model will understand it. A higher score means better, more predictable outputs and fewer hallucinations."
+            <FaqItem
+              question="What is the Prompt Intelligence Score?"
+              answer="It's a planned metric (0-100) that will analyze your prompt's clarity, specificity, and how easily an AI model will understand it — currently in development, coming soon to the toolkit."
             />
-            <FaqItem 
-              question="How does the API cost estimation work?" 
-              answer="Our engine counts the tokens of your original prompt vs the optimized prompt, and multiplies the savings by the official API pricing (e.g., OpenAI's input token costs) to show exactly how much money you save per 1,000 requests."
+            <FaqItem
+              question="How does the API cost estimation work?"
+              answer="Diff & Cost Estimate is coming soon: it will count the tokens of your original prompt vs the optimized prompt, and multiply the savings by official API pricing to show exactly how much money you save per 1,000 requests."
             />
             <FaqItem 
               question="Is my prompt data stored securely?" 
@@ -484,14 +488,19 @@ export default function Home() {
 // Helper Components
 // -------------------------------------------------------------
 
-function FeatureCard({ icon, title, description, href }: { icon: React.ReactNode, title: string, description: string, href: string }) {
+function FeatureCard({ icon, title, description, href, comingSoon }: { icon: React.ReactNode, title: string, description: string, href: string, comingSoon?: boolean }) {
   return (
     <Link href={href} className="glass-card p-8 rounded-2xl flex flex-col items-start text-left transition-all hover:-translate-y-2 hover:border-primary/20 hover:shadow-xl group relative overflow-hidden h-full">
       <div className="p-4 bg-background/50 rounded-xl border border-border mb-6 transition-transform group-hover:scale-110">
         {icon}
       </div>
-      <div className="flex flex-wrap items-center mb-3">
-        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mr-3">{title}</h3>
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mr-1">{title}</h3>
+        {comingSoon && (
+          <span className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-wider border border-border">
+            Coming Soon
+          </span>
+        )}
         {/* Animated Arrow */}
         <div className="flex items-center text-sm font-bold text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
           Try out <ArrowRight className="ml-1 h-4 w-4" />

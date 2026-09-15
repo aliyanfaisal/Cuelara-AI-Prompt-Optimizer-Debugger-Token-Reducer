@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Token Optimizer | Reduce AI Prompt Token Usage & Cut API Costs",
-  description: "Compress your prompt token count by up to 50% without losing meaning, constraints, or functionality. Calculate token savings and slash OpenAI, Claude, and Gemini API bills.",
+  description: "Compress verbose prompts by up to 50%, verified against real token counts — not estimates. Calculate exact savings and cut OpenAI, Claude, and Gemini API bills.",
   keywords: [
     "Token Optimizer",
     "Token Reducer",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Token Optimizer | Reduce AI Prompt Token Usage & Cut API Costs",
-    description: "Compress your prompt token count by up to 50% without losing meaning or constraints.",
+    description: "Compress verbose prompts by up to 50%, verified against real token counts — not estimates.",
     url: "https://cuelara.com/tools/token-optimizer",
     siteName: "Cuelara",
     type: "website",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Token Optimizer | Compress Prompt Tokens",
-    description: "Cut your AI API costs in half with smart prompt token compression.",
+    description: "Cut real token bloat from verbose prompts with verified, measured compression up to 50%.",
   },
   robots: {
     index: true,

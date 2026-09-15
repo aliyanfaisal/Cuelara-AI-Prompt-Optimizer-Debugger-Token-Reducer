@@ -35,7 +35,7 @@ const TOOLS = [
     href: "/tools/token-optimizer",
     docs: "/cookbook",
     icon: Zap,
-    description: "Compress your prompt token count by up to 50% without losing meaning or constraints.",
+    description: "Compress verbose prompts by up to 50%, verified against real token counts — not estimates.",
     color: "text-amber-500",
     bg: "bg-amber-500/10",
     border: "border-amber-500/20",
@@ -51,6 +51,7 @@ const TOOLS = [
     bg: "bg-blue-500/10",
     border: "border-blue-500/20",
     isLarge: false,
+    comingSoon: true,
   },
   {
     name: "Prompt Debugger",
@@ -62,6 +63,7 @@ const TOOLS = [
     bg: "bg-emerald-500/10",
     border: "border-emerald-500/20",
     isLarge: false,
+    comingSoon: true,
   },
   {
     name: "Intelligence Score",
@@ -73,6 +75,7 @@ const TOOLS = [
     bg: "bg-violet-500/10",
     border: "border-violet-500/20",
     isLarge: false,
+    comingSoon: true,
   },
   {
     name: "Prompt Formatter",
@@ -84,6 +87,7 @@ const TOOLS = [
     bg: "bg-pink-500/10",
     border: "border-pink-500/20",
     isLarge: false,
+    comingSoon: true,
   },
 ];
 
@@ -162,12 +166,17 @@ export default function ToolsOverviewPage() {
 
                   {/* Text Content */}
                   <div>
-                    <Link href={tool.href} className="block w-fit">
+                    <Link href={tool.href} className="flex items-center gap-2 flex-wrap w-fit">
                       <h3 className={`font-bold text-foreground mb-2 group-hover:text-primary transition-colors ${
                         tool.isLarge ? "text-2xl md:text-3xl" : "text-lg"
                       }`}>
                         {tool.name}
                       </h3>
+                      {tool.comingSoon && (
+                        <span className="mb-2 px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-wider border border-border">
+                          Coming Soon
+                        </span>
+                      )}
                     </Link>
                     <p className={`text-muted-foreground leading-relaxed ${
                       tool.isLarge ? "text-sm md:text-base max-w-xl" : "text-xs line-clamp-2"

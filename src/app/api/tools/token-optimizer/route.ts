@@ -4,10 +4,60 @@ import { prisma } from "@/lib/prisma";
 import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToday } from "@/lib/rate-limit";
 import { GENAI_TIMEOUT_MS, isGenAITimeout } from "@/lib/genai-timeout";
 import { getTokenOptimizerLimit } from "@/lib/token-optimizer/limits";
-import { isCompressionLevel, isPreserveOption, LEVEL_GUIDANCE } from "@/lib/token-optimizer/constants";
+import { isCompressionLevel, isPreserveOption, LEVEL_GUIDANCE, type CompressionLevel, type PreserveOption } from "@/lib/token-optimizer/constants";
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
+import { countPromptTokens } from "@/lib/token-count";
 
 const TOOL = "token-optimizer";
+const MODEL = "gemini-3.6-flash";
+const RETRY_TIMEOUT_MS = 8_000;
+
+const QUALITY_RULES = `Priority order (most important first):
+1. The result must remain fully correct, grammatical, and immediately understandable — a professional prompt engineer would still find it clear and unambiguous.
+2. Preserve every constraint, instruction, variable, and example from the original — never drop meaning.
+3. Only within those two rules, minimize token count as much as the compression level below allows.
+
+Never invent abbreviations, drop letters from words, or produce fragments a reader wouldn't recognize as real language (e.g. do not shorten "string" to "str" or "function" to "fn" unless that shorthand already appeared in the original). If the input is already minimal and there is no way to shorten it further without breaking rule 1 or 2, return it unchanged rather than degrading it — an honest unchanged result is far better than a mangled one.`;
+
+function buildCompressionPrompt(rawInput: string, level: CompressionLevel, preserveFormatting: PreserveOption): string {
+  return `You are an expert prompt compression engine. Rewrite the user's prompt below so it uses fewer tokens while preserving 100% of its meaning.
+
+COMPRESSION LEVEL: ${level} — ${LEVEL_GUIDANCE[level]}
+PRESERVE ORIGINAL FORMATTING: ${
+    preserveFormatting === "Yes"
+      ? "Yes — keep the existing structure (headers, lists, code blocks) intact, only compress the wording within it."
+      : "No — you may restructure freely (e.g. convert prose into bullets) if it saves more tokens."
+  }
+
+${QUALITY_RULES}
+
+ORIGINAL PROMPT:
+"""
+${rawInput}
+"""
+
+Return only the compressed prompt text — no meta-commentary, no explanation of what you changed, no markdown fences around the whole output.`;
+}
+
+function buildRetryPrompt(rawInput: string, previousAttempt: string): string {
+  return `Your previous compression attempt didn't reduce the token count. Look again for genuinely removable redundancy — filler words, repeated qualifiers, unnecessary connective phrases — and produce a shorter version of the ORIGINAL PROMPT below.
+
+${QUALITY_RULES}
+
+If, after applying those rules, you truly find nothing safe to remove, return the ORIGINAL PROMPT unchanged rather than forcing a cut that breaks rule 1 or 2.
+
+ORIGINAL PROMPT:
+"""
+${rawInput}
+"""
+
+YOUR PREVIOUS ATTEMPT (no shorter than the original):
+"""
+${previousAttempt}
+"""
+
+Return only the final prompt text — no meta-commentary, no explanation, no markdown fences.`;
+}
 
 export async function POST(req: Request) {
   try {
@@ -43,44 +93,49 @@ export async function POST(req: Request) {
     }
 
     const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
+    const trimmedInput = rawInput.trim();
+    const originalTokenCount = countPromptTokens(trimmedInput);
 
-    const metaPrompt = `You are an expert prompt compression engine. Compress the user's prompt below to reduce its token footprint while preserving 100% of its meaning, instructions, constraints, variables, and examples.
+    // Gemini's own claim of "compressed" isn't trustworthy on its own — verify with the
+    // same tokenizer the UI uses before trusting the result.
+    const firstAttempt = await ai.models.generateContent({
+      model: MODEL,
+      contents: buildCompressionPrompt(trimmedInput, level, preserveFormatting),
+    });
+    let compressed = (firstAttempt.text ?? "").trim();
 
-COMPRESSION LEVEL: ${level} — ${LEVEL_GUIDANCE[level]}
-PRESERVE ORIGINAL FORMATTING: ${
-      preserveFormatting === "Yes"
-        ? "Yes — keep the existing structure (headers, lists, code blocks) intact, only compress the wording within it."
-        : "No — you may restructure freely (e.g. convert prose into bullets) if it saves more tokens."
+    // One retry when the first pass didn't actually shrink it — but on a short, fixed
+    // budget of its own, so a slow/failing retry falls back to the first result instead
+    // of blowing past the route's overall timeout.
+    if (compressed && countPromptTokens(compressed) >= originalTokenCount) {
+      try {
+        const retry = await ai.models.generateContent({
+          model: MODEL,
+          contents: buildRetryPrompt(trimmedInput, compressed),
+          config: { httpOptions: { timeout: RETRY_TIMEOUT_MS } },
+        });
+        const retryText = (retry.text ?? "").trim();
+        if (retryText && countPromptTokens(retryText) < countPromptTokens(compressed)) {
+          compressed = retryText;
+        }
+      } catch (retryError) {
+        console.warn("Token Optimizer retry skipped:", retryError);
+      }
     }
 
-ORIGINAL PROMPT:
-"""
-${rawInput.trim()}
-"""
-
-Return only the compressed prompt text — no meta-commentary, no explanation of what you changed, no markdown fences around the whole output.`;
+    if (!compressed) {
+      return NextResponse.json({ error: "The AI did not return a result. Please try again." }, { status: 502 });
+    }
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
-        let fullText = "";
         try {
-          const responseStream = await ai.models.generateContentStream({
-            model: "gemini-3.6-flash",
-            contents: metaPrompt,
-          });
-
-          for await (const chunk of responseStream) {
-            if (chunk.text) {
-              fullText += chunk.text;
-              controller.enqueue(encoder.encode(chunk.text));
-            }
-          }
-
-          if (!fullText.trim()) {
-            controller.enqueue(encoder.encode(encodeStreamError("The AI did not return a result. Please try again.")));
-            controller.close();
-            return;
+          // Reveal the already-validated text progressively so the UI keeps its live feel.
+          const CHUNK_SIZE = 24;
+          for (let i = 0; i < compressed.length; i += CHUNK_SIZE) {
+            controller.enqueue(encoder.encode(compressed.slice(i, i + CHUNK_SIZE)));
+            await new Promise((resolve) => setTimeout(resolve, 12));
           }
 
           await consumeDailyLimit(subjectKey, TOOL);
@@ -97,10 +152,7 @@ Return only the compressed prompt text — no meta-commentary, no explanation of
           controller.close();
         } catch (error) {
           console.error("Token Optimizer stream error:", error);
-          const message = isGenAITimeout(error)
-            ? "The AI is taking too long to respond. Please try again."
-            : "Something went wrong while compressing your prompt.";
-          controller.enqueue(encoder.encode(encodeStreamError(message)));
+          controller.enqueue(encoder.encode(encodeStreamError("Something went wrong while compressing your prompt.")));
           controller.close();
         }
       },

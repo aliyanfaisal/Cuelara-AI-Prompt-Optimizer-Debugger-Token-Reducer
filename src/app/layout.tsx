@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cuelara — AI Prompt Optimizer, Debugger & Token Reducer",
-  description: "A professional toolkit to optimize, format, and debug your AI prompts for maximum understanding and token efficiency.",
+  title: "Cuelara — AI Prompt Optimizer & Context Extractor",
+  description: "Turn rough prompts into structured, production-ready instructions and extract only the relevant context from large documents — free tools built for ChatGPT, Claude, and Gemini.",
 };
 
 export default function RootLayout({
