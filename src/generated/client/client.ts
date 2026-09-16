@@ -52,6 +52,11 @@ export type Setting = Prisma.SettingModel
  */
 export type ApiKey = Prisma.ApiKeyModel
 /**
+ * Model ApiCallLog
+ * 
+ */
+export type ApiCallLog = Prisma.ApiCallLogModel
+/**
  * Model ToolUsageDaily
  * 
  */

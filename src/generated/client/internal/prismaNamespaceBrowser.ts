@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Setting: 'Setting',
   ApiKey: 'ApiKey',
+  ApiCallLog: 'ApiCallLog',
   ToolUsageDaily: 'ToolUsageDaily',
   ExtractedDocument: 'ExtractedDocument',
   ExtractedDocumentChunk: 'ExtractedDocumentChunk',
@@ -106,6 +107,20 @@ export const ApiKeyScalarFieldEnum = {
 } as const
 
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
+
+
+export const ApiCallLogScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  model: 'model',
+  tool: 'tool',
+  success: 'success',
+  statusCode: 'statusCode',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt'
+} as const
+
+export type ApiCallLogScalarFieldEnum = (typeof ApiCallLogScalarFieldEnum)[keyof typeof ApiCallLogScalarFieldEnum]
 
 
 export const ToolUsageDailyScalarFieldEnum = {

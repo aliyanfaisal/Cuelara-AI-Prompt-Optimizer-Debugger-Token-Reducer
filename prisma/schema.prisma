@@ -36,6 +36,24 @@ model ApiKey {
   @@index([provider, isActive])
 }
 
+// One row per actual outbound call to a provider key (i.e. one row per key
+// tried during callWithKeyRotation's retry loop) — the finest-grained record
+// of real API traffic, used for the admin usage/failure dashboard.
+model ApiCallLog {
+  id           String   @id @default(cuid())
+  provider     String
+  model        String
+  tool         String
+  success      Boolean
+  statusCode   Int?
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([provider, createdAt])
+  @@index([success, createdAt])
+}
+
 // subjectKey identifies who is being rate-limited: "user:<id>" for a signed-in
 // user (so their quota follows their account, not their network), else "ip:<hash>".
 model ToolUsageDaily {

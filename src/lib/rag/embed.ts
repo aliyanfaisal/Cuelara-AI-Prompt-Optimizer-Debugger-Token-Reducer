@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
 
-const EMBEDDING_MODEL = "gemini-embedding-001";
+export const EMBEDDING_MODEL = "gemini-embedding-001";
 const BATCH_SIZE = 100;
 
 export async function embedTexts(

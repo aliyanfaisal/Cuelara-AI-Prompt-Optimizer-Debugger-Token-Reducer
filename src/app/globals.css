@@ -20,6 +20,16 @@
   --input: #e4e4e7;
   --ring: #4f46e5;
   --radius: 0.75rem;
+
+  /* Chart data colors — validated for CVD-safe adjacency (see dataviz skill). */
+  --chart-success: #0ca30c;
+  --chart-failure: #d03b3b;
+  --chart-cat-1: #2a78d6;
+  --chart-cat-2: #eb6834;
+  --chart-cat-3: #1baf7a;
+  --chart-cat-4: #eda100;
+  --chart-cat-5: #e87ba4;
+  --chart-cat-6: #008300;
 }
 
 .dark {
@@ -40,6 +50,15 @@
   --border: #262626;
   --input: #262626;
   --ring: #818cf8;
+
+  --chart-success: #0ca30c;
+  --chart-failure: #d03b3b;
+  --chart-cat-1: #3987e5;
+  --chart-cat-2: #d95926;
+  --chart-cat-3: #199e70;
+  --chart-cat-4: #c98500;
+  --chart-cat-5: #d55181;
+  --chart-cat-6: #008300;
 }
 
 @theme {
@@ -60,6 +79,14 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-chart-success: var(--chart-success);
+  --color-chart-failure: var(--chart-failure);
+  --color-chart-cat-1: var(--chart-cat-1);
+  --color-chart-cat-2: var(--chart-cat-2);
+  --color-chart-cat-3: var(--chart-cat-3);
+  --color-chart-cat-4: var(--chart-cat-4);
+  --color-chart-cat-5: var(--chart-cat-5);
+  --color-chart-cat-6: var(--chart-cat-6);
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;

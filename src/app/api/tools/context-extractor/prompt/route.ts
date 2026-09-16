@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { embedTexts } from "@/lib/rag/embed";
+import { embedTexts, EMBEDDING_MODEL } from "@/lib/rag/embed";
 import { rankTopK } from "@/lib/rag/similarity";
 import { loadDocumentForSubject, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
 import { getContextExtractorLimits } from "@/lib/rag/limits";
@@ -45,8 +45,10 @@ export async function POST(req: Request) {
 
     let queryEmbeddings: number[][];
     try {
-      queryEmbeddings = await callWithKeyRotation("gemini", (apiKey) =>
-        embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey)
+      queryEmbeddings = await callWithKeyRotation(
+        "gemini",
+        (apiKey) => embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey),
+        { tool: PROMPT_TOOL, model: EMBEDDING_MODEL }
       );
     } catch (error) {
       if (error instanceof NoApiKeysConfiguredError) {

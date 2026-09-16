@@ -18,3 +18,14 @@ export const PROVIDER_LABELS: Record<Provider, string> = {
 export function isProvider(value: unknown): value is Provider {
   return typeof value === "string" && (PROVIDERS as readonly string[]).includes(value);
 }
+
+// Fixed categorical assignment (CVD-validated adjacency, see globals.css) — a
+// provider always maps to the same slot regardless of its rank in any chart.
+export const PROVIDER_CHART_COLORS: Record<Provider, string> = {
+  gemini: "var(--chart-cat-1)",
+  groq: "var(--chart-cat-2)",
+  openrouter: "var(--chart-cat-3)",
+  grok: "var(--chart-cat-4)",
+  openai: "var(--chart-cat-5)",
+  claude: "var(--chart-cat-6)",
+};

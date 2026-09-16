@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
+import { logApiCall, extractProviderErrorStatus, extractProviderErrorMessage } from "@/lib/api-call-log";
 
 export { PROVIDERS, PROVIDER_LABELS, isProvider, type Provider } from "@/lib/providers";
 
@@ -28,10 +29,7 @@ function shuffle<T>(items: T[]): T[] {
  * way regardless of which key sent it, so it isn't retried across the pool.
  */
 export function isRetryableProviderError(error: unknown): boolean {
-  const status =
-    (error as { status?: number })?.status ??
-    (error as { statusCode?: number })?.statusCode ??
-    (error as { response?: { status?: number } })?.response?.status;
+  const status = extractProviderErrorStatus(error);
   if (typeof status === "number") {
     return status === 401 || status === 403 || status === 429 || status >= 500;
   }
@@ -45,14 +43,23 @@ export class NoApiKeysConfiguredError extends Error {
   }
 }
 
+export interface CallMeta {
+  /** Which tool triggered this call — powers the admin usage dashboard's breakdown. */
+  tool: string;
+  /** The specific model requested — logged alongside the provider for per-model stats. */
+  model: string;
+}
+
 /**
  * Runs `fn` with a randomly-chosen key from the provider's active pool. On a
  * retryable failure (see isRetryableProviderError), tries again with a different
- * key from the pool until one succeeds or the pool is exhausted.
+ * key from the pool until one succeeds or the pool is exhausted. Every real
+ * attempt (one per key tried) is logged for the admin dashboard, success or fail.
  */
 export async function callWithKeyRotation<T>(
   provider: Provider,
-  fn: (apiKey: string) => Promise<T>
+  fn: (apiKey: string) => Promise<T>,
+  meta: CallMeta
 ): Promise<T> {
   const keys = shuffle(await getActiveApiKeys(provider));
   if (keys.length === 0) throw new NoApiKeysConfiguredError(provider);
@@ -60,9 +67,19 @@ export async function callWithKeyRotation<T>(
   let lastError: unknown;
   for (const key of keys) {
     try {
-      return await fn(key);
+      const result = await fn(key);
+      await logApiCall({ provider, model: meta.model, tool: meta.tool, success: true });
+      return result;
     } catch (error) {
       lastError = error;
+      await logApiCall({
+        provider,
+        model: meta.model,
+        tool: meta.tool,
+        success: false,
+        statusCode: extractProviderErrorStatus(error),
+        errorMessage: extractProviderErrorMessage(error),
+      });
       if (!isRetryableProviderError(error)) throw error;
     }
   }

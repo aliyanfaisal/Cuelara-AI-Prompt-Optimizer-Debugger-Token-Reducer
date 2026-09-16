@@ -94,7 +94,8 @@ export async function POST(req: Request) {
       // the same tokenizer the UI uses before trusting the result.
       const firstAttempt = await generateWithFallback(
         TEXT_GENERATION_CHAIN,
-        buildCompressionPrompt(trimmedInput, level, preserveFormatting)
+        buildCompressionPrompt(trimmedInput, level, preserveFormatting),
+        TOOL
       );
       compressed = firstAttempt.text.trim();
 
@@ -102,7 +103,7 @@ export async function POST(req: Request) {
       // so a slow/failing retry falls back to the first result instead of failing outright.
       if (compressed && countPromptTokens(compressed) >= originalTokenCount) {
         try {
-          const retry = await generateWithFallback(TEXT_GENERATION_CHAIN, buildRetryPrompt(trimmedInput, compressed));
+          const retry = await generateWithFallback(TEXT_GENERATION_CHAIN, buildRetryPrompt(trimmedInput, compressed), TOOL);
           const retryText = retry.text.trim();
           if (retryText && countPromptTokens(retryText) < countPromptTokens(compressed)) {
             compressed = retryText;

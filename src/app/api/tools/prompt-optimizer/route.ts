@@ -7,7 +7,7 @@ import { isOptimizerMode, isOptimizerLevel, MODE_EXEMPLARS, LEVEL_GUIDANCE } fro
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
 import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { generateWithFallback } from "@/lib/llm-generate";
-import { TEXT_GENERATION_CHAIN } from "@/lib/model-chain";
+import { TEXT_GENERATION_CHAIN, GEMINI_MODEL } from "@/lib/model-chain";
 
 const TOOL = "prompt-optimizer";
 
@@ -59,16 +59,20 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
     let fallbackText: string | null = null;
 
     try {
-      responseStream = await callWithKeyRotation("gemini", (apiKey) => {
-        const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
-        return ai.models.generateContentStream({ model: "gemini-3.6-flash", contents: metaPrompt });
-      });
+      responseStream = await callWithKeyRotation(
+        "gemini",
+        (apiKey) => {
+          const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
+          return ai.models.generateContentStream({ model: GEMINI_MODEL, contents: metaPrompt });
+        },
+        { tool: TOOL, model: GEMINI_MODEL }
+      );
     } catch (error) {
       if (!(error instanceof NoApiKeysConfiguredError) && !isRetryableProviderError(error)) throw error;
       // Gemini is unconfigured or its whole pool is rate-limited — fall back to the
       // free-tier overflow providers (Groq, then OpenRouter). This propagates out of
       // the route (to the outer catch) if those are exhausted too.
-      const fallback = await generateWithFallback(TEXT_GENERATION_CHAIN.slice(1), metaPrompt);
+      const fallback = await generateWithFallback(TEXT_GENERATION_CHAIN.slice(1), metaPrompt, TOOL);
       fallbackText = fallback.text;
     }
 

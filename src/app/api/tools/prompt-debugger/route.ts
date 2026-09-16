@@ -32,7 +32,7 @@ ${rawInput}
 
 Find genuine issues only — never invent a problem to pad the list, and never flag something the prompt already handles correctly. If the prompt has no real issues at the requested strictness/focus, return an empty "issues" array.
 
-For each issue found, the "fix" field must be a short, standalone instruction (one sentence, imperative, ready to paste) that a user could append to the end of their prompt verbatim to resolve that exact issue.
+For each issue found, the "fix" field must be a short, standalone instruction (one sentence, imperative) that resolves that exact issue — specific enough to paste on its own, but written so it would also read naturally if merged directly into the prompt's existing wording rather than bolted on as a separate sentence.
 
 For each check that genuinely passes (relevant to the requested focus), include one entry in "passedChecks" describing what was verified clean.
 
@@ -125,14 +125,15 @@ export async function POST(req: Request) {
 
     let report: DebuggerReport | null = null;
     try {
-      const attempt = await generateWithFallback(TEXT_GENERATION_CHAIN, buildAuditPrompt(trimmedInput, level, focus));
+      const attempt = await generateWithFallback(TEXT_GENERATION_CHAIN, buildAuditPrompt(trimmedInput, level, focus), TOOL);
       report = parseReport(attempt.text);
 
       if (!report) {
         // The model didn't return clean JSON — one retry with a sharper reminder.
         const retry = await generateWithFallback(
           TEXT_GENERATION_CHAIN,
-          `${buildAuditPrompt(trimmedInput, level, focus)}\n\nReturn ONLY the raw JSON object. No markdown fences, no leading or trailing text.`
+          `${buildAuditPrompt(trimmedInput, level, focus)}\n\nReturn ONLY the raw JSON object. No markdown fences, no leading or trailing text.`,
+          TOOL
         );
         report = parseReport(retry.text);
       }

@@ -86,7 +86,6 @@ const TOOLS = [
     bg: "bg-pink-500/10",
     border: "border-pink-500/20",
     isLarge: false,
-    comingSoon: true,
   },
 ];
 

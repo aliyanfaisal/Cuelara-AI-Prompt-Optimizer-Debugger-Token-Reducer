@@ -3,18 +3,16 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { 
-  Terminal, Copy, Check, ChevronDown, 
-  Settings2, FileCode2, Save, AlignLeft, Paintbrush,
-  Sparkles, RefreshCcw, Download, Zap, Code2, FileText,
-  ShieldCheck, ArrowRight, BookOpen, Layers, CheckCircle2,
+import {
+  Terminal, Copy, Check, ChevronDown,
+  Settings2, FileCode2, AlignLeft, Paintbrush,
+  RefreshCcw, Download, Zap, Code2,
+  ShieldCheck, BookOpen, Layers, AlertTriangle,
   FileCode, Cpu
 } from "lucide-react";
+import { FORMAT_STYLES, INDENT_SIZES, type FormatStyle, type IndentSize } from "@/lib/prompt-formatter/constants";
 
 type GenerationState = "idle" | "loading" | "success";
-
-const FORMAT_STYLES = ["Markdown (Standard)", "XML (Claude-Optimized)", "JSON (API Ready)"];
-const INDENT_SIZES = ["2 Spaces", "4 Spaces", "Tabs"];
 
 const LOADING_PHRASES = [
   "Parsing raw input and identifying logical section boundaries...",
@@ -42,19 +40,44 @@ const FAQS = [
   }
 ];
 
+interface FormatterUsage {
+  isAuthenticated: boolean;
+  promptsRemaining: number;
+  promptsLimit: number;
+}
+
 export default function PromptFormatterPage() {
   const [state, setState] = useState<GenerationState>("idle");
   const [input, setInput] = useState("");
-  const [format, setFormat] = useState(FORMAT_STYLES[0]);
-  const [indent, setIndent] = useState(INDENT_SIZES[0]);
-  
+  const [format, setFormat] = useState<FormatStyle>(FORMAT_STYLES[0]);
+  const [indent, setIndent] = useState<IndentSize>(INDENT_SIZES[0]);
+
   const [isFormatOpen, setIsFormatOpen] = useState(false);
   const [isIndentOpen, setIsIndentOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
+  const [formatted, setFormatted] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [usage, setUsage] = useState<FormatterUsage | null>(null);
+
   const outputRef = useRef<HTMLDivElement>(null);
+
+  const refreshUsage = async () => {
+    try {
+      const res = await fetch("/api/tools/prompt-formatter/usage");
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data.promptsLimit === "number") setUsage(data);
+      }
+    } catch {
+      // Usage display is best-effort — a failed fetch just hides the pill.
+    }
+  };
+
+  useEffect(() => {
+    refreshUsage();
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -75,43 +98,44 @@ export default function PromptFormatterPage() {
     }
   }, [state]);
 
-  const handleFormat = () => {
-    if (!input.trim()) return;
-    
+  const handleFormat = async () => {
+    if (!input.trim() || state === "loading") return;
+
     setState("loading");
-    
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/tools/prompt-formatter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input, format, indent }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setErrorMessage(data.error || "Something went wrong. Please try again.");
+        setState("idle");
+        return;
+      }
+
+      setFormatted(typeof data.formatted === "string" ? data.formatted : "");
+      if (typeof data.promptsLimit === "number") {
+        setUsage({
+          isAuthenticated: !!data.isAuthenticated,
+          promptsRemaining: data.promptsRemaining,
+          promptsLimit: data.promptsLimit,
+        });
+      }
       setState("success");
-    }, 2800);
-  };
-
-  const generateFormattedOutput = () => {
-    const raw = input.trim() || "Perform the specified objective with high clarity and precision.";
-
-    if (format.startsWith("XML")) {
-      return `<system>\nYou are an expert assistant specialized in executing complex instructions with precision.\n</system>\n\n<task>\n${raw}\n</task>\n\n<guidelines>\n  - Adhere strictly to the requested scope.\n  - Ensure high clarity, accuracy, and structural organization.\n  - Avoid conversational filler.\n</guidelines>\n\n<output_format>\nDeliver the response in clean, organized Markdown.\n</output_format>`;
+    } catch {
+      setErrorMessage("Network error — please check your connection and try again.");
+      setState("idle");
     }
-
-    if (format.startsWith("JSON")) {
-      const spaceCount = indent === "4 Spaces" ? 4 : indent === "Tabs" ? "\t" : 2;
-      return JSON.stringify({
-        system_role: "Expert AI specialist",
-        primary_task: raw,
-        constraints: [
-          "Maintain strict factual accuracy",
-          "Follow specified layout rules",
-          "Eliminate conversational preambles"
-        ],
-        output_format: "Structured Markdown"
-      }, null, spaceCount);
-    }
-
-    // Standard Markdown
-    return `### SYSTEM ROLE\nYou are a domain specialist providing comprehensive, high-accuracy guidance.\n\n### PRIMARY OBJECTIVE\n${raw}\n\n### EXECUTION RULES\n- Break down all requirements methodically.\n- Ground all reasoning in verifiable facts.\n- Eliminate conversational preambles and post-answer pleasantries.\n\n### OUTPUT STRUCTURE\nPresent the final result with clear headings, bulleted lists, and code blocks where appropriate.`;
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(generateFormattedOutput());
+    navigator.clipboard.writeText(formatted);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -119,7 +143,7 @@ export default function PromptFormatterPage() {
   const handleDownload = () => {
     const element = document.createElement("a");
     const ext = format.startsWith("JSON") ? "json" : format.startsWith("XML") ? "xml" : "txt";
-    const fileBlob = new Blob([generateFormattedOutput()], { type: 'text/plain' });
+    const fileBlob = new Blob([formatted], { type: 'text/plain' });
     element.href = URL.createObjectURL(fileBlob);
     element.download = `formatted_prompt.${ext}`;
     document.body.appendChild(element);
@@ -234,14 +258,24 @@ export default function PromptFormatterPage() {
 
         {/* Action Footer */}
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-            <AlignLeft className="w-4 h-4 text-pink-500" />
-            <span>Target Output: <strong className="text-foreground">{format.split(" ")[0]}</strong></span>
+          <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <AlignLeft className="w-4 h-4 text-pink-500" />
+              <span>Target Output: <strong className="text-foreground">{format.split(" ")[0]}</strong></span>
+            </div>
+            {usage && (
+              <span>
+                <strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} formats left today
+                {!usage.isAuthenticated && (
+                  <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>
+                )}
+              </span>
+            )}
           </div>
 
           <button
             onClick={handleFormat}
-            disabled={!input.trim() || state === "loading"}
+            disabled={!input.trim() || state === "loading" || usage?.promptsRemaining === 0}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {state === "loading" ? (
@@ -262,7 +296,21 @@ export default function PromptFormatterPage() {
       {/* 3. Output Section */}
       <div ref={outputRef} className="scroll-mt-24 mb-16">
         <AnimatePresence mode="wait">
-          
+
+          {/* Error State */}
+          {state === "idle" && errorMessage && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="bg-rose-500/5 border border-rose-500/20 rounded-2xl p-5 flex items-center gap-3 text-sm text-rose-600 dark:text-rose-400"
+            >
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{errorMessage}</span>
+            </motion.div>
+          )}
+
           {/* Loading Animation Stage */}
           {state === "loading" && (
             <motion.div
@@ -352,7 +400,7 @@ export default function PromptFormatterPage() {
               </div>
 
               <div className="p-5 md:p-6 bg-muted/10 font-mono text-xs leading-relaxed text-foreground overflow-x-auto whitespace-pre-wrap max-h-[420px]">
-                {generateFormattedOutput()}
+                {formatted}
               </div>
             </motion.div>
           )}

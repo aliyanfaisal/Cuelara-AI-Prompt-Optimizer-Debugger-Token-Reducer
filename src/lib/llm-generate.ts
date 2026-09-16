@@ -8,6 +8,8 @@ export type GenerateFn = (apiKey: string, prompt: string) => Promise<string>;
 
 export interface ProviderChainLink {
   provider: Provider;
+  /** The specific model this link calls — logged with every attempt for the admin dashboard. */
+  model: string;
   generate: GenerateFn;
 }
 
@@ -81,13 +83,14 @@ export class AllProvidersExhaustedError extends Error {
  */
 export async function generateWithFallback(
   chain: ProviderChainLink[],
-  prompt: string
+  prompt: string,
+  tool: string
 ): Promise<{ text: string; provider: Provider }> {
   let lastError: unknown;
 
-  for (const { provider, generate } of chain) {
+  for (const { provider, model, generate } of chain) {
     try {
-      const text = await callWithKeyRotation(provider, (apiKey) => generate(apiKey, prompt));
+      const text = await callWithKeyRotation(provider, (apiKey) => generate(apiKey, prompt), { tool, model });
       return { text, provider };
     } catch (error) {
       lastError = error;

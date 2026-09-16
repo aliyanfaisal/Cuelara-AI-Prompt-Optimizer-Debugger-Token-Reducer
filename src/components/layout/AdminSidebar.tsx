@@ -3,22 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { 
-  LayoutDashboard, 
-  Users, 
-  FileText, 
-  BookOpen, 
-  Settings, 
-  ChevronLeft, 
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
+  BookOpen,
+  Settings,
+  ChevronLeft,
   ChevronRight,
   LogOut,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  BarChart3
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Roles", href: "/admin/roles", icon: ShieldCheck },
   { name: "Prompts", href: "/admin/prompts", icon: FileText },

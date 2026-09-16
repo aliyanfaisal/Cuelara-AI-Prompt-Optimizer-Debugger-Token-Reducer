@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { extractText, isSupportedFile, UnsupportedFileTypeError } from "@/lib/rag/parse";
 import { chunkText } from "@/lib/rag/chunk";
-import { embedTexts } from "@/lib/rag/embed";
+import { embedTexts, EMBEDDING_MODEL } from "@/lib/rag/embed";
 import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { rankTopK } from "@/lib/rag/similarity";
 import { saveDocument, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
@@ -101,11 +101,14 @@ export async function POST(req: Request) {
     let chunkEmbeddings: number[][];
     let queryEmbeddings: number[][];
     try {
-      [chunkEmbeddings, queryEmbeddings] = await callWithKeyRotation("gemini", (apiKey) =>
-        Promise.all([
-          embedTexts(chunks.map((c) => c.content), "RETRIEVAL_DOCUMENT", apiKey),
-          embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey),
-        ])
+      [chunkEmbeddings, queryEmbeddings] = await callWithKeyRotation(
+        "gemini",
+        (apiKey) =>
+          Promise.all([
+            embedTexts(chunks.map((c) => c.content), "RETRIEVAL_DOCUMENT", apiKey),
+            embedTexts([searchQuery], "RETRIEVAL_QUERY", apiKey),
+          ]),
+        { tool: DOCUMENT_TOOL, model: EMBEDDING_MODEL }
       );
     } catch (error) {
       if (error instanceof NoApiKeysConfiguredError) {

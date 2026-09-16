@@ -1,7 +1,7 @@
 import "server-only";
 import { geminiGenerate, openAICompatibleGenerate, type ProviderChainLink } from "@/lib/llm-generate";
 
-const GEMINI_MODEL = "gemini-3.6-flash";
+export const GEMINI_MODEL = "gemini-3.6-flash";
 
 // Groq's free lineup shifts over time (Llama 3.3 70B and 3.1 8B left the free
 // tier in August 2026) — check https://console.groq.com/docs/models before
@@ -23,10 +23,11 @@ const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
  * across providers would break similarity search against already-stored vectors.
  */
 export const TEXT_GENERATION_CHAIN: ProviderChainLink[] = [
-  { provider: "gemini", generate: geminiGenerate(GEMINI_MODEL) },
-  { provider: "groq", generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL) },
+  { provider: "gemini", model: GEMINI_MODEL, generate: geminiGenerate(GEMINI_MODEL) },
+  { provider: "groq", model: GROQ_MODEL, generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL) },
   {
     provider: "openrouter",
+    model: OPENROUTER_MODEL,
     generate: openAICompatibleGenerate(OPENROUTER_BASE_URL, OPENROUTER_MODEL, {
       "HTTP-Referer": "https://cuelara.com",
       "X-Title": "Cuelara",
