@@ -4,16 +4,50 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { 
-  Activity, Copy, Check, ChevronDown, 
+  Activity, Check, ChevronDown, 
   Settings2, Target, BrainCircuit, BarChart3, TrendingUp,
-  Sparkles, RefreshCcw, ShieldCheck, Zap, Code2, FileText,
-  Terminal, BookOpen, CheckCircle2, AlertTriangle, ArrowRight
+  RefreshCcw, ShieldCheck, Zap, Code2,
+  BookOpen, AlertTriangle
 } from "lucide-react";
+
+import {
+  SCORING_CRITERIA,
+  TARGET_MODELS,
+  type ScoringCriteria,
+  type TargetModel,
+  type DimensionScore,
+  type ScoreRecommendation,
+  type ScoreTier,
+} from "@/lib/intelligence-score/constants";
 
 type GenerationState = "idle" | "loading" | "success";
 
-const SCORING_MODELS = ["Standard (General)", "Strict (Production)", "Creative"];
-const TARGET_LLMS = ["Any Model", "GPT-4 Optimization", "Claude 3 Optimization"];
+interface ScoreResult {
+  overallScore: number;
+  tier: ScoreTier;
+  clarity: DimensionScore;
+  precision: DimensionScore;
+  density: DimensionScore;
+  recommendations: ScoreRecommendation[];
+}
+
+interface ScoreUsage {
+  isAuthenticated: boolean;
+  promptsRemaining: number;
+  promptsLimit: number;
+}
+
+const PRIORITY_DOT: Record<ScoreRecommendation["priority"], string> = {
+  high: "text-rose-500",
+  medium: "text-amber-500",
+  low: "text-violet-500",
+};
+
+function barColor(score: number): string {
+  if (score >= 75) return "bg-emerald-500";
+  if (score >= 50) return "bg-amber-500";
+  return "bg-rose-500";
+}
 
 const LOADING_PHRASES = [
   "Evaluating linguistic clarity and semantic ambiguity...",
@@ -44,16 +78,34 @@ const FAQS = [
 export default function IntelligenceScorePage() {
   const [state, setState] = useState<GenerationState>("idle");
   const [input, setInput] = useState("");
-  const [model, setModel] = useState(SCORING_MODELS[0]);
-  const [target, setTarget] = useState(TARGET_LLMS[0]);
+  const [model, setModel] = useState<ScoringCriteria>(SCORING_CRITERIA[0]);
+  const [target, setTarget] = useState<TargetModel>(TARGET_MODELS[0]);
   
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [isTargetOpen, setIsTargetOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
+  const [result, setResult] = useState<ScoreResult | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [usage, setUsage] = useState<ScoreUsage | null>(null);
+
   const outputRef = useRef<HTMLDivElement>(null);
+
+  const refreshUsage = async () => {
+    try {
+      const res = await fetch("/api/tools/intelligence-score/usage");
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data.promptsLimit === "number") setUsage(data);
+      }
+    } catch {
+      // Usage display is best-effort — a failed fetch just hides the pill.
+    }
+  };
+
+  useEffect(() => {
+    refreshUsage();
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -74,27 +126,48 @@ export default function IntelligenceScorePage() {
     }
   }, [state]);
 
-  const handleAnalyze = () => {
-    if (!input.trim()) return;
-    
+  const handleAnalyze = async () => {
+    if (!input.trim() || state === "loading") return;
+
     setState("loading");
-    
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/tools/intelligence-score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input, criteria: model, target }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setErrorMessage(data.error || "Something went wrong. Please try again.");
+        setState("idle");
+        return;
+      }
+
+      setResult({
+        overallScore: data.overallScore,
+        tier: data.tier,
+        clarity: data.clarity,
+        precision: data.precision,
+        density: data.density,
+        recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
+      });
+      if (typeof data.promptsLimit === "number") {
+        setUsage({
+          isAuthenticated: !!data.isAuthenticated,
+          promptsRemaining: data.promptsRemaining,
+          promptsLimit: data.promptsLimit,
+        });
+      }
       setState("success");
-    }, 2800);
+    } catch {
+      setErrorMessage("Network error — please check your connection and try again.");
+      setState("idle");
+    }
   };
-
-  // Dynamic Heuristic Calculations
-  const hasFormatting = /(#|<|>|\n\n|- |\* )/.test(input);
-  const hasConstraints = /(constraint|must|format|schema|limit|only|do not|never|json|markdown)/i.test(input);
-  const hasFluff = /(please|could you|thank you|kindly|i want you to)/i.test(input);
-  const wordCount = input.trim().split(/\s+/).length;
-
-  const clarityScore = Math.min(95, Math.max(45, (hasFormatting ? 85 : 65) + (wordCount > 15 ? 10 : -10)));
-  const precisionScore = Math.min(98, Math.max(35, (hasConstraints ? 88 : 50) + (hasFormatting ? 10 : -15)));
-  const densityScore = Math.min(96, Math.max(40, (hasFluff ? 55 : 85) + (wordCount > 25 ? 10 : 0)));
-  
-  const overallScore = Math.round((clarityScore * 0.35) + (precisionScore * 0.40) + (densityScore * 0.25));
 
   return (
     <article className="flex flex-col w-full py-8">
@@ -147,7 +220,7 @@ export default function IntelligenceScorePage() {
             </button>
             {isModelOpen && (
               <div className="absolute top-full left-0 mt-1 w-48 bg-card border border-border rounded-xl shadow-xl z-30 py-1 overflow-hidden">
-                {SCORING_MODELS.map(m => (
+                {SCORING_CRITERIA.map(m => (
                   <button
                     key={m}
                     onClick={() => { setModel(m); setIsModelOpen(false); }}
@@ -174,7 +247,7 @@ export default function IntelligenceScorePage() {
             </button>
             {isTargetOpen && (
               <div className="absolute top-full left-0 mt-1 w-48 bg-card border border-border rounded-xl shadow-xl z-30 py-1 overflow-hidden">
-                {TARGET_LLMS.map(t => (
+                {TARGET_MODELS.map(t => (
                   <button
                     key={t}
                     onClick={() => { setTarget(t); setIsTargetOpen(false); }}
@@ -205,12 +278,20 @@ export default function IntelligenceScorePage() {
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
           <div className="text-xs text-muted-foreground flex items-center gap-1.5">
             <BrainCircuit className="w-4 h-4 text-violet-500" />
-            <span>Ready for multi-dimensional heuristic scoring</span>
+            <span>AI-graded across clarity, precision, and density</span>
           </div>
+          {usage && (
+            <span className="text-xs text-muted-foreground">
+              <strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} scores left today
+              {!usage.isAuthenticated && (
+                <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>
+              )}
+            </span>
+          )}
 
           <button
             onClick={handleAnalyze}
-            disabled={!input.trim() || state === "loading"}
+            disabled={!input.trim() || state === "loading" || usage?.promptsRemaining === 0}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {state === "loading" ? (
@@ -232,6 +313,20 @@ export default function IntelligenceScorePage() {
       <div ref={outputRef} className="scroll-mt-24 mb-16">
         <AnimatePresence mode="wait">
           
+          {/* Error State */}
+          {state === "idle" && errorMessage && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="bg-rose-500/5 border border-rose-500/20 rounded-2xl p-5 flex items-center gap-3 text-sm text-rose-600 dark:text-rose-400"
+            >
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{errorMessage}</span>
+            </motion.div>
+          )}
+
           {/* Loading Animation Stage */}
           {state === "loading" && (
             <motion.div
@@ -273,7 +368,7 @@ export default function IntelligenceScorePage() {
           )}
 
           {/* Success / Report View */}
-          {state === "success" && (
+          {state === "success" && result && (
             <motion.div
               key="success"
               initial={{ opacity: 0, y: 20 }}
@@ -286,78 +381,50 @@ export default function IntelligenceScorePage() {
                   <span>Prompt Intelligence Assessment</span>
                 </div>
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                  overallScore >= 80 
-                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
-                    : overallScore >= 60 
+                  result.overallScore >= 75
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                    : result.overallScore >= 50
                     ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                     : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
                 }`}>
-                  {overallScore >= 80 ? "Production-Grade" : overallScore >= 60 ? "Acceptable (Needs Polish)" : "Needs Optimization"}
+                  {result.tier}
                 </span>
               </div>
 
               <div className="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center md:items-start">
-                
+
                 {/* Large Radial Score Box */}
                 <div className="flex-shrink-0 flex flex-col items-center justify-center w-36 h-36 rounded-full border-[6px] border-violet-500/20 relative shadow-sm">
-                  <span className="text-4xl font-black text-foreground">{overallScore}</span>
+                  <span className="text-4xl font-black text-foreground">{result.overallScore}</span>
                   <span className="text-[10px] font-bold text-muted-foreground mt-0.5 tracking-widest uppercase">Score</span>
                 </div>
-                
+
                 {/* Dimension Breakdown Metrics */}
                 <div className="flex-1 w-full space-y-5">
-                  
-                  {/* Metric 1: Clarity */}
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-semibold text-foreground">Linguistic Clarity</span>
-                      <span className="text-xs font-bold text-foreground">{clarityScore} / 100</span>
+                  {([
+                    { label: "Linguistic Clarity", dim: result.clarity },
+                    { label: "Constraint Precision", dim: result.precision },
+                    { label: "Contextual Signal Density", dim: result.density },
+                  ]).map(({ label, dim }) => (
+                    <div key={label}>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className="text-xs font-semibold text-foreground">{label}</span>
+                        <span className="text-xs font-bold text-foreground">{dim.score} / 100</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${dim.score}%` }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className={`h-full rounded-full ${barColor(dim.score)}`}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed mt-1.5">{dim.rationale}</p>
                     </div>
-                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }} 
-                        animate={{ width: `${clarityScore}%` }} 
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="h-full bg-emerald-500 rounded-full" 
-                      />
-                    </div>
-                  </div>
-
-                  {/* Metric 2: Precision */}
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-semibold text-foreground">Constraint Precision</span>
-                      <span className="text-xs font-bold text-foreground">{precisionScore} / 100</span>
-                    </div>
-                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }} 
-                        animate={{ width: `${precisionScore}%` }} 
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className={`h-full rounded-full ${precisionScore >= 75 ? "bg-emerald-500" : "bg-amber-500"}`} 
-                      />
-                    </div>
-                  </div>
-
-                  {/* Metric 3: Density */}
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-semibold text-foreground">Contextual Signal Density</span>
-                      <span className="text-xs font-bold text-foreground">{densityScore} / 100</span>
-                    </div>
-                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }} 
-                        animate={{ width: `${densityScore}%` }} 
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="h-full bg-violet-500 rounded-full" 
-                      />
-                    </div>
-                  </div>
-
+                  ))}
                 </div>
               </div>
-              
+
               {/* Actionable Suggestions */}
               <div className="bg-muted/15 p-5 md:p-6 border-t border-border">
                 <h4 className="text-xs font-bold text-foreground flex items-center gap-2 mb-3 uppercase tracking-wider">
@@ -365,27 +432,15 @@ export default function IntelligenceScorePage() {
                   Optimization Recommendations
                 </h4>
                 <ul className="space-y-2.5 text-xs text-muted-foreground leading-relaxed">
-                  {precisionScore < 75 && (
-                    <li className="flex items-start gap-2">
-                      <span className="text-amber-500 font-bold">•</span>
-                      <span><strong>Add explicit output format rules:</strong> Your constraint score is low. Specify the exact layout (e.g. Markdown, JSON keys, bulleted items).</span>
+                  {result.recommendations.map((rec, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className={`${PRIORITY_DOT[rec.priority]} font-bold`}>•</span>
+                      <span><strong>{rec.title}:</strong> {rec.detail}</span>
                     </li>
-                  )}
-                  {hasFluff && (
-                    <li className="flex items-start gap-2">
-                      <span className="text-amber-500 font-bold">•</span>
-                      <span><strong>Trim conversational fluff:</strong> Remove phrases like &ldquo;please&rdquo; or &ldquo;could you&rdquo; using the <strong>Token Optimizer</strong> to increase signal density.</span>
-                    </li>
-                  )}
-                  {!hasFormatting && (
-                    <li className="flex items-start gap-2">
-                      <span className="text-violet-500 font-bold">•</span>
-                      <span><strong>Apply structural delimiters:</strong> Break down your instructions using the <strong>Prompt Formatter</strong> to establish distinct Role and Task sections.</span>
-                    </li>
-                  )}
+                  ))}
                   <li className="flex items-start gap-2">
                     <span className="text-emerald-500 font-bold">•</span>
-                    <span>Ready to level up this prompt? Use our 1-click <strong>Prompt Optimizer</strong> to automatically reconstruct this into a 95+ score instruction set.</span>
+                    <span>Want a stronger score? Run this prompt through the <Link href="/tools/prompt-optimizer" className="font-semibold text-primary hover:underline">Prompt Optimizer</Link> or tidy its structure with the <Link href="/tools/prompt-formatter" className="font-semibold text-primary hover:underline">Prompt Formatter</Link>, then score it again.</span>
                   </li>
                 </ul>
               </div>

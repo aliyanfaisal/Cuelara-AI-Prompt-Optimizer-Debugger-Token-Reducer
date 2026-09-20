@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { updateToolSettings } from "./actions";
-import { FileText, ShieldAlert, Wand2, Zap, Bug, Terminal } from "lucide-react";
+import { FileText, ShieldAlert, Wand2, Zap, Bug, Terminal, Activity } from "lucide-react";
 
 export default function SettingsManager({
   initialSettings,
@@ -21,6 +21,8 @@ export default function SettingsManager({
     promptDebuggerDailyLimitAuth: string;
     promptFormatterDailyLimit: string;
     promptFormatterDailyLimitAuth: string;
+    intelligenceScoreDailyLimit: string;
+    intelligenceScoreDailyLimitAuth: string;
   };
 }) {
   const [maxFileMb, setMaxFileMb] = useState(initialSettings.contextExtractorMaxFileMb);
@@ -36,6 +38,8 @@ export default function SettingsManager({
   const [promptDebuggerDailyLimitAuth, setPromptDebuggerDailyLimitAuth] = useState(initialSettings.promptDebuggerDailyLimitAuth);
   const [promptFormatterDailyLimit, setPromptFormatterDailyLimit] = useState(initialSettings.promptFormatterDailyLimit);
   const [promptFormatterDailyLimitAuth, setPromptFormatterDailyLimitAuth] = useState(initialSettings.promptFormatterDailyLimitAuth);
+  const [intelligenceScoreDailyLimit, setIntelligenceScoreDailyLimit] = useState(initialSettings.intelligenceScoreDailyLimit);
+  const [intelligenceScoreDailyLimitAuth, setIntelligenceScoreDailyLimitAuth] = useState(initialSettings.intelligenceScoreDailyLimitAuth);
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
@@ -56,6 +60,8 @@ export default function SettingsManager({
       promptDebuggerDailyLimitAuth,
       promptFormatterDailyLimit,
       promptFormatterDailyLimitAuth,
+      intelligenceScoreDailyLimit,
+      intelligenceScoreDailyLimitAuth,
     });
 
     if (result.error) {
@@ -407,6 +413,66 @@ export default function SettingsManager({
               />
               <p className="text-xs text-muted-foreground mt-2">
                 How many prompts a logged-in account may format per UTC day — tracked by account, not IP.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <Activity className="w-5 h-5 text-violet-500" />
+            Intelligence Score
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Limits applied to the Intelligence Score tool.
+          </p>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 flex gap-3 text-amber-600 dark:text-amber-400">
+            <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-semibold">Cost control</p>
+              <p>Each score is one AI generation call. Anonymous visitors are tracked by IP; signed-in users get their own, higher limit that follows their account instead.</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Anonymous visitors</p>
+
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Scores per day</label>
+              <input
+                type="number"
+                min={1}
+                value={intelligenceScoreDailyLimit}
+                onChange={(e) => setIntelligenceScoreDailyLimit(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="5"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                How many prompts a single IP address may score per UTC day.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-2 border-t border-border">
+            <p className="text-xs font-bold uppercase tracking-wider text-primary pt-4">Signed-in users</p>
+
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Scores per day</label>
+              <input
+                type="number"
+                min={1}
+                value={intelligenceScoreDailyLimitAuth}
+                onChange={(e) => setIntelligenceScoreDailyLimitAuth(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="15"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                How many prompts a logged-in account may score per UTC day — tracked by account, not IP.
               </p>
             </div>
           </div>
