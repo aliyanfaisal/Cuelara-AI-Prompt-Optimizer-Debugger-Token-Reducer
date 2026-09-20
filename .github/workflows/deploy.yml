@@ -1,22 +1,4 @@
-name: Deploy to cuelara.com
-
-# Builds the site in CI (no secrets or database needed to build) and ships the
-# self-contained Next.js standalone bundle to the server over SSH + rsync.
-#
-# Required repository secrets:
-#   SSH_HOST         server hostname or IP
-#   SSH_USER         SSH login user (e.g. wowzario)
-#   SSH_PRIVATE_KEY  private key whose public half is in the server's authorized_keys
-#
-# Optional repository secrets:
-#   SSH_PORT                 defaults to 22
-#   SSH_KNOWN_HOSTS          output of `ssh-keyscan -p <port> <host>` — pins the server's
-#                            identity. Without it the host key is fetched on each run.
-#   APP_ENV_FILE             full contents of the production .env (DATABASE_URL, NEXTAUTH_SECRET,
-#                            NEXTAUTH_URL, …). If unset, the .env already on the server is kept.
-#   DEPLOY_RESTART_COMMAND   how to restart the app, run inside the deploy directory.
-#                            Defaults to a Passenger restart: mkdir -p tmp && touch tmp/restart.txt
-#                            e.g. `pm2 restart cuelara` or `systemctl --user restart cuelara`
+name: Deploy to cuelara.com                      e.g. `pm2 restart cuelara` or `systemctl --user restart cuelara`
 
 on:
   push:
