@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Sparkles, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
 export function Footer() {
   return (
@@ -28,11 +29,15 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 py-16 border-b border-border/50">
           
           <div className="md:col-span-2 flex flex-col gap-6">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="bg-primary/10 p-2 rounded-xl border border-primary/20 group-hover:bg-primary/20 transition-colors">
-                <Sparkles className="h-5 w-5 text-primary" />
-              </div>
-              <span className="font-bold text-2xl tracking-tight">Cuelara</span>
+            <Link href="/" aria-label="Cuelara home" className="flex items-center group">
+              <Image
+                src="/cuelara-logo.png"
+                alt="Cuelara"
+                width={1200}
+                height={184}
+                unoptimized
+                className="h-8 w-auto transition-transform group-hover:scale-105 origin-left"
+              />
             </Link>
             <p className="text-muted-foreground leading-relaxed max-w-sm">
               The professional toolkit for AI power users. Optimize your instructions for maximum understanding, structural clarity, and token efficiency.

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
@@ -52,13 +53,17 @@ export function Navbar() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
               >
-                <Link href="/" className="flex items-center space-x-2 group z-50 pl-2 sm:pl-0">
-                  <div className="bg-primary/10 p-1.5 sm:p-2 rounded-full border border-primary/20 transition-transform group-hover:scale-110">
-                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  </div>
-                  <span className="font-bold text-base sm:text-lg tracking-tight text-foreground">
-                    Cuelara
-                  </span>
+                <Link href="/" aria-label="Cuelara home" className="flex items-center group z-50 pl-2 sm:pl-0">
+                  {/* unoptimized: served as-is, so the standalone server needs no image-optimization runtime */}
+                  <Image
+                    src="/cuelara-logo.png"
+                    alt="Cuelara"
+                    width={1200}
+                    height={184}
+                    priority
+                    unoptimized
+                    className="h-5 sm:h-6 w-auto transition-transform group-hover:scale-105"
+                  />
                 </Link>
               </motion.div>
 
