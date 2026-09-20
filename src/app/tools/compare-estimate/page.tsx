@@ -11,13 +11,14 @@ import {
 } from "lucide-react";
 import { PromptComparison } from "@/components/tools/PromptComparison";
 import { countPromptTokens } from "@/lib/token-count";
+import { getPricedModel, estimateCost, formatUsd, PRICING_AS_OF } from "@/lib/model-pricing";
 
 type GenerationState = "idle" | "success";
 
 const FAQS = [
   {
     question: "How does the Diff & Cost Estimate tool calculate savings?",
-    answer: "The tool tokenizes both prompts with the same encoding frontier models use, then applies published per-model input-token pricing (GPT-4o, Claude Sonnet 5, Gemini 3.6 Flash, and more) to project exact per-call and scaled monthly cost reductions."
+    answer: "The tool tokenizes both prompts with the same encoding frontier models use, then applies published per-model input and output token pricing (GPT-4o, Claude Sonnet 5, Gemini 3.6 Flash, DeepSeek, and more) to project monthly cost reductions at 1K to 1M+ requests. Output length is held equal on both sides, since shortening a prompt only reduces input cost."
   },
   {
     question: "Why does reducing prompt tokens improve AI response latency?",
@@ -32,6 +33,16 @@ const FAQS = [
     answer: "Aiming for a 35% to 50% token reduction is the sweet spot. This significantly cuts API costs while ensuring that all essential domain context, variable constraints, and formatting schemas remain completely intact."
   }
 ];
+
+// Static SEO example: a 1,500-token prompt trimmed to 750 tokens, 100k input-only calls a month.
+// Derived from the shared pricing table so it can't drift from the live calculator.
+const EXAMPLE_MODEL_IDS = ["gpt-4o", "claude-sonnet-5", "gemini-3-6-flash", "gpt-4o-mini"];
+const EXAMPLE_ROWS = EXAMPLE_MODEL_IDS.map((id) => {
+  const model = getPricedModel(id);
+  const original = estimateCost(model, 1500, 0, 100_000).total;
+  const optimized = estimateCost(model, 750, 0, 100_000).total;
+  return { name: model.name, provider: model.provider, original, optimized, saved: original - optimized };
+});
 
 export default function CompareEstimatePage() {
   const [state, setState] = useState<GenerationState>("idle");
@@ -229,7 +240,7 @@ export default function CompareEstimatePage() {
         {/* Section 3: Token Cost Comparison Table */}
         <div className="space-y-4">
           <h3 className="text-xl font-bold text-foreground">Estimated Monthly Savings by Model Tier (100k API Calls)</h3>
-          <p className="text-xs text-muted-foreground">Based on published input-token pricing as of September 2026 — use the live calculator above for current rates and your own prompt.</p>
+          <p className="text-xs text-muted-foreground">Input-token savings only, based on published pricing as of {PRICING_AS_OF} — use the live calculator above for your own prompt, output length, and volume.</p>
           <div className="rounded-2xl border border-border overflow-hidden bg-card">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -242,30 +253,14 @@ export default function CompareEstimatePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  <tr>
-                    <td className="p-4 font-semibold text-foreground">OpenAI GPT-4o</td>
-                    <td className="p-4 text-muted-foreground">$375.00</td>
-                    <td className="p-4 font-semibold text-primary">$187.50</td>
-                    <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$187.50 / mo</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-semibold text-foreground">Anthropic Claude Sonnet 5</td>
-                    <td className="p-4 text-muted-foreground">$300.00</td>
-                    <td className="p-4 font-semibold text-primary">$150.00</td>
-                    <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$150.00 / mo</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-semibold text-foreground">Google Gemini 3.6 Flash</td>
-                    <td className="p-4 text-muted-foreground">$112.50</td>
-                    <td className="p-4 font-semibold text-primary">$56.25</td>
-                    <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$56.25 / mo</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-semibold text-foreground">OpenAI GPT-4o-mini</td>
-                    <td className="p-4 text-muted-foreground">$22.50</td>
-                    <td className="p-4 font-semibold text-primary">$11.25</td>
-                    <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+$11.25 / mo</td>
-                  </tr>
+                  {EXAMPLE_ROWS.map((row) => (
+                    <tr key={row.name}>
+                      <td className="p-4 font-semibold text-foreground">{row.provider} {row.name}</td>
+                      <td className="p-4 text-muted-foreground">{formatUsd(row.original)}</td>
+                      <td className="p-4 font-semibold text-primary">{formatUsd(row.optimized)}</td>
+                      <td className="p-4 font-semibold text-emerald-600 dark:text-emerald-400">+{formatUsd(row.saved)} / mo</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -83,9 +83,10 @@ Evaluates prompt engineering quality using a comprehensive scoring index:
 
 ### 💰 Compare & Estimate
 An interactive cost workbench to model token economics across the world's leading LLMs.
-- **Cross-Provider Matrix:** Instant cost comparisons for **OpenAI (GPT-4o, o3-mini)**, **Anthropic (Claude 3.5 Sonnet, Claude 3.5 Haiku)**, and **Google (Gemini 2.5 Pro, Flash)**.
-- **Visual Analytics:** Interactive Recharts data breakdowns illustrating input vs. output expenses across scale tiers (1K, 100K, 1M+ requests).
-- **Latency & Context Window Specs:** Detailed parameter comparisons including context limit windows and maximum completion tokens.
+- **Cross-Provider Matrix:** Every model side by side — **OpenAI (GPT-4o, GPT-4o mini)**, **Anthropic (Claude Sonnet 5, Haiku 4.5)**, **Google (Gemini 3.6 Flash, 3.1 Pro)**, and **DeepSeek V4-Flash** — with input/output rates, context-window usage, and net savings per model.
+- **Input vs Output Economics:** A Recharts breakdown showing that shortening a prompt cuts input cost while output cost stays fixed, with an adjustable expected-output length.
+- **Scale Tiers:** Savings projected at 1K, 10K, 100K, and 1M requests per month, or any custom volume.
+- **Single Pricing Source:** All rates live in `src/lib/model-pricing.ts`, dated and linked to each provider's pricing page.
 
 ### 📑 Context Extractor
 Converts bloated reference documents into lightweight, high-density context blocks.
