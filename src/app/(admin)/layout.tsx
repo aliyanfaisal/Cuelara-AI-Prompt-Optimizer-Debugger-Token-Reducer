@@ -1,6 +1,9 @@
 import { AdminSidebar } from "@/components/layout/AdminSidebar";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 
+// Every admin page reads live data (users, settings, cookbook…) — never prerender them at build time.
+export const dynamic = "force-dynamic";
+
 export default function AdminLayout({
   children,
 }: {

@@ -1,0 +1,156 @@
+name: Deploy to cuelara.com
+
+# Builds the site in CI (no secrets or database needed to build) and ships the
+# self-contained Next.js standalone bundle to the server over SSH + rsync.
+#
+# Required repository secrets:
+#   SSH_HOST         server hostname or IP
+#   SSH_USER         SSH login user (e.g. wowzario)
+#   SSH_PRIVATE_KEY  private key whose public half is in the server's authorized_keys
+#
+# Optional repository secrets:
+#   SSH_PORT                 defaults to 22
+#   SSH_KNOWN_HOSTS          output of `ssh-keyscan -p <port> <host>` — pins the server's
+#                            identity. Without it the host key is fetched on each run.
+#   APP_ENV_FILE             full contents of the production .env (DATABASE_URL, NEXTAUTH_SECRET,
+#                            NEXTAUTH_URL, …). If unset, the .env already on the server is kept.
+#   DEPLOY_RESTART_COMMAND   how to restart the app, run inside the deploy directory.
+#                            Defaults to a Passenger restart: mkdir -p tmp && touch tmp/restart.txt
+#                            e.g. `pm2 restart cuelara` or `systemctl --user restart cuelara`
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time; a newer push waits instead of cancelling a deploy mid-upload.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  DEPLOY_PATH: /home/wowzario/cuelara.com
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check required secrets
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          missing=0
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Repository secret $name is not set (Settings → Secrets and variables → Actions)."
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Assemble deploy bundle
+        run: |
+          rm -rf deploy
+          mkdir -p deploy/.next
+          # Standalone output: server.js + the minimal node_modules it needs.
+          cp -R .next/standalone/. deploy/
+          # Standalone deliberately omits static assets and public/ — add them.
+          cp -R .next/static deploy/.next/static
+          if [ -d public ]; then cp -R public deploy/public; fi
+          du -sh deploy
+
+      - name: Configure SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            echo "::warning::SSH_KNOWN_HOSTS is not set — trusting the host key presented on this run. Add it to pin the server's identity."
+            ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" > ~/.ssh/known_hosts
+          fi
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Prepare server (directory and .env)
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
+        run: |
+          SSH="ssh -i $HOME/.ssh/deploy_key -p $SSH_PORT -o IdentitiesOnly=yes -o BatchMode=yes"
+          TARGET="$SSH_USER@$SSH_HOST"
+
+          $SSH "$TARGET" "mkdir -p '$DEPLOY_PATH'"
+
+          if [ -n "$APP_ENV_FILE" ]; then
+            printf '%s\n' "$APP_ENV_FILE" | $SSH "$TARGET" "umask 077 && cat > '$DEPLOY_PATH/.env' && chmod 600 '$DEPLOY_PATH/.env'"
+            echo "Wrote .env from APP_ENV_FILE."
+          fi
+
+          # Fail before uploading anything if the app would boot without its config.
+          if ! $SSH "$TARGET" "test -f '$DEPLOY_PATH/.env'"; then
+            echo "::error::No .env at $DEPLOY_PATH/.env on the server. Create it there, or set the APP_ENV_FILE secret."
+            exit 1
+          fi
+
+      - name: Upload to server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          cd deploy
+          # --delete only prunes inside the directories listed here, so server-owned files
+          # next to them (.env, tmp/, logs, .htaccess, …) are never touched.
+          rsync -az --delete --stats \
+            -e "ssh -i $HOME/.ssh/deploy_key -p $SSH_PORT -o IdentitiesOnly=yes -o BatchMode=yes" \
+            server.js package.json .next node_modules public \
+            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+
+      - name: Restart app
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          RESTART_COMMAND: ${{ secrets.DEPLOY_RESTART_COMMAND }}
+        run: |
+          if [ -z "$RESTART_COMMAND" ]; then
+            RESTART_COMMAND="mkdir -p tmp && touch tmp/restart.txt"
+          fi
+          ssh -i "$HOME/.ssh/deploy_key" -p "$SSH_PORT" -o IdentitiesOnly=yes -o BatchMode=yes \
+            "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && $RESTART_COMMAND"
+          echo "Deployed $GITHUB_SHA to $DEPLOY_PATH"
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
