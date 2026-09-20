@@ -14,7 +14,11 @@ permissions:
   contents: read
 
 env:
-  DEPLOY_PATH: /home/wowzario/cuelara.com
+  # The cPanel Node.js app's application root. This is also the folder the web server
+  # publishes for cuelara.com, so anything in it that isn't blocked is downloadable — keep
+  # source files out of it. Override with a repository variable named DEPLOY_PATH
+  # (Settings → Secrets and variables → Actions → Variables).
+  DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/home/wowzario/cuelara.com' }}
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
@@ -111,13 +115,19 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
         run: |
+          SSH_OPTS="-i $HOME/.ssh/deploy_key -p $SSH_PORT -o IdentitiesOnly=yes -o BatchMode=yes"
+          TARGET="$SSH_USER@$SSH_HOST"
+
+          # CloudLinux (cPanel Node.js Selector) requires node_modules to be a symlink into the
+          # app's virtual environment, so ask the server where the dependencies must go.
+          NM_TARGET=$(ssh $SSH_OPTS "$TARGET" "bash -s -- '$DEPLOY_PATH'" < .github/scripts/resolve-node-modules.sh)
+          echo "Dependencies go to: $NM_TARGET"
+
           cd deploy
-          # --delete only prunes inside the directories listed here, so server-owned files
-          # next to them (.env, tmp/, logs, .htaccess, …) are never touched.
-          rsync -az --delete --stats \
-            -e "ssh -i $HOME/.ssh/deploy_key -p $SSH_PORT -o IdentitiesOnly=yes -o BatchMode=yes" \
-            server.js package.json .next node_modules public \
-            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+          # --delete only prunes inside the directories being synced, so server-owned files next
+          # to them (.env, tmp/, logs, .htaccess, …) are never touched.
+          rsync -az --delete --stats -e "ssh $SSH_OPTS" node_modules/ "$TARGET:$NM_TARGET/"
+          rsync -az --delete --stats -e "ssh $SSH_OPTS" server.js package.json .next public "$TARGET:$DEPLOY_PATH/"
 
       - name: Restart app
         env:

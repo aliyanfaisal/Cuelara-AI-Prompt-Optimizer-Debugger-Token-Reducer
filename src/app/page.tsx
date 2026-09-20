@@ -8,14 +8,14 @@ import { ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, C
 export default function Home() {
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-grid-pattern relative">
-      
+
       {/* Background Glow Effects */}
       <div className="absolute top-[-10%] left-[20%] w-[40vw] h-[40vw] rounded-full bg-primary/10 blur-[120px] dark:blur-[150px] mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
       <div className="absolute top-[20%] right-[10%] w-[30vw] h-[30vw] rounded-full bg-accent/10 blur-[100px] dark:blur-[120px] mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
 
       {/* 1. Hero Section */}
       <section className="w-full relative pt-28 pb-16 md:pt-48 md:pb-24 flex flex-col items-center text-center z-10 px-4">
-        
+
         {/* Floating Decorative Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block z-0">
           <motion.div
@@ -25,7 +25,7 @@ export default function Home() {
           >
             <Sparkles className="w-6 h-6 text-primary/50" />
           </motion.div>
-          
+
           <motion.div
             animate={{ y: [0, 20, 0], rotate: [0, -15, 5, 0] }}
             transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
@@ -33,7 +33,7 @@ export default function Home() {
           >
             <Code2 className="w-8 h-8 text-accent/50" />
           </motion.div>
-          
+
           <motion.div
             animate={{ y: [0, -10, 0], x: [0, 10, 0] }}
             transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
@@ -153,10 +153,10 @@ export default function Home() {
 
         {/* Animated Code/Preview Element */}
         <motion.div
-           initial={{ opacity: 0, y: 40 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.7, delay: 0.4 }}
-           className="mt-20 w-full max-w-4xl relative"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.4 }}
+          className="mt-20 w-full max-w-4xl relative"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-2xl blur-xl" />
           <PromptDemo />
@@ -173,19 +173,19 @@ export default function Home() {
               <svg fill="currentColor" className="w-8 h-8 group-hover:text-[#10a37f] transition-colors" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"><title>OpenAI icon</title><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"></path></g></svg>
               <span className="text-xl font-bold font-sans tracking-tight hidden sm:block">OpenAI</span>
             </div>
-            
+
             {/* Claude */}
             <div className="flex items-center gap-2 group">
-              <svg className="w-8 h-8" fill="#D97757" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Claude</title><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>
+              <svg className="w-8 h-8" fill="#D97757" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Claude</title><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z" /></svg>
               <span className="text-xl font-bold font-serif tracking-tight hidden sm:block">Claude</span>
             </div>
-            
+
             {/* Gemini */}
             <div className="flex items-center gap-2 group">
-              <svg className="w-8 h-8" viewBox="0 0 296 298" xmlns="http://www.w3.org/2000/svg" width="296" height="298" fill="none"><mask id="a" width="296" height="298" x="0" y="0" maskUnits="userSpaceOnUse" style={{maskType: "alpha"}}><path fill="#3186FF" d="M141.201 4.886c2.282-6.17 11.042-6.071 13.184.148l5.985 17.37a184.004 184.004 0 0 0 111.257 113.049l19.304 6.997c6.143 2.227 6.156 10.91.02 13.155l-19.35 7.082a184.001 184.001 0 0 0-109.495 109.385l-7.573 20.629c-2.241 6.105-10.869 6.121-13.133.025l-7.908-21.296a184 184 0 0 0-109.02-108.658l-19.698-7.239c-6.102-2.243-6.118-10.867-.025-13.132l20.083-7.467A183.998 183.998 0 0 0 133.291 26.28l7.91-21.394Z"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="163" cy="149" fill="#3689FF" rx="196" ry="159"/></g><g filter="url(#c)"><ellipse cx="33.5" cy="142.5" fill="#F6C013" rx="68.5" ry="72.5"/></g><g filter="url(#d)"><ellipse cx="19.5" cy="148.5" fill="#F6C013" rx="68.5" ry="72.5"/></g><g filter="url(#e)"><path fill="#FA4340" d="M194 10.5C172 82.5 65.5 134.333 22.5 135L144-66l50 76.5Z"/></g><g filter="url(#f)"><path fill="#FA4340" d="M190.5-12.5C168.5 59.5 62 111.333 19 112L140.5-89l50 76.5Z"/></g><g filter="url(#g)"><path fill="#14BB69" d="M194.5 279.5C172.5 207.5 66 155.667 23 155l121.5 201 50-76.5Z"/></g><g filter="url(#h)"><path fill="#14BB69" d="M196.5 320.5C174.5 248.5 68 196.667 25 196l121.5 201 50-76.5Z"/></g></g><defs><filter id="b" width="464" height="390" x="-69" y="-46" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="18"/></filter><filter id="c" width="265" height="273" x="-99" y="6" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32"/></filter><filter id="d" width="265" height="273" x="-113" y="12" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32"/></filter><filter id="e" width="299.5" height="329" x="-41.5" y="-130" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32"/></filter><filter id="f" width="299.5" height="329" x="-45" y="-153" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32"/></filter><filter id="g" width="299.5" height="329" x="-41" y="91" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32"/></filter><filter id="h" width="299.5" height="329" x="-39" y="132" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32"/></filter></defs></svg>
+              <svg className="w-8 h-8" viewBox="0 0 296 298" xmlns="http://www.w3.org/2000/svg" width="296" height="298" fill="none"><mask id="a" width="296" height="298" x="0" y="0" maskUnits="userSpaceOnUse" style={{ maskType: "alpha" }}><path fill="#3186FF" d="M141.201 4.886c2.282-6.17 11.042-6.071 13.184.148l5.985 17.37a184.004 184.004 0 0 0 111.257 113.049l19.304 6.997c6.143 2.227 6.156 10.91.02 13.155l-19.35 7.082a184.001 184.001 0 0 0-109.495 109.385l-7.573 20.629c-2.241 6.105-10.869 6.121-13.133.025l-7.908-21.296a184 184 0 0 0-109.02-108.658l-19.698-7.239c-6.102-2.243-6.118-10.867-.025-13.132l20.083-7.467A183.998 183.998 0 0 0 133.291 26.28l7.91-21.394Z" /></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="163" cy="149" fill="#3689FF" rx="196" ry="159" /></g><g filter="url(#c)"><ellipse cx="33.5" cy="142.5" fill="#F6C013" rx="68.5" ry="72.5" /></g><g filter="url(#d)"><ellipse cx="19.5" cy="148.5" fill="#F6C013" rx="68.5" ry="72.5" /></g><g filter="url(#e)"><path fill="#FA4340" d="M194 10.5C172 82.5 65.5 134.333 22.5 135L144-66l50 76.5Z" /></g><g filter="url(#f)"><path fill="#FA4340" d="M190.5-12.5C168.5 59.5 62 111.333 19 112L140.5-89l50 76.5Z" /></g><g filter="url(#g)"><path fill="#14BB69" d="M194.5 279.5C172.5 207.5 66 155.667 23 155l121.5 201 50-76.5Z" /></g><g filter="url(#h)"><path fill="#14BB69" d="M196.5 320.5C174.5 248.5 68 196.667 25 196l121.5 201 50-76.5Z" /></g></g><defs><filter id="b" width="464" height="390" x="-69" y="-46" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix" /><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="18" /></filter><filter id="c" width="265" height="273" x="-99" y="6" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix" /><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32" /></filter><filter id="d" width="265" height="273" x="-113" y="12" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix" /><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32" /></filter><filter id="e" width="299.5" height="329" x="-41.5" y="-130" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix" /><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32" /></filter><filter id="f" width="299.5" height="329" x="-45" y="-153" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix" /><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32" /></filter><filter id="g" width="299.5" height="329" x="-41" y="91" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix" /><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32" /></filter><filter id="h" width="299.5" height="329" x="-39" y="132" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse"><feFlood floodOpacity="0" result="BackgroundImageFix" /><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur result="effect1_foregroundBlur_69_17998" stdDeviation="32" /></filter></defs></svg>
               <span className="text-xl font-bold font-sans tracking-tight hidden sm:block">Gemini</span>
             </div>
-            
+
             {/* Meta */}
             <div className="flex items-center gap-2 group">
               <svg
@@ -249,7 +249,7 @@ export default function Home() {
 
             {/* Cohere */}
             <div className="flex items-center gap-2 group">
-              <svg className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" viewBox="0 0 75 75"><path d="M24.3 44.7c2 0 6-.1 11.6-2.4 6.5-2.7 19.3-7.5 28.6-12.5 6.5-3.5 9.3-8.1 9.3-14.3C73.8 7 66.9 0 58.3 0h-36C10 0 0 10 0 22.3s9.4 22.4 24.3 22.4z" style={{fillRule:"evenodd", clipRule:"evenodd", fill:"#39594d"}}/><path d="M30.4 60c0-6 3.6-11.5 9.2-13.8l11.3-4.7C62.4 36.8 75 45.2 75 57.6 75 67.2 67.2 75 57.6 75H45.3c-8.2 0-14.9-6.7-14.9-15z" style={{fillRule:"evenodd", clipRule:"evenodd", fill:"#d18ee2"}}/><path d="M12.9 47.6C5.8 47.6 0 53.4 0 60.5v1.7C0 69.2 5.8 75 12.9 75c7.1 0 12.9-5.8 12.9-12.9v-1.7c-.1-7-5.8-12.8-12.9-12.8z" style={{fill:"#ff7759"}}/></svg>
+              <svg className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" viewBox="0 0 75 75"><path d="M24.3 44.7c2 0 6-.1 11.6-2.4 6.5-2.7 19.3-7.5 28.6-12.5 6.5-3.5 9.3-8.1 9.3-14.3C73.8 7 66.9 0 58.3 0h-36C10 0 0 10 0 22.3s9.4 22.4 24.3 22.4z" style={{ fillRule: "evenodd", clipRule: "evenodd", fill: "#39594d" }} /><path d="M30.4 60c0-6 3.6-11.5 9.2-13.8l11.3-4.7C62.4 36.8 75 45.2 75 57.6 75 67.2 67.2 75 57.6 75H45.3c-8.2 0-14.9-6.7-14.9-15z" style={{ fillRule: "evenodd", clipRule: "evenodd", fill: "#d18ee2" }} /><path d="M12.9 47.6C5.8 47.6 0 53.4 0 60.5v1.7C0 69.2 5.8 75 12.9 75c7.1 0 12.9-5.8 12.9-12.9v-1.7c-.1-7-5.8-12.8-12.9-12.8z" style={{ fill: "#ff7759" }} /></svg>
               <span className="text-xl font-bold font-sans tracking-tight hidden sm:block">Cohere</span>
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function Home() {
       {/* 3. Features Grid */}
       <section className="w-full py-16 md:py-32 relative z-10 border-b border-border bg-background">
         <div className="container mx-auto px-4 md:px-8">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -269,8 +269,8 @@ export default function Home() {
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">Prompt Optimizer & Context Extractor</h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Two focused, fully-working tools to write production-ready prompts and cut document token usage — plus more on the way.</p>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -322,7 +322,7 @@ export default function Home() {
               description="Instantly converts unstructured walls of text into standardized, model-friendly sections (Role, Task, Constraints)."
               comingSoon
             />
-            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -330,7 +330,7 @@ export default function Home() {
       <section className="w-full py-16 md:py-32 relative z-10 border-b border-border bg-muted/10">
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col-reverse md:flex-row items-center gap-12 md:gap-16">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -339,14 +339,14 @@ export default function Home() {
             >
               <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground tracking-tight">From messy thoughts to precise instructions in seconds.</h2>
               <p className="text-base md:text-lg text-muted-foreground">Writing good prompts is hard. Cuelara acts as your AI engineering co-pilot, formatting your brain-dumps into professional system instructions.</p>
-              
+
               <div className="space-y-6 pt-2 md:pt-4">
                 <Step number="1" title="Paste your raw idea" desc="Don't worry about formatting or being concise. Just dump your requirements." />
                 <Step number="2" title="Cuelara analyzes and optimizes" desc="Our engine detects ambiguities, structures the task, and shreds useless tokens." />
                 <Step number="3" title="Deploy and save" desc="Copy the heavily optimized prompt to your codebase and watch your API bills drop." />
               </div>
             </motion.div>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -356,9 +356,9 @@ export default function Home() {
               <div className="relative transform-gpu transition-all duration-500 group-hover:scale-[1.02] group-hover:-rotate-1">
                 {/* Subtle outer glow */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent/20 blur-2xl rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                
+
                 <div className="relative bg-background/80 backdrop-blur-xl rounded-[2rem] p-10 shadow-2xl border border-border/50 aspect-square max-h-[450px] flex flex-col items-center justify-center overflow-hidden">
-                  
+
                   {/* Subtle inner grid pattern */}
                   <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
 
@@ -371,7 +371,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Text content */}
                   <div className="text-center z-10">
                     <h3 className="text-2xl md:text-3xl font-bold mb-3 tracking-tight text-foreground">
@@ -395,7 +395,7 @@ export default function Home() {
       {/* 5. FAQ Section */}
       <section className="w-full py-16 md:py-32 relative z-10 border-b border-border bg-background">
         <div className="container mx-auto px-4 md:px-8 max-w-4xl">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -405,36 +405,36 @@ export default function Home() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
             <p className="text-base md:text-lg text-muted-foreground">Everything you need to know about Cuelara and prompt optimization.</p>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="space-y-4"
           >
-            <FaqItem 
-              question="Why should I care about token usage?" 
+            <FaqItem
+              question="Why should I care about token usage?"
               answer="API providers like OpenAI and Anthropic charge by the token. If you have a highly-used application passing a 1,000 token system prompt on every request, reducing that to 500 tokens immediately cuts your API costs in half, while also making the model respond slightly faster."
             />
-            <FaqItem 
-              question="Does shortening the prompt make the AI dumber?" 
+            <FaqItem
+              question="Does shortening the prompt make the AI dumber?"
               answer="No! In fact, it often makes it smarter. Long, bloated prompts often confuse LLMs by burying the core instruction in filler words. Cuelara removes the 'fluff' while preserving the exact constraints and requirements, leading to more accurate outputs."
             />
             <FaqItem
               question="Do I need to pay to use Cuelara?"
               answer="The core Prompt Optimizer and Context Extractor are completely free to use, with a daily usage limit. We offer premium plans for teams who need higher limits, API access, and saved prompt workspaces."
             />
-            <FaqItem 
-              question="What models do you optimize for?" 
+            <FaqItem
+              question="What models do you optimize for?"
               answer="Cuelara generates structurally sound prompts that work excellently across all major frontier models including GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro."
             />
             <FaqItem
               question="Can I use Cuelara to write prompts from scratch?"
               answer="Yes! Prompt Optimizer takes your loose ideas — even a single rough sentence — and structures them into a professional, production-ready prompt. You can also explore our Cookbook for pre-made, highly optimized templates."
             />
-            <FaqItem 
-              question="Can it handle complex JSON schemas or code formatting?" 
+            <FaqItem
+              question="Can it handle complex JSON schemas or code formatting?"
               answer="Absolutely. Cuelara is heavily optimized for developers. It will preserve your strict JSON structures, XML tags, and code blocks while rewriting the conversational filler around them."
             />
             <FaqItem
@@ -445,8 +445,8 @@ export default function Home() {
               question="How does the API cost estimation work?"
               answer="Diff & Cost Estimate is coming soon: it will count the tokens of your original prompt vs the optimized prompt, and multiply the savings by official API pricing to show exactly how much money you save per 1,000 requests."
             />
-            <FaqItem 
-              question="Is my prompt data stored securely?" 
+            <FaqItem
+              question="Is my prompt data stored securely?"
               answer="We do not store your prompts or fine-tune models on your data. All optimizations run ephemerally, and your intellectual property remains 100% yours."
             />
           </motion.div>
@@ -457,8 +457,8 @@ export default function Home() {
       <section className="w-full py-16 md:py-32 relative z-10 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-[300px] bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -531,8 +531,8 @@ function FaqItem({ question, answer }: { question: string, answer: string }) {
 
   return (
     <div className="border border-border rounded-xl overflow-hidden glass transition-colors hover:bg-muted/30">
-      <button 
-        onClick={() => setIsOpen(!isOpen)} 
+      <button
+        onClick={() => setIsOpen(!isOpen)}
         className="w-full text-left px-4 py-4 md:px-6 md:py-5 flex items-center justify-between font-bold text-base md:text-lg focus:outline-none"
       >
         {question}
@@ -591,7 +591,7 @@ function PromptDemo() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % DEMO_EXAMPLES.length);
-    }, 4500); 
+    }, 4500);
     return () => clearInterval(timer);
   }, []);
 
@@ -605,23 +605,22 @@ function PromptDemo() {
           <div className="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-500/20" />
           <div className="w-3 h-3 rounded-full bg-green-400 border border-green-500/20" />
         </div>
-        
+
         <div className="flex-1 flex justify-center gap-2 overflow-hidden">
           {DEMO_EXAMPLES.map((example, idx) => (
-            <div 
+            <div
               key={idx}
-              className={`text-xs font-mono px-3 py-1 rounded-md transition-all duration-300 ${
-                idx === currentIndex 
-                  ? "bg-background shadow-sm text-foreground" 
+              className={`text-xs font-mono px-3 py-1 rounded-md transition-all duration-300 ${idx === currentIndex
+                  ? "bg-background shadow-sm text-foreground"
                   : "text-muted-foreground hidden sm:block"
-              }`}
+                }`}
             >
               {example.file}
             </div>
           ))}
         </div>
-        
-        <div className="w-20" /> 
+
+        <div className="w-20" />
       </div>
 
       <div className="p-6 md:p-8 font-mono text-sm sm:text-base leading-loose min-h-[220px] flex flex-col justify-center bg-background/30">
