@@ -20,7 +20,8 @@ export function publishedAtFor(status: "draft" | "published", current: Date | nu
 }
 
 export function siteUrl(): string {
-  return (process.env.NEXTAUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const fallback = process.env.NODE_ENV === "production" ? "https://cuelara.com" : "http://localhost:3000";
+  return (process.env.NEXTAUTH_URL ?? fallback).replace(/\/$/, "");
 }
 
 export function readingTimeMinutes(markdown: string): number {

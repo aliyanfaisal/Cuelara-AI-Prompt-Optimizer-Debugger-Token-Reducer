@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { siteUrl } from "@/lib/blog";
 import { isAuthorizedBearer } from "@/lib/blog-sync/auth";
 import { blogPostPayloadSchema, formatValidationErrors } from "@/lib/blog-sync/schema";
 import { upsertBlogPost } from "@/lib/blog-sync/upsert";
@@ -37,14 +38,13 @@ export async function POST(req: Request) {
     }
 
     const { id, slug, created } = await upsertBlogPost(parsed.data);
-    const origin = (process.env.NEXTAUTH_URL ?? new URL(req.url).origin).replace(/\/$/, "");
 
     return NextResponse.json(
       {
         id,
         external_id: parsed.data.external_id,
         status: created ? "created" : "updated",
-        url: `${origin}/blog/${slug}`,
+        url: `${siteUrl()}/blog/${slug}`,
       },
       { status: created ? 201 : 200 }
     );

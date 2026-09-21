@@ -1,24 +1,12 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { PGlite } from "@electric-sql/pglite";
-import { PrismaPGlite } from "pglite-prisma-adapter";
-import { readFileSync, readdirSync } from "node:fs";
-import { PrismaClient } from "@/generated/client/client";
+import type { PrismaClient } from "@/generated/client/client";
+import { createTestDb } from "./test-db";
 
-// The BlogPost table as it existed before this feature; the real migration is applied on top of it.
-const LEGACY_BLOG_POST = `
-CREATE TABLE "BlogPost" (
-  "id" TEXT NOT NULL, "title" TEXT NOT NULL, "slug" TEXT NOT NULL, "content" TEXT NOT NULL,
-  "excerpt" TEXT, "published" BOOLEAN NOT NULL DEFAULT false, "seoTitle" TEXT, "seoDesc" TEXT,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL,
-  CONSTRAINT "BlogPost_pkey" PRIMARY KEY ("id")
-);
-CREATE UNIQUE INDEX "BlogPost_slug_key" ON "BlogPost"("slug");
-`;
 const TOKEN = "test-token";
 
-let pg: PGlite;
 let db: PrismaClient;
+let closeDb: () => Promise<void>;
 let POST: (req: Request) => Promise<Response>;
 
 const payload = (over: Record<string, unknown> = {}) => ({
@@ -47,24 +35,14 @@ const send = (body: unknown, headers: Record<string, string> = { authorization: 
   );
 
 before(async () => {
-  pg = new PGlite();
-  await pg.exec(LEGACY_BLOG_POST);
-  // Every migration, in order, exactly as `prisma migrate deploy` would apply them.
-  for (const dir of readdirSync("prisma/migrations").filter((d) => /^\d+_/.test(d)).sort()) {
-    await pg.exec(readFileSync(`prisma/migrations/${dir}/migration.sql`, "utf8"));
-  }
-  db = new PrismaClient({ adapter: new PrismaPGlite(pg) });
-
-  // src/lib/prisma.ts reuses this global, so the route under test talks to the in-memory database.
-  (globalThis as unknown as { prisma: PrismaClient }).prisma = db;
+  ({ db, close: closeDb } = await createTestDb());
   process.env.PORTFOLIO_API_TOKEN = TOKEN;
   process.env.NEXTAUTH_URL = "https://cuelara.example";
   ({ POST } = await import("@/app/api/blog-posts/route"));
 });
 
 after(async () => {
-  await db.$disconnect();
-  await pg.close();
+  await closeDb();
 });
 
 describe("POST /api/blog-posts", () => {
