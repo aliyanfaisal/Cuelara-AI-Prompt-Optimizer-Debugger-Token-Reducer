@@ -7,6 +7,7 @@ import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate, postCardSelect, publishedWhere, readingTimeMinutes, siteUrl, teaser, type PostCardData } from "@/lib/blog";
 import { PostCard, PostImage } from "../PostCard";
+import { CodeBlock } from "./CodeBlock";
 import { ShareButtons } from "./ShareButtons";
 
 export const dynamic = "force-dynamic";
@@ -147,8 +148,8 @@ export default async function BlogPostPage({ params }: { params: Params }) {
         {post.imageUrl && <PostImage src={post.imageUrl} alt="" className="mb-10 w-full rounded-2xl border border-border" />}
 
         {/* react-markdown escapes raw HTML by default and strips unsafe URLs (e.g. javascript:), so the body is never rendered as raw HTML. */}
-        <div className="space-y-4 leading-relaxed text-foreground/90 [&_a]:text-primary [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-4 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-bold [&_img]:rounded-xl [&_ol]:list-decimal [&_ol]:pl-6 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-muted [&_pre]:p-4 [&_pre_code]:bg-transparent [&_ul]:list-disc [&_ul]:pl-6">
-          <ReactMarkdown>{post.content}</ReactMarkdown>
+        <div className="space-y-4 leading-relaxed text-foreground/90 [&_a]:text-primary [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-4 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-bold [&_img]:rounded-xl [&_ol]:list-decimal [&_ol]:pl-6 [&_pre_code]:rounded-none [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_ul]:list-disc [&_ul]:pl-6">
+          <ReactMarkdown components={{ pre: CodeBlock }}>{post.content}</ReactMarkdown>
         </div>
 
         {post.tags.length > 0 && (
