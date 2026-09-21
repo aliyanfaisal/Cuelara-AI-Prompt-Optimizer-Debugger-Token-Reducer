@@ -14,7 +14,8 @@ import {
   LogOut,
   Sparkles,
   ShieldCheck,
-  BarChart3
+  BarChart3,
+  Newspaper
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -25,6 +26,7 @@ const navigation = [
   { name: "Roles", href: "/admin/roles", icon: ShieldCheck },
   { name: "Prompts", href: "/admin/prompts", icon: FileText },
   { name: "Cookbook", href: "/admin/cookbook", icon: BookOpen },
+  { name: "Blog", href: "/admin/blog", icon: Newspaper },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

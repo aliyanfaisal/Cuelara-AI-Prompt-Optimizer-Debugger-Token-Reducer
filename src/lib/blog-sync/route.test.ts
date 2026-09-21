@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { PrismaPGlite } from "pglite-prisma-adapter";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { PrismaClient } from "@/generated/client/client";
 
 // The BlogPost table as it existed before this feature; the real migration is applied on top of it.
@@ -49,7 +49,10 @@ const send = (body: unknown, headers: Record<string, string> = { authorization: 
 before(async () => {
   pg = new PGlite();
   await pg.exec(LEGACY_BLOG_POST);
-  await pg.exec(readFileSync("prisma/migrations/20260921000000_blog_portfolio_sync/migration.sql", "utf8"));
+  // Every migration, in order, exactly as `prisma migrate deploy` would apply them.
+  for (const dir of readdirSync("prisma/migrations").filter((d) => /^\d+_/.test(d)).sort()) {
+    await pg.exec(readFileSync(`prisma/migrations/${dir}/migration.sql`, "utf8"));
+  }
   db = new PrismaClient({ adapter: new PrismaPGlite(pg) });
 
   // src/lib/prisma.ts reuses this global, so the route under test talks to the in-memory database.
@@ -104,6 +107,8 @@ describe("POST /api/blog-posts", () => {
     assert.equal(post.content, "## Heading\n\nBody");
     assert.equal(post.status, "published");
     assert.equal(post.published, true);
+    assert.equal(post.readingMinutes, 1);
+    assert.equal(post.teaser, "Heading Body");
     assert.equal(post.imageUrl, "https://portfolio.example/img/a.png");
     assert.equal(post.sourceImageUrl, "https://images.example/orig.png");
     assert.equal(post.canonicalUrl, "https://portfolio.example/blog/first-post");
@@ -149,6 +154,14 @@ describe("POST /api/blog-posts", () => {
     assert.ok(responses.every((r) => r.status === 200 || r.status === 201));
     assert.equal(responses.filter((r) => r.status === 201).length, 1);
     assert.equal(await db.blogPost.count({ where: { externalId: 200 } }), 1);
+  });
+
+  it("recomputes reading time and teaser when the body changes", async () => {
+    await send(payload({ external_id: 400, slug: "long", body: "word ".repeat(1000) }));
+    const post = await db.blogPost.findUniqueOrThrow({ where: { externalId: 400 } });
+    assert.equal(post.readingMinutes, 5);
+    assert.ok(post.teaser && post.teaser.length <= 201);
+    assert.ok(post.teaser?.endsWith("…"));
   });
 
   it("stamps published_at when a published post arrives without one", async () => {

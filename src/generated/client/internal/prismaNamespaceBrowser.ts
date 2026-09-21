@@ -175,6 +175,8 @@ export const BlogPostScalarFieldEnum = {
   canonicalUrl: 'canonicalUrl',
   status: 'status',
   publishedAt: 'publishedAt',
+  readingMinutes: 'readingMinutes',
+  teaser: 'teaser',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

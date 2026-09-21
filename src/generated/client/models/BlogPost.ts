@@ -28,10 +28,12 @@ export type AggregateBlogPost = {
 
 export type BlogPostAvgAggregateOutputType = {
   externalId: number | null
+  readingMinutes: number | null
 }
 
 export type BlogPostSumAggregateOutputType = {
   externalId: number | null
+  readingMinutes: number | null
 }
 
 export type BlogPostMinAggregateOutputType = {
@@ -49,6 +51,8 @@ export type BlogPostMinAggregateOutputType = {
   canonicalUrl: string | null
   status: $Enums.BlogPostStatus | null
   publishedAt: Date | null
+  readingMinutes: number | null
+  teaser: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -68,6 +72,8 @@ export type BlogPostMaxAggregateOutputType = {
   canonicalUrl: string | null
   status: $Enums.BlogPostStatus | null
   publishedAt: Date | null
+  readingMinutes: number | null
+  teaser: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -87,6 +93,8 @@ export type BlogPostCountAggregateOutputType = {
   canonicalUrl: number
   status: number
   publishedAt: number
+  readingMinutes: number
+  teaser: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -95,10 +103,12 @@ export type BlogPostCountAggregateOutputType = {
 
 export type BlogPostAvgAggregateInputType = {
   externalId?: true
+  readingMinutes?: true
 }
 
 export type BlogPostSumAggregateInputType = {
   externalId?: true
+  readingMinutes?: true
 }
 
 export type BlogPostMinAggregateInputType = {
@@ -116,6 +126,8 @@ export type BlogPostMinAggregateInputType = {
   canonicalUrl?: true
   status?: true
   publishedAt?: true
+  readingMinutes?: true
+  teaser?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -135,6 +147,8 @@ export type BlogPostMaxAggregateInputType = {
   canonicalUrl?: true
   status?: true
   publishedAt?: true
+  readingMinutes?: true
+  teaser?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -154,6 +168,8 @@ export type BlogPostCountAggregateInputType = {
   canonicalUrl?: true
   status?: true
   publishedAt?: true
+  readingMinutes?: true
+  teaser?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -260,6 +276,8 @@ export type BlogPostGroupByOutputType = {
   canonicalUrl: string | null
   status: $Enums.BlogPostStatus
   publishedAt: Date | null
+  readingMinutes: number
+  teaser: string | null
   createdAt: Date
   updatedAt: Date
   _count: BlogPostCountAggregateOutputType | null
@@ -302,6 +320,8 @@ export type BlogPostWhereInput = {
   canonicalUrl?: Prisma.StringNullableFilter<"BlogPost"> | string | null
   status?: Prisma.EnumBlogPostStatusFilter<"BlogPost"> | $Enums.BlogPostStatus
   publishedAt?: Prisma.DateTimeNullableFilter<"BlogPost"> | Date | string | null
+  readingMinutes?: Prisma.IntFilter<"BlogPost"> | number
+  teaser?: Prisma.StringNullableFilter<"BlogPost"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   categories?: Prisma.BlogCategoryListRelationFilter
@@ -323,6 +343,8 @@ export type BlogPostOrderByWithRelationInput = {
   canonicalUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+  teaser?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   categories?: Prisma.BlogCategoryOrderByRelationAggregateInput
@@ -347,6 +369,8 @@ export type BlogPostWhereUniqueInput = Prisma.AtLeast<{
   canonicalUrl?: Prisma.StringNullableFilter<"BlogPost"> | string | null
   status?: Prisma.EnumBlogPostStatusFilter<"BlogPost"> | $Enums.BlogPostStatus
   publishedAt?: Prisma.DateTimeNullableFilter<"BlogPost"> | Date | string | null
+  readingMinutes?: Prisma.IntFilter<"BlogPost"> | number
+  teaser?: Prisma.StringNullableFilter<"BlogPost"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   categories?: Prisma.BlogCategoryListRelationFilter
@@ -368,6 +392,8 @@ export type BlogPostOrderByWithAggregationInput = {
   canonicalUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+  teaser?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.BlogPostCountOrderByAggregateInput
@@ -395,6 +421,8 @@ export type BlogPostScalarWhereWithAggregatesInput = {
   canonicalUrl?: Prisma.StringNullableWithAggregatesFilter<"BlogPost"> | string | null
   status?: Prisma.EnumBlogPostStatusWithAggregatesFilter<"BlogPost"> | $Enums.BlogPostStatus
   publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"BlogPost"> | Date | string | null
+  readingMinutes?: Prisma.IntWithAggregatesFilter<"BlogPost"> | number
+  teaser?: Prisma.StringNullableWithAggregatesFilter<"BlogPost"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
 }
@@ -414,6 +442,8 @@ export type BlogPostCreateInput = {
   canonicalUrl?: string | null
   status?: $Enums.BlogPostStatus
   publishedAt?: Date | string | null
+  readingMinutes?: number
+  teaser?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.BlogCategoryCreateNestedManyWithoutPostsInput
@@ -435,6 +465,8 @@ export type BlogPostUncheckedCreateInput = {
   canonicalUrl?: string | null
   status?: $Enums.BlogPostStatus
   publishedAt?: Date | string | null
+  readingMinutes?: number
+  teaser?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.BlogCategoryUncheckedCreateNestedManyWithoutPostsInput
@@ -456,6 +488,8 @@ export type BlogPostUpdateInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.BlogCategoryUpdateManyWithoutPostsNestedInput
@@ -477,6 +511,8 @@ export type BlogPostUncheckedUpdateInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.BlogCategoryUncheckedUpdateManyWithoutPostsNestedInput
@@ -498,6 +534,8 @@ export type BlogPostCreateManyInput = {
   canonicalUrl?: string | null
   status?: $Enums.BlogPostStatus
   publishedAt?: Date | string | null
+  readingMinutes?: number
+  teaser?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -517,6 +555,8 @@ export type BlogPostUpdateManyMutationInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -536,6 +576,8 @@ export type BlogPostUncheckedUpdateManyInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -555,12 +597,15 @@ export type BlogPostCountOrderByAggregateInput = {
   canonicalUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+  teaser?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type BlogPostAvgOrderByAggregateInput = {
   externalId?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
 }
 
 export type BlogPostMaxOrderByAggregateInput = {
@@ -578,6 +623,8 @@ export type BlogPostMaxOrderByAggregateInput = {
   canonicalUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+  teaser?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -597,12 +644,15 @@ export type BlogPostMinOrderByAggregateInput = {
   canonicalUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+  teaser?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type BlogPostSumOrderByAggregateInput = {
   externalId?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
 }
 
 export type BlogPostListRelationFilter = {
@@ -714,6 +764,8 @@ export type BlogPostCreateWithoutCategoriesInput = {
   canonicalUrl?: string | null
   status?: $Enums.BlogPostStatus
   publishedAt?: Date | string | null
+  readingMinutes?: number
+  teaser?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tags?: Prisma.BlogTagCreateNestedManyWithoutPostsInput
@@ -734,6 +786,8 @@ export type BlogPostUncheckedCreateWithoutCategoriesInput = {
   canonicalUrl?: string | null
   status?: $Enums.BlogPostStatus
   publishedAt?: Date | string | null
+  readingMinutes?: number
+  teaser?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutPostsInput
@@ -778,6 +832,8 @@ export type BlogPostScalarWhereInput = {
   canonicalUrl?: Prisma.StringNullableFilter<"BlogPost"> | string | null
   status?: Prisma.EnumBlogPostStatusFilter<"BlogPost"> | $Enums.BlogPostStatus
   publishedAt?: Prisma.DateTimeNullableFilter<"BlogPost"> | Date | string | null
+  readingMinutes?: Prisma.IntFilter<"BlogPost"> | number
+  teaser?: Prisma.StringNullableFilter<"BlogPost"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
 }
@@ -797,6 +853,8 @@ export type BlogPostCreateWithoutTagsInput = {
   canonicalUrl?: string | null
   status?: $Enums.BlogPostStatus
   publishedAt?: Date | string | null
+  readingMinutes?: number
+  teaser?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.BlogCategoryCreateNestedManyWithoutPostsInput
@@ -817,6 +875,8 @@ export type BlogPostUncheckedCreateWithoutTagsInput = {
   canonicalUrl?: string | null
   status?: $Enums.BlogPostStatus
   publishedAt?: Date | string | null
+  readingMinutes?: number
+  teaser?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.BlogCategoryUncheckedCreateNestedManyWithoutPostsInput
@@ -858,6 +918,8 @@ export type BlogPostUpdateWithoutCategoriesInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tags?: Prisma.BlogTagUpdateManyWithoutPostsNestedInput
@@ -878,6 +940,8 @@ export type BlogPostUncheckedUpdateWithoutCategoriesInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tags?: Prisma.BlogTagUncheckedUpdateManyWithoutPostsNestedInput
@@ -898,6 +962,8 @@ export type BlogPostUncheckedUpdateManyWithoutCategoriesInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -917,6 +983,8 @@ export type BlogPostUpdateWithoutTagsInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.BlogCategoryUpdateManyWithoutPostsNestedInput
@@ -937,6 +1005,8 @@ export type BlogPostUncheckedUpdateWithoutTagsInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.BlogCategoryUncheckedUpdateManyWithoutPostsNestedInput
@@ -957,6 +1027,8 @@ export type BlogPostUncheckedUpdateManyWithoutTagsInput = {
   canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBlogPostStatusFieldUpdateOperationsInput | $Enums.BlogPostStatus
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1016,6 +1088,8 @@ export type BlogPostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   canonicalUrl?: boolean
   status?: boolean
   publishedAt?: boolean
+  readingMinutes?: boolean
+  teaser?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   categories?: boolean | Prisma.BlogPost$categoriesArgs<ExtArgs>
@@ -1038,6 +1112,8 @@ export type BlogPostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   canonicalUrl?: boolean
   status?: boolean
   publishedAt?: boolean
+  readingMinutes?: boolean
+  teaser?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["blogPost"]>
@@ -1057,6 +1133,8 @@ export type BlogPostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   canonicalUrl?: boolean
   status?: boolean
   publishedAt?: boolean
+  readingMinutes?: boolean
+  teaser?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["blogPost"]>
@@ -1076,11 +1154,13 @@ export type BlogPostSelectScalar = {
   canonicalUrl?: boolean
   status?: boolean
   publishedAt?: boolean
+  readingMinutes?: boolean
+  teaser?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type BlogPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "content" | "excerpt" | "published" | "seoTitle" | "seoDesc" | "externalId" | "imageUrl" | "sourceImageUrl" | "canonicalUrl" | "status" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
+export type BlogPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "content" | "excerpt" | "published" | "seoTitle" | "seoDesc" | "externalId" | "imageUrl" | "sourceImageUrl" | "canonicalUrl" | "status" | "publishedAt" | "readingMinutes" | "teaser" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
 export type BlogPostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   categories?: boolean | Prisma.BlogPost$categoriesArgs<ExtArgs>
   tags?: boolean | Prisma.BlogPost$tagsArgs<ExtArgs>
@@ -1110,6 +1190,8 @@ export type $BlogPostPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     canonicalUrl: string | null
     status: $Enums.BlogPostStatus
     publishedAt: Date | null
+    readingMinutes: number
+    teaser: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["blogPost"]>
@@ -1551,6 +1633,8 @@ export interface BlogPostFieldRefs {
   readonly canonicalUrl: Prisma.FieldRef<"BlogPost", 'String'>
   readonly status: Prisma.FieldRef<"BlogPost", 'BlogPostStatus'>
   readonly publishedAt: Prisma.FieldRef<"BlogPost", 'DateTime'>
+  readonly readingMinutes: Prisma.FieldRef<"BlogPost", 'Int'>
+  readonly teaser: Prisma.FieldRef<"BlogPost", 'String'>
   readonly createdAt: Prisma.FieldRef<"BlogPost", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"BlogPost", 'DateTime'>
 }

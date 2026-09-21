@@ -119,6 +119,9 @@ model BlogPost {
   canonicalUrl   String?        @db.Text
   status         BlogPostStatus @default(draft)
   publishedAt    DateTime?
+  // Derived from the body when a post is saved, so list pages never have to load the (large) body.
+  readingMinutes Int            @default(1)
+  teaser         String?        @db.Text
 
   categories BlogCategory[]
   tags       BlogTag[]

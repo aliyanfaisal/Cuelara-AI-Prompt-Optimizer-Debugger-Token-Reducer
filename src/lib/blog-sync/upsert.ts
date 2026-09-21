@@ -1,6 +1,7 @@
 import { Prisma } from "@/generated/client/client";
 import { prisma } from "@/lib/prisma";
 import type { BlogPostPayload } from "./schema";
+import { plainTextSummary, readingTimeMinutes } from "@/lib/blog";
 import { resolveUniqueSlug, toLabelSlugs } from "./slug";
 
 export interface UpsertResult {
@@ -34,6 +35,8 @@ async function save(tx: Prisma.TransactionClient, data: BlogPostPayload): Promis
   const fields = {
     title: data.title,
     content: data.body,
+    readingMinutes: readingTimeMinutes(data.body),
+    teaser: plainTextSummary(data.body),
     excerpt: data.excerpt ?? null,
     status: data.status,
     published: data.status === "published",

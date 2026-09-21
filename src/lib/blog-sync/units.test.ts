@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { cardSummary, plainTextSummary, postState, publishedAtFor, readingTimeMinutes } from "@/lib/blog";
 import { isAuthorizedBearer } from "./auth";
 import { blogPostPayloadSchema, formatValidationErrors } from "./schema";
 import { resolveUniqueSlug, slugify, toLabelSlugs } from "./slug";
@@ -71,5 +72,43 @@ describe("slug helpers", () => {
     const taken = new Set(["post", "post-2"]);
     assert.equal(await resolveUniqueSlug("post", async (s) => taken.has(s)), "post-3");
     assert.equal(await resolveUniqueSlug("fresh", async (s) => taken.has(s)), "fresh");
+  });
+});
+
+describe("blog card helpers", () => {
+  it("summarizes Markdown as plain text and truncates", () => {
+    assert.equal(plainTextSummary("## Title\n\nSome **bold** [link](https://x.y) text ![img](a.png)"), "Title Some bold link text");
+    assert.equal(plainTextSummary("a".repeat(300)), `${"a".repeat(200)}…`);
+  });
+  it("estimates reading time at ~200 wpm, minimum 1 minute", () => {
+    assert.equal(readingTimeMinutes("one two"), 1);
+    assert.equal(readingTimeMinutes("word ".repeat(1000)), 5);
+  });
+  it("prefers the excerpt, then the stored teaser, for cards", () => {
+    assert.equal(cardSummary({ excerpt: " Hi ", teaser: "t" }), "Hi");
+    assert.equal(cardSummary({ excerpt: null, teaser: "t" }), "t");
+    assert.equal(cardSummary({ excerpt: null, teaser: null }), "");
+  });
+});
+
+describe("admin publish rules", () => {
+  const now = new Date("2026-06-01T00:00:00Z");
+  const past = new Date("2026-01-01T00:00:00Z");
+  const future = new Date("2027-01-01T00:00:00Z");
+
+  it("publishing stamps now for drafts without a date and for scheduled posts, keeping past dates", () => {
+    assert.equal(publishedAtFor("published", null, now), now);
+    assert.equal(publishedAtFor("published", future, now), now);
+    assert.equal(publishedAtFor("published", past, now), past);
+  });
+  it("unpublishing never touches the date", () => {
+    assert.equal(publishedAtFor("draft", past, now), past);
+    assert.equal(publishedAtFor("draft", null, now), null);
+  });
+  it("derives live / scheduled / draft", () => {
+    assert.equal(postState("draft", past), "draft");
+    assert.equal(postState("published", past), "live");
+    assert.equal(postState("published", new Date(Date.now() + 86_400_000)), "scheduled");
+    assert.equal(postState("published", null), "scheduled");
   });
 });
