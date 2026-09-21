@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withGenAIRetry } from "@/lib/genai-retry";
+import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 
 export async function POST(req: Request) {
@@ -27,7 +29,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Gemini API Key is not configured in settings." }, { status: 400 });
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
 
     const promptText = `
 You are an expert AI prompt engineer. Create a highly detailed "Cookbook Prompt" based on the following input:
@@ -52,7 +54,7 @@ You must return a JSON object with the following schema:
 For all HTML fields, use standard tags like <p>, <ul>, <li>, <strong>, <h3>. Do not include Markdown.
 `;
 
-    const response = await ai.models.generateContent({
+    const response = await withGenAIRetry(() => ai.models.generateContent({
         model: 'gemini-3.6-flash',
         contents: promptText,
         config: {
@@ -75,7 +77,7 @@ For all HTML fields, use standard tags like <p>, <ul>, <li>, <strong>, <h3>. Do 
                 required: ["title", "explanation", "whenToUse", "bestPractices", "commonMistakes", "promptTemplate", "exampleInput", "exampleOutput"]
             }
         }
-    });
+    }));
 
     if (!response.text) {
         throw new Error("No response from AI");

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withGenAIRetry } from "@/lib/genai-retry";
+import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
 import { GoogleGenAI, Type } from "@google/genai";
 
 export async function POST(req: Request) {
@@ -28,7 +30,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Gemini API Key is not configured in settings." }, { status: 400 });
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
 
     const promptText = `
 You are an expert platform architect. Your task is to generate unique and highly relevant category ideas for a Prompt Engineering Cookbook platform.
@@ -53,7 +55,7 @@ Each object must follow this schema:
 }
 `;
 
-    const response = await ai.models.generateContent({
+    const response = await withGenAIRetry(() => ai.models.generateContent({
         model: 'gemini-3.6-flash',
         contents: promptText,
         config: {
@@ -83,7 +85,7 @@ Each object must follow this schema:
                 }
             }
         }
-    });
+    }));
 
     if (!response.text) {
         throw new Error("No response from AI");
