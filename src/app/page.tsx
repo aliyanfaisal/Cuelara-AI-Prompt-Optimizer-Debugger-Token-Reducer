@@ -320,7 +320,6 @@ export default function Home() {
               icon={<Terminal className="h-6 w-6 text-pink-500" />}
               title="Prompt Formatter"
               description="Instantly converts unstructured walls of text into standardized, model-friendly sections (Role, Task, Constraints)."
-              comingSoon
             />
           </motion.div>
         </div>
