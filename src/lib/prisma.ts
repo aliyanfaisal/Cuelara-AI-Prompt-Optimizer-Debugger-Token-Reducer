@@ -1,13 +1,13 @@
 import { PrismaClient } from '@/generated/client/client';
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { neonConfig } from '@neondatabase/serverless';
+import ws from 'ws';
 
-const connectionString = `${process.env.DATABASE_URL}`;
-
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+// Neon's driver talks WebSockets over port 443, which shared hosts don't block (unlike raw Postgres on 5432).
+neonConfig.webSocketConstructor = ws;
 
 const prismaClientSingleton = () => {
+  const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
   return new PrismaClient({ adapter });
 };
 
