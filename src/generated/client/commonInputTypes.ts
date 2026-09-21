@@ -228,6 +228,13 @@ export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonFilter<$PrismaModel>
 }
 
+export type EnumBlogPostStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BlogPostStatus | Prisma.EnumBlogPostStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BlogPostStatus[] | Prisma.ListEnumBlogPostStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BlogPostStatus[] | Prisma.ListEnumBlogPostStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBlogPostStatusFilter<$PrismaModel> | $Enums.BlogPostStatus
+}
+
 export type DateTimeNullableFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -237,6 +244,16 @@ export type DateTimeNullableFilter<$PrismaModel = never> = {
   gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+}
+
+export type EnumBlogPostStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BlogPostStatus | Prisma.EnumBlogPostStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BlogPostStatus[] | Prisma.ListEnumBlogPostStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BlogPostStatus[] | Prisma.ListEnumBlogPostStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBlogPostStatusWithAggregatesFilter<$PrismaModel> | $Enums.BlogPostStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBlogPostStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBlogPostStatusFilter<$PrismaModel>
 }
 
 export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -480,6 +497,13 @@ export type NestedJsonFilterBase<$PrismaModel = never> = {
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
 }
 
+export type NestedEnumBlogPostStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BlogPostStatus | Prisma.EnumBlogPostStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BlogPostStatus[] | Prisma.ListEnumBlogPostStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BlogPostStatus[] | Prisma.ListEnumBlogPostStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBlogPostStatusFilter<$PrismaModel> | $Enums.BlogPostStatus
+}
+
 export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -489,6 +513,16 @@ export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
   gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+}
+
+export type NestedEnumBlogPostStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BlogPostStatus | Prisma.EnumBlogPostStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BlogPostStatus[] | Prisma.ListEnumBlogPostStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BlogPostStatus[] | Prisma.ListEnumBlogPostStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBlogPostStatusWithAggregatesFilter<$PrismaModel> | $Enums.BlogPostStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBlogPostStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBlogPostStatusFilter<$PrismaModel>
 }
 
 export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {

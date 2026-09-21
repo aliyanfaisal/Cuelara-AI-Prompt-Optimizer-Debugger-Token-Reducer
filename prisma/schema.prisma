@@ -26,7 +26,7 @@ model Setting {
 // rate limits are spread across the pool instead of exhausting a single key.
 model ApiKey {
   id        String   @id @default(cuid())
-  provider  String   // "gemini" | "grok" | "openai" | "claude"
+  provider  String // "gemini" | "grok" | "openai" | "claude"
   key       String
   label     String?
   isActive  Boolean  @default(true)
@@ -60,7 +60,7 @@ model ToolUsageDaily {
   id         String   @id @default(cuid())
   subjectKey String
   tool       String
-  date       String   // YYYY-MM-DD (UTC)
+  date       String // YYYY-MM-DD (UTC)
   count      Int      @default(0)
   updatedAt  DateTime @updatedAt
 
@@ -77,78 +77,111 @@ model ExtractedDocument {
   totalTokens Int
   createdAt   DateTime @default(now())
 
-  chunks      ExtractedDocumentChunk[]
+  chunks ExtractedDocumentChunk[]
 
   @@index([subjectKey, createdAt])
 }
 
 model ExtractedDocumentChunk {
-  id         String   @id @default(cuid())
+  id         String            @id @default(cuid())
   documentId String
   document   ExtractedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
-  position   Int
-  section    String
-  content    String   @db.Text
-  embedding  Json     // number[]
+  position  Int
+  section   String
+  content   String @db.Text
+  embedding Json // number[]
 
   @@index([documentId])
 }
 
-model BlogPost {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  content     String   @db.Text
-  excerpt     String?  @db.Text
-  published   Boolean  @default(false)
-  
-  seoTitle    String?
-  seoDesc     String?
+enum BlogPostStatus {
+  draft
+  published
+}
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model BlogPost {
+  id        String  @id @default(cuid())
+  title     String
+  slug      String  @unique
+  content   String  @db.Text
+  excerpt   String? @db.Text
+  // Legacy flag, mirrored from `status` on every write. Public visibility is decided by status + publishedAt.
+  published Boolean @default(false)
+
+  seoTitle String?
+  seoDesc  String?
+
+  // Posts pushed from the portfolio site (POST /api/blog-posts). Null for posts created here.
+  externalId     Int?           @unique
+  imageUrl       String?        @db.Text
+  sourceImageUrl String?        @db.Text
+  canonicalUrl   String?        @db.Text
+  status         BlogPostStatus @default(draft)
+  publishedAt    DateTime?
+
+  categories BlogCategory[]
+  tags       BlogTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model BlogCategory {
+  id    String     @id @default(cuid())
+  name  String
+  slug  String     @unique
+  posts BlogPost[]
+}
+
+model BlogTag {
+  id    String     @id @default(cuid())
+  name  String
+  slug  String     @unique
+  posts BlogPost[]
 }
 
 model CookbookCategory {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
-  slug        String   @unique
-  description String?  @db.Text
-  
-  parentId    String?
-  parent      CookbookCategory?  @relation("CategoryToCategory", fields: [parentId], references: [id])
-  children    CookbookCategory[] @relation("CategoryToCategory")
+  slug        String  @unique
+  description String? @db.Text
 
-  prompts     CookbookPrompt[]
+  parentId String?
+  parent   CookbookCategory?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children CookbookCategory[] @relation("CategoryToCategory")
+
+  prompts CookbookPrompt[]
 }
 
 model CookbookPrompt {
-  id              String   @id @default(cuid())
-  title           String
-  slug            String   @unique
-  image           String?
-  categoryId      String
-  category        CookbookCategory @relation(fields: [categoryId], references: [id])
-  
-  explanation     String   @db.Text
-  whenToUse       String   @db.Text
-  commonMistakes  String   @db.Text
-  bestPractices   String   @db.Text
-  
-  promptTemplate  String   @db.Text
-  exampleInput    String   @db.Text
-  exampleOutput   String   @db.Text
-  
-  faqs            String?  @db.Text
-  
-  published       Boolean  @default(false)
-  
-  seoTitle        String?
-  seoDesc         String?
+  id         String           @id @default(cuid())
+  title      String
+  slug       String           @unique
+  image      String?
+  categoryId String
+  category   CookbookCategory @relation(fields: [categoryId], references: [id])
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  explanation    String @db.Text
+  whenToUse      String @db.Text
+  commonMistakes String @db.Text
+  bestPractices  String @db.Text
+
+  promptTemplate String @db.Text
+  exampleInput   String @db.Text
+  exampleOutput  String @db.Text
+
+  faqs String? @db.Text
+
+  published Boolean @default(false)
+
+  seoTitle String?
+  seoDesc  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // -----------------------------------------
@@ -190,14 +223,14 @@ model User {
   image         String?
   password      String?
   roles         Role[]    @relation("UserRoles")
-  isActive      Boolean   @default(false)  // For magic link activation
+  isActive      Boolean   @default(false) // For magic link activation
   createdAt     DateTime  @default(now())
-  
-  accounts          Account[]
-  sessions          Session[]
-  workspaces        Workspace[]
-  prompts           Prompt[]
-  activationTokens  ActivationToken[]
+
+  accounts         Account[]
+  sessions         Session[]
+  workspaces       Workspace[]
+  prompts          Prompt[]
+  activationTokens ActivationToken[]
 }
 
 model Role {
@@ -206,8 +239,8 @@ model Role {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
-  users       User[]   @relation("UserRoles")
+
+  users User[] @relation("UserRoles")
 }
 
 model ActivationToken {
@@ -232,33 +265,33 @@ model VerificationToken {
 // -----------------------------------------
 
 model Workspace {
-  id          String    @id @default(cuid())
-  name        String
-  createdAt   DateTime  @default(now())
-  
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  prompts     Prompt[]
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  prompts Prompt[]
 }
 
 model Prompt {
-  id          String    @id @default(cuid())
-  title       String
-  image       String?   // Featured image URL
-  content     String    @db.Text
-  model       String?   
-  tokens      Int?
-  cost        Float?    // Added based on user feedback
-  isPublic    Boolean   @default(false) // Added based on user feedback
-  tags        String[]  // Added based on user feedback
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id       String   @id @default(cuid())
+  title    String
+  image    String? // Featured image URL
+  content  String   @db.Text
+  model    String?
+  tokens   Int?
+  cost     Float? // Added based on user feedback
+  isPublic Boolean  @default(false) // Added based on user feedback
+  tags     String[] // Added based on user feedback
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   workspaceId String?
   workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
 }

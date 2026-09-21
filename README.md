@@ -212,6 +212,48 @@ Database & Security
 
 ---
 
+## 📥 Blog Sync API (portfolio → Cuelara)
+
+`POST /api/blog-posts` receives blog posts pushed from the portfolio site. It is idempotent: `external_id` (the post ID on the sending site) is the source of truth, so retries and duplicate deliveries update the same row.
+
+- **Auth:** `Authorization: Bearer <PORTFOLIO_API_TOKEN>` (constant-time compare; 401 if missing/invalid or if the env var is unset).
+- **Responses:** `201` created, `200` updated → `{ "id", "external_id", "status": "created"|"updated", "url" }`. `422` `{ "message", "errors": { field: [messages] } }` on validation failure, `400` malformed JSON, `413` body over 1 MB, `500` generic error. Only 2xx means the post is fully saved.
+- **Slugs:** a slug already used by a different post gets `-2`, `-3`, ...; an existing post's slug never changes on update.
+- **Categories/tags:** found or created by slugified name and replaced on every update, in the same transaction as the post.
+- **Images:** `image_url` is hotlinked, never downloaded. `canonical_url` is rendered as `<link rel="canonical">` on `/blog/<slug>`.
+- **Visibility:** only `status = published` with `published_at <= now` is served on `/blog/<slug>`; drafts 404. Markdown is rendered with `react-markdown` (raw HTML is escaped).
+
+```bash
+# Create (201) — repeat the same command to update (200)
+curl -i -X POST http://localhost:3000/api/blog-posts \
+  -H "Authorization: Bearer $PORTFOLIO_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: post-123-v1" \
+  -d '{
+    "external_id": 123,
+    "title": "Hello world",
+    "slug": "hello-world",
+    "excerpt": "A short teaser",
+    "body": "## Hi\n\nMarkdown body",
+    "status": "published",
+    "image_url": "https://portfolio.example/storage/hello.png",
+    "source_image_url": null,
+    "categories": ["Guides"],
+    "tags": ["laravel", "nextjs"],
+    "published_at": "2026-09-21T10:00:00+00:00",
+    "canonical_url": "https://portfolio.example/blog/hello-world"
+  }'
+
+# 401: no token        -> curl -i -X POST http://localhost:3000/api/blog-posts -d '{}'
+# 422: invalid payload -> same request with a Bearer token and  -d '{"title": ""}'
+```
+
+Run the tests (in-memory Postgres, no external database needed) with `npm test`.
+
+Database changes ship as a Prisma migration; apply it with `npx prisma migrate deploy`.
+
+---
+
 ## 🤝 Community & Contributions
 
 Cuelara is an open-source initiative designed to establish industry-standard prompt engineering conventions. Contributions, feature suggestions, and pull requests are welcomed:

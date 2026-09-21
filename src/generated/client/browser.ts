@@ -53,6 +53,16 @@ export type ExtractedDocumentChunk = Prisma.ExtractedDocumentChunkModel
  */
 export type BlogPost = Prisma.BlogPostModel
 /**
+ * Model BlogCategory
+ * 
+ */
+export type BlogCategory = Prisma.BlogCategoryModel
+/**
+ * Model BlogTag
+ * 
+ */
+export type BlogTag = Prisma.BlogTagModel
+/**
  * Model CookbookCategory
  * 
  */

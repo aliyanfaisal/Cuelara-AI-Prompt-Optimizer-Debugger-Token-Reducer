@@ -58,6 +58,8 @@ export const ModelName = {
   ExtractedDocument: 'ExtractedDocument',
   ExtractedDocumentChunk: 'ExtractedDocumentChunk',
   BlogPost: 'BlogPost',
+  BlogCategory: 'BlogCategory',
+  BlogTag: 'BlogTag',
   CookbookCategory: 'CookbookCategory',
   CookbookPrompt: 'CookbookPrompt',
   Account: 'Account',
@@ -167,11 +169,35 @@ export const BlogPostScalarFieldEnum = {
   published: 'published',
   seoTitle: 'seoTitle',
   seoDesc: 'seoDesc',
+  externalId: 'externalId',
+  imageUrl: 'imageUrl',
+  sourceImageUrl: 'sourceImageUrl',
+  canonicalUrl: 'canonicalUrl',
+  status: 'status',
+  publishedAt: 'publishedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type BlogPostScalarFieldEnum = (typeof BlogPostScalarFieldEnum)[keyof typeof BlogPostScalarFieldEnum]
+
+
+export const BlogCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug'
+} as const
+
+export type BlogCategoryScalarFieldEnum = (typeof BlogCategoryScalarFieldEnum)[keyof typeof BlogCategoryScalarFieldEnum]
+
+
+export const BlogTagScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug'
+} as const
+
+export type BlogTagScalarFieldEnum = (typeof BlogTagScalarFieldEnum)[keyof typeof BlogTagScalarFieldEnum]
 
 
 export const CookbookCategoryScalarFieldEnum = {
