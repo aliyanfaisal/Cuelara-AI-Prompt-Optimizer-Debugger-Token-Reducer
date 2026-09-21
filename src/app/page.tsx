@@ -267,7 +267,7 @@ export default function Home() {
             className="text-center mb-12 md:mb-16"
           >
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">Prompt Optimizer & Context Extractor</h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Two focused, fully-working tools to write production-ready prompts and cut document token usage — plus more on the way.</p>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Seven focused, fully-working tools to write, debug, score, compress and cost-check production-ready prompts.</p>
           </motion.div>
 
           <motion.div
@@ -306,14 +306,12 @@ export default function Home() {
               icon={<ShieldCheck className="h-6 w-6 text-emerald-500" />}
               title="Prompt Debugger"
               description="Automatically detects vague wording, contradictory constraints, and missing context before you hit send."
-              comingSoon
             />
             <FeatureCard
               href="/tools/intelligence-score"
               icon={<Sparkles className="h-6 w-6 text-violet-500" />}
               title="Intelligence Score"
               description="Get a 1-100 score analyzing your prompt's clarity, specificity, and AI-readiness with actionable suggestions."
-              comingSoon
             />
             <FeatureCard
               href="/tools/prompt-formatter"
@@ -438,11 +436,11 @@ export default function Home() {
             />
             <FaqItem
               question="What is the Prompt Intelligence Score?"
-              answer="It's a planned metric (0-100) that will analyze your prompt's clarity, specificity, and how easily an AI model will understand it — currently in development, coming soon to the toolkit."
+              answer="It's a 0-100 metric that analyzes your prompt's clarity, specificity, and how easily an AI model will understand it, with actionable suggestions to improve it. Try it in the Intelligence Score tool."
             />
             <FaqItem
               question="How does the API cost estimation work?"
-              answer="Diff & Cost Estimate is coming soon: it will count the tokens of your original prompt vs the optimized prompt, and multiply the savings by official API pricing to show exactly how much money you save per 1,000 requests."
+              answer="Diff & Cost Estimate counts the tokens of your original prompt vs the optimized prompt, and multiplies the savings by official API pricing to show exactly how much money you save per 1,000 requests."
             />
             <FaqItem
               question="Is my prompt data stored securely?"
@@ -486,7 +484,7 @@ export default function Home() {
 // Helper Components
 // -------------------------------------------------------------
 
-function FeatureCard({ icon, title, description, href, comingSoon }: { icon: React.ReactNode, title: string, description: string, href: string, comingSoon?: boolean }) {
+function FeatureCard({ icon, title, description, href }: { icon: React.ReactNode, title: string, description: string, href: string }) {
   return (
     <Link href={href} className="glass-card p-8 rounded-2xl flex flex-col items-start text-left transition-all hover:-translate-y-2 hover:border-primary/20 hover:shadow-xl group relative overflow-hidden h-full">
       <div className="p-4 bg-background/50 rounded-xl border border-border mb-6 transition-transform group-hover:scale-110">
@@ -494,11 +492,6 @@ function FeatureCard({ icon, title, description, href, comingSoon }: { icon: Rea
       </div>
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mr-1">{title}</h3>
-        {comingSoon && (
-          <span className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-wider border border-border">
-            Coming Soon
-          </span>
-        )}
         {/* Animated Arrow */}
         <div className="flex items-center text-sm font-bold text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
           Try out <ArrowRight className="ml-1 h-4 w-4" />

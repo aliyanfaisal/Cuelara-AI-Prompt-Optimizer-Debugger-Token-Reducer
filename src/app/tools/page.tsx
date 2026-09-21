@@ -62,7 +62,6 @@ const TOOLS = [
     bg: "bg-emerald-500/10",
     border: "border-emerald-500/20",
     isLarge: false,
-    comingSoon: true,
   },
   {
     name: "Intelligence Score",
@@ -74,7 +73,6 @@ const TOOLS = [
     bg: "bg-violet-500/10",
     border: "border-violet-500/20",
     isLarge: false,
-    comingSoon: true,
   },
   {
     name: "Prompt Formatter",
@@ -170,11 +168,6 @@ export default function ToolsOverviewPage() {
                       }`}>
                         {tool.name}
                       </h3>
-                      {tool.comingSoon && (
-                        <span className="mb-2 px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-wider border border-border">
-                          Coming Soon
-                        </span>
-                      )}
                     </Link>
                     <p className={`text-muted-foreground leading-relaxed ${
                       tool.isLarge ? "text-sm md:text-base max-w-xl" : "text-xs line-clamp-2"
