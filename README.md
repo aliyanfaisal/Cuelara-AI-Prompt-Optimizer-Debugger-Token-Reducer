@@ -250,7 +250,7 @@ curl -i -X POST http://localhost:3000/api/blog-posts \
 
 Run the tests (in-memory Postgres, no external database needed) with `npm test`.
 
-Database changes ship as a Prisma migration; apply it with `npx prisma migrate deploy`.
+The schema changes live in `prisma/migrations/`. This database has no Prisma Migrate history, so apply them with `node scripts/apply-blog-migrations.js` (idempotent, one transaction) rather than `prisma migrate deploy`.
 
 ---
 
