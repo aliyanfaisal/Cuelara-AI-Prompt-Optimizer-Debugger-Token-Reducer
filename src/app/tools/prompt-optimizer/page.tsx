@@ -13,6 +13,7 @@ import {
 import { MODES, LEVELS, type OptimizerMode, type OptimizerLevel } from "@/lib/prompt-optimizer/constants";
 import { splitStreamTrailer } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
+import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -66,6 +67,7 @@ export default function PromptOptimizerPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [usage, setUsage] = useState<OptimizerUsage | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [viewMode, setViewMode] = useState<PromptViewMode>("rendered");
 
   const estimatedTokens = useMemo(() => countPromptTokens(input), [input]);
 
@@ -397,10 +399,11 @@ export default function PromptOptimizerPage() {
                 </div>
                 
                 <div className="flex items-center gap-2">
+                  <PromptViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
                   <button
                     onClick={handleCopy}
                     disabled={isStreaming}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {copied ? (
                       <>
@@ -417,7 +420,7 @@ export default function PromptOptimizerPage() {
                   <button
                     onClick={handleDownload}
                     disabled={isStreaming}
-                    className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     title="Download as .txt"
                   >
                     <Download className="w-4 h-4" />
@@ -425,10 +428,13 @@ export default function PromptOptimizerPage() {
                 </div>
               </div>
 
-              <div className="p-5 md:p-6 bg-muted/10 font-mono text-xs leading-relaxed text-foreground overflow-x-auto whitespace-pre-wrap max-h-[420px]">
-                {optimizedPrompt}
-                {isStreaming && <span className="inline-block w-1.5 h-3.5 bg-primary/70 ml-0.5 animate-pulse align-middle" />}
-              </div>
+              <PromptOutputViewer
+                content={optimizedPrompt}
+                isStreaming={isStreaming}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                accentColor="primary"
+              />
             </motion.div>
           )}
 

@@ -12,6 +12,7 @@ import {
   BookOpen, Lock, Scale, DollarSign
 } from "lucide-react";
 import { countPromptTokens } from "@/lib/token-count";
+import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 
 type ProcessingState = "idle" | "loading" | "success";
 
@@ -147,6 +148,7 @@ export default function ContextExtractorPage() {
 
   const [wantsPrompt, setWantsPrompt] = useState(true);
   const [activeTab, setActiveTab] = useState<"prompt" | "data">("prompt");
+  const [promptViewMode, setPromptViewMode] = useState<PromptViewMode>("rendered");
   const [isCopied, setIsCopied] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [showDosDonts, setShowDosDonts] = useState(false);
@@ -930,9 +932,10 @@ export default function ContextExtractorPage() {
                         Task instructions and matching data, embedded into one prompt.
                       </p>
                       <div className="flex items-center gap-2">
+                        <PromptViewToggle viewMode={promptViewMode} onViewModeChange={setPromptViewMode} />
                         <button
                           onClick={handleCopyPrompt}
-                          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
+                          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                         >
                           {isCopied ? (
                             <>
@@ -948,7 +951,7 @@ export default function ContextExtractorPage() {
                         </button>
                         <button
                           onClick={handleDownload}
-                          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-semibold transition-colors"
+                          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-semibold transition-colors cursor-pointer"
                         >
                           <Download className="w-3.5 h-3.5" />
                           Download as Document
@@ -956,53 +959,16 @@ export default function ContextExtractorPage() {
                       </div>
                     </div>
 
-                    {formatStyle === "markdown" ? (
-                      <div className="space-y-5">
-                        <div>
-                          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-primary mb-2">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            Task Instruction
-                          </div>
-                          <p className="text-sm text-foreground leading-relaxed p-3.5 rounded-xl bg-muted/30 border border-border whitespace-pre-wrap break-words">
-                            {aiTask}
-                          </p>
-                        </div>
-
-                        <div>
-                          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-primary mb-2">
-                            <Layers className="w-3.5 h-3.5" />
-                            Relevant Extracted Data
-                          </div>
-                          <div className="space-y-3">
-                            {extractedData.map((snippet) => (
-                              <div key={snippet.id} className="pl-3.5 border-l-2 border-primary/30">
-                                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                  <span className="text-xs font-semibold text-foreground">{snippet.section}</span>
-                                  <span className="text-[10px] text-muted-foreground">Relevance: {snippet.relevance}%</span>
-                                </div>
-                                <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
-                                  {snippet.content}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
-                            Constraints
-                          </div>
-                          <ul className="text-xs text-muted-foreground leading-relaxed list-disc pl-4 space-y-1">
-                            <li>Rely strictly on the extracted data provided above.</li>
-                            <li>Do not extrapolate or assume facts outside this context.</li>
-                          </ul>
-                        </div>
-                      </div>
-                    ) : (
-                      <pre className="p-4 rounded-xl bg-muted/30 border border-border text-xs font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed overflow-x-auto max-h-[380px]">
-                        {formatOutputPrompt()}
-                      </pre>
-                    )}
+                    <div className="rounded-xl border border-border overflow-hidden">
+                      <PromptOutputViewer
+                        content={formatOutputPrompt()}
+                        viewMode={promptViewMode}
+                        onViewModeChange={setPromptViewMode}
+                        accentColor="primary"
+                        language={formatStyle}
+                        maxHeight="max-h-[440px]"
+                      />
+                    </div>
                   </div>
                 )}
 

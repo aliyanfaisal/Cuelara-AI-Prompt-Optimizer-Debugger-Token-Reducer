@@ -11,6 +11,7 @@ import {
   FileCode, Cpu
 } from "lucide-react";
 import { FORMAT_STYLES, INDENT_SIZES, type FormatStyle, type IndentSize } from "@/lib/prompt-formatter/constants";
+import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -60,6 +61,7 @@ export default function PromptFormatterPage() {
   const [formatted, setFormatted] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [usage, setUsage] = useState<FormatterUsage | null>(null);
+  const [viewMode, setViewMode] = useState<PromptViewMode>("rendered");
 
   const outputRef = useRef<HTMLDivElement>(null);
 
@@ -373,9 +375,10 @@ export default function PromptFormatterPage() {
                 </div>
                 
                 <div className="flex items-center gap-2">
+                  <PromptViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
                   <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm cursor-pointer"
                   >
                     {copied ? (
                       <>
@@ -391,7 +394,7 @@ export default function PromptFormatterPage() {
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                    className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     title="Download formatted file"
                   >
                     <Download className="w-4 h-4" />
@@ -399,9 +402,13 @@ export default function PromptFormatterPage() {
                 </div>
               </div>
 
-              <div className="p-5 md:p-6 bg-muted/10 font-mono text-xs leading-relaxed text-foreground overflow-x-auto whitespace-pre-wrap max-h-[420px]">
-                {formatted}
-              </div>
+              <PromptOutputViewer
+                content={formatted}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                accentColor="pink"
+                language={format.startsWith("JSON") ? "json" : format.startsWith("XML") ? "xml" : "markdown"}
+              />
             </motion.div>
           )}
 
