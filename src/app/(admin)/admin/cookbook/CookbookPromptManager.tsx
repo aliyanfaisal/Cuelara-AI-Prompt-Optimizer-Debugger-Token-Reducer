@@ -42,6 +42,11 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
   const [aiIdea, setAiIdea] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  // react-quill-new only reads `value` on mount and doesn't reliably re-sync
+  // when it's changed programmatically afterwards (e.g. AI autofill or
+  // opening the edit modal). Bumping this key forces the editors to remount
+  // so they pick up the new content.
+  const [quillKey, setQuillKey] = useState(0);
 
   const filteredPrompts = initialPrompts.filter(prompt => 
     prompt.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -61,6 +66,7 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
     setFormData(defaultFormState);
     setEditingPrompt(null);
     setActiveFormTab("general");
+    setQuillKey(k => k + 1);
     setIsModalOpen(true);
   }
 
@@ -85,6 +91,7 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
       published: prompt.published,
     });
     setActiveFormTab("general");
+    setQuillKey(k => k + 1);
     setIsModalOpen(true);
   }
 
@@ -167,7 +174,8 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
         seoTitle: generated.seoTitle || "",
         seoDesc: generated.seoDesc || "",
       });
-      
+      setQuillKey(k => k + 1);
+
       setShowAiInput(false);
       alert("Successfully auto-generated all fields!");
     } catch (error: any) {
@@ -425,23 +433,23 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
                 <div className="space-y-6 [&_.ql-toolbar]:bg-muted/50 [&_.ql-toolbar]:border-none [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-border [&_.ql-container]:border-none [&_.ql-editor]:min-h-[120px]">
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">Explanation <span className="text-red-500">*</span></label>
-                    <ReactQuill theme="snow" value={formData.explanation} onChange={(v) => setFormData({...formData, explanation: v})} />
+                    <ReactQuill key={`explanation-${quillKey}`} theme="snow" value={formData.explanation} onChange={(v) => setFormData({...formData, explanation: v})} />
                   </div>
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">When to Use <span className="text-red-500">*</span></label>
-                    <ReactQuill theme="snow" value={formData.whenToUse} onChange={(v) => setFormData({...formData, whenToUse: v})} />
+                    <ReactQuill key={`whenToUse-${quillKey}`} theme="snow" value={formData.whenToUse} onChange={(v) => setFormData({...formData, whenToUse: v})} />
                   </div>
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">Best Practices <span className="text-red-500">*</span></label>
-                    <ReactQuill theme="snow" value={formData.bestPractices} onChange={(v) => setFormData({...formData, bestPractices: v})} />
+                    <ReactQuill key={`bestPractices-${quillKey}`} theme="snow" value={formData.bestPractices} onChange={(v) => setFormData({...formData, bestPractices: v})} />
                   </div>
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">Common Mistakes <span className="text-red-500">*</span></label>
-                    <ReactQuill theme="snow" value={formData.commonMistakes} onChange={(v) => setFormData({...formData, commonMistakes: v})} />
+                    <ReactQuill key={`commonMistakes-${quillKey}`} theme="snow" value={formData.commonMistakes} onChange={(v) => setFormData({...formData, commonMistakes: v})} />
                   </div>
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">FAQs (Optional)</label>
-                    <ReactQuill theme="snow" value={formData.faqs} onChange={(v) => setFormData({...formData, faqs: v})} />
+                    <ReactQuill key={`faqs-${quillKey}`} theme="snow" value={formData.faqs} onChange={(v) => setFormData({...formData, faqs: v})} />
                   </div>
                 </div>
               </div>
