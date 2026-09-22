@@ -52,6 +52,10 @@ describe("sitemap.xml", () => {
     assert.ok(!(await sitemap()).some((e) => e.url.endsWith("/blog/fresh-post")));
   });
 
+  // NOTE: cookbook prompt sitemap entries (/prompt/{slug}) aren't covered here — CookbookCategory/
+  // CookbookPrompt were never captured as Prisma migrations (only `db push`), so this migration-built
+  // in-memory test DB can't create those tables. See prisma/migrations/ — same gap predates this file.
+
   it("falls back to the static pages instead of failing when the database errors", async () => {
     await db.$executeRawUnsafe('DROP TABLE "BlogPost" CASCADE');
     const urls = (await sitemap()).map((e) => e.url);

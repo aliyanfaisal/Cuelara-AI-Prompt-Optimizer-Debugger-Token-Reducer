@@ -7,7 +7,7 @@ import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate, postCardSelect, publishedWhere, readingTimeMinutes, siteUrl, teaser, type PostCardData } from "@/lib/blog";
 import { PostCard, PostImage } from "../PostCard";
-import { CodeBlock } from "./CodeBlock";
+import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { ShareButtons } from "./ShareButtons";
 
 export const dynamic = "force-dynamic";

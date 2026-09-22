@@ -198,8 +198,8 @@ export default function CookbookPage() {
                   transition={{ duration: 0.3, delay: i * 0.05 }}
                   className="h-full"
                 >
-                  <Link 
-                    href={`/cookbook/${prompt.slug}`} 
+                  <Link
+                    href={`/prompt/${prompt.slug}`}
                     className="group flex flex-col bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all h-full hover:border-primary/40 relative"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

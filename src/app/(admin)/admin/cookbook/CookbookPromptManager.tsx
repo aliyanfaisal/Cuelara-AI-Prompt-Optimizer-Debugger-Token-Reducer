@@ -1,13 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Edit2, Trash2, X, Plus, Eye, EyeOff, LayoutTemplate, Image as ImageIcon, Sparkles, Loader2 } from "lucide-react";
+import { Search, Edit2, Trash2, X, Plus, Eye, EyeOff, ExternalLink, LayoutTemplate, Image as ImageIcon, Sparkles, Loader2 } from "lucide-react";
 import { createCookbookPrompt, updateCookbookPrompt, deleteCookbookPrompt, toggleCookbookPromptPublish } from "./actions";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import "react-quill-new/dist/quill.snow.css";
-
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+import { MarkdownEditor } from "@/components/markdown/MarkdownEditor";
 
 const defaultFormState = {
   title: "",
@@ -42,11 +39,10 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
   const [aiIdea, setAiIdea] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  // react-quill-new only reads `value` on mount and doesn't reliably re-sync
-  // when it's changed programmatically afterwards (e.g. AI autofill or
-  // opening the edit modal). Bumping this key forces the editors to remount
-  // so they pick up the new content.
-  const [quillKey, setQuillKey] = useState(0);
+  // Bumped on AI autofill / opening the create or edit modal, so each
+  // MarkdownEditor remounts and resets to its "Write" tab instead of
+  // staying stuck on a stale "Preview" of the previous prompt's content.
+  const [mdEditorKey, setMdEditorKey] = useState(0);
 
   const filteredPrompts = initialPrompts.filter(prompt => 
     prompt.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -66,7 +62,7 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
     setFormData(defaultFormState);
     setEditingPrompt(null);
     setActiveFormTab("general");
-    setQuillKey(k => k + 1);
+    setMdEditorKey(k => k + 1);
     setIsModalOpen(true);
   }
 
@@ -91,7 +87,7 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
       published: prompt.published,
     });
     setActiveFormTab("general");
-    setQuillKey(k => k + 1);
+    setMdEditorKey(k => k + 1);
     setIsModalOpen(true);
   }
 
@@ -174,7 +170,7 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
         seoTitle: generated.seoTitle || "",
         seoDesc: generated.seoDesc || "",
       });
-      setQuillKey(k => k + 1);
+      setMdEditorKey(k => k + 1);
 
       setShowAiInput(false);
       alert("Successfully auto-generated all fields!");
@@ -237,6 +233,17 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
+                      {prompt.published && (
+                        <a
+                          href={`/prompt/${prompt.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 text-muted-foreground hover:text-primary transition-colors hover:bg-muted rounded-lg"
+                          title="View live"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
                       <button onClick={() => handleTogglePublish(prompt)} className="p-2 text-muted-foreground hover:text-amber-500 transition-colors hover:bg-muted rounded-lg" title={prompt.published ? "Unpublish" : "Publish"}>
                         {prompt.published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -433,23 +440,23 @@ export default function CookbookPromptManager({ initialPrompts, categories }: { 
                 <div className="space-y-6 [&_.ql-toolbar]:bg-muted/50 [&_.ql-toolbar]:border-none [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-border [&_.ql-container]:border-none [&_.ql-editor]:min-h-[120px]">
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">Explanation <span className="text-red-500">*</span></label>
-                    <ReactQuill key={`explanation-${quillKey}`} theme="snow" value={formData.explanation} onChange={(v) => setFormData({...formData, explanation: v})} />
+                    <MarkdownEditor key={`explanation-${mdEditorKey}`} value={formData.explanation} onChange={(v) => setFormData({...formData, explanation: v})} />
                   </div>
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">When to Use <span className="text-red-500">*</span></label>
-                    <ReactQuill key={`whenToUse-${quillKey}`} theme="snow" value={formData.whenToUse} onChange={(v) => setFormData({...formData, whenToUse: v})} />
+                    <MarkdownEditor key={`whenToUse-${mdEditorKey}`} value={formData.whenToUse} onChange={(v) => setFormData({...formData, whenToUse: v})} />
                   </div>
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">Best Practices <span className="text-red-500">*</span></label>
-                    <ReactQuill key={`bestPractices-${quillKey}`} theme="snow" value={formData.bestPractices} onChange={(v) => setFormData({...formData, bestPractices: v})} />
+                    <MarkdownEditor key={`bestPractices-${mdEditorKey}`} value={formData.bestPractices} onChange={(v) => setFormData({...formData, bestPractices: v})} />
                   </div>
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">Common Mistakes <span className="text-red-500">*</span></label>
-                    <ReactQuill key={`commonMistakes-${quillKey}`} theme="snow" value={formData.commonMistakes} onChange={(v) => setFormData({...formData, commonMistakes: v})} />
+                    <MarkdownEditor key={`commonMistakes-${mdEditorKey}`} value={formData.commonMistakes} onChange={(v) => setFormData({...formData, commonMistakes: v})} />
                   </div>
                   <div className="border border-border rounded-lg overflow-hidden">
                     <label className="block text-sm font-semibold p-3 border-b border-border bg-muted/20">FAQs (Optional)</label>
-                    <ReactQuill key={`faqs-${quillKey}`} theme="snow" value={formData.faqs} onChange={(v) => setFormData({...formData, faqs: v})} />
+                    <MarkdownEditor key={`faqs-${mdEditorKey}`} value={formData.faqs} onChange={(v) => setFormData({...formData, faqs: v})} />
                   </div>
                 </div>
               </div>

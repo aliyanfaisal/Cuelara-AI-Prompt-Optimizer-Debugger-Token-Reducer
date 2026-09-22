@@ -39,11 +39,11 @@ User Idea/Topic: ${idea || "Generate a generic but highly useful and advanced pr
 You must return a JSON object with the following schema:
 {
   "title": "A catchy, clear title for the prompt",
-  "explanation": "HTML formatted explanation of what this prompt does",
-  "whenToUse": "HTML formatted explanation of when to use it",
-  "bestPractices": "HTML formatted list of best practices",
-  "commonMistakes": "HTML formatted list of common mistakes",
-  "faqs": "HTML formatted FAQ section",
+  "explanation": "Markdown formatted explanation of what this prompt does",
+  "whenToUse": "Markdown formatted explanation of when to use it",
+  "bestPractices": "Markdown formatted list of best practices",
+  "commonMistakes": "Markdown formatted list of common mistakes",
+  "faqs": "Markdown formatted FAQ section",
   "promptTemplate": "The actual raw prompt template with placeholders like [Topic]",
   "exampleInput": "A raw text example of inputs for the placeholders",
   "exampleOutput": "A simulated raw text example of the AI's output",
@@ -51,7 +51,7 @@ You must return a JSON object with the following schema:
   "seoDesc": "SEO optimized meta description (150 chars max)"
 }
 
-For all HTML fields, use standard tags like <p>, <ul>, <li>, <strong>, <h3>. Do not include Markdown.
+For all Markdown fields, use standard Markdown syntax: "## " / "### " headings, "-" bullet lists, "**bold**", and fenced code blocks (\`\`\`language ... \`\`\`) for any code or prompt snippets. Do not output HTML tags.
 `;
 
     const response = await withGenAIRetry(() => ai.models.generateContent({

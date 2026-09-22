@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { publishedWhere, siteUrl } from "@/lib/blog";
+import { publishedCookbookWhere } from "@/lib/cookbook";
 import { prisma } from "@/lib/prisma";
 
 // Rendered per request so newly pushed posts show up immediately instead of waiting for the next build.
@@ -36,11 +37,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap: could not load blog posts", error);
   }
 
+  let cookbookPrompts: { slug: string; updatedAt: Date }[] = [];
+  try {
+    cookbookPrompts = await prisma.cookbookPrompt.findMany({
+      where: publishedCookbookWhere(),
+      orderBy: { updatedAt: "desc" },
+      select: { slug: true, updatedAt: true },
+      take: 5000,
+    });
+  } catch (error) {
+    console.error("Sitemap: could not load cookbook prompts", error);
+  }
+
   const latestPost = posts.reduce<Date | undefined>((latest, p) => (!latest || p.updatedAt > latest ? p.updatedAt : latest), undefined);
 
   return [
     ...STATIC_PATHS.map((path) => ({ url: `${base}${path}` })),
     { url: `${base}/blog`, lastModified: latestPost },
     ...posts.map((p) => ({ url: `${base}/blog/${p.slug}`, lastModified: p.updatedAt })),
+    ...cookbookPrompts.map((p) => ({ url: `${base}/prompt/${p.slug}`, lastModified: p.updatedAt })),
   ];
 }

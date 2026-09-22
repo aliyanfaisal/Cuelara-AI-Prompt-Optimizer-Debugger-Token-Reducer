@@ -20,7 +20,7 @@ function languageOf(children: ReactNode): string | null {
   return null;
 }
 
-async function writeToClipboard(text: string) {
+export async function writeToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
   } catch {
