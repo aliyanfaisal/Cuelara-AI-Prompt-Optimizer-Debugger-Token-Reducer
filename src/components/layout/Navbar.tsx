@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText } from "lucide-react";
+import { Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText, Palette } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 const TOOLS_MENU = [
@@ -13,6 +13,7 @@ const TOOLS_MENU = [
   { name: "Prompt Optimizer", icon: <Code2 className="w-4 h-4 text-primary" />, href: "/tools/prompt-optimizer" },
   { name: "Prompt Debugger", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, href: "/tools/prompt-debugger" },
   { name: "Prompt Formatter", icon: <Terminal className="w-4 h-4 text-pink-500" />, href: "/tools/prompt-formatter" },
+  { name: "Site to Prompt", icon: <Palette className="w-4 h-4 text-fuchsia-500" />, href: "/tools/site-to-prompt" },
   { name: "Intelligence Score", icon: <Sparkles className="w-4 h-4 text-violet-500" />, href: "/tools/intelligence-score" },
   { name: "Diff & Cost Estimate", icon: <ArrowRight className="w-4 h-4 text-blue-500" />, href: "/tools/compare-estimate" },
 ];

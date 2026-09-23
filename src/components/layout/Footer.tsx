@@ -65,6 +65,7 @@ export function Footer() {
             <Link href="/tools/prompt-optimizer" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Optimizer</Link>
             <Link href="/tools/prompt-debugger" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Debugger</Link>
             <Link href="/tools/prompt-formatter" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Formatter</Link>
+            <Link href="/tools/site-to-prompt" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Site to Prompt</Link>
             <Link href="/tools/compare-estimate" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Compare & Diff</Link>
             <Link href="/tools/intelligence-score" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Intelligence Score</Link>
           </div>

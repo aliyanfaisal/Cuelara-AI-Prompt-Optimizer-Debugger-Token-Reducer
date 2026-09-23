@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Zap, Code2, ShieldCheck, Terminal, Sparkles, ArrowRight,
-  ExternalLink, BookOpen, Clock, ShieldAlert, Cpu, FileText
+  ExternalLink, BookOpen, Clock, ShieldAlert, Cpu, FileText, Palette
 } from "lucide-react";
 
 const TOOLS = [
@@ -83,6 +83,17 @@ const TOOLS = [
     color: "text-pink-500",
     bg: "bg-pink-500/10",
     border: "border-pink-500/20",
+    isLarge: false,
+  },
+  {
+    name: "Site to Prompt",
+    href: "/tools/site-to-prompt",
+    docs: "/cookbook",
+    icon: Palette,
+    description: "Paste a website and get a prompt that recreates its real colors, fonts, spacing and layout for v0, Bolt, Claude or Midjourney.",
+    color: "text-fuchsia-500",
+    bg: "bg-fuchsia-500/10",
+    border: "border-fuchsia-500/20",
     isLarge: false,
   },
 ];

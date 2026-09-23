@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2, FileText } from "lucide-react";
+import { ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2, FileText, Palette } from "lucide-react";
 
 export default function Home() {
   return (
@@ -318,6 +318,12 @@ export default function Home() {
               icon={<Terminal className="h-6 w-6 text-pink-500" />}
               title="Prompt Formatter"
               description="Instantly converts unstructured walls of text into standardized, model-friendly sections (Role, Task, Constraints)."
+            />
+            <FeatureCard
+              href="/tools/site-to-prompt"
+              icon={<Palette className="h-6 w-6 text-fuchsia-500" />}
+              title="Site to Prompt"
+              description="Measures a website's real colors, fonts and spacing, then writes a prompt that recreates its look in v0, Bolt, Claude or Midjourney."
             />
           </motion.div>
         </div>

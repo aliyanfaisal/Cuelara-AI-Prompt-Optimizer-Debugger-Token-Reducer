@@ -18,6 +18,7 @@ const STATIC_PATHS = [
   "/tools/prompt-debugger",
   "/tools/intelligence-score",
   "/tools/prompt-formatter",
+  "/tools/site-to-prompt",
   "/cookbook",
 ];
 
