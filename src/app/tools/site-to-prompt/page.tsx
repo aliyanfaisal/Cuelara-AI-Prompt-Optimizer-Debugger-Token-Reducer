@@ -88,6 +88,7 @@ export default function SiteToPromptPage() {
   const [error, setError] = useState<string | null>(null);
   const [usage, setUsage] = useState<Usage | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
   const pendingChecked = useRef(false);
   const dnaRef = useRef<HTMLDivElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
@@ -251,7 +252,7 @@ export default function SiteToPromptPage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
         className="bg-card border border-border shadow-sm rounded-2xl overflow-hidden flex flex-col mb-8">
         {!extVersion ? (
-          <div className="p-6 md:p-8 flex flex-col items-start gap-4">
+          <div className="p-6 md:p-8 flex flex-col items-start gap-5">
             <div className="p-2.5 bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-500 rounded-xl">
               <Puzzle className="w-5 h-5" />
             </div>
@@ -260,9 +261,10 @@ export default function SiteToPromptPage() {
                 {extChecked ? "Install the Cuelara extension to continue" : "Checking for the Cuelara extension..."}
               </h2>
               <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-xl">
-                Browsers don&apos;t let one website read another&apos;s styling, so Site to Prompt measures pages from a small extension running in your own browser. It only acts when you press Analyse here, and it works on logged-in pages too.
+                Browsers don&apos;t let one website read another&apos;s styling, so Site to Prompt measures pages from a small extension running in your own browser. It only acts when you press Analyse here or click its toolbar icon, and it works on logged-in pages too.
               </p>
             </div>
+
             <div className="flex flex-wrap items-center gap-3">
               {EXTENSION_URL && (
                 <a href={EXTENSION_URL} target="_blank" rel="noopener noreferrer"
@@ -270,13 +272,37 @@ export default function SiteToPromptPage() {
                   <Puzzle className="w-3.5 h-3.5" /> Add to Chrome
                 </a>
               )}
-              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-                <RefreshCcw className="w-3 h-3 animate-spin" /> This page unlocks automatically once the extension is installed.
-              </span>
+              <a href="/cuelara-extension.zip" download
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold shadow-sm ${
+                  EXTENSION_URL ? "border border-border bg-background hover:bg-muted text-foreground" : "bg-fuchsia-600 hover:bg-fuchsia-700 text-white"}`}>
+                <Download className="w-3.5 h-3.5" /> Download extension (.zip)
+              </a>
             </div>
-            {extChecked && !EXTENSION_URL && (
-              <p className="text-xs text-muted-foreground">The extension is being prepared for the Chrome Web Store — check back soon.</p>
-            )}
+
+            <div className="w-full rounded-xl border border-border bg-muted/20 p-4 md:p-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">Install in 4 steps (Chrome, Edge, Brave)</h3>
+              <ol className="space-y-2.5 text-xs text-muted-foreground leading-relaxed list-decimal pl-4 marker:font-bold marker:text-fuchsia-500">
+                <li>Download the zip above and <strong className="text-foreground">unzip it</strong> to a folder you&apos;ll keep (don&apos;t delete it afterwards).</li>
+                <li>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span>Open <code className="px-1.5 py-0.5 rounded bg-muted text-foreground">chrome://extensions</code> in a new tab (Edge: <code className="px-1.5 py-0.5 rounded bg-muted text-foreground">edge://extensions</code>).</span>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText("chrome://extensions"); setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000); }}
+                      className="flex items-center gap-1 px-2 py-1 rounded-md border border-border bg-background hover:bg-muted text-[11px] font-semibold text-foreground cursor-pointer">
+                      {copiedLink ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy link</>}
+                    </button>
+                  </div>
+                </li>
+                <li>Turn on <strong className="text-foreground">Developer mode</strong> (top-right switch).</li>
+                <li>Click <strong className="text-foreground">Load unpacked</strong> and choose the unzipped folder. Then pin the extension from the puzzle-piece menu so its icon is easy to click.</li>
+              </ol>
+              <p className="text-[11px] text-muted-foreground mt-3 flex items-center gap-1.5">
+                <RefreshCcw className="w-3 h-3 animate-spin shrink-0" /> This page unlocks automatically as soon as the extension is installed.
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-1.5">
+                Chrome may show a &ldquo;developer mode extensions&rdquo; notice when it starts — that&apos;s normal for extensions installed this way. To update later, download the new zip, replace the folder&apos;s files, and press the reload icon on the extension card.
+              </p>
+            </div>
           </div>
         ) : (
           <>

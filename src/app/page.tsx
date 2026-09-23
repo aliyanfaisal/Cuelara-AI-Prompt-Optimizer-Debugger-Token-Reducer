@@ -267,7 +267,7 @@ export default function Home() {
             className="text-center mb-12 md:mb-16"
           >
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">Prompt Optimizer & Context Extractor</h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Seven focused, fully-working tools to write, debug, score, compress and cost-check production-ready prompts.</p>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Eight focused, fully-working tools to write, debug, score, compress, cost-check and design production-ready prompts.</p>
           </motion.div>
 
           <motion.div
