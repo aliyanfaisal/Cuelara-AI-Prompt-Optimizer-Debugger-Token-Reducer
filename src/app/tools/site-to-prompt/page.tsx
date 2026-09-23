@@ -30,7 +30,7 @@ const FAQS = [
   },
   {
     question: "Can I analyse a site without typing its URL?",
-    answer: "Yes. Open any website, click the Cuelara icon in your browser toolbar, and this page opens with that site's design already measured.",
+    answer: "Yes. Open any website, click the Cuelara icon in your browser toolbar and press \"Analyse this page\". This page opens with that site's design already measured.",
   },
   {
     question: "What does the extension send to Cuelara?",
@@ -49,6 +49,15 @@ const FAQS = [
     answer: "Yes. The Design DNA card is editable — change the core colors or fonts before generating and the prompt uses your values.",
   },
 ];
+
+function fmtRadius(v: number): string {
+  return v >= 999 ? "pill" : `${v}px`;
+}
+
+// Gradient strings come from measured CSS; only render ones that are plain gradient() values.
+function safeGradient(v: string | null): string | null {
+  return v && /^[a-z-]*gradient\([^;{}<>]*\)$/i.test(v) ? v : null;
+}
 
 function isHex(v: string): boolean {
   return /^#[0-9A-Fa-f]{6}$/.test(v);
@@ -228,7 +237,7 @@ export default function SiteToPromptPage() {
     document.body.removeChild(a);
   };
 
-  const setColor = (key: "background" | "surface" | "text" | "mutedText" | "accent", v: string) =>
+  const setColor = (key: "background" | "surface" | "text" | "mutedText" | "accent" | "heading" | "border", v: string) =>
     setDna((d) => (d ? { ...d, colors: { ...d.colors, [key]: v } } : d));
 
   const busy = stage === "analysing" || stage === "generating";
@@ -261,7 +270,7 @@ export default function SiteToPromptPage() {
                 {extChecked ? "Install the Cuelara extension to continue" : "Checking for the Cuelara extension..."}
               </h2>
               <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-xl">
-                Browsers don&apos;t let one website read another&apos;s styling, so Site to Prompt measures pages from a small extension running in your own browser. It only acts when you press Analyse here or click its toolbar icon, and it works on logged-in pages too.
+                Browsers don&apos;t let one website read another&apos;s styling, so Site to Prompt measures pages from a small extension running in your own browser. It only acts when you press Analyse here or in its popup, and it works on logged-in pages too.
               </p>
             </div>
 
@@ -362,8 +371,27 @@ export default function SiteToPromptPage() {
                     <ColorField label="Surface" value={dna.colors.surface} onChange={(v) => setColor("surface", v)} />
                     <ColorField label="Text" value={dna.colors.text} onChange={(v) => setColor("text", v)} />
                     <ColorField label="Muted text" value={dna.colors.mutedText} onChange={(v) => setColor("mutedText", v)} />
+                    <ColorField label="Heading" value={dna.colors.heading} onChange={(v) => setColor("heading", v)} />
+                    <ColorField label="Border" value={dna.colors.border} onChange={(v) => setColor("border", v)} />
                     <ColorField label="Accent" value={dna.colors.accent} onChange={(v) => setColor("accent", v)} />
                   </div>
+                  {dna.colors.accents.length > 1 && (
+                    <div className="flex flex-wrap items-center gap-2 mt-3 text-xs text-muted-foreground">
+                      <span>Brand colors:</span>
+                      {dna.colors.accents.map((c) => (
+                        <button key={c} onClick={() => setDna({ ...dna, colors: { ...dna.colors, accent: c } })} title={`Use ${c} as the accent`}
+                          className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-mono cursor-pointer ${dna.colors.accent === c ? "border-fuchsia-500/50 bg-fuchsia-500/5 text-foreground" : "border-border hover:bg-muted"}`}>
+                          <span className="w-3.5 h-3.5 rounded-full border border-border" style={{ background: c }} /> {c}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {safeGradient(dna.effects.textGradient) && (
+                    <div className="mt-3">
+                      <p className="text-xs text-muted-foreground mb-1.5">Gradient text</p>
+                      <div className="h-3 rounded-full border border-border" style={{ background: safeGradient(dna.effects.textGradient)! }} />
+                    </div>
+                  )}
                   <div className="flex h-3 rounded-full overflow-hidden mt-4 border border-border" aria-label="Palette by usage">
                     {dna.colors.palette.map((c) => (
                       <div key={c.hex} title={`${c.hex} · ${Math.round(c.share * 100)}%`} style={{ background: c.hex, flexGrow: Math.max(c.share, 0.02) }} />
@@ -401,9 +429,9 @@ export default function SiteToPromptPage() {
                       {dna.spacing.scale.length > 0 && <span className="text-muted-foreground"> · {dna.spacing.scale.join(", ")}px</span>}
                     </p>
                     <p className="text-muted-foreground mt-1">
-                      Radii: {dna.radii.common.length ? dna.radii.common.map((r) => `${r}px`).join(", ") : "none"}
-                      {dna.radii.button !== null && ` · buttons ${dna.radii.button}px`}
-                      {dna.radii.card !== null && ` · cards ${dna.radii.card}px`}
+                      Radii: {dna.radii.common.length ? dna.radii.common.map(fmtRadius).join(", ") : "none"}
+                      {dna.radii.button !== null && ` · buttons ${fmtRadius(dna.radii.button)}`}
+                      {dna.radii.card !== null && ` · cards ${fmtRadius(dna.radii.card)}`}
                     </p>
                   </div>
                   <div>
@@ -417,6 +445,7 @@ export default function SiteToPromptPage() {
                       {dna.shadows.length > 0 && ` · ${dna.shadows.length} shadow style${dna.shadows.length > 1 ? "s" : ""}`}
                       {dna.effects.backdropBlur && " · backdrop blur"}
                       {dna.effects.gradients.length > 0 && " · gradients"}
+                      {dna.cssVariables.length > 0 && ` · ${dna.cssVariables.length} design tokens read`}
                     </p>
                   </div>
                 </section>

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Cuelara Site to Prompt",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Measures a website's real colors, fonts, spacing and layout so Cuelara can turn them into an AI prompt.",
   "minimum_chrome_version": "111",
   "permissions": [
@@ -31,7 +31,8 @@
     }
   ],
   "action": {
-    "default_title": "Turn this site into a prompt",
+    "default_title": "Cuelara Site to Prompt",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",

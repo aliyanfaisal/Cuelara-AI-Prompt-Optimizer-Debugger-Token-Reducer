@@ -5,7 +5,14 @@ export interface RawSample {
   h: number;
   color: string;
   bg: string;
+  /** Colour actually painted behind the element (own + ancestor layers blended). Absent from older extension versions. */
+  bgResolved?: string;
+  bgOwnAlpha?: number;
   bgImage: string;
+  textGradient?: string;
+  borderColor?: string;
+  svgStroke?: string;
+  letterSpacing?: number;
   fontFamily: string;
   fontSize: number;
   fontWeight: number;
@@ -42,6 +49,7 @@ export interface RawPage {
   pageColor: string;
   themeColor: string;
   loadedFonts: string[];
+  cssVariables?: { name: string; value: string }[];
   sections: RawSection[];
   samples: RawSample[];
 }
@@ -56,11 +64,13 @@ export interface TypeStyle {
   size: number;
   weight: number;
   lineHeight: number | null;
+  letterSpacing: number | null;
 }
 
 export interface ComponentStyle {
-  bg: string;
+  bg: string | null;
   color: string;
+  border: string | null;
   radius: number;
   padding: string;
   fontWeight: number;
@@ -76,6 +86,10 @@ export interface DesignDna {
     text: string;
     mutedText: string | null;
     accent: string | null;
+    /** Distinct saturated brand colours, strongest first (accent is the first). */
+    accents: string[];
+    heading: string | null;
+    border: string | null;
     palette: PaletteColor[];
   };
   typography: {
@@ -87,7 +101,8 @@ export interface DesignDna {
   spacing: { baseUnit: number | null; scale: number[] };
   radii: { common: number[]; button: number | null; card: number | null };
   shadows: string[];
-  effects: { backdropBlur: boolean; gradients: string[] };
+  effects: { backdropBlur: boolean; gradients: string[]; textGradient: string | null };
+  cssVariables: { name: string; value: string }[];
   layout: {
     containerWidth: number | null;
     usesGrid: boolean;
@@ -95,5 +110,5 @@ export interface DesignDna {
     gridColumns: number[];
     sections: { kind: string; height: number; background: string | null; heading: string }[];
   };
-  components: { button: ComponentStyle | null; card: ComponentStyle | null };
+  components: { button: ComponentStyle | null; buttonSecondary: ComponentStyle | null; card: ComponentStyle | null };
 }

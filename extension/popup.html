@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cuelara Site to Prompt</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icons/icon-48.png" alt="" width="32" height="32">
+      <div>
+        <h1>Site to Prompt</h1>
+        <p class="muted">by Cuelara</p>
+      </div>
+    </header>
+
+    <section class="page" aria-live="polite">
+      <p class="label">Current page</p>
+      <p id="host" class="host">—</p>
+    </section>
+
+    <p id="status" class="status" role="status" hidden></p>
+
+    <button id="analyse" class="btn primary" type="button">Analyse this page</button>
+    <button id="open" class="btn secondary" type="button">Open Site to Prompt</button>
+
+    <details>
+      <summary>What gets sent?</summary>
+      <p class="muted">
+        Only style measurements: colors, font names and sizes, spacing, radii, shadows, the page title and a few heading
+        texts. Nothing is sent until you press Analyse, and it never reads form fields or cookies.
+      </p>
+    </details>
+
+    <footer class="muted"><span id="version"></span></footer>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

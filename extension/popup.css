@@ -1,0 +1,59 @@
+:root {
+  --bg: #ffffff;
+  --card: #f7f7f9;
+  --text: #16161d;
+  --muted: #6b6b78;
+  --border: #e4e4ea;
+  --accent: #c026d3;
+  --accent-hover: #a21caf;
+  --danger: #dc2626;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15151b;
+    --card: #1e1e26;
+    --text: #f2f2f5;
+    --muted: #9a9aa8;
+    --border: #2c2c37;
+    --danger: #f87171;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  width: 320px;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+header { display: flex; align-items: center; gap: 10px; }
+h1 { font-size: 15px; margin: 0; line-height: 1.2; }
+p { margin: 0; }
+.muted { color: var(--muted); font-size: 12px; }
+.page { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.label { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.host { font-weight: 600; word-break: break-all; }
+.status { font-size: 12px; display: flex; gap: 8px; align-items: flex-start; }
+.status.error { color: var(--danger); }
+.status .spin {
+  width: 12px; height: 12px; margin-top: 3px; flex: none; border-radius: 50%;
+  border: 2px solid var(--border); border-top-color: var(--accent); animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn {
+  width: 100%; padding: 10px 12px; border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer;
+  border: 1px solid transparent;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn.secondary { background: transparent; color: var(--text); border-color: var(--border); }
+.btn.secondary:hover:not(:disabled) { background: var(--card); }
+.btn:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details { border-top: 1px solid var(--border); padding-top: 10px; }
+summary { cursor: pointer; font-weight: 600; font-size: 12px; }
+details p { margin-top: 6px; }
+footer { text-align: center; }
+[hidden] { display: none !important; }

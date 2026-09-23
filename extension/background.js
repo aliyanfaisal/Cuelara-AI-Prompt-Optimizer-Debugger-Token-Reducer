@@ -1,15 +1,7 @@
-import { collectPageSamples } from "./collector.js";
+import { CUELARA_ORIGINS, MEASURE_ERROR, measureTab, parseWebUrl } from "./shared.js";
 
-const TOOL_URL = "https://cuelara.com/tools/site-to-prompt";
 const LOAD_TIMEOUT_MS = 20000;
 const SETTLE_MS = 1500;
-const ALLOWED_SENDER_ORIGINS = ["https://cuelara.com", "https://www.cuelara.com", "http://localhost:3000"];
-
-const TOOL_MATCH_PATTERNS = [
-  "https://cuelara.com/tools/site-to-prompt*",
-  "https://www.cuelara.com/tools/site-to-prompt*",
-  "http://localhost:3000/tools/site-to-prompt*",
-];
 
 let busy = false;
 
@@ -30,23 +22,8 @@ function waitForLoad(tabId) {
   });
 }
 
-function parseWebUrl(rawUrl) {
-  try {
-    const url = new URL(rawUrl);
-    return url.protocol === "http:" || url.protocol === "https:" ? url : null;
-  } catch {
-    return null;
-  }
-}
-
-const MEASURE_ERROR = "Couldn't read that page. It may be down, restricted by the browser, or still loading.";
-
-async function measureTab(tabId) {
-  const [injection] = await chrome.scripting.executeScript({ target: { tabId }, func: collectPageSamples });
-  if (!injection || !injection.result) throw new Error("no result");
-  return injection.result;
-}
-
+// The tool page asks for a URL to be analysed: open it in an inactive tab of the user's own browser
+// (their cookies apply, so logged-in pages work too), measure it, and close the tab.
 async function analyse(rawUrl) {
   const url = parseWebUrl(rawUrl);
   if (!url) return { ok: false, error: "That doesn't look like a valid http(s) URL." };
@@ -55,7 +32,6 @@ async function analyse(rawUrl) {
   busy = true;
   let tab;
   try {
-    // An inactive tab in the user's own browser: their cookies apply, so logged-in pages work too.
     tab = await chrome.tabs.create({ url: url.toString(), active: false });
     await waitForLoad(tab.id);
     await new Promise((r) => setTimeout(r, SETTLE_MS));
@@ -68,33 +44,7 @@ async function analyse(rawUrl) {
   }
 }
 
-async function openToolPage(withResult) {
-  const url = withResult ? `${TOOL_URL}?from=extension` : TOOL_URL;
-  // Reuse an already-open tool tab instead of piling up new ones.
-  const existing = await chrome.tabs.query({ url: TOOL_MATCH_PATTERNS });
-  if (existing.length > 0 && existing[0].id !== undefined) {
-    await chrome.tabs.update(existing[0].id, { url, active: true });
-    if (existing[0].windowId !== undefined) chrome.windows.update(existing[0].windowId, { focused: true }).catch(() => {});
-  } else {
-    await chrome.tabs.create({ url });
-  }
-}
-
-// Toolbar click on any website: measure that tab in place, stash the result, and open the tool page to show it.
-chrome.action.onClicked.addListener(async (tab) => {
-  const pageUrl = tab.url ? parseWebUrl(tab.url) : null;
-  const onCuelara = pageUrl && ALLOWED_SENDER_ORIGINS.includes(pageUrl.origin);
-  if (!pageUrl || onCuelara || tab.id === undefined) return openToolPage(false);
-
-  try {
-    const raw = await measureTab(tab.id);
-    await chrome.storage.session.set({ pending: { ok: true, raw, url: pageUrl.toString() } });
-  } catch {
-    await chrome.storage.session.set({ pending: { ok: false, error: MEASURE_ERROR } });
-  }
-  return openToolPage(true);
-});
-
+// A page analysed from the popup is handed to the tool page once, then cleared.
 async function takePending() {
   const { pending } = await chrome.storage.session.get("pending");
   if (pending) await chrome.storage.session.remove("pending");
@@ -102,9 +52,9 @@ async function takePending() {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // Only the bridge running on Cuelara's own pages may ask for an analysis.
+  // Only the bridge running on Cuelara's own pages may ask for these.
   const origin = sender.tab && sender.tab.url ? new URL(sender.tab.url).origin : "";
-  if (!ALLOWED_SENDER_ORIGINS.includes(origin)) return false;
+  if (!CUELARA_ORIGINS.includes(origin)) return false;
 
   if (message && message.type === "analyse" && typeof message.url === "string") {
     analyse(message.url).then(sendResponse);
