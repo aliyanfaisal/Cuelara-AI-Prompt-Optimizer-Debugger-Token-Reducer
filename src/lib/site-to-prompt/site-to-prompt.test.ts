@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { normalizeColor, parseColor, colorsInString, compositeOver } from "./color";
 import { buildDesignDna } from "./aggregate";
-import type { RawPage, RawSample } from "./types";
+import { summarizeSection } from "./summarize";
+import type { RawNode, RawPage, RawSample } from "./types";
 
 test("normalizeColor handles rgb, rgba, space syntax and transparency", () => {
   assert.equal(normalizeColor("rgb(37, 99, 235)"), "#2563EB");
@@ -80,4 +81,29 @@ test("buildDesignDna uses blended backgrounds, gradient text and pill radii", ()
   assert.match(dna.effects.textGradient ?? "", /#7C86FF/);
   assert.equal(dna.radii.button, 9999);
   assert.equal(dna.components.card?.border, "#222223");
+});
+
+test("summarizeSection reads columns, stats, buttons and repeated cards from a tree", () => {
+  const text = (t: string, font: string, extra = {}) => ({ tag: "p", role: "text", text: t, box: [0, 0, 100, 20], s: { font, color: "#FFFFFF", ...extra } });
+  const tree: RawNode = {
+    tag: "section", box: [0, 0, 1440, 800], s: { pad: "80px 0px" },
+    kids: [{
+      tag: "div", box: [144, 80, 1152, 600], s: { display: "grid", cols: 2, gap: "48px" },
+      kids: [
+        { tag: "div", box: [144, 120, 528, 500], kids: [
+          { tag: "h1", role: "heading", text: "Big headline", box: [0, 0, 500, 96], s: { font: "48px/700", color: "#FFFFFF" } },
+          text("5+", "24px/700"), text("300+", "24px/700"),
+          { tag: "a", role: "button", box: [0, 0, 145, 46], s: { bg: "#FFFFFF", radius: "full", pad: "12px 24px", font: "14px/600", color: "#18181B" }, kids: [text("Start now", "14px/600")] },
+        ] },
+        // vertically centred column: starts lower than the first one but still overlaps it
+        { tag: "div", box: [816, 172, 384, 400], kids: [{ tag: "img", role: "image", box: [0, 0, 384, 400], s: { alt: "portrait", radius: "full" } }] },
+      ],
+    }],
+  };
+  const lines = summarizeSection("hero", tree).join("\n");
+  assert.match(lines, /2-column grid \(gap 48px\)/);
+  assert.match(lines, /Stats: 5\+, 300\+/);
+  assert.match(lines, /"Start now" — filled #FFFFFF/);
+  assert.match(lines, /Images: 384×400/);
+  assert.doesNotMatch(lines, /"5\+" —/); // stats are not headings
 });

@@ -1,4 +1,5 @@
 import { normalizeColor, luminance, saturationLightness, colorDistance, colorsInString } from "./color";
+import { summarizeSection } from "./summarize";
 import type { ComponentStyle, DesignDna, PaletteColor, RawPage, RawSample, TypeStyle } from "./types";
 
 /** Weighted tally: add(key, weight) repeatedly, then read entries ranked by total weight. */
@@ -315,10 +316,14 @@ export function buildDesignDna(raw: RawPage, url: string | null): DesignDna {
       usesFlex: samples.some((s) => s.display === "flex" || s.display === "inline-flex"),
       gridColumns: gridCols.ranked().slice(0, 3).map(([v]) => v),
       sections: raw.sections.map((s) => ({
+        role: s.role ?? "section",
         kind: s.tag,
+        y: s.y ?? 0,
         height: s.h,
         background: normalizeColor(s.bg),
         heading: s.heading,
+        summary: summarizeSection(s.role ?? "section", s.tree ?? null),
+        tree: s.tree ?? null,
       })),
     },
     components: {

@@ -8,6 +8,7 @@ import {
   Wand2, ChevronDown, Code2, Terminal, BookOpen,
 } from "lucide-react";
 import { TARGETS, type Target } from "@/lib/site-to-prompt/constants";
+import { EXTENSION_VERSION, EXTENSION_ZIP_URL } from "@/lib/site-to-prompt/extension-version";
 import { pingExtension, analyseWithExtension, takePendingAnalysis } from "@/lib/site-to-prompt/extension-bridge";
 import type { DesignDna } from "@/lib/site-to-prompt/types";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
@@ -281,10 +282,10 @@ export default function SiteToPromptPage() {
                   <Puzzle className="w-3.5 h-3.5" /> Add to Chrome
                 </a>
               )}
-              <a href="/cuelara-extension.zip" download
+              <a href={EXTENSION_ZIP_URL} download
                 className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold shadow-sm ${
                   EXTENSION_URL ? "border border-border bg-background hover:bg-muted text-foreground" : "bg-fuchsia-600 hover:bg-fuchsia-700 text-white"}`}>
-                <Download className="w-3.5 h-3.5" /> Download extension (.zip)
+                <Download className="w-3.5 h-3.5" /> Download extension v{EXTENSION_VERSION} (.zip)
               </a>
             </div>
 
@@ -441,7 +442,7 @@ export default function SiteToPromptPage() {
                       {dna.layout.containerWidth && <span className="text-muted-foreground"> · {dna.layout.containerWidth}px container</span>}
                     </p>
                     <p className="text-muted-foreground mt-1">
-                      {dna.layout.sections.length} top-level sections
+                      {dna.layout.sections.length} sections
                       {dna.shadows.length > 0 && ` · ${dna.shadows.length} shadow style${dna.shadows.length > 1 ? "s" : ""}`}
                       {dna.effects.backdropBlur && " · backdrop blur"}
                       {dna.effects.gradients.length > 0 && " · gradients"}
@@ -450,6 +451,32 @@ export default function SiteToPromptPage() {
                   </div>
                 </section>
               </div>
+
+              {dna.layout.sections.length > 0 && (
+                <div className="px-5 md:px-6 pb-6">
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                    Page structure · {dna.layout.sections.length} sections
+                  </h3>
+                  <div className="space-y-2">
+                    {dna.layout.sections.map((sec, i) => (
+                      <details key={i} className="group rounded-xl border border-border bg-background">
+                        <summary className="flex items-center gap-3 px-3.5 py-2.5 cursor-pointer text-xs list-none">
+                          <span className="w-2.5 h-2.5 rounded-full border border-border shrink-0" style={{ background: sec.background ?? "transparent" }} />
+                          <span className="font-semibold text-foreground capitalize">{i + 1}. {sec.role}</span>
+                          {sec.heading && <span className="text-muted-foreground truncate">“{sec.heading}”</span>}
+                          <span className="ml-auto text-muted-foreground shrink-0">{sec.height}px</span>
+                          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform group-open:rotate-180" />
+                        </summary>
+                        <ul className="px-4 pb-3 pt-1 space-y-1.5 text-[11px] leading-relaxed text-muted-foreground list-disc pl-8 border-t border-border/50">
+                          {sec.summary.length > 0
+                            ? sec.summary.map((line, j) => <li key={j}>{line}</li>)
+                            : <li>No structure captured for this section.</li>}
+                        </ul>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Step 3: target + goal */}
               <div className="px-5 md:px-6 py-5 border-t border-border bg-muted/10 space-y-4">

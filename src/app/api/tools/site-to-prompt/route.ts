@@ -3,11 +3,17 @@ import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToda
 import { isGenAITimeout } from "@/lib/genai-timeout";
 import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { generateWithFallback } from "@/lib/llm-generate";
-import { TEXT_GENERATION_CHAIN } from "@/lib/model-chain";
+import { buildTextGenerationChain } from "@/lib/model-chain";
 import { getSiteToPromptLimits } from "@/lib/site-to-prompt/limits";
 import { PROMPT_TOOL, MAX_GOAL_LENGTH, isTarget } from "@/lib/site-to-prompt/constants";
 import { designDnaSchema } from "@/lib/site-to-prompt/schema";
 import { buildSitePrompt, stripFences } from "@/lib/site-to-prompt/prompt";
+
+// A whole page's structure in, a long build prompt out — slower than the other tools' short prompts.
+const GENERATION_TIMEOUT_MS = 150_000;
+const CHAIN = buildTextGenerationChain(GENERATION_TIMEOUT_MS);
+
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   try {
@@ -29,7 +35,7 @@ export async function POST(req: Request) {
 
     let text: string;
     try {
-      const attempt = await generateWithFallback(TEXT_GENERATION_CHAIN, buildSitePrompt(parsed.data, body.target, goal), PROMPT_TOOL);
+      const attempt = await generateWithFallback(CHAIN, buildSitePrompt(parsed.data, body.target, goal), PROMPT_TOOL);
       text = stripFences(attempt.text);
     } catch (error) {
       if (error instanceof NoApiKeysConfiguredError) {

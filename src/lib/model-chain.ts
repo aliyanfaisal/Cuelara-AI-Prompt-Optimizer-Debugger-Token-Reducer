@@ -1,5 +1,6 @@
 import "server-only";
 import { geminiGenerate, openAICompatibleGenerate, type ProviderChainLink } from "@/lib/llm-generate";
+import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
 
 export const GEMINI_MODEL = "gemini-3.6-flash";
 
@@ -22,15 +23,21 @@ const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
  * it needs Gemini's embedding model specifically, and mixing embedding spaces
  * across providers would break similarity search against already-stored vectors.
  */
-export const TEXT_GENERATION_CHAIN: ProviderChainLink[] = [
-  { provider: "gemini", model: GEMINI_MODEL, generate: geminiGenerate(GEMINI_MODEL) },
-  { provider: "groq", model: GROQ_MODEL, generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL) },
-  {
-    provider: "openrouter",
-    model: OPENROUTER_MODEL,
-    generate: openAICompatibleGenerate(OPENROUTER_BASE_URL, OPENROUTER_MODEL, {
-      "HTTP-Referer": "https://cuelara.com",
-      "X-Title": "Cuelara",
-    }),
-  },
-];
+export function buildTextGenerationChain(timeoutMs: number = GENAI_TIMEOUT_MS): ProviderChainLink[] {
+  return [
+    { provider: "gemini", model: GEMINI_MODEL, generate: geminiGenerate(GEMINI_MODEL, timeoutMs) },
+    { provider: "groq", model: GROQ_MODEL, generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL, undefined, timeoutMs) },
+    {
+      provider: "openrouter",
+      model: OPENROUTER_MODEL,
+      generate: openAICompatibleGenerate(
+        OPENROUTER_BASE_URL,
+        OPENROUTER_MODEL,
+        { "HTTP-Referer": "https://cuelara.com", "X-Title": "Cuelara" },
+        timeoutMs
+      ),
+    },
+  ];
+}
+
+export const TEXT_GENERATION_CHAIN: ProviderChainLink[] = buildTextGenerationChain();

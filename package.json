@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "tsx --test \"src/**/*.test.ts\"",
-    "build:extension": "cd extension && rm -f ../public/cuelara-extension.zip && zip -qr ../public/cuelara-extension.zip . -x README.md -x '.DS_Store'"
+    "build:extension": "node scripts/build-extension.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",

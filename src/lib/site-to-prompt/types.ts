@@ -33,6 +33,18 @@ export interface RawSample {
   backdropBlur: boolean;
 }
 
+/** One element of a section's simplified layout tree, as measured in the page. */
+export interface RawNode {
+  tag: string;
+  role?: string;
+  text?: string;
+  /** [x, y, width, height] relative to the section's top-left corner. */
+  box: number[];
+  /** Only the styles that matter: layout, paint and text, keyed by short names. */
+  s?: Record<string, string | number | boolean>;
+  kids?: RawNode[];
+}
+
 export interface RawSection {
   tag: string;
   h: number;
@@ -40,6 +52,10 @@ export interface RawSection {
   display: string;
   children: number;
   heading: string;
+  role?: string;
+  y?: number;
+  w?: number;
+  tree?: RawNode | null;
 }
 
 export interface RawPage {
@@ -108,7 +124,20 @@ export interface DesignDna {
     usesGrid: boolean;
     usesFlex: boolean;
     gridColumns: number[];
-    sections: { kind: string; height: number; background: string | null; heading: string }[];
+    sections: DnaSection[];
   };
   components: { button: ComponentStyle | null; buttonSecondary: ComponentStyle | null; card: ComponentStyle | null };
+}
+
+export interface DnaSection {
+  /** header | hero | section | footer */
+  role: string;
+  kind: string;
+  y: number;
+  height: number;
+  background: string | null;
+  heading: string;
+  /** Plain-language facts about the section, derived from its tree. */
+  summary: string[];
+  tree: RawNode | null;
 }

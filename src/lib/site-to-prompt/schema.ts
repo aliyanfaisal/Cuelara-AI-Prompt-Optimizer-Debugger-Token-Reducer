@@ -3,6 +3,27 @@ import { z } from "zod";
 const hex = z.string().regex(/^#[0-9A-Fa-f]{6}$/);
 const short = z.string().max(200);
 
+interface NodeShape {
+  tag: string;
+  role?: string;
+  text?: string;
+  box: number[];
+  s?: Record<string, string | number | boolean>;
+  kids?: NodeShape[];
+}
+
+/** A section's layout tree: recursive, so bounded by field lengths and child counts (the request size is capped in the route). */
+const nodeSchema: z.ZodType<NodeShape> = z.lazy(() =>
+  z.object({
+    tag: z.string().max(24),
+    role: z.string().max(16).optional(),
+    text: z.string().max(140).optional(),
+    box: z.array(z.number().finite()).length(4),
+    s: z.record(z.string().max(24), z.union([z.string().max(320), z.number().finite(), z.boolean()])).optional(),
+    kids: z.array(nodeSchema).max(16).optional(),
+  })
+);
+
 /** Validates a DesignDna coming back from the browser — the client can edit it, so it is untrusted input. */
 export const designDnaSchema = z.object({
   source: z.object({ url: z.string().max(2048).nullable(), title: short }),
@@ -16,7 +37,7 @@ export const designDnaSchema = z.object({
     accents: z.array(hex).max(6),
     heading: hex.nullable(),
     border: hex.nullable(),
-    palette: z.array(z.object({ hex, share: z.number() })).max(8),
+    palette: z.array(z.object({ hex, share: z.number() })).max(10),
   }),
   typography: z.object({
     headingFont: short,
@@ -37,7 +58,18 @@ export const designDnaSchema = z.object({
     usesFlex: z.boolean(),
     gridColumns: z.array(z.number()).max(4),
     sections: z
-      .array(z.object({ kind: short, height: z.number(), background: hex.nullable(), heading: short }))
+      .array(
+        z.object({
+          role: z.string().max(16),
+          kind: short,
+          y: z.number(),
+          height: z.number(),
+          background: hex.nullable(),
+          heading: short,
+          summary: z.array(z.string().max(400)).max(30),
+          tree: nodeSchema.nullable(),
+        })
+      )
       .max(14),
   }),
   components: z.object({
@@ -99,7 +131,20 @@ export const rawPageSchema = z.object({
   loadedFonts: z.array(z.string().max(100)).max(12),
   cssVariables: z.array(z.object({ name: z.string().max(80), value: z.string().max(120) })).max(70).optional(),
   sections: z
-    .array(z.object({ tag: z.string().max(32), h: num, bg: cssColor, display: z.string().max(32), children: num, heading: z.string().max(120) }))
+    .array(
+      z.object({
+        tag: z.string().max(32),
+        h: num,
+        bg: cssColor,
+        display: z.string().max(32),
+        children: num,
+        heading: z.string().max(120),
+        role: z.string().max(16).optional(),
+        y: num.optional(),
+        w: num.optional(),
+        tree: nodeSchema.nullable().optional(),
+      })
+    )
     .max(14),
   samples: z.array(rawSampleSchema).max(4000),
 });

@@ -1,4 +1,4 @@
-import { collectPageSamples } from "./collector.js";
+import { collectPageSamples, preparePage } from "./collector.js";
 
 export const TOOL_URL = "https://cuelara.com/tools/site-to-prompt";
 export const TOOL_MATCH_PATTERNS = [
@@ -31,6 +31,8 @@ export function unsupportedReason(tabUrl) {
 }
 
 export async function measureTab(tabId) {
+  // Scroll through first so reveal-on-scroll sections exist; a failure here must never block measuring.
+  await chrome.scripting.executeScript({ target: { tabId }, func: preparePage }).catch(() => {});
   const [injection] = await chrome.scripting.executeScript({ target: { tabId }, func: collectPageSamples });
   if (!injection || !injection.result) throw new Error("no result");
   return injection.result;

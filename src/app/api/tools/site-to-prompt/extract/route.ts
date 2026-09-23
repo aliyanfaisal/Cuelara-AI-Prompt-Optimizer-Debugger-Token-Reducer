@@ -6,6 +6,7 @@ import { rawPageSchema } from "@/lib/site-to-prompt/schema";
 import { buildDesignDna } from "@/lib/site-to-prompt/aggregate";
 
 const MIN_SAMPLES = 5;
+const MAX_BODY_BYTES = 2_000_000;
 
 /** The extension measures the page in the user's browser; this route turns those measurements into the Design DNA. */
 export async function POST(req: Request) {
@@ -18,6 +19,10 @@ export async function POST(req: Request) {
         { error: `You've used your ${extractLimit} free site analyses for today. Please try again tomorrow.` },
         { status: 429 }
       );
+    }
+
+    if (Number(req.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: "That page produced too much data to analyse." }, { status: 413 });
     }
 
     const body = await req.json().catch(() => null);

@@ -23,9 +23,9 @@ export class ProviderHttpError extends Error {
   }
 }
 
-export function geminiGenerate(model: string): GenerateFn {
+export function geminiGenerate(model: string, timeoutMs: number = GENAI_TIMEOUT_MS): GenerateFn {
   return async (apiKey, prompt) => {
-    const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
+    const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: timeoutMs } });
     const response = await ai.models.generateContent({ model, contents: prompt });
     return (response.text ?? "").trim();
   };
@@ -39,7 +39,8 @@ export function geminiGenerate(model: string): GenerateFn {
 export function openAICompatibleGenerate(
   baseUrl: string,
   model: string,
-  extraHeaders?: Record<string, string>
+  extraHeaders?: Record<string, string>,
+  timeoutMs: number = GENAI_TIMEOUT_MS
 ): GenerateFn {
   return async (apiKey, prompt) => {
     const res = await fetch(`${baseUrl}/chat/completions`, {
@@ -53,7 +54,7 @@ export function openAICompatibleGenerate(
         model,
         messages: [{ role: "user", content: prompt }],
       }),
-      signal: AbortSignal.timeout(GENAI_TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
     });
 
     if (!res.ok) {
