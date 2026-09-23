@@ -19,8 +19,41 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cuelara — AI Prompt Optimizer & Context Extractor",
-  description: "Turn rough prompts into structured, production-ready instructions and extract only the relevant context from large documents — free tools built for ChatGPT, Claude, and Gemini.",
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "https://cuelara.com"),
+  title: {
+    default: "Cuelara — AI Prompt Optimizer & Context Extractor",
+    template: "%s | Cuelara",
+  },
+  description:
+    "Turn rough prompts into structured, production-ready instructions and extract only the relevant context from large documents — free tools built for ChatGPT, Claude, and Gemini.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Cuelara — AI Prompt Optimizer & Context Extractor",
+    description:
+      "Turn rough prompts into structured, production-ready instructions and extract only the relevant context from large documents.",
+    url: "https://cuelara.com",
+    siteName: "Cuelara",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cuelara — AI Prompt Optimizer & Context Extractor",
+    description:
+      "Turn rough prompts into structured, production-ready instructions and extract only the relevant context from large documents.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
