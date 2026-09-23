@@ -58,7 +58,42 @@ export interface RawSection {
   tree?: RawNode | null;
 }
 
+export interface AlternateTheme {
+  mode: "light" | "dark";
+  background: string;
+  text: string;
+  heading: string;
+}
+
+/** What the site is built with and how its light/dark theme works, detected in the page. */
+export interface TechInfo {
+  js: string[];
+  css: string[];
+  ui: string[];
+  styling: string[];
+  icons: string[];
+  animation: string[];
+  fonts: string[];
+  platform: string[];
+  lang: string;
+  dir: string;
+  viewportMeta: boolean;
+  breakpoints: number[];
+  theme: {
+    current: "light" | "dark";
+    mechanism: "class" | "attribute" | "media-query" | "none";
+    detail: string;
+    hasDarkVariant: boolean;
+    hasLightVariant: boolean;
+    toggle: boolean;
+    stored: string;
+    colorScheme: string;
+    alternate: AlternateTheme | null;
+  };
+}
+
 export interface RawPage {
+  tech?: TechInfo | null;
   title: string;
   viewportWidth: number;
   pageBg: string;
@@ -119,6 +154,7 @@ export interface DesignDna {
   shadows: string[];
   effects: { backdropBlur: boolean; gradients: string[]; textGradient: string | null };
   cssVariables: { name: string; value: string }[];
+  tech: TechInfo | null;
   layout: {
     containerWidth: number | null;
     usesGrid: boolean;

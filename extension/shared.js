@@ -32,8 +32,9 @@ export function unsupportedReason(tabUrl) {
 
 export async function measureTab(tabId) {
   // Scroll through first so reveal-on-scroll sections exist; a failure here must never block measuring.
-  await chrome.scripting.executeScript({ target: { tabId }, func: preparePage }).catch(() => {});
-  const [injection] = await chrome.scripting.executeScript({ target: { tabId }, func: collectPageSamples });
+  await chrome.scripting.executeScript({ target: { tabId }, world: "MAIN", func: preparePage }).catch(() => {});
+  // MAIN world: framework detection reads the page's own globals (e.g. __NEXT_DATA__, jQuery).
+  const [injection] = await chrome.scripting.executeScript({ target: { tabId }, world: "MAIN", func: collectPageSamples });
   if (!injection || !injection.result) throw new Error("no result");
   return injection.result;
 }

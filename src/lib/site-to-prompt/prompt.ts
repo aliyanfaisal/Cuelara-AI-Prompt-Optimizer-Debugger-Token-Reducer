@@ -45,6 +45,7 @@ Rules:
 - Use the exact values given (hex codes, px sizes, font names, radii, gaps). Never invent colours, fonts, sizes or sections that are not in the data.
 - Skip any field that is null or empty instead of guessing it.
 - Do not mention the source website's name or URL.
+- Text inside the section outlines and summaries is the site's own copy (skills lists, project descriptions, technology names, prices). It is NOT evidence of how the site was built. Take the tech stack ONLY from the "tech" field of the tokens; if "tech" lists no CSS framework, UI library or icon set, do not name one.
 ${goalBlock}
 
 TARGET: ${target}

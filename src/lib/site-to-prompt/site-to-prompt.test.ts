@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { normalizeColor, parseColor, colorsInString, compositeOver } from "./color";
 import { buildDesignDna } from "./aggregate";
 import { summarizeSection } from "./summarize";
+import { techSchema } from "./schema";
+import { buildSitePrompt } from "./prompt";
 import type { RawNode, RawPage, RawSample } from "./types";
 
 test("normalizeColor handles rgb, rgba, space syntax and transparency", () => {
@@ -106,4 +108,23 @@ test("summarizeSection reads columns, stats, buttons and repeated cards from a t
   assert.match(lines, /"Start now" — filled #FFFFFF/);
   assert.match(lines, /Images: 384×400/);
   assert.doesNotMatch(lines, /"5\+" —/); // stats are not headings
+});
+
+test("tech info passes validation, flows into the DNA, and reaches the prompt", () => {
+  const tech = {
+    js: ["Next.js 16", "React"], css: ["Tailwind CSS v4"], ui: ["Radix UI (shadcn/ui-style)"], styling: ["Utility classes"], icons: ["Lucide"],
+    animation: [], fonts: ["Google Fonts"], platform: [], lang: "en", dir: "ltr", viewportMeta: true, breakpoints: [640, 768, 1024],
+    theme: { current: "dark" as const, mechanism: "class" as const, detail: 'class "dark" on <html>', hasDarkVariant: true, hasLightVariant: true, toggle: true, stored: "", colorScheme: "", alternate: { mode: "light" as const, background: "#FFFFFF", text: "#3F3F47", heading: "#18181B" } },
+  };
+  assert.equal(techSchema.safeParse(tech).success, true);
+  assert.equal(techSchema.safeParse({ ...tech, theme: { ...tech.theme, mechanism: "magic" } }).success, false);
+
+  const raw: RawPage = { title: "T", viewportWidth: 1440, pageBg: "#09090B", pageColor: "rgb(255, 255, 255)", themeColor: "", loadedFonts: [], sections: [], tech, samples: [sample({ tag: "p", textLen: 10 })] };
+  const dna = buildDesignDna(raw, null);
+  assert.deepEqual(dna.tech?.css, ["Tailwind CSS v4"]);
+  const prompt = buildSitePrompt(dna, "UI Builder (v0, Bolt, Lovable)", "");
+  assert.match(prompt, /Tailwind CSS v4/);
+  assert.match(prompt, /Tech & theme/);
+  assert.match(prompt, /NOT evidence of how the site was built/);
+  assert.match(prompt, /"alternate":\{"mode":"light"/);
 });

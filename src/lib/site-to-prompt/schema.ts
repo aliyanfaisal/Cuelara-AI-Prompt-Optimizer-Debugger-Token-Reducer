@@ -12,6 +12,37 @@ interface NodeShape {
   kids?: NodeShape[];
 }
 
+const techList = z.array(z.string().max(80)).max(8);
+
+/** What the site is built with and how its theme works — detected in the browser, so bounded tightly. */
+export const techSchema = z.object({
+  js: techList,
+  css: techList,
+  ui: techList,
+  styling: techList,
+  icons: techList,
+  animation: techList,
+  fonts: techList,
+  platform: techList,
+  lang: z.string().max(12),
+  dir: z.string().max(8),
+  viewportMeta: z.boolean(),
+  breakpoints: z.array(z.number().finite()).max(8),
+  theme: z.object({
+    current: z.enum(["light", "dark"]),
+    mechanism: z.enum(["class", "attribute", "media-query", "none"]),
+    detail: z.string().max(120),
+    hasDarkVariant: z.boolean(),
+    hasLightVariant: z.boolean(),
+    toggle: z.boolean(),
+    stored: z.string().max(80),
+    colorScheme: z.string().max(40),
+    alternate: z
+      .object({ mode: z.enum(["light", "dark"]), background: z.string().max(9), text: z.string().max(9), heading: z.string().max(9) })
+      .nullable(),
+  }),
+});
+
 /** A section's layout tree: recursive, so bounded by field lengths and child counts (the request size is capped in the route). */
 const nodeSchema: z.ZodType<NodeShape> = z.lazy(() =>
   z.object({
@@ -52,6 +83,7 @@ export const designDnaSchema = z.object({
   shadows: z.array(z.string().max(240)).max(4),
   effects: z.object({ backdropBlur: z.boolean(), gradients: z.array(z.string().max(400)).max(4), textGradient: z.string().max(400).nullable() }),
   cssVariables: z.array(z.object({ name: z.string().max(80), value: z.string().max(120) })).max(70),
+  tech: techSchema.nullable(),
   layout: z.object({
     containerWidth: z.number().nullable(),
     usesGrid: z.boolean(),
@@ -130,6 +162,7 @@ export const rawPageSchema = z.object({
   themeColor: cssColor,
   loadedFonts: z.array(z.string().max(100)).max(12),
   cssVariables: z.array(z.object({ name: z.string().max(80), value: z.string().max(120) })).max(70).optional(),
+  tech: techSchema.nullable().optional(),
   sections: z
     .array(
       z.object({

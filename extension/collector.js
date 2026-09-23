@@ -470,10 +470,23 @@ export function collectPageSamples() {
 
   // ---- the site's own design tokens (CSS custom properties) ----------------------------------
   const names = new Set();
+  const mediaTexts = new Set();
+  let darkSelectors = 0;
+  let lightSelectors = 0;
+  let fontFaces = 0;
+  let ruleBudget = 8000;
+  const darkSel = /(\.dark\b|\[data-(?:bs-)?theme=["']?dark|\[data-mode=["']?dark|\.theme-dark|\.dark-mode|\.is-dark)/i;
+  const lightSel = /(\.light\b|\[data-(?:bs-)?theme=["']?light|\[data-mode=["']?light|\.theme-light|\.light-mode)/i;
   const visit = (rules, depth) => {
     if (depth > 4) return;
     for (const rule of rules) {
-      if (names.size > 400) return;
+      if (--ruleBudget <= 0 || names.size > 500) return;
+      if (rule.media && rule.media.mediaText) mediaTexts.add(rule.media.mediaText);
+      if (rule.selectorText) {
+        if (darkSel.test(rule.selectorText)) darkSelectors++;
+        if (lightSel.test(rule.selectorText)) lightSelectors++;
+      }
+      if (rule.constructor && rule.constructor.name === "CSSFontFaceRule") fontFaces++;
       if (rule.style) {
         for (let i = 0; i < rule.style.length; i++) {
           const n = rule.style[i];
@@ -507,6 +520,341 @@ export function collectPageSamples() {
   }
   const cssVariables = colorVars.slice(0, 50).concat(otherVars.slice(0, 20));
 
+  // ---- tech stack & theme system -----------------------------------------------------------------
+  const detectTech = () => {
+    const htmlEl = document.documentElement;
+    // Every class token on the page, with counts — the fingerprint of most CSS frameworks.
+    const tokens = new Map();
+    let total = 0;
+    const classEls = document.querySelectorAll("[class]");
+    for (let i = 0; i < classEls.length && i < 6000; i++) {
+      const attr = classEls[i].getAttribute("class");
+      if (!attr) continue;
+      for (const t of attr.split(/\s+/)) {
+        if (!t) continue;
+        tokens.set(t, (tokens.get(t) || 0) + 1);
+        total++;
+      }
+    }
+    const countOf = (re) => {
+      let n = 0;
+      for (const [t, c] of tokens) if (re.test(t)) n += c;
+      return n;
+    };
+    const uniqueOf = (re) => {
+      let n = 0;
+      for (const t of tokens.keys()) if (re.test(t)) n++;
+      return n;
+    };
+    const has = (sel) => {
+      try {
+        return !!document.querySelector(sel);
+      } catch (e) {
+        return false;
+      }
+    };
+    let resources = [];
+    try {
+      resources = performance.getEntriesByType("resource").slice(0, 500).map((r) => r.name);
+    } catch (e) {
+      // Resource timing can be unavailable — the DOM assets below still cover most cases.
+    }
+    const assets = Array.from(document.querySelectorAll("link[href], script[src]"))
+      .slice(0, 400)
+      .map((e) => e.href || e.src || "")
+      .concat(resources);
+    const fontFiles = resources.filter((r) => /\.(woff2?|ttf|otf)(\?|$)/i.test(r));
+    const assetHas = (re) => assets.some((a) => re.test(a));
+    const nameList = Array.from(names);
+    const w = window;
+    const out = { js: [], css: [], ui: [], styling: [], icons: [], animation: [], fonts: [], platform: [] };
+    const push = (arr, v) => {
+      if (v && !arr.includes(v)) arr.push(v);
+    };
+
+    // -- JS frameworks / libraries (MAIN world gives us the page's globals)
+    const reactRoot = () => {
+      for (const el of [document.getElementById("root"), document.getElementById("__next"), document.body && document.body.firstElementChild]) {
+        if (el && Object.keys(el).some((k) => k.startsWith("__reactContainer") || k.startsWith("__reactFiber"))) return true;
+      }
+      return false;
+    };
+    const isNext = !!w.__NEXT_DATA__ || !!document.getElementById("__next") || has('script[src*="/_next/"]');
+    if (isNext) push(out.js, `Next.js${w.next && w.next.version ? " " + w.next.version : ""}`);
+    if (w.__NUXT__ || w.$nuxt || has("#__nuxt")) push(out.js, "Nuxt");
+    if (reactRoot() || w.__REACT_DEVTOOLS_GLOBAL_HOOK__ && w.__REACT_DEVTOOLS_GLOBAL_HOOK__.renderers && w.__REACT_DEVTOOLS_GLOBAL_HOOK__.renderers.size) push(out.js, "React");
+    if (w.__VUE__ || w.Vue || Array.from(document.querySelectorAll("body *")).slice(0, 300).some((e) => e.__vue_app__ || e.__vue__)) push(out.js, `Vue${w.Vue && w.Vue.version ? " " + w.Vue.version : ""}`);
+    if (has("[ng-version]")) push(out.js, `Angular ${document.querySelector("[ng-version]").getAttribute("ng-version")}`);
+    if (has("astro-island, astro-slot") || has("[data-astro-cid]")) push(out.js, "Astro");
+    if (uniqueOf(/^svelte-[a-z0-9]+$/) > 2) push(out.js, "Svelte");
+    if (has("[data-reactroot]") && !out.js.includes("React")) push(out.js, "React");
+    if (w.jQuery && w.jQuery.fn) push(out.js, `jQuery ${w.jQuery.fn.jquery || ""}`.trim());
+    if (w.Alpine || has("[x-data]")) push(out.js, "Alpine.js");
+    if (w.Livewire || has("[wire\\:id]")) push(out.js, "Livewire");
+    if (w.htmx) push(out.js, "htmx");
+    if (has("[data-turbo], turbo-frame") || w.Turbo) push(out.js, "Hotwire Turbo");
+    if (w.Inertia || has("#app[data-page]")) push(out.js, "Inertia.js");
+    if (w.Ember) push(out.js, "Ember");
+    if (has('meta[name="csrf-token"]') && (has("[wire\\:id]") || has("#app[data-page]"))) push(out.platform, "Laravel");
+
+    // -- CSS frameworks
+    const twUtil = /^(?:[a-z0-9-]+:)*-?(?:flex|grid|block|inline-block|inline-flex|hidden|relative|absolute|fixed|sticky|items-[a-z]+|justify-[a-z]+|gap-[xy]?-?\d+(?:\.5)?|space-[xy]-\d+|p[xytblrse]?-\d+(?:\.5)?|m[xytblrse]?-(?:\d+(?:\.5)?|auto)|w-(?:\d+(?:\/\d+)?|full|screen|auto|fit|min|max|\[[^\]]+\])|h-(?:\d+|full|screen|auto|fit|\[[^\]]+\])|text-(?:xs|sm|base|lg|[2-9]?xl)|font-(?:thin|light|normal|medium|semibold|bold|extrabold|black|sans|serif|mono)|leading-[a-z0-9.]+|tracking-[a-z]+|rounded(?:-[a-z0-9]+)?|bg-[a-z]+(?:-\d{2,3})?(?:\/\d+)?|text-[a-z]+-\d{2,3}|border(?:-[a-z0-9]+)?|shadow(?:-[a-z]+)?|max-w-[a-z0-9]+|min-h-screen|overflow-[a-z]+|opacity-\d+|transition(?:-[a-z]+)?|duration-\d+|z-\d+|inset-\d+|top-\d+|grid-cols-\d+|col-span-\d+)$/;
+    const twHits = countOf(twUtil);
+    const isTailwind = twHits >= 40 && twHits / Math.max(total, 1) >= 0.3;
+    let tailwindVersion = "";
+    if (isTailwind || nameList.some((n) => /^--color-[a-z]+-\d{2,3}$/.test(n))) {
+      const v4 = nameList.some((n) => /^--color-[a-z]+-\d{2,3}$/.test(n)) || nameList.includes("--spacing") || nameList.includes("--default-font-family");
+      tailwindVersion = v4 ? "4" : "3";
+    }
+    if (isTailwind) push(out.css, `Tailwind CSS v${tailwindVersion || "3"}`);
+    const bsCore = countOf(/^(container(-fluid)?|row|col(-(?:xs|sm|md|lg|xl|xxl))?(-\d+)?|btn|btn-[a-z-]+|navbar(-[a-z]+)?|form-control|badge|carousel|modal(-[a-z]+)?|d-(?:flex|none|block|inline)|(?:mb|mt|ms|me|px|py)-\d)$/);
+    if (bsCore >= 14 && tokens.has("row") && (uniqueOf(/^col-/) > 0)) {
+      const v = has("[data-bs-toggle], [data-bs-target]") || nameList.some((n) => n.startsWith("--bs-")) ? "5" : has("[data-toggle], [data-target]") ? "4" : uniqueOf(/^col-xs-/) > 0 ? "3" : "";
+      const hrefV = (assets.join(" ").match(/bootstrap(?:@|\/)(\d+)/i) || [])[1];
+      push(out.css, `Bootstrap${v || hrefV ? " " + (v || hrefV) : ""}`);
+    }
+    if (tokens.has("columns") && tokens.has("column") && uniqueOf(/^is-/) > 2) push(out.css, "Bulma");
+    if (uniqueOf(/^(grid-x|grid-y|cell|small-\d+|medium-\d+|large-\d+)$/) > 4) push(out.css, "Foundation");
+    if (uniqueOf(/^uk-/) > 3) push(out.css, "UIkit");
+    if (tokens.has("ui") && uniqueOf(/^(segment|menu|grid|button|container)$/) > 2 && countOf(/^ui$/) > 3) push(out.css, "Semantic UI");
+    if (uniqueOf(/^(materialboxed|waves-effect|z-depth-\d|card-panel)$/) > 1) push(out.css, "Materialize");
+    if (uniqueOf(/^(pure-g|pure-u-[\w-]+)$/) > 1) push(out.css, "Pure.css");
+    if (nameList.some((n) => /^--pico-/.test(n))) push(out.css, "Pico CSS");
+    if (assetHas(/tachyons/i)) push(out.css, "Tachyons");
+
+    // -- UI component libraries
+    if (uniqueOf(/^Mui[A-Z]/) > 2) push(out.ui, "Material UI (MUI)");
+    if (uniqueOf(/^chakra-/) > 1) push(out.ui, "Chakra UI");
+    if (uniqueOf(/^ant-/) > 3) push(out.ui, "Ant Design");
+    if (uniqueOf(/^mantine-/) > 2 || uniqueOf(/^m_[a-z0-9]{8,}$/) > 4) push(out.ui, "Mantine");
+    if (has("[data-radix-collection-item], [data-radix-popper-content-wrapper], [data-radix-scroll-area-viewport]") || has('[id^="radix-"]') || has("[data-slot]")) {
+      push(out.ui, isTailwind ? "Radix UI (shadcn/ui-style)" : "Radix UI");
+    }
+    if (has('[id^="headlessui-"]')) push(out.ui, "Headless UI");
+    if (isTailwind && tokens.has("btn") && uniqueOf(/^(btn-(primary|secondary|accent|ghost|outline)|card-body|card-title|badge-[a-z]+|navbar-(start|center|end)|drawer-[a-z]+)$/) > 1) push(out.ui, "daisyUI");
+    if (has("[data-drawer-target], [data-modal-target], [data-dropdown-toggle]")) push(out.ui, "Flowbite");
+    if (uniqueOf(/^v-(btn|card|app|toolbar|list|container|row|col)/) > 2) push(out.ui, "Vuetify");
+    if (uniqueOf(/^el-[a-z-]+/) > 3) push(out.ui, "Element Plus");
+    if (uniqueOf(/^p-(button|component|inputtext|datatable)/) > 1) push(out.ui, "PrimeVue/PrimeReact");
+    if (uniqueOf(/^(nextui|heroui)-/) > 1) push(out.ui, "NextUI/HeroUI");
+
+    // -- styling approach
+    if (has("style[data-emotion]") || uniqueOf(/^css-[a-z0-9]{5,8}(-[A-Za-z]+)?$/) > 4) push(out.styling, "Emotion (CSS-in-JS)");
+    if (has("style[data-styled]") || uniqueOf(/^sc-[A-Za-z0-9]{6,}$/) > 3) push(out.styling, "styled-components");
+    if (uniqueOf(/^[A-Za-z0-9-]+_[A-Za-z0-9-]+__[A-Za-z0-9_-]{5}$/) > 3 || uniqueOf(/^[a-z0-9-]+-module__[A-Za-z0-9_-]+__[A-Za-z0-9_-]+$/) > 3) push(out.styling, "CSS Modules");
+    if (uniqueOf(/^jsx-\d{5,}$/) > 1) push(out.styling, "styled-jsx");
+    if (isTailwind) push(out.styling, "Utility classes");
+    if (!isTailwind && !out.css.length && !out.styling.length) push(out.styling, "Custom / semantic CSS");
+
+    // -- icon sets
+    if (uniqueOf(/^(fa|fas|far|fab|fal|fad|fa-solid|fa-regular|fa-brands)$/) > 0 && uniqueOf(/^fa-[a-z0-9-]+$/) > 1) push(out.icons, "Font Awesome");
+    if (uniqueOf(/^bi-[a-z0-9-]+$/) > 1) push(out.icons, "Bootstrap Icons");
+    if (has(".material-icons, .material-symbols-outlined, .material-symbols-rounded")) push(out.icons, "Material Icons");
+    if (has("svg.lucide, svg[class*='lucide-']")) push(out.icons, "Lucide");
+    if (has("svg.feather, svg[class*='feather-']")) push(out.icons, "Feather");
+    if (has("svg[class*='tabler-icon']")) push(out.icons, "Tabler Icons");
+    if (uniqueOf(/^ri-[a-z0-9-]+$/) > 1) push(out.icons, "Remix Icon");
+    if (uniqueOf(/^ph(-[a-z]+)?$/) > 0 && uniqueOf(/^ph-[a-z0-9-]+$/) > 1) push(out.icons, "Phosphor");
+    if (has("ion-icon")) push(out.icons, "Ionicons");
+    if (uniqueOf(/^bx(-[a-z0-9-]+)?$/) > 1 && tokens.has("bx")) push(out.icons, "Boxicons");
+    if (uniqueOf(/^(mdi|mdi-[a-z0-9-]+)$/) > 1) push(out.icons, "Material Design Icons");
+
+    // -- animation / interaction libraries
+    if (w.gsap || w.TweenMax || assetHas(/gsap/i)) push(out.animation, `GSAP${w.gsap && w.gsap.version ? " " + w.gsap.version : ""}`);
+    if (has("[data-aos]") || w.AOS) push(out.animation, "AOS (animate on scroll)");
+    if (uniqueOf(/^animate__/) > 0) push(out.animation, "animate.css");
+    if (has("[data-projection-id], [data-framer-appear-id]")) push(out.animation, "Framer Motion");
+    if (w.lottie || has("lottie-player, dotlottie-player, .lottie")) push(out.animation, "Lottie");
+    if (has(".swiper, .swiper-container") || w.Swiper) push(out.animation, "Swiper");
+    if (has(".slick-slider")) push(out.animation, "Slick carousel");
+    if (w.THREE || has("canvas[data-engine*='three']")) push(out.animation, "Three.js");
+    if (has("[data-scroll-container], .locomotive-scroll") || w.Lenis) push(out.animation, "Smooth scroll (Lenis/Locomotive)");
+    if (has("[class*='reveal']") && !out.animation.length) push(out.animation, "Scroll-reveal (custom)");
+
+    // -- fonts
+    if (assetHas(/fonts\.googleapis\.com|fonts\.gstatic\.com/i)) push(out.fonts, "Google Fonts");
+    if (assetHas(/use\.typekit\.net|fonts\.adobe\.com/i)) push(out.fonts, "Adobe Fonts");
+    if (assetHas(/fonts\.bunny\.net/i)) push(out.fonts, "Bunny Fonts");
+    if (assetHas(/fontshare\.com/i)) push(out.fonts, "Fontshare");
+    if (assetHas(/cdnfonts\.com|fonts\.com|myfonts/i)) push(out.fonts, "Web font CDN");
+    if (fontFiles.some((f) => { try { return new URL(f).origin === location.origin; } catch (e) { return false; } })) push(out.fonts, "Self-hosted font files");
+    else if (fontFaces > 0 && !out.fonts.length) push(out.fonts, "Self-hosted @font-face");
+    if (assetHas(/\/_next\/static\/media\/.*\.woff2?/i) || tokens.has("__className_") ) push(out.fonts, "next/font (self-hosted)");
+    // A declared family with no font file behind it renders as whatever is installed locally (or a fallback).
+    let loadedCount = 0;
+    try {
+      document.fonts.forEach((f) => { if (f.status === "loaded") loadedCount++; });
+    } catch (e) {
+      loadedCount = fontFiles.length;
+    }
+    if (!out.fonts.length && loadedCount === 0 && fontFiles.length === 0) push(out.fonts, "No web-font files loaded (system / locally installed fonts)");
+
+    // -- CMS / platform
+    const gen = (document.querySelector('meta[name="generator"]') || {}).content || "";
+    if (gen) push(out.platform, gen.slice(0, 40));
+    if (assetHas(/\/wp-content\/|\/wp-includes\//i) || has('link[rel="https://api.w.org/"]')) push(out.platform, "WordPress");
+    if (uniqueOf(/^elementor-/) > 2) push(out.platform, "Elementor");
+    if (assetHas(/cdn\.shopify\.com/i) || w.Shopify) push(out.platform, "Shopify");
+    if (has("html[data-wf-page]") || uniqueOf(/^w-(nav|container|col|button)/) > 2) push(out.platform, "Webflow");
+    if (assetHas(/parastorage\.com|wixstatic\.com/i)) push(out.platform, "Wix");
+    if (assetHas(/squarespace/i)) push(out.platform, "Squarespace");
+    if (assetHas(/framerusercontent\.com/i) || has("[data-framer-name]")) push(out.platform, "Framer");
+    if (uniqueOf(/^woocommerce/) > 0) push(out.platform, "WooCommerce");
+
+    // -- responsive breakpoints from media queries
+    const bpTally = new Map();
+    let prefersDark = 0;
+    let prefersLight = 0;
+    for (const m of mediaTexts) {
+      if (/prefers-color-scheme:\s*dark/.test(m)) prefersDark++;
+      if (/prefers-color-scheme:\s*light/.test(m)) prefersLight++;
+      for (const mm of m.matchAll(/\((?:min|max)-width:\s*([\d.]+)(px|em|rem)\)/g)) {
+        const px2 = Math.round(parseFloat(mm[1]) * (mm[2] === "px" ? 1 : 16));
+        if (px2 >= 320 && px2 <= 2000) bpTally.set(px2, (bpTally.get(px2) || 0) + 1);
+      }
+    }
+    const breakpoints = [...bpTally.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map((e) => e[0]).sort((a, b) => a - b);
+
+    // -- light / dark theme system
+    const htmlCls = htmlEl.classList;
+    const themeAttrName = ["data-theme", "data-bs-theme", "data-mode", "data-color-mode", "data-color-scheme", "data-mui-color-scheme", "data-joy-color-scheme", "data-theme-mode"].find((a) => htmlEl.hasAttribute(a) || (document.body && document.body.hasAttribute(a)));
+    const themeAttrEl = themeAttrName ? (htmlEl.hasAttribute(themeAttrName) ? htmlEl : document.body) : null;
+    const themeAttrVal = themeAttrName ? themeAttrEl.getAttribute(themeAttrName) : "";
+    const classTheme = ["dark", "light"].find((c) => htmlCls.contains(c)) || (document.body && ["dark", "light"].find((c) => document.body.classList.contains(c))) || "";
+    const hasDarkVariant = countOf(/^dark:/) > 0;
+    let mechanism = "none";
+    if (classTheme || darkSelectors > 0 || hasDarkVariant && !prefersDark) mechanism = "class";
+    if (themeAttrName && /^(dark|light|auto|system)$/i.test(themeAttrVal || "")) mechanism = "attribute";
+
+    if (mechanism === "none" && prefersDark > 0) mechanism = "media-query";
+    const toggleEl = Array.from(document.querySelectorAll("button, [role='switch'], input[type='checkbox'], label, a[aria-label], a[title]"))
+      .slice(0, 400)
+      .find((e) => {
+        const label = (e.getAttribute("aria-label") || "") + " " + (e.getAttribute("title") || "");
+        if (/(theme|dark mode|light mode|color mode|colour mode|appearance|switch to (dark|light)|toggle (dark|light))/i.test(label)) return true;
+        if (e.tagName === "A" || e.tagName === "LABEL") return false;
+        const idCls = (e.id || "") + " " + (typeof e.className === "string" ? e.className : "");
+        return /(theme-?(toggle|switch|selector)|dark-?mode|color-?mode|mode-?(toggle|switch)|appearance)/i.test(idCls) || !!e.querySelector("svg.lucide-sun, svg.lucide-moon, .fa-moon, .fa-sun, .bi-moon, .bi-sun, .bi-moon-stars, [data-icon='moon'], [data-icon='sun']");
+      });
+    const storedTheme = (() => {
+      try {
+        for (const k of ["theme", "color-theme", "color-mode", "vueuse-color-scheme", "chakra-ui-color-mode", "mantine-color-scheme-value", "darkMode"]) {
+          const v = localStorage.getItem(k);
+          if (v) return `${k}=${v}`.slice(0, 60);
+        }
+      } catch (e) {
+        // storage can be blocked — the theme mechanism is still detectable without it.
+      }
+      return "";
+    })();
+    const schemeMeta = (document.querySelector('meta[name="color-scheme"]') || {}).content || "";
+    const scheme = getComputedStyle(htmlEl).colorScheme;
+    const currentMode = luminanceOf(pageBg) < 0.25 ? "dark" : "light";
+
+    // Flip the theme briefly (transitions off) to read the other palette, then put everything back.
+    let alternate = null;
+    if (mechanism === "class" || mechanism === "attribute") {
+      const kill = document.createElement("style");
+      kill.textContent = "*,*::before,*::after{transition:none!important;animation:none!important}";
+      const restore = [];
+      try {
+        document.head.appendChild(kill);
+        if (mechanism === "class") {
+          const target = htmlCls.contains("dark") || htmlCls.contains("light") || !document.body || !(document.body.classList.contains("dark") || document.body.classList.contains("light")) ? htmlEl : document.body;
+          const before = target.className;
+          restore.push(() => { target.className = before; });
+          const wasDark = target.classList.contains("dark") || currentMode === "dark";
+          if (wasDark) { target.classList.remove("dark"); target.classList.add("light"); } else { target.classList.remove("light"); target.classList.add("dark"); }
+        } else {
+          const before = themeAttrEl.getAttribute(themeAttrName);
+          restore.push(() => themeAttrEl.setAttribute(themeAttrName, before));
+          themeAttrEl.setAttribute(themeAttrName, currentMode === "dark" ? "light" : "dark");
+        }
+        void document.body.offsetHeight;
+        const fresh = (el) => {
+          const chain = [];
+          for (let e = el; e; e = e.parentElement) chain.push(e);
+          let base = canvasDefault;
+          for (let i = chain.length - 1; i >= 0; i--) {
+            const c = rgba(getComputedStyle(chain[i]).backgroundColor);
+            if (c && c[3] > 0.004) base = over(base, c);
+          }
+          return base;
+        };
+        const counts = new Map();
+        for (let ix = 0; ix < 6; ix++) {
+          for (let iy = 0; iy < 5; iy++) {
+            const el = document.elementFromPoint(Math.round(((ix + 0.5) / 6) * window.innerWidth), Math.round(((iy + 0.5) / 5) * window.innerHeight));
+            const h = hex(fresh(el || document.body));
+            counts.set(h, (counts.get(h) || 0) + 1);
+          }
+        }
+        const altBg = [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
+        const bodyFg = rgba(getComputedStyle(document.body).color);
+        const altText = bodyFg ? hex(over(rgba(altBg) || canvasDefault, bodyFg)) : "";
+        const heading = document.querySelector("h1, h2");
+        const hFg = heading ? rgba(getComputedStyle(heading).color) : null;
+        alternate = {
+          mode: luminanceOf(altBg) < 0.25 ? "dark" : "light",
+          background: altBg,
+          text: altText,
+          heading: hFg && hFg[3] > 0.02 ? hex(over(rgba(altBg) || canvasDefault, hFg)) : "",
+        };
+      } catch (e) {
+        alternate = null;
+      } finally {
+        for (const r of restore) {
+          try { r(); } catch (e2) { /* best effort */ }
+        }
+        kill.remove();
+      }
+    }
+
+    return {
+      js: out.js.slice(0, 6),
+      css: out.css.slice(0, 4),
+      ui: out.ui.slice(0, 4),
+      styling: out.styling.slice(0, 4),
+      icons: out.icons.slice(0, 4),
+      animation: out.animation.slice(0, 5),
+      fonts: out.fonts.slice(0, 4),
+      platform: out.platform.slice(0, 4),
+      lang: (htmlEl.getAttribute("lang") || "").slice(0, 12),
+      dir: htmlEl.getAttribute("dir") || "ltr",
+      viewportMeta: !!document.querySelector('meta[name="viewport"]'),
+      breakpoints,
+      theme: {
+        current: currentMode,
+        mechanism,
+        detail: (classTheme ? `class "${classTheme}" on <${htmlCls.contains(classTheme) ? "html" : "body"}>` : "") + (themeAttrName ? `${classTheme ? "; " : ""}${themeAttrName}="${(themeAttrVal || "").slice(0, 20)}"` : ""),
+        hasDarkVariant: hasDarkVariant || darkSelectors > 0 || prefersDark > 0,
+        hasLightVariant: lightSelectors > 0 || prefersLight > 0 || mechanism !== "none",
+        toggle: !!toggleEl,
+        stored: storedTheme,
+        colorScheme: (schemeMeta || (scheme && scheme !== "normal" ? scheme : "")).slice(0, 30),
+        alternate,
+      },
+    };
+  };
+
+  const luminanceOf = (h) => {
+    const c = rgba(h);
+    if (!c) return 1;
+    const lin = (v) => {
+      const x = v / 255;
+      return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+  };
+
+  let tech = null;
+  try {
+    tech = detectTech();
+  } catch (e) {
+    // Detection is an extra — a failure here must never lose the measurements.
+    tech = null;
+  }
+
   const themeMeta = document.querySelector('meta[name="theme-color"]');
   const bodyCs = document.body ? getComputedStyle(document.body) : null;
   const fonts = [];
@@ -527,6 +875,7 @@ export function collectPageSamples() {
     themeColor: themeMeta ? (themeMeta.getAttribute("content") || "").slice(0, 40) : "",
     loadedFonts: Array.from(new Set(fonts)),
     cssVariables,
+    tech,
     sections,
     samples,
   };

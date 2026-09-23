@@ -86,3 +86,9 @@ ehthumbs_vista.db
 
 # Tool Workflows
 tool-workflows/
+
+# scratch scripts (local experiments; never commit)
+/_*.ts
+/_*.mts
+/_*.mjs
+/_*.js

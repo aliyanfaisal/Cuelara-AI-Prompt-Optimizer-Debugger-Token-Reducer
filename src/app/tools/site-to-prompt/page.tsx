@@ -452,6 +452,57 @@ export default function SiteToPromptPage() {
                 </section>
               </div>
 
+              {dna.tech && (
+                <div className="px-5 md:px-6 pb-6">
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">Stack &amp; theme</h3>
+                  <div className="space-y-2 text-xs">
+                    {([
+                      ["Framework", dna.tech.js],
+                      ["CSS", dna.tech.css],
+                      ["UI library", dna.tech.ui],
+                      ["Styling", dna.tech.styling],
+                      ["Icons", dna.tech.icons],
+                      ["Animation", dna.tech.animation],
+                      ["Fonts", dna.tech.fonts],
+                      ["Platform", dna.tech.platform],
+                    ] as const).filter(([, list]) => list.length > 0).map(([label, list]) => (
+                      <div key={label} className="flex flex-wrap items-center gap-1.5">
+                        <span className="w-20 shrink-0 text-muted-foreground">{label}</span>
+                        {list.map((item) => (
+                          <span key={item} className="px-2 py-1 rounded-lg border border-border bg-muted/30 text-foreground font-medium">{item}</span>
+                        ))}
+                      </div>
+                    ))}
+                    {dna.tech.breakpoints.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="w-20 shrink-0 text-muted-foreground">Breakpoints</span>
+                        <span className="text-foreground font-medium">{dna.tech.breakpoints.map((b) => `${b}px`).join(" · ")}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-4 rounded-xl border border-border bg-background p-3.5 text-xs leading-relaxed">
+                    <p className="text-foreground font-semibold capitalize">
+                      {dna.tech.theme.current} theme now
+                      <span className="text-muted-foreground font-normal">
+                        {dna.tech.theme.mechanism === "none" ? " · no theme switch detected" : ` · switches via ${dna.tech.theme.mechanism}${dna.tech.theme.detail ? ` (${dna.tech.theme.detail})` : ""}`}
+                        {dna.tech.theme.toggle && " · toggle button found"}
+                      </span>
+                    </p>
+                    {dna.tech.theme.alternate && (
+                      <div className="flex flex-wrap items-center gap-3 mt-2.5 text-muted-foreground">
+                        <span>Also has a {dna.tech.theme.alternate.mode} theme:</span>
+                        {([["background", dna.tech.theme.alternate.background], ["text", dna.tech.theme.alternate.text], ["heading", dna.tech.theme.alternate.heading]] as const).filter(([, v]) => isHex(v)).map(([k, v]) => (
+                          <span key={k} className="flex items-center gap-1.5">
+                            <span className="w-3.5 h-3.5 rounded-full border border-border" style={{ background: v }} />
+                            <span>{k}</span> <span className="font-mono text-foreground">{v}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {dna.layout.sections.length > 0 && (
                 <div className="px-5 md:px-6 pb-6">
                   <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">

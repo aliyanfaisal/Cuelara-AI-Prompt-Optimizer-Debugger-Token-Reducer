@@ -310,6 +310,7 @@ export function buildDesignDna(raw: RawPage, url: string | null): DesignDna {
       textGradient,
     },
     cssVariables: (raw.cssVariables ?? []).slice(0, 60),
+    tech: raw.tech ?? null,
     layout: {
       containerWidth: containerTally.top(),
       usesGrid: samples.some((s) => s.display === "grid" || s.display === "inline-grid"),
