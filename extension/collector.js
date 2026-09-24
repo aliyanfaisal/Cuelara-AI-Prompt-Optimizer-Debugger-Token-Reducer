@@ -20,13 +20,31 @@ export async function preparePage() {
 }
 
 /**
+ * Lists stylesheets the page itself cannot read (served from another origin). The extension fetches
+ * these separately — it has host access, so CORS does not apply — and passes a summary to
+ * collectPageSamples. Injected like the collector, so it must be self-contained.
+ */
+export function listCrossOriginSheets() {
+  const out = [];
+  for (const sheet of document.styleSheets) {
+    if (!sheet.href || !/^https?:/i.test(sheet.href)) continue;
+    try {
+      void sheet.cssRules;
+    } catch (e) {
+      if (out.length < 8) out.push(sheet.href);
+    }
+  }
+  return out;
+}
+
+/**
  * Injected into the analysed page (chrome.scripting.executeScript `func`). It must stay fully
  * self-contained — the function is serialised, so it can reference nothing outside its own body.
  * It measures and normalises (every colour becomes plain sRGB, translucent layers are blended onto
  * what is behind them); interpretation happens server-side in src/lib/site-to-prompt/aggregate.ts,
  * so tuning the analysis never needs an extension update.
  */
-export function collectPageSamples() {
+export function collectPageSamples(extra) {
   const MAX_NODES = 4000;
   const px = (v) => {
     const n = parseFloat(v);
@@ -503,6 +521,14 @@ export function collectPageSamples() {
       // Cross-origin stylesheets can't be read — their tokens are simply skipped.
     }
   }
+  // Facts from stylesheets the page could not read, fetched by the extension.
+  if (extra) {
+    for (const n of extra.names || []) if (names.size < 500) names.add(n);
+    for (const m of extra.mediaTexts || []) mediaTexts.add(m);
+    darkSelectors += extra.darkSelectors || 0;
+    lightSelectors += extra.lightSelectors || 0;
+    fontFaces += extra.fontFaces || 0;
+  }
   const rootStyle = getComputedStyle(document.documentElement);
   const colorVars = [];
   const otherVars = [];
@@ -750,63 +776,109 @@ export function collectPageSamples() {
     const schemeMeta = (document.querySelector('meta[name="color-scheme"]') || {}).content || "";
     const scheme = getComputedStyle(htmlEl).colorScheme;
     const currentMode = luminanceOf(pageBg) < 0.25 ? "dark" : "light";
+    let themeProbe = "";
 
     // Flip the theme briefly (transitions off) to read the other palette, then put everything back.
-    let alternate = null;
-    if (mechanism === "class" || mechanism === "attribute") {
+    // When the mechanism is unknown (obfuscated builds, custom setups) the same flip is used as a probe:
+    // if changing a class or attribute really changes the page colours, that is the mechanism.
+    const readPalette = () => {
+      const fresh = (el) => {
+        const chain = [];
+        for (let e = el; e; e = e.parentElement) chain.push(e);
+        let base = canvasDefault;
+        for (let i = chain.length - 1; i >= 0; i--) {
+          const c = rgba(getComputedStyle(chain[i]).backgroundColor);
+          if (c && c[3] > 0.004) base = over(base, c);
+        }
+        return base;
+      };
+      const counts = new Map();
+      for (let ix = 0; ix < 6; ix++) {
+        for (let iy = 0; iy < 5; iy++) {
+          const el = document.elementFromPoint(Math.round(((ix + 0.5) / 6) * window.innerWidth), Math.round(((iy + 0.5) / 5) * window.innerHeight));
+          const h = hex(fresh(el || document.body));
+          counts.set(h, (counts.get(h) || 0) + 1);
+        }
+      }
+      const bg = [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
+      const bodyFg = rgba(getComputedStyle(document.body).color);
+      const heading = document.querySelector("h1, h2");
+      const hFg = heading ? rgba(getComputedStyle(heading).color) : null;
+      const base = rgba(bg) || canvasDefault;
+      return {
+        background: bg,
+        text: bodyFg ? hex(over(base, bodyFg)) : "",
+        heading: hFg && hFg[3] > 0.02 ? hex(over(base, hFg)) : "",
+      };
+    };
+    const flip = (apply, undo) => {
       const kill = document.createElement("style");
       kill.textContent = "*,*::before,*::after{transition:none!important;animation:none!important}";
-      const restore = [];
       try {
         document.head.appendChild(kill);
-        if (mechanism === "class") {
-          const target = htmlCls.contains("dark") || htmlCls.contains("light") || !document.body || !(document.body.classList.contains("dark") || document.body.classList.contains("light")) ? htmlEl : document.body;
-          const before = target.className;
-          restore.push(() => { target.className = before; });
-          const wasDark = target.classList.contains("dark") || currentMode === "dark";
-          if (wasDark) { target.classList.remove("dark"); target.classList.add("light"); } else { target.classList.remove("light"); target.classList.add("dark"); }
-        } else {
-          const before = themeAttrEl.getAttribute(themeAttrName);
-          restore.push(() => themeAttrEl.setAttribute(themeAttrName, before));
-          themeAttrEl.setAttribute(themeAttrName, currentMode === "dark" ? "light" : "dark");
-        }
+        apply();
         void document.body.offsetHeight;
-        const fresh = (el) => {
-          const chain = [];
-          for (let e = el; e; e = e.parentElement) chain.push(e);
-          let base = canvasDefault;
-          for (let i = chain.length - 1; i >= 0; i--) {
-            const c = rgba(getComputedStyle(chain[i]).backgroundColor);
-            if (c && c[3] > 0.004) base = over(base, c);
-          }
-          return base;
-        };
-        const counts = new Map();
-        for (let ix = 0; ix < 6; ix++) {
-          for (let iy = 0; iy < 5; iy++) {
-            const el = document.elementFromPoint(Math.round(((ix + 0.5) / 6) * window.innerWidth), Math.round(((iy + 0.5) / 5) * window.innerHeight));
-            const h = hex(fresh(el || document.body));
-            counts.set(h, (counts.get(h) || 0) + 1);
-          }
-        }
-        const altBg = [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
-        const bodyFg = rgba(getComputedStyle(document.body).color);
-        const altText = bodyFg ? hex(over(rgba(altBg) || canvasDefault, bodyFg)) : "";
-        const heading = document.querySelector("h1, h2");
-        const hFg = heading ? rgba(getComputedStyle(heading).color) : null;
-        alternate = {
-          mode: luminanceOf(altBg) < 0.25 ? "dark" : "light",
-          background: altBg,
-          text: altText,
-          heading: hFg && hFg[3] > 0.02 ? hex(over(rgba(altBg) || canvasDefault, hFg)) : "",
-        };
+        const pal = readPalette();
+        return { ...pal, mode: luminanceOf(pal.background) < 0.25 ? "dark" : "light" };
       } catch (e) {
-        alternate = null;
+        return null;
       } finally {
-        for (const r of restore) {
-          try { r(); } catch (e2) { /* best effort */ }
-        }
+        try { undo(); } catch (e2) { /* best effort */ }
         kill.remove();
+      }
+    };
+    const currentPalette = readPalette();
+    const colorDistanceHex = (x, y) => {
+      const p = rgba(x);
+      const q = rgba(y);
+      return p && q ? Math.sqrt((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2 + (p[2] - q[2]) ** 2) : 0;
+    };
+    const differs = (alt) => !!alt && (alt.mode !== currentMode || colorDistanceHex(alt.background, currentPalette.background) > 40);
+    const classFlip = (target, from, to) => {
+      const before = target.className;
+      return flip(
+        () => { target.classList.remove(from); target.classList.add(to); },
+        () => { target.className = before; }
+      );
+    };
+    const attrFlip = (target, name, to) => {
+      if (!target) return null;
+      const had = target.hasAttribute(name);
+      const before = had ? target.getAttribute(name) : null;
+      return flip(
+        () => target.setAttribute(name, to),
+        () => (had ? target.setAttribute(name, before) : target.removeAttribute(name))
+      );
+    };
+    const targets = [htmlEl, document.body].filter(Boolean);
+    let alternate = null;
+    if (mechanism === "class") {
+      const target = htmlCls.contains("dark") || htmlCls.contains("light") || !document.body || !(document.body.classList.contains("dark") || document.body.classList.contains("light")) ? htmlEl : document.body;
+      alternate = currentMode === "dark" ? classFlip(target, "dark", "light") : classFlip(target, "light", "dark");
+      if (!differs(alternate)) alternate = null;
+    } else if (mechanism === "attribute") {
+      alternate = attrFlip(themeAttrEl, themeAttrName, currentMode === "dark" ? "light" : "dark");
+      if (!differs(alternate)) alternate = null;
+    }
+    // Unknown mechanism, or the guessed one changed nothing: probe the common conventions and keep the
+    // first that visibly changes the page.
+    if (!alternate) {
+      const want = currentMode === "dark" ? "light" : "dark";
+      const probes = [];
+      for (const t of targets) {
+        probes.push({ kind: "class", label: `class "${want}" on <${t.tagName.toLowerCase()}>`, run: () => classFlip(t, currentMode, want) });
+        for (const name of ["data-theme", "data-bs-theme", "data-mode", "data-color-mode", "data-color-scheme"]) {
+          probes.push({ kind: "attribute", label: `${name}="${want}" on <${t.tagName.toLowerCase()}>`, run: () => attrFlip(t, name, want) });
+        }
+      }
+      for (const probe of probes) {
+        const alt = probe.run();
+        if (differs(alt)) {
+          alternate = alt;
+          mechanism = probe.kind;
+          themeProbe = `${probe.label} (found by testing)`;
+          break;
+        }
       }
     }
 
@@ -826,7 +898,7 @@ export function collectPageSamples() {
       theme: {
         current: currentMode,
         mechanism,
-        detail: (classTheme ? `class "${classTheme}" on <${htmlCls.contains(classTheme) ? "html" : "body"}>` : "") + (themeAttrName ? `${classTheme ? "; " : ""}${themeAttrName}="${(themeAttrVal || "").slice(0, 20)}"` : ""),
+        detail: themeProbe || (classTheme ? `class "${classTheme}" on <${htmlCls.contains(classTheme) ? "html" : "body"}>` : "") + (themeAttrName ? `${classTheme ? "; " : ""}${themeAttrName}="${(themeAttrVal || "").slice(0, 20)}"` : ""),
         hasDarkVariant: hasDarkVariant || darkSelectors > 0 || prefersDark > 0,
         hasLightVariant: lightSelectors > 0 || prefersLight > 0 || mechanism !== "none",
         toggle: !!toggleEl,

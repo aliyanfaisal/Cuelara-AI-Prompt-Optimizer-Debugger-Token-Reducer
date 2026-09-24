@@ -6,7 +6,7 @@ Measures a website's computed styles in the user's own browser so the web tool a
 - `collector.js` — injected into the analysed page; measures only (colors, fonts, spacing, radii…). Must stay self-contained.
 - `background.js` — service worker. Two entry points: (1) the tool page asks it to analyse a URL (inactive tab → collector → close tab); (2) the popup's result is handed over via `chrome.storage.session`, which the tool page collects once via `takePending`. Only accepts requests from Cuelara's own pages.
 - `popup.html` / `popup.js` / `popup.css` — toolbar popup: shows the current site, measures that tab on **Analyse this page**, stores the result and opens (or reuses) the tool page. Explains unsupported pages (chrome://, web stores, Cuelara itself) instead of failing silently.
-- `shared.js` — helpers used by both the popup and the service worker (measuring, opening the tool page, unsupported-page rules).
+- `shared.js` — helpers used by both the popup and the service worker (measuring, opening the tool page, unsupported-page rules). `measureTab` also fetches the page's cross-origin stylesheets (the extension has host access, so CORS doesn't apply) and passes only extracted facts — custom-property names, media queries, dark-mode selector counts, font-face counts — to the collector.
 - `bridge.js` — content script on Cuelara pages; relays `ping` / `analyse` / `takePending` between the page (`window.postMessage`) and the service worker.
 
 All interpretation (palette, roles, type scale…) lives server-side in `src/lib/site-to-prompt/aggregate.ts`, so analysis tweaks never need an extension update. The measurement shape is `RawPage` in `src/lib/site-to-prompt/types.ts` and is validated by `rawPageSchema`.

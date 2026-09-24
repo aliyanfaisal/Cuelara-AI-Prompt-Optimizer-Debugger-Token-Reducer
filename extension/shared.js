@@ -1,4 +1,4 @@
-import { collectPageSamples, preparePage } from "./collector.js";
+import { collectPageSamples, listCrossOriginSheets, preparePage } from "./collector.js";
 
 export const TOOL_URL = "https://cuelara.com/tools/site-to-prompt";
 export const TOOL_MATCH_PATTERNS = [
@@ -30,11 +30,54 @@ export function unsupportedReason(tabUrl) {
   return null;
 }
 
+const CSS_FETCH_TIMEOUT_MS = 8000;
+const CSS_MAX_CHARS = 2_000_000;
+const DARK_SELECTOR = /(\.dark\b|\[data-(?:bs-)?theme=["']?dark|\[data-mode=["']?dark|\.theme-dark|\.dark-mode|\.is-dark)[^{}]*\{/gi;
+const LIGHT_SELECTOR = /(\.light\b|\[data-(?:bs-)?theme=["']?light|\[data-mode=["']?light|\.theme-light|\.light-mode)[^{}]*\{/gi;
+
+/**
+ * Stylesheets served from another origin (CDNs, asset hosts) are unreadable from inside the page, so their
+ * media queries, custom properties and dark-mode selectors would be invisible. The extension has host access
+ * and can fetch them; only a small set of facts is kept, and the CSS text itself is never sent anywhere.
+ */
+export async function summarizeCrossOriginCss(tabId) {
+  const summary = { names: [], mediaTexts: [], darkSelectors: 0, lightSelectors: 0, fontFaces: 0 };
+  try {
+    const [injection] = await chrome.scripting.executeScript({ target: { tabId }, world: "MAIN", func: listCrossOriginSheets });
+    const hrefs = (injection && injection.result) || [];
+    const names = new Set();
+    const media = new Set();
+    await Promise.all(
+      hrefs.map(async (href) => {
+        try {
+          if (!parseWebUrl(href)) return;
+          const res = await fetch(href, { credentials: "omit", signal: AbortSignal.timeout(CSS_FETCH_TIMEOUT_MS) });
+          if (!res.ok) return;
+          const css = (await res.text()).slice(0, CSS_MAX_CHARS);
+          for (const m of css.matchAll(/(--[a-zA-Z0-9_-]+)\s*:/g)) if (!m[1].startsWith("--tw-") && names.size < 500) names.add(m[1]);
+          for (const m of css.matchAll(/@media\s*([^{]+)\{/g)) if (media.size < 200) media.add(m[1].trim());
+          summary.darkSelectors += (css.match(DARK_SELECTOR) || []).length;
+          summary.lightSelectors += (css.match(LIGHT_SELECTOR) || []).length;
+          summary.fontFaces += (css.match(/@font-face/gi) || []).length;
+        } catch {
+          // One unreachable stylesheet must not stop the analysis.
+        }
+      })
+    );
+    summary.names = [...names];
+    summary.mediaTexts = [...media];
+  } catch {
+    // Reading extra CSS is a bonus; the measurements below still work without it.
+  }
+  return summary;
+}
+
 export async function measureTab(tabId) {
   // Scroll through first so reveal-on-scroll sections exist; a failure here must never block measuring.
   await chrome.scripting.executeScript({ target: { tabId }, world: "MAIN", func: preparePage }).catch(() => {});
+  const extra = await summarizeCrossOriginCss(tabId);
   // MAIN world: framework detection reads the page's own globals (e.g. __NEXT_DATA__, jQuery).
-  const [injection] = await chrome.scripting.executeScript({ target: { tabId }, world: "MAIN", func: collectPageSamples });
+  const [injection] = await chrome.scripting.executeScript({ target: { tabId }, world: "MAIN", func: collectPageSamples, args: [extra] });
   if (!injection || !injection.result) throw new Error("no result");
   return injection.result;
 }

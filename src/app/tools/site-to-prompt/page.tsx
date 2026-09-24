@@ -35,7 +35,7 @@ const FAQS = [
   },
   {
     question: "What does the extension send to Cuelara?",
-    answer: "Only style measurements: colors, font names and sizes, spacing, radii, shadows, and the page title and a few heading texts used to describe the layout. It doesn't read form fields, cookies, or page content beyond that, and it only acts when you press Analyse on this page.",
+    answer: "Only style measurements: colors, font names and sizes, spacing, radii, shadows, the detected tech stack (frameworks, theme mechanism), and the page title and a few heading texts used to describe the layout. To find design tokens it also reads the site's linked stylesheets, but only the extracted token names are sent, never the CSS itself. It doesn't read form fields or cookies, and it only acts when you press Analyse.",
   },
   {
     question: "How does it read a site's design without AI?",
