@@ -76,6 +76,9 @@ export async function sendEmail(params: SendEmailParams): Promise<void> {
 const BRAND_COLOR = "#7c3aed";
 
 function emailShell(title: string, bodyHtml: string): string {
+  const site = process.env.NEXTAUTH_URL || "https://cuelara.com";
+  const year = new Date().getFullYear();
+
   return `<!doctype html>
 <html>
   <body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
@@ -95,8 +98,15 @@ function emailShell(title: string, bodyHtml: string): string {
               </td>
             </tr>
             <tr>
-              <td style="padding:16px 32px;background:#fafafa;border-top:1px solid #e4e4e7;color:#71717a;font-size:11px;">
-                If you didn't request this, you can safely ignore this email.
+              <td style="padding:20px 32px;background:#fafafa;border-top:1px solid #e4e4e7;">
+                <p style="color:#71717a;font-size:11px;margin:0 0 12px;">If you didn't request this, you can safely ignore this email.</p>
+                <p style="margin:0 0 8px;font-size:12px;">
+                  <a href="${site}" style="color:#71717a;text-decoration:none;margin-right:12px;">cuelara.com</a>
+                  <a href="${site}/privacy" style="color:#71717a;text-decoration:none;margin-right:12px;">Privacy</a>
+                  <a href="${site}/terms" style="color:#71717a;text-decoration:none;margin-right:12px;">Terms</a>
+                  <a href="${site}/contact" style="color:#71717a;text-decoration:none;">Contact</a>
+                </p>
+                <p style="color:#a1a1aa;font-size:11px;margin:0;">&copy; ${year} Cuelara, Inc. All rights reserved.</p>
               </td>
             </tr>
           </table>
@@ -105,6 +115,11 @@ function emailShell(title: string, bodyHtml: string): string {
     </table>
   </body>
 </html>`;
+}
+
+function textFooter(): string {
+  const site = process.env.NEXTAUTH_URL || "https://cuelara.com";
+  return `\n\n---\ncuelara.com · ${site}/privacy · ${site}/terms · ${site}/contact\n© ${new Date().getFullYear()} Cuelara, Inc. All rights reserved.`;
 }
 
 function button(url: string, label: string): string {
@@ -122,7 +137,7 @@ export async function sendActivationEmail(to: string, activationUrl: string): Pr
      ${button(activationUrl, "Activate my account")}
      <p style="color:#71717a;font-size:12px;">This link expires in 24 hours. If the button doesn't work, paste this into your browser:<br/><span style="word-break:break-all;">${activationUrl}</span></p>`
   );
-  const text = `Confirm your email\n\nActivate your Cuelara account: ${activationUrl}\n\nThis link expires in 24 hours.`;
+  const text = `Confirm your email\n\nActivate your Cuelara account: ${activationUrl}\n\nThis link expires in 24 hours.${textFooter()}`;
   await sendEmail({ type: "activation", to, subject: "Activate your Cuelara account", html, text });
 }
 
@@ -133,7 +148,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
      ${button(resetUrl, "Reset my password")}
      <p style="color:#71717a;font-size:12px;">This link expires in 1 hour. If the button doesn't work, paste this into your browser:<br/><span style="word-break:break-all;">${resetUrl}</span></p>`
   );
-  const text = `Reset your password\n\nReset your Cuelara password: ${resetUrl}\n\nThis link expires in 1 hour.`;
+  const text = `Reset your password\n\nReset your Cuelara password: ${resetUrl}\n\nThis link expires in 1 hour.${textFooter()}`;
   await sendEmail({ type: "password-reset", to, subject: "Reset your Cuelara password", html, text });
 }
 
@@ -143,6 +158,6 @@ export async function sendPlanChangeEmail(to: string, planName: string): Promise
     `<p>Your Cuelara account is now on the <strong>${planName}</strong> plan. Your daily usage limits have been updated accordingly.</p>
      ${button(`${process.env.NEXTAUTH_URL || ""}/tools`, "Go to your tools")}`
   );
-  const text = `Your Cuelara plan was updated to: ${planName}.\n\nGo to your tools: ${process.env.NEXTAUTH_URL || ""}/tools`;
+  const text = `Your Cuelara plan was updated to: ${planName}.\n\nGo to your tools: ${process.env.NEXTAUTH_URL || ""}/tools${textFooter()}`;
   await sendEmail({ type: "plan-change", to, subject: `Your Cuelara plan is now ${planName}`, html, text });
 }
