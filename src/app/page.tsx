@@ -107,7 +107,7 @@ export default function Home() {
           className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-8 shadow-sm"
         >
           <Sparkles className="mr-2 h-4 w-4" />
-          <span>Prompt Optimizer & Context Extractor</span>
+          <span>Prompt Optimizer · Context Extractor · Site to Prompt</span>
         </motion.div>
 
         <motion.h1
@@ -126,7 +126,7 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-2xl text-lg text-muted-foreground md:text-xl mb-12 leading-relaxed"
         >
-          Cuelara turns rough prompts into structured, production-ready instructions, and extracts only the relevant context from your documents — so every token you send to GPT-4o, Claude, or Gemini actually matters.
+          Cuelara turns rough prompts into structured, production-ready instructions, extracts only the relevant context from your documents, and turns any website&apos;s design into a prompt an AI can rebuild — so every token you send to GPT-4o, Claude, or Gemini actually matters.
         </motion.p>
 
         <motion.div
@@ -266,8 +266,8 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">Prompt Optimizer & Context Extractor</h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Eight focused, fully-working tools to write, debug, score, compress, cost-check and design production-ready prompts.</p>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">Write it. Feed it. Design it.</h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Eight focused, fully-working tools: optimize prompts, extract the context that matters from large documents, turn any website into a design prompt, and debug, score, compress and cost-check the result.</p>
           </motion.div>
 
           <motion.div
@@ -340,13 +340,13 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="flex-1 space-y-6 md:space-y-8"
             >
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground tracking-tight">From messy thoughts to precise instructions in seconds.</h2>
-              <p className="text-base md:text-lg text-muted-foreground">Writing good prompts is hard. Cuelara acts as your AI engineering co-pilot, formatting your brain-dumps into professional system instructions.</p>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground tracking-tight">From messy inputs to precise prompts in seconds.</h2>
+              <p className="text-base md:text-lg text-muted-foreground">Good AI output starts with good input. Cuelara acts as your AI engineering co-pilot: it sharpens your instructions, trims your documents down to what matters, and captures a website&apos;s design as a prompt.</p>
 
               <div className="space-y-6 pt-2 md:pt-4">
-                <Step number="1" title="Paste your raw idea" desc="Don't worry about formatting or being concise. Just dump your requirements." />
-                <Step number="2" title="Cuelara analyzes and optimizes" desc="Our engine detects ambiguities, structures the task, and shreds useless tokens." />
-                <Step number="3" title="Deploy and save" desc="Copy the heavily optimized prompt to your codebase and watch your API bills drop." />
+                <Step number="1" title="Start from what you have" desc="A rough idea, a 200-page PDF, or a website you want to recreate. No formatting or trimming needed." />
+                <Step number="2" title="Pick the tool for the job" desc="Prompt Optimizer structures the task, Context Extractor pulls only the relevant passages, and Site to Prompt measures the real colors, fonts and layout." />
+                <Step number="3" title="Copy, deploy and save" desc="Paste the finished prompt into ChatGPT, Claude, v0 or your codebase and watch your API bills drop." />
               </div>
             </motion.div>
             <motion.div
@@ -433,6 +433,14 @@ export default function Home() {
               answer="Cuelara generates structurally sound prompts that work excellently across all major frontier models including GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro."
             />
             <FaqItem
+              question="What does the Context Extractor do?"
+              answer="Upload a large PDF, CSV or document and ask your question. The Context Extractor uses semantic retrieval (RAG) to return only the passages that matter, so you send a fraction of the tokens to the model and it has far less irrelevant text to get confused by."
+            />
+            <FaqItem
+              question="What is Site to Prompt?"
+              answer="Site to Prompt measures a real, rendered website (its colors, fonts, spacing, layout, sections and tech stack) and writes a prompt that lets an AI UI builder like v0 or Bolt, an assistant like Claude or ChatGPT, or an image model like Midjourney recreate that design."
+            />
+            <FaqItem
               question="Can I use Cuelara to write prompts from scratch?"
               answer="Yes! Prompt Optimizer takes your loose ideas — even a single rough sentence — and structures them into a professional, production-ready prompt. You can also explore our Cookbook for pre-made, highly optimized templates."
             />
@@ -468,15 +476,15 @@ export default function Home() {
           transition={{ duration: 0.7 }}
           className="container mx-auto px-4 text-center relative z-10"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-4 md:mb-6">Stop guessing. Start optimizing.</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-4 md:mb-6">Stop guessing. Start prompting smarter.</h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 md:mb-10 max-w-2xl mx-auto">
-            Join thousands of developers writing highly efficient, structurally perfect AI prompts.
+            Join developers who optimize prompts, cut context down to what matters, and turn any website into a prompt.
           </p>
           <Link
             href="/tools"
             className="inline-flex w-[90%] sm:w-auto h-12 md:h-14 items-center justify-center rounded-full bg-primary px-6 md:px-10 text-base md:text-lg font-bold text-primary-foreground shadow-xl transition-all hover:scale-105 active:scale-95 hover:shadow-primary/25"
           >
-            Optimize Your First Prompt
+            Try the Tools
             <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
           </Link>
         </motion.div>

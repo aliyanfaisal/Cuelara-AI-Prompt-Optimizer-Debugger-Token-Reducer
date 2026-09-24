@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Zap, Code2, ShieldCheck, Terminal, Sparkles, ArrowRight,
-  ExternalLink, BookOpen, Clock, ShieldAlert, Cpu, FileText, Palette
+  ExternalLink, BookOpen, Clock, FileText, Palette
 } from "lucide-react";
 
 const TOOLS = [
@@ -31,17 +31,6 @@ const TOOLS = [
     isLarge: false,
   },
   {
-    name: "Token Optimizer",
-    href: "/tools/token-optimizer",
-    docs: "/cookbook",
-    icon: Zap,
-    description: "Compress verbose prompts by up to 50%, verified against real token counts — not estimates.",
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/20",
-    isLarge: false,
-  },
-  {
     name: "Site to Prompt",
     href: "/tools/site-to-prompt",
     docs: "/cookbook",
@@ -50,6 +39,17 @@ const TOOLS = [
     color: "text-fuchsia-500",
     bg: "bg-fuchsia-500/10",
     border: "border-fuchsia-500/20",
+    isLarge: false,
+  },
+  {
+    name: "Token Optimizer",
+    href: "/tools/token-optimizer",
+    docs: "/cookbook",
+    icon: Zap,
+    description: "Compress verbose prompts by up to 50%, verified against real token counts — not estimates.",
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
     isLarge: false,
   },
   {
@@ -120,7 +120,7 @@ export default function ToolsOverviewPage() {
               AI Prompt Engineering <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">Toolkit</span>
             </h1>
             <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
-              Professional utilities to compress tokens, extract targeted context, format schemas, and eliminate hallucinations across OpenAI, Claude, and Gemini.
+              Optimize prompts, extract only the context that matters from large documents, turn any website&apos;s design into a ready-to-use prompt, and compress, debug and score the result, across OpenAI, Claude, and Gemini.
             </p>
             
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
@@ -129,12 +129,12 @@ export default function ToolsOverviewPage() {
                 <span className="text-xs font-semibold text-foreground">Save 40%+ Tokens</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border/60 rounded-xl shadow-sm">
-                <ShieldAlert className="w-4 h-4 text-emerald-500" />
-                <span className="text-xs font-semibold text-foreground">Prevent Collisions</span>
+                <FileText className="w-4 h-4 text-emerald-500" />
+                <span className="text-xs font-semibold text-foreground">Extract Only What Matters</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border/60 rounded-xl shadow-sm">
-                <Cpu className="w-4 h-4 text-primary" />
-                <span className="text-xs font-semibold text-foreground">Schema Formatter</span>
+                <Palette className="w-4 h-4 text-fuchsia-500" />
+                <span className="text-xs font-semibold text-foreground">Website to Prompt</span>
               </div>
             </div>
           </motion.div>
