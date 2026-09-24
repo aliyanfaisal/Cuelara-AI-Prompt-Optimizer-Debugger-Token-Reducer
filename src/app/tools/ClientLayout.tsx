@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useSession } from "next-auth/react";
+import { TOOL_USAGE_CHANGED_EVENT } from "@/lib/tool-usage-events";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Zap, Code2, ShieldCheck,
@@ -70,6 +71,13 @@ const TOOL_USAGE_CONFIG: Record<string, ToolUsageConfig> = {
       { label: "Optimizations today", unit: "optimizations", remainingKey: "promptsRemaining", limitKey: "promptsLimit" },
     ],
   },
+  "/tools/site-to-prompt": {
+    endpoint: "/api/tools/site-to-prompt/usage",
+    metrics: [
+      { label: "Site analyses today", unit: "analyses", remainingKey: "analysesRemaining", limitKey: "analysesLimit" },
+      { label: "Prompts today", unit: "prompts", remainingKey: "promptsRemaining", limitKey: "promptsLimit" },
+    ],
+  },
 };
 
 function getInitials(name?: string | null, email?: string | null): string {
@@ -95,14 +103,18 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
       return;
     }
     let cancelled = false;
-    fetch(toolUsageConfig.endpoint)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled && typeof data.isAuthenticated === "boolean") setUsage(data);
-      })
-      .catch(() => {});
+    const load = () =>
+      fetch(toolUsageConfig.endpoint)
+        .then((res) => res.json())
+        .then((data) => {
+          if (!cancelled && typeof data.isAuthenticated === "boolean") setUsage(data);
+        })
+        .catch(() => {});
+    load();
+    window.addEventListener(TOOL_USAGE_CHANGED_EVENT, load);
     return () => {
       cancelled = true;
+      window.removeEventListener(TOOL_USAGE_CHANGED_EVENT, load);
     };
   }, [sessionStatus, toolUsageConfig]);
 

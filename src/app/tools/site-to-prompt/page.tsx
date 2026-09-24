@@ -11,10 +11,29 @@ import { TARGETS, type Target } from "@/lib/site-to-prompt/constants";
 import { EXTENSION_VERSION, EXTENSION_ZIP_URL } from "@/lib/site-to-prompt/extension-version";
 import { pingExtension, analyseWithExtension, takePendingAnalysis } from "@/lib/site-to-prompt/extension-bridge";
 import type { DesignDna } from "@/lib/site-to-prompt/types";
+import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { notifyToolUsageChanged } from "@/lib/tool-usage-events";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 
 const EXTENSION_URL = process.env.NEXT_PUBLIC_EXTENSION_URL || "";
 type Stage = "idle" | "analysing" | "analysed" | "generating" | "done";
+
+// Expected durations, measured on real pages: long build prompts (UI builder / code assistant) take
+// 1-2 minutes, the short image prompts a fraction of that. The last step holds until the answer arrives.
+const LONG_STEPS: ProgressStep[] = [
+  { label: "Reading the design data...", seconds: 5 },
+  { label: "Mapping colors, fonts and design tokens...", seconds: 10 },
+  { label: "Going through the page section by section...", seconds: 30 },
+  { label: "Writing your prompt...", seconds: 40 },
+  { label: "Checking exact values and polishing...", seconds: 20 },
+];
+const SHORT_STEPS: ProgressStep[] = [
+  { label: "Reading the design data...", seconds: 3 },
+  { label: "Picking the palette and mood...", seconds: 5 },
+  { label: "Writing your image prompt...", seconds: 9 },
+  { label: "Polishing the wording...", seconds: 5 },
+];
+const stepsFor = (target: Target): ProgressStep[] => (target.startsWith("Image Generator") ? SHORT_STEPS : LONG_STEPS);
 
 interface Usage {
   isAuthenticated: boolean;
@@ -93,6 +112,8 @@ export default function SiteToPromptPage() {
   const [isTargetOpen, setIsTargetOpen] = useState(false);
   const [goal, setGoal] = useState("");
   const [prompt, setPrompt] = useState("");
+  // The answer waits here while the progress card plays out its last step, then it replaces the card.
+  const [pendingPrompt, setPendingPrompt] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<PromptViewMode>("rendered");
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -131,7 +152,7 @@ export default function SiteToPromptPage() {
 
   useEffect(() => {
     if (stage === "analysed") setTimeout(() => dnaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
-    if (stage === "done") setTimeout(() => outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    if (stage === "generating" || stage === "done") setTimeout(() => outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }, [stage]);
 
   const canAnalyse = url.trim().length > 0 && !!extVersion;
@@ -158,6 +179,7 @@ export default function SiteToPromptPage() {
         promptsRemaining: u?.promptsRemaining ?? 0,
         promptsLimit: u?.promptsLimit ?? 0,
       }));
+      notifyToolUsageChanged();
       setStage("analysed");
     } catch {
       setError("Network error — please check your connection and try again.");
@@ -202,6 +224,8 @@ export default function SiteToPromptPage() {
     if (!dna || stage === "generating") return;
     setStage("generating");
     setError(null);
+    setPrompt("");
+    setPendingPrompt(null);
     try {
       const res = await fetch("/api/tools/site-to-prompt", {
         method: "POST",
@@ -214,9 +238,10 @@ export default function SiteToPromptPage() {
         setStage("analysed");
         return;
       }
-      setPrompt(data.prompt);
       setUsage((u) => (u ? { ...u, promptsRemaining: data.promptsRemaining, promptsLimit: data.promptsLimit } : u));
-      setStage("done");
+      notifyToolUsageChanged();
+      // The progress card finishes its bar first, then swaps in the prompt (see onFinished below).
+      setPendingPrompt(data.prompt);
     } catch {
       setError("Network error — please check your connection and try again.");
       setStage("analysed");
@@ -356,8 +381,8 @@ export default function SiteToPromptPage() {
         <AnimatePresence>
           {dna && stage !== "analysing" && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-card border border-border rounded-2xl shadow-sm mb-8 overflow-hidden">
-              <div className="px-5 py-4 border-b border-border bg-muted/20">
+              className="bg-card border border-border rounded-2xl shadow-sm mb-8">
+              <div className="px-5 py-4 border-b border-border bg-muted/20 rounded-t-2xl">
                 <h2 className="text-sm font-bold text-foreground">Design DNA</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Measured from {dna.source.url ?? "the page"} · {dna.mode} theme. Edit anything before generating.
@@ -530,7 +555,7 @@ export default function SiteToPromptPage() {
               )}
 
               {/* Step 3: target + goal */}
-              <div className="px-5 md:px-6 py-5 border-t border-border bg-muted/10 space-y-4">
+              <div className="px-5 md:px-6 py-5 border-t border-border bg-muted/10 space-y-4 rounded-b-2xl">
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="relative">
                     <button onClick={() => setIsTargetOpen(!isTargetOpen)}
@@ -570,6 +595,22 @@ export default function SiteToPromptPage() {
 
       {/* Output */}
       <div ref={outputRef} className="scroll-mt-24 mb-16">
+        {stage === "generating" && (
+          <TimedProgress
+            key={target}
+            accent="fuchsia"
+            icon={Wand2}
+            steps={stepsFor(target)}
+            subtitle={target.startsWith("Image Generator") ? "Usually takes about 20 seconds." : "Long pages take 1-2 minutes — the prompt covers every section."}
+            slowHint="Still writing — big pages take a little longer. Please keep this tab open."
+            done={pendingPrompt !== null}
+            onFinished={() => {
+              setPrompt(pendingPrompt ?? "");
+              setPendingPrompt(null);
+              setStage("done");
+            }}
+          />
+        )}
         {stage === "done" && prompt && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
             <div className="px-5 py-4 border-b border-border bg-muted/20 flex flex-wrap items-center justify-between gap-4">

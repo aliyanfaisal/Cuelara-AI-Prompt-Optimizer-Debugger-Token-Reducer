@@ -5,6 +5,7 @@ import { buildDesignDna } from "./aggregate";
 import { summarizeSection } from "./summarize";
 import { techSchema } from "./schema";
 import { buildSitePrompt } from "./prompt";
+import { TARGET_GUIDANCE } from "./constants";
 import type { RawNode, RawPage, RawSample } from "./types";
 
 test("normalizeColor handles rgb, rgba, space syntax and transparency", () => {
@@ -127,4 +128,12 @@ test("tech info passes validation, flows into the DNA, and reaches the prompt", 
   assert.match(prompt, /Tech & theme/);
   assert.match(prompt, /NOT evidence of how the site was built/);
   assert.match(prompt, /"alternate":\{"mode":"light"/);
+});
+
+test("Code Assistant prompt puts the CSS tokens last, under a heading, and never before the overview", () => {
+  const g = TARGET_GUIDANCE["Code Assistant (Claude, ChatGPT)"];
+  const order = ["## Overview", "## Tech & theme", "## Page structure", "## Design tokens (CSS)"].map((h) => g.indexOf(h));
+  assert.ok(order.every((i) => i >= 0), "all four headings are requested");
+  assert.deepEqual([...order].sort((a, b) => a - b), order, "headings are requested in this order");
+  assert.match(g, /Do NOT put any code before the Overview/);
 });

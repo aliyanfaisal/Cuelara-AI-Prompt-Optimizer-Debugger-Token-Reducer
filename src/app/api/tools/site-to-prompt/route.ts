@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToday } from "@/lib/rate-limit";
 import { isGenAITimeout } from "@/lib/genai-timeout";
-import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
+import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
 import { generateWithFallback } from "@/lib/llm-generate";
 import { buildTextGenerationChain } from "@/lib/model-chain";
 import { getSiteToPromptLimits } from "@/lib/site-to-prompt/limits";
@@ -14,6 +14,24 @@ const GENERATION_TIMEOUT_MS = 150_000;
 const CHAIN = buildTextGenerationChain(GENERATION_TIMEOUT_MS);
 
 export const maxDuration = 300;
+
+// Gemini answers "high demand" (503) in short spikes, and the free fallbacks can't take a prompt this large,
+// so a brief pause and another pass through the chain usually succeeds where an immediate error would not.
+const RETRY_DELAYS_MS = [0, 5_000, 12_000];
+
+async function generateWithRetry(prompt: string) {
+  let lastError: unknown;
+  for (const delay of RETRY_DELAYS_MS) {
+    if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
+    try {
+      return await generateWithFallback(CHAIN, prompt, PROMPT_TOOL);
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableProviderError(error) && !isRequestTooLargeForProvider(error)) throw error;
+    }
+  }
+  throw lastError;
+}
 
 export async function POST(req: Request) {
   try {
@@ -35,7 +53,7 @@ export async function POST(req: Request) {
 
     let text: string;
     try {
-      const attempt = await generateWithFallback(CHAIN, buildSitePrompt(parsed.data, body.target, goal), PROMPT_TOOL);
+      const attempt = await generateWithRetry(buildSitePrompt(parsed.data, body.target, goal));
       text = stripFences(attempt.text);
     } catch (error) {
       if (error instanceof NoApiKeysConfiguredError) {
@@ -51,7 +69,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Site to Prompt error:", error);
     if (isGenAITimeout(error)) return NextResponse.json({ error: "The AI is taking too long to respond. Please try again." }, { status: 504 });
-    if (isRetryableProviderError(error)) {
+    if (isRetryableProviderError(error) || isRequestTooLargeForProvider(error)) {
       return NextResponse.json({ error: "All configured API keys are currently rate-limited. Please try again shortly." }, { status: 429 });
     }
     return NextResponse.json({ error: "Something went wrong while generating your prompt." }, { status: 500 });

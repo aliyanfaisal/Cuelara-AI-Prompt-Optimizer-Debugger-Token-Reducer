@@ -36,6 +36,14 @@ export function isRetryableProviderError(error: unknown): boolean {
   return false;
 }
 
+/**
+ * The provider rejected this request as too big for its plan (HTTP 413, e.g. a free tier's tokens-per-minute cap).
+ * Another provider may well accept it, so a fallback chain should move on rather than fail the whole request.
+ */
+export function isRequestTooLargeForProvider(error: unknown): boolean {
+  return extractProviderErrorStatus(error) === 413;
+}
+
 export class NoApiKeysConfiguredError extends Error {
   constructor(provider: Provider) {
     super(`No active API keys configured for ${PROVIDER_LABELS[provider]}.`);

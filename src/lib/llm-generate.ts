@@ -1,7 +1,7 @@
 import "server-only";
 import { GoogleGenAI } from "@google/genai";
 import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
-import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
+import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
 import type { Provider } from "@/lib/providers";
 
 export type GenerateFn = (apiKey: string, prompt: string) => Promise<string>;
@@ -96,7 +96,7 @@ export async function generateWithFallback(
     } catch (error) {
       lastError = error;
       if (error instanceof NoApiKeysConfiguredError) continue;
-      if (!isRetryableProviderError(error)) throw error;
+      if (!isRetryableProviderError(error) && !isRequestTooLargeForProvider(error)) throw error;
     }
   }
 
