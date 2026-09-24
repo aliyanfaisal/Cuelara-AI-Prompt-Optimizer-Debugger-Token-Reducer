@@ -9,6 +9,7 @@ import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError
 import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { buildTextGenerationChain, GEMINI_MODEL } from "@/lib/model-chain";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
+import { saveToolRun, titleFrom } from "@/lib/history";
 
 const TOOL = "prompt-optimizer";
 
@@ -110,6 +111,14 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
           }
 
           await consumeDailyLimit(subjectKey, TOOL);
+          await saveToolRun({
+            userId: subject.userId,
+            tool: TOOL,
+            title: titleFrom(rawInput),
+            input: { rawInput: rawInput.trim(), mode, level },
+            result: { optimizedPrompt: fullText },
+            historyId: body?.historyId,
+          });
           const used = await getUsedToday(subjectKey, TOOL);
           controller.enqueue(
             encoder.encode(

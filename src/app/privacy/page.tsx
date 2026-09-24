@@ -23,6 +23,7 @@ Cuelara ("we", "us") runs the website at cuelara.com and the tools, cookbook and
 
 - **Account details.** If you create an account we store your email address, your name (if you give one) and a securely hashed password. We never store your password in readable form.
 - **Contact messages.** If you use the contact form we store your name, email address, subject and message so we can reply.
+- **Tool history.** When you are signed in, we save each tool run to your account: what you entered, the options you chose and the result. See "Your tool history" below.
 - **Uploaded documents.** If you use the Context Extractor, we process the file you upload (see "Uploaded documents" below).
 
 ### Information collected automatically
@@ -32,13 +33,17 @@ Cuelara ("we", "us") runs the website at cuelara.com and the tools, cookbook and
 - **Email logs.** We record the recipient, subject and delivery result of emails we send you (for example account activation and password reset).
 - **Cookies and local storage.** See section 7.
 
-## 3. What we do not store
+## 3. Your tool history
 
-The text you paste into the prompt tools (Prompt Optimizer, Token Optimizer, Prompt Debugger, Prompt Formatter, Intelligence Score, Context Extractor prompts, Site to Prompt) is processed to give you a result. We do not save it to your account and we do not use it to train models. It is handled by the AI providers described in section 5 for the duration of the request.
+If you use the tools while **signed in**, we save each run to your account so you can find it again: the text you entered (or, for Site to Prompt, the design measurements of the page), the options you chose, and the result. You can open, edit, re-run and delete any saved run from your dashboard, or clear a tool's whole history at once. Only you can see your history, and deleted items are removed from our database. We keep at most the 200 most recent runs per tool.
+
+If you use the tools **without signing in**, nothing you enter is saved: it is processed to give you a result and then discarded. In both cases we do not use your content to train models, and it is handled by the AI providers described in section 5 while the request is processed.
+
+Because saved runs contain what you typed, please don't put passwords, payment card numbers or other highly sensitive data into the tools.
 
 ## 4. Uploaded documents
 
-When you upload a document to the Context Extractor, we extract its text, split it into sections and compute numerical embeddings so we can find the passages relevant to your question. The extracted text and embeddings are stored in our database, linked to your account or your visitor identifier, so you can ask several questions about the same file. They are removed automatically after about 24 hours, and stale ones are cleared whenever you upload a new document. Please do not upload documents you are not allowed to share with a service provider.
+When you upload a document to the Context Extractor, we extract its text, split it into sections and compute numerical embeddings so we can find the passages relevant to your question. The extracted text and embeddings are stored in our database, linked to your account or your visitor identifier, so you can ask several questions about the same file. They are removed automatically after about 24 hours, and stale ones are cleared whenever you upload a new document. If you are signed in, your tool history keeps the file's name and the excerpts the tool returned for your question, but not the file itself. Text you paste in directly is saved with the run. Please do not upload documents you are not allowed to share with a service provider.
 
 ## 5. Who we share information with
 
@@ -53,7 +58,7 @@ Do not include passwords, payment card numbers, health information or other high
 
 ## 6. How long we keep information
 
-- **Account details:** until you ask us to delete your account.
+- **Account details and tool history:** until you delete them or ask us to delete your account. Deleting your account removes your saved runs.
 - **Contact messages:** for as long as needed to handle your request and keep a record of it, then deleted on request.
 - **Uploaded documents and embeddings:** about 24 hours.
 - **Usage counts and service logs:** for a limited period for abuse prevention, capacity planning and debugging.
@@ -96,8 +101,8 @@ export default function PrivacyPage() {
   return (
     <LegalDocument
       title="Privacy Policy"
-      updated="September 24, 2026"
-      intro="We keep this policy short and specific. It describes what Cuelara actually collects and does today."
+      updated="September 25, 2026"
+      intro="We keep this policy short and specific. It describes what Cuelara actually collects and does today, including the history we keep for signed-in users."
       markdown={CONTENT}
     />
   );

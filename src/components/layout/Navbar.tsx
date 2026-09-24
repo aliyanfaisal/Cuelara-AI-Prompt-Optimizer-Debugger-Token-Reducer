@@ -145,7 +145,7 @@ export function Navbar() {
                 ) : session ? (
                   <>
                     <Link
-                      href={(session.user as any)?.roles?.includes("ADMIN") ? "/admin/dashboard" : "/tools"}
+                      href={(session.user as any)?.roles?.includes("ADMIN") ? "/admin/dashboard" : "/dashboard"}
                       className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-2"
                     >
                       {(session.user as any)?.roles?.includes("ADMIN") ? "Admin Dashboard" : "Dashboard"}
@@ -237,7 +237,7 @@ export function Navbar() {
               ) : session ? (
                 <>
                   <Link
-                    href={(session.user as any)?.roles?.includes("ADMIN") ? "/admin/dashboard" : "/tools"}
+                    href={(session.user as any)?.roles?.includes("ADMIN") ? "/admin/dashboard" : "/dashboard"}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex w-full h-12 items-center justify-center rounded-full bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg transition-all active:scale-95"
                   >

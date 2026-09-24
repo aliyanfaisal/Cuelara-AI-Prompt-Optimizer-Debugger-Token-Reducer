@@ -9,6 +9,7 @@ import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeFo
 import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { buildTextGenerationChain } from "@/lib/model-chain";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
+import { saveToolRun, titleFrom } from "@/lib/history";
 
 const TOOL = "token-optimizer";
 
@@ -138,6 +139,14 @@ export async function POST(req: Request) {
           }
 
           await consumeDailyLimit(subjectKey, TOOL);
+          await saveToolRun({
+            userId: subject.userId,
+            tool: TOOL,
+            title: titleFrom(rawInput),
+            input: { input: rawInput.trim(), level, preserveFormatting },
+            result: { compressedText: compressed },
+            historyId: body?.historyId,
+          });
           const used = await getUsedToday(subjectKey, TOOL);
           controller.enqueue(
             encoder.encode(

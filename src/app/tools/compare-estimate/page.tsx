@@ -12,6 +12,8 @@ import {
 import { PromptComparison } from "@/components/tools/PromptComparison";
 import { countPromptTokens } from "@/lib/token-count";
 import { getPricedModel, estimateCost, formatUsd, PRICING_AS_OF } from "@/lib/model-pricing";
+import { useSession } from "next-auth/react";
+import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "success";
 
@@ -60,9 +62,28 @@ export default function CompareEstimatePage() {
     }
   }, [state]);
 
+  const { status: authStatus } = useSession();
+  const saved = useSavedRun<{ basePrompt: string; newPrompt: string }, unknown>("compare-estimate");
+  useEffect(() => {
+    const run = saved.run;
+    if (!run) return;
+    setBasePrompt(run.input.basePrompt);
+    setNewPrompt(run.input.newPrompt);
+    setState("success");
+  }, [saved.run]);
+
   const handleCompare = () => {
     if (!basePrompt.trim() && !newPrompt.trim()) return;
     setState("success");
+    // The comparison happens in the browser, so signed-in users' runs are saved with a separate request.
+    // Best effort: a failed save must not affect the comparison itself.
+    if (authStatus === "authenticated") {
+      fetch("/api/history", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tool: "compare-estimate", basePrompt, newPrompt, historyId: saved.run?.id }),
+      }).catch(() => {});
+    }
   };
 
   const baseTokens = useMemo(() => countPromptTokens(basePrompt), [basePrompt]);
@@ -90,6 +111,8 @@ export default function CompareEstimatePage() {
           Compare your original prompt with an optimized version side-by-side. Visualize exact text diffs, compute token reductions, and calculate dollar savings across OpenAI, Anthropic, and Gemini.
         </p>
       </motion.div>
+
+      <SavedRunBanner saved={saved} tool="compare-estimate" />
 
       {/* 2. Studio Editor Card */}
       <motion.div 

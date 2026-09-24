@@ -20,6 +20,8 @@ function todayUtc(): string {
 export interface RequestSubject {
   subjectKey: string;
   isAuthenticated: boolean;
+  /** The signed-in user's id, or null for an anonymous visitor. */
+  userId: string | null;
   /** This user's per-tool plan overrides (tool id -> daily limit), or null if unauthenticated / no active plan. */
   planLimits: Record<string, number> | null;
 }
@@ -34,20 +36,23 @@ export async function getRequestSubject(req: Request): Promise<RequestSubject> {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string } | undefined)?.id;
 
-  if (userId) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { plan: { select: { isActive: true, limits: { select: { tool: true, dailyLimit: true } } } } },
-    });
-    const planLimits =
-      user?.plan?.isActive && user.plan.limits.length > 0
-        ? Object.fromEntries(user.plan.limits.map((l) => [l.tool, l.dailyLimit]))
-        : null;
-    return { subjectKey: `user:${userId}`, isAuthenticated: true, planLimits };
-  }
+  if (userId) return subjectForUser(userId);
 
   const ip = getClientIp(req);
-  return { subjectKey: `ip:${hashIp(ip)}`, isAuthenticated: false, planLimits: null };
+  return { subjectKey: `ip:${hashIp(ip)}`, isAuthenticated: false, userId: null, planLimits: null };
+}
+
+/** The rate-limit subject for a signed-in user, including their active plan's per-tool limits. */
+export async function subjectForUser(userId: string): Promise<RequestSubject> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { plan: { select: { isActive: true, limits: { select: { tool: true, dailyLimit: true } } } } },
+  });
+  const planLimits =
+    user?.plan?.isActive && user.plan.limits.length > 0
+      ? Object.fromEntries(user.plan.limits.map((l) => [l.tool, l.dailyLimit]))
+      : null;
+  return { subjectKey: `user:${userId}`, isAuthenticated: true, userId, planLimits };
 }
 
 /** A plan's per-tool override wins over the tool's normal authenticated/anonymous default when present. */

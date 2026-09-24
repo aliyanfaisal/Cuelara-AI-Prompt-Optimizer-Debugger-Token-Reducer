@@ -14,6 +14,7 @@ import {
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type ProcessingState = "idle" | "loading" | "success";
 
@@ -268,6 +269,47 @@ export default function ContextExtractorPage() {
     if (typeof data.promptsLimit === "number") setPromptsLimit(data.promptsLimit);
   };
 
+  // Reopened from history: show the saved excerpts and inputs without any request. A file's own contents
+  // aren't saved, only its name and (for about a day) the processed document, so a file run can ask new
+  // questions while that lasts and otherwise asks for the file again. Pasted text is saved whole.
+  const saved = useSavedRun<
+    {
+      sourceMode: "file" | "text";
+      filename: string;
+      fileSize: string;
+      rawText: string;
+      aiTask: string;
+      formatStyle: "markdown" | "xml" | "json";
+      wantsPrompt: boolean;
+      searchQuery: string;
+      depth: "top3" | "top5";
+      documentId: string;
+    },
+    { snippets: ExtractedDataSnippet[]; originalTokens: number }
+  >("context-extractor");
+  useEffect(() => {
+    const run = saved.run;
+    if (!run) return;
+    const i = run.input;
+    setSourceMode(i.sourceMode);
+    if (i.sourceMode === "file") {
+      setFile({ name: i.filename || "document", size: i.fileSize || "", tokenCount: run.result.originalTokens });
+      setDocumentId(i.documentId || null);
+    } else {
+      setRawText(i.rawText);
+    }
+    setFileObj(null);
+    setIsSample(false);
+    setSearchQuery(i.searchQuery);
+    setAiTask(i.aiTask);
+    setDepth(i.depth === "top5" ? "top5" : "top3");
+    setFormatStyle(i.formatStyle);
+    setWantsPrompt(i.wantsPrompt);
+    setServerOriginalTokens(run.result.originalTokens);
+    setExtractedData(run.result.snippets);
+    setState("success");
+  }, [saved.run]);
+
   const handleExtract = async () => {
     const hasSource = (sourceMode === "file" && file) || (sourceMode === "text" && rawText.trim().length > 0);
     if (!hasSource || !searchQuery.trim() || !aiTask.trim()) return;
@@ -282,6 +324,18 @@ export default function ContextExtractorPage() {
       return;
     }
 
+    // Display-only details saved with the run so history can reopen it exactly as it looked.
+    const history = {
+      sourceMode,
+      filename: file?.name ?? "",
+      fileSize: file?.size ?? "",
+      rawText: sourceMode === "text" ? rawText : "",
+      aiTask,
+      formatStyle,
+      wantsPrompt,
+      historyId: saved.run?.id,
+    };
+
     try {
       let response: Response;
 
@@ -289,7 +343,7 @@ export default function ContextExtractorPage() {
         response = await fetch("/api/tools/context-extractor/prompt", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ documentId, searchQuery, aiTask, depth }),
+          body: JSON.stringify({ documentId, searchQuery, aiTask, depth, history }),
         });
       } else {
         const formData = new FormData();
@@ -301,6 +355,7 @@ export default function ContextExtractorPage() {
         formData.append("searchQuery", searchQuery);
         formData.append("aiTask", aiTask);
         formData.append("depth", depth);
+        formData.append("history", JSON.stringify(history));
 
         response = await fetch("/api/tools/context-extractor", {
           method: "POST",
@@ -459,6 +514,8 @@ export default function ContextExtractorPage() {
           </AnimatePresence>
         </div>
       </motion.div>
+
+      <SavedRunBanner saved={saved} tool="context-extractor" />
 
       {/* 2. Main Studio Card */}
       <motion.div

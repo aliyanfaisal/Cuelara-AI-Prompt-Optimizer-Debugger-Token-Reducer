@@ -25,6 +25,9 @@ function LoginForm() {
   
   const error = searchParams?.get("error");
   const success = searchParams?.get("success");
+  // Only same-site relative paths ("/dashboard"), never "//evil.com" or a full URL.
+  const callbackParam = searchParams?.get("callbackUrl");
+  const callbackUrl = callbackParam && callbackParam.startsWith("/") && !callbackParam.startsWith("//") ? callbackParam : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +47,9 @@ function LoginForm() {
         const session = await sessionRes.json();
         
         if (session?.user?.roles?.includes("ADMIN")) {
-          router.push("/admin/dashboard");
+          router.push(callbackUrl ?? "/admin/dashboard");
         } else {
-          router.push("/tools");
+          router.push(callbackUrl ?? "/dashboard");
         }
         router.refresh();
       }

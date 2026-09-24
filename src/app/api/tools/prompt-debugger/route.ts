@@ -17,6 +17,7 @@ import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeFo
 import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { buildTextGenerationChain } from "@/lib/model-chain";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
+import { saveToolRun, titleFrom } from "@/lib/history";
 
 const TOOL = "prompt-debugger";
 
@@ -152,6 +153,14 @@ export async function POST(req: Request) {
     }
 
     await consumeDailyLimit(subjectKey, TOOL);
+    await saveToolRun({
+      userId: subject.userId,
+      tool: TOOL,
+      title: titleFrom(rawInput),
+      input: { input: rawInput.trim(), level, focus },
+      result: { issues: report.issues, passedChecks: report.passedChecks },
+      historyId: body?.historyId,
+    });
     const used = await getUsedToday(subjectKey, TOOL);
 
     return NextResponse.json({

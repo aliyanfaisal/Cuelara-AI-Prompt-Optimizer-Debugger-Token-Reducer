@@ -24,7 +24,7 @@ const OFFERINGS = [
 
 const PRINCIPLES = [
   { icon: Gauge, title: "Measured, not guessed", text: "Where we can, we count real tokens and measure real pages instead of estimating." },
-  { icon: ShieldCheck, title: "Respect for your data", text: "We don't save the prompts you run through the tools, and uploaded documents are removed within about a day." },
+  { icon: ShieldCheck, title: "Respect for your data", text: "Nothing you enter is saved unless you sign in, your history is private and deletable, and uploaded documents are removed within about a day." },
   { icon: Zap, title: "Useful and free to start", text: "Every tool is available on the free plan. Paid plans raise limits; they don't hide the basics." },
 ];
 

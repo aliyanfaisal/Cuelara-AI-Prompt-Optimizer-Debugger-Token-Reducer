@@ -15,6 +15,7 @@ import { splitStreamTrailer } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -99,6 +100,17 @@ export default function PromptOptimizerPage() {
     }
   }, [state]);
 
+  const saved = useSavedRun<{ rawInput: string; mode: string; level: string }, { optimizedPrompt: string }>("prompt-optimizer");
+  useEffect(() => {
+    const run = saved.run;
+    if (!run) return;
+    setInput(run.input.rawInput);
+    setMode(MODES.find((m) => m === run.input.mode) ?? MODES[0]);
+    setLevel(LEVELS.find((l) => l === run.input.level) ?? LEVELS[1]);
+    setOptimizedPrompt(run.result.optimizedPrompt);
+    setState("success");
+  }, [saved.run]);
+
   const handleOptimize = async () => {
     if (!input.trim() || state === "loading" || isStreaming) return;
 
@@ -110,7 +122,7 @@ export default function PromptOptimizerPage() {
       const res = await fetch("/api/tools/prompt-optimizer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawInput: input, mode, level }),
+        body: JSON.stringify({ rawInput: input, mode, level, historyId: saved.run?.id }),
       });
 
       if (!res.ok || !res.body) {
@@ -204,6 +216,8 @@ export default function PromptOptimizerPage() {
           Transform rough drafts and brain-dumps into structured, production-ready prompts tailored for ChatGPT, Claude, Gemini, and DeepSeek.
         </p>
       </motion.div>
+
+      <SavedRunBanner saved={saved} tool="prompt-optimizer" />
 
       {/* 2. Studio Editor Card */}
       <motion.div 

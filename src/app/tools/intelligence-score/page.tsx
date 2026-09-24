@@ -20,6 +20,7 @@ import {
   type ScoreTier,
 } from "@/lib/intelligence-score/constants";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -118,6 +119,17 @@ export default function IntelligenceScorePage() {
     }
   }, [state]);
 
+  const saved = useSavedRun<{ input: string; criteria: string; target: string }, ScoreResult>("intelligence-score");
+  useEffect(() => {
+    const run = saved.run;
+    if (!run) return;
+    setInput(run.input.input);
+    setModel(SCORING_CRITERIA.find((c) => c === run.input.criteria) ?? SCORING_CRITERIA[0]);
+    setTarget(TARGET_MODELS.find((t) => t === run.input.target) ?? TARGET_MODELS[0]);
+    setResult(run.result);
+    setState("success");
+  }, [saved.run]);
+
   const handleAnalyze = async () => {
     if (!input.trim() || state === "loading") return;
 
@@ -129,7 +141,7 @@ export default function IntelligenceScorePage() {
       const res = await fetch("/api/tools/intelligence-score", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input, criteria: model, target }),
+        body: JSON.stringify({ input, criteria: model, target, historyId: saved.run?.id }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -183,6 +195,8 @@ export default function IntelligenceScorePage() {
           Grade the clarity, constraint precision, and AI-readiness of your prompt with an instant 0–100 intelligence benchmark before running it in production.
         </p>
       </motion.div>
+
+      <SavedRunBanner saved={saved} tool="intelligence-score" />
 
       {/* 2. Studio Editor Card */}
       <motion.div 

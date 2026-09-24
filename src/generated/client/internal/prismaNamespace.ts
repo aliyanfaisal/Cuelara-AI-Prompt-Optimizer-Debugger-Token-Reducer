@@ -416,6 +416,7 @@ export const ModelName = {
   ActivationToken: 'ActivationToken',
   PasswordResetToken: 'PasswordResetToken',
   Plan: 'Plan',
+  ToolRun: 'ToolRun',
   ContactMessage: 'ContactMessage',
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
@@ -436,7 +437,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "apiKey" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "prompt"
+    modelProps: "setting" | "apiKey" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "prompt"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1846,6 +1847,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ToolRun: {
+      payload: Prisma.$ToolRunPayload<ExtArgs>
+      fields: Prisma.ToolRunFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ToolRunFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ToolRunFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>
+        }
+        findFirst: {
+          args: Prisma.ToolRunFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ToolRunFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>
+        }
+        findMany: {
+          args: Prisma.ToolRunFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>[]
+        }
+        create: {
+          args: Prisma.ToolRunCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>
+        }
+        createMany: {
+          args: Prisma.ToolRunCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ToolRunCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>[]
+        }
+        delete: {
+          args: Prisma.ToolRunDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>
+        }
+        update: {
+          args: Prisma.ToolRunUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>
+        }
+        deleteMany: {
+          args: Prisma.ToolRunDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ToolRunUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ToolRunUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>[]
+        }
+        upsert: {
+          args: Prisma.ToolRunUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolRunPayload>
+        }
+        aggregate: {
+          args: Prisma.ToolRunAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateToolRun>
+        }
+        groupBy: {
+          args: Prisma.ToolRunGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ToolRunGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ToolRunCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ToolRunCountAggregateOutputType> | number
+        }
+      }
+    }
     ContactMessage: {
       payload: Prisma.$ContactMessagePayload<ExtArgs>
       fields: Prisma.ContactMessageFieldRefs
@@ -2511,6 +2586,20 @@ export const PlanScalarFieldEnum = {
 export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
 
 
+export const ToolRunScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tool: 'tool',
+  title: 'title',
+  input: 'input',
+  result: 'result',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ToolRunScalarFieldEnum = (typeof ToolRunScalarFieldEnum)[keyof typeof ToolRunScalarFieldEnum]
+
+
 export const ContactMessageScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -2880,6 +2969,7 @@ export type GlobalOmitConfig = {
   activationToken?: Prisma.ActivationTokenOmit
   passwordResetToken?: Prisma.PasswordResetTokenOmit
   plan?: Prisma.PlanOmit
+  toolRun?: Prisma.ToolRunOmit
   contactMessage?: Prisma.ContactMessageOmit
   planToolLimit?: Prisma.PlanToolLimitOmit
   verificationToken?: Prisma.VerificationTokenOmit

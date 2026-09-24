@@ -13,6 +13,7 @@ import {
 import { FORMAT_STYLES, INDENT_SIZES, type FormatStyle, type IndentSize } from "@/lib/prompt-formatter/constants";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -92,6 +93,17 @@ export default function PromptFormatterPage() {
     }
   }, [state]);
 
+  const saved = useSavedRun<{ input: string; format: string; indent: string | number }, { formatted: string }>("prompt-formatter");
+  useEffect(() => {
+    const run = saved.run;
+    if (!run) return;
+    setInput(run.input.input);
+    setFormat(FORMAT_STYLES.find((f) => f === run.input.format) ?? FORMAT_STYLES[0]);
+    setIndent(INDENT_SIZES.find((n) => n === run.input.indent) ?? INDENT_SIZES[0]);
+    setFormatted(run.result.formatted);
+    setState("success");
+  }, [saved.run]);
+
   const handleFormat = async () => {
     if (!input.trim() || state === "loading") return;
 
@@ -103,7 +115,7 @@ export default function PromptFormatterPage() {
       const res = await fetch("/api/tools/prompt-formatter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input, format, indent }),
+        body: JSON.stringify({ input, format, indent, historyId: saved.run?.id }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -167,6 +179,8 @@ export default function PromptFormatterPage() {
           Clean up, structure, and standardise messy prompts automatically into Markdown, XML tags, or JSON for superior readability and AI model comprehension.
         </p>
       </motion.div>
+
+      <SavedRunBanner saved={saved} tool="prompt-formatter" />
 
       {/* 2. Studio Editor Card */}
       <motion.div 

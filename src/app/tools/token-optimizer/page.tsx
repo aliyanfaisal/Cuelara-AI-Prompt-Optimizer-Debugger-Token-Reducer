@@ -15,6 +15,7 @@ import { splitStreamTrailer } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -98,6 +99,17 @@ export default function TokenOptimizerPage() {
     }
   }, [state]);
 
+  const saved = useSavedRun<{ input: string; level: string; preserveFormatting: string }, { compressedText: string }>("token-optimizer");
+  useEffect(() => {
+    const run = saved.run;
+    if (!run) return;
+    setInput(run.input.input);
+    setLevel(COMPRESSION_LEVELS.find((l) => l === run.input.level) ?? COMPRESSION_LEVELS[1]);
+    setPreserve(PRESERVE_OPTIONS.find((o) => o === run.input.preserveFormatting) ?? PRESERVE_OPTIONS[0]);
+    setCompressedText(run.result.compressedText);
+    setState("success");
+  }, [saved.run]);
+
   const handleCompress = async () => {
     if (!input.trim() || state === "loading" || isStreaming) return;
 
@@ -109,7 +121,7 @@ export default function TokenOptimizerPage() {
       const res = await fetch("/api/tools/token-optimizer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input, level, preserveFormatting: preserve }),
+        body: JSON.stringify({ input, level, preserveFormatting: preserve, historyId: saved.run?.id }),
       });
 
       if (!res.ok || !res.body) {
@@ -198,6 +210,8 @@ export default function TokenOptimizerPage() {
           Compress verbose prompts by up to 50% without losing meaning, constraints, or instruction logic — verified against real token counts, not estimates.
         </p>
       </motion.div>
+
+      <SavedRunBanner saved={saved} tool="token-optimizer" />
 
       {/* 2. Editor Container */}
       <motion.div 

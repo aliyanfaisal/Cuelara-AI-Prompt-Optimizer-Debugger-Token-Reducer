@@ -10,6 +10,7 @@ import { PROMPT_TOOL, MAX_GOAL_LENGTH, isTarget } from "@/lib/site-to-prompt/con
 import { designDnaSchema } from "@/lib/site-to-prompt/schema";
 import { buildSitePrompt, stripFences } from "@/lib/site-to-prompt/prompt";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
+import { saveToolRun, titleFrom } from "@/lib/history";
 
 // A whole page's structure in, a long build prompt out — slower than the other tools' short prompts.
 const GENERATION_TIMEOUT_MS = 150_000;
@@ -88,6 +89,15 @@ export async function POST(req: Request) {
     if (!text) return NextResponse.json({ error: "The AI did not return a usable result. Please try again." }, { status: 502 });
 
     await consumeDailyLimit(subjectKey, PROMPT_TOOL);
+    await saveToolRun({
+      userId: subject.userId,
+      tool: "site-to-prompt",
+      title: titleFrom(parsed.data.source.url || parsed.data.source.title || goal, "Website analysis"),
+      // The full (unfiltered) measurement is kept with the section picks, so the run can be reopened exactly as it was.
+      input: { dna: parsed.data, target: body.target, goal, selectedSections: selectedSections ?? [] },
+      result: { prompt: text },
+      historyId: body?.historyId,
+    });
     const used = await getUsedToday(subjectKey, PROMPT_TOOL);
     return NextResponse.json({ prompt: text, promptsRemaining: Math.max(0, promptLimit - used), promptsLimit: promptLimit });
   } catch (error) {

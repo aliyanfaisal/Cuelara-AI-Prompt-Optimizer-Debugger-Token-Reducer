@@ -256,6 +256,7 @@ model User {
   prompts             Prompt[]
   activationTokens    ActivationToken[]
   passwordResetTokens PasswordResetToken[]
+  toolRuns            ToolRun[]
 
   @@index([planId])
 }
@@ -308,6 +309,24 @@ model Plan {
 
   users  User[]
   limits PlanToolLimit[]
+}
+
+// One saved run of a tool for a signed-in user: what they entered and what they got back.
+// Shown in the dashboard's tool history, where a run can be reopened in its tool (with the saved
+// result on screen, no new submission), edited and re-run, or deleted. Anonymous runs are never saved.
+model ToolRun {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool      String // URL slug of the tool, e.g. "prompt-optimizer" (see src/lib/history.ts)
+  title     String
+  input     Json
+  result    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, tool, updatedAt])
+  @@index([userId, createdAt])
 }
 
 // A message submitted through the public /contact form.

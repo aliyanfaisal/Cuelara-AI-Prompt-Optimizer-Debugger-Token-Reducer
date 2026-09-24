@@ -19,6 +19,7 @@ import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeFo
 import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { buildTextGenerationChain } from "@/lib/model-chain";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
+import { saveToolRun, titleFrom } from "@/lib/history";
 
 const TOOL = "intelligence-score";
 
@@ -166,14 +167,25 @@ export async function POST(req: Request) {
 
     // The overall score is derived server-side from the dimension scores, never taken from the model.
     const overallScore = computeOverallScore(report);
-
-    return NextResponse.json({
+    const scoreResult = {
       overallScore,
       tier: getScoreTier(overallScore),
       clarity: report.clarity,
       precision: report.precision,
       density: report.density,
       recommendations: report.recommendations,
+    };
+    await saveToolRun({
+      userId: subject.userId,
+      tool: TOOL,
+      title: titleFrom(rawInput),
+      input: { input: rawInput.trim(), criteria, target },
+      result: scoreResult,
+      historyId: body?.historyId,
+    });
+
+    return NextResponse.json({
+      ...scoreResult,
       isAuthenticated,
       promptsRemaining: Math.max(0, limit - used),
       promptsLimit: limit,

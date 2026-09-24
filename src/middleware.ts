@@ -20,8 +20,8 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
         
-        // Admin routes always require auth
-        if (pathname.startsWith("/admin")) return !!token;
+        // Admin routes and the user dashboard always require auth (signed-out visitors go to /login and come back).
+        if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) return !!token;
 
         return true; // Allow public access by default
       },
@@ -35,6 +35,7 @@ export default withAuth(
 export const config = {
   matcher: [
     "/admin/:path*",
+    "/dashboard/:path*",
     // Add other protected routes here later
   ],
 };

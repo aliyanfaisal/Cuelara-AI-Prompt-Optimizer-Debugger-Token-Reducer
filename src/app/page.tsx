@@ -458,7 +458,7 @@ export default function Home() {
             />
             <FaqItem
               question="Is my prompt data stored securely?"
-              answer="We do not store your prompts or fine-tune models on your data. All optimizations run ephemerally, and your intellectual property remains 100% yours."
+              answer="We never use your prompts to train models, and your intellectual property remains 100% yours. If you use the tools without an account, nothing you enter is saved. If you sign in, your runs are saved to your private history so you can reopen, edit or delete them, and only you can see them."
             />
           </motion.div>
         </div>

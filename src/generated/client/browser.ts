@@ -113,6 +113,11 @@ export type PasswordResetToken = Prisma.PasswordResetTokenModel
  */
 export type Plan = Prisma.PlanModel
 /**
+ * Model ToolRun
+ * 
+ */
+export type ToolRun = Prisma.ToolRunModel
+/**
  * Model ContactMessage
  * 
  */

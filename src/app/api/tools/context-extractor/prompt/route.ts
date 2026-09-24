@@ -7,6 +7,7 @@ import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubjec
 import { isGenAITimeout } from "@/lib/genai-timeout";
 import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
+import { sanitizeExtractorMeta, saveExtractorRun } from "@/lib/rag/history";
 
 // Re-runs a different query against a document that was already uploaded, parsed,
 // chunked and embedded — only the new query gets embedded here, so this only ever
@@ -61,6 +62,15 @@ export async function POST(req: Request) {
     const snippets = rankTopK(document.chunks, document.chunkEmbeddings, queryEmbeddings[0], Math.min(k, document.chunks.length));
 
     await consumeDailyLimit(subjectKey, PROMPT_TOOL);
+    await saveExtractorRun({
+      userId: subject.userId,
+      meta: sanitizeExtractorMeta(body?.history),
+      searchQuery,
+      depth: k === 5 ? "top5" : "top3",
+      documentId,
+      originalTokens: document.totalTokens,
+      snippets,
+    });
 
     const [documentsUsed, promptsUsed] = await Promise.all([
       getUsedToday(subjectKey, DOCUMENT_TOOL),

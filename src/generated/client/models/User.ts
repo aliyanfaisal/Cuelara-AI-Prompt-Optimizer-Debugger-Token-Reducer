@@ -222,6 +222,7 @@ export type UserWhereInput = {
   prompts?: Prisma.PromptListRelationFilter
   activationTokens?: Prisma.ActivationTokenListRelationFilter
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
+  toolRuns?: Prisma.ToolRunListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -242,6 +243,7 @@ export type UserOrderByWithRelationInput = {
   prompts?: Prisma.PromptOrderByRelationAggregateInput
   activationTokens?: Prisma.ActivationTokenOrderByRelationAggregateInput
   passwordResetTokens?: Prisma.PasswordResetTokenOrderByRelationAggregateInput
+  toolRuns?: Prisma.ToolRunOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -265,6 +267,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   prompts?: Prisma.PromptListRelationFilter
   activationTokens?: Prisma.ActivationTokenListRelationFilter
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
+  toolRuns?: Prisma.ToolRunListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -314,6 +317,7 @@ export type UserCreateInput = {
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -333,6 +337,7 @@ export type UserUncheckedCreateInput = {
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -352,6 +357,7 @@ export type UserUpdateInput = {
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -371,6 +377,7 @@ export type UserUncheckedUpdateInput = {
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -595,6 +602,20 @@ export type UserUncheckedUpdateManyWithoutPlanNestedInput = {
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
+export type UserCreateNestedOneWithoutToolRunsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutToolRunsInput, Prisma.UserUncheckedCreateWithoutToolRunsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutToolRunsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutToolRunsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutToolRunsInput, Prisma.UserUncheckedCreateWithoutToolRunsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutToolRunsInput
+  upsert?: Prisma.UserUpsertWithoutToolRunsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutToolRunsInput, Prisma.UserUpdateWithoutToolRunsInput>, Prisma.UserUncheckedUpdateWithoutToolRunsInput>
+}
+
 export type UserCreateNestedOneWithoutWorkspacesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspacesInput, Prisma.UserUncheckedCreateWithoutWorkspacesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspacesInput
@@ -639,6 +660,7 @@ export type UserCreateWithoutAccountsInput = {
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -657,6 +679,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -691,6 +714,7 @@ export type UserUpdateWithoutAccountsInput = {
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -709,6 +733,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -727,6 +752,7 @@ export type UserCreateWithoutSessionsInput = {
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -745,6 +771,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -779,6 +806,7 @@ export type UserUpdateWithoutSessionsInput = {
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -797,6 +825,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRolesInput = {
@@ -815,6 +844,7 @@ export type UserCreateWithoutRolesInput = {
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRolesInput = {
@@ -833,6 +863,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRolesInput = {
@@ -887,6 +918,7 @@ export type UserCreateWithoutActivationTokensInput = {
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutActivationTokensInput = {
@@ -905,6 +937,7 @@ export type UserUncheckedCreateWithoutActivationTokensInput = {
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutActivationTokensInput = {
@@ -939,6 +972,7 @@ export type UserUpdateWithoutActivationTokensInput = {
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutActivationTokensInput = {
@@ -957,6 +991,7 @@ export type UserUncheckedUpdateWithoutActivationTokensInput = {
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPasswordResetTokensInput = {
@@ -975,6 +1010,7 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -993,6 +1029,7 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -1027,6 +1064,7 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -1045,6 +1083,7 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPlanInput = {
@@ -1063,6 +1102,7 @@ export type UserCreateWithoutPlanInput = {
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPlanInput = {
@@ -1081,6 +1121,7 @@ export type UserUncheckedCreateWithoutPlanInput = {
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPlanInput = {
@@ -1109,6 +1150,98 @@ export type UserUpdateManyWithWhereWithoutPlanInput = {
   data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutPlanInput>
 }
 
+export type UserCreateWithoutToolRunsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
+  plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutToolRunsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  planId?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutToolRunsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutToolRunsInput, Prisma.UserUncheckedCreateWithoutToolRunsInput>
+}
+
+export type UserUpsertWithoutToolRunsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutToolRunsInput, Prisma.UserUncheckedUpdateWithoutToolRunsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutToolRunsInput, Prisma.UserUncheckedCreateWithoutToolRunsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutToolRunsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutToolRunsInput, Prisma.UserUncheckedUpdateWithoutToolRunsInput>
+}
+
+export type UserUpdateWithoutToolRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
+  plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutToolRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutWorkspacesInput = {
   id?: string
   name?: string | null
@@ -1125,6 +1258,7 @@ export type UserCreateWithoutWorkspacesInput = {
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWorkspacesInput = {
@@ -1143,6 +1277,7 @@ export type UserUncheckedCreateWithoutWorkspacesInput = {
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWorkspacesInput = {
@@ -1177,6 +1312,7 @@ export type UserUpdateWithoutWorkspacesInput = {
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkspacesInput = {
@@ -1195,6 +1331,7 @@ export type UserUncheckedUpdateWithoutWorkspacesInput = {
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPromptsInput = {
@@ -1213,6 +1350,7 @@ export type UserCreateWithoutPromptsInput = {
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPromptsInput = {
@@ -1231,6 +1369,7 @@ export type UserUncheckedCreateWithoutPromptsInput = {
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPromptsInput = {
@@ -1265,6 +1404,7 @@ export type UserUpdateWithoutPromptsInput = {
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPromptsInput = {
@@ -1283,6 +1423,7 @@ export type UserUncheckedUpdateWithoutPromptsInput = {
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpdateWithoutRolesInput = {
@@ -1301,6 +1442,7 @@ export type UserUpdateWithoutRolesInput = {
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRolesInput = {
@@ -1319,6 +1461,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutRolesInput = {
@@ -1360,6 +1503,7 @@ export type UserUpdateWithoutPlanInput = {
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPlanInput = {
@@ -1378,6 +1522,7 @@ export type UserUncheckedUpdateWithoutPlanInput = {
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutPlanInput = {
@@ -1404,6 +1549,7 @@ export type UserCountOutputType = {
   prompts: number
   activationTokens: number
   passwordResetTokens: number
+  toolRuns: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1414,6 +1560,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   prompts?: boolean | UserCountOutputTypeCountPromptsArgs
   activationTokens?: boolean | UserCountOutputTypeCountActivationTokensArgs
   passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
+  toolRuns?: boolean | UserCountOutputTypeCountToolRunsArgs
 }
 
 /**
@@ -1475,6 +1622,13 @@ export type UserCountOutputTypeCountPasswordResetTokensArgs<ExtArgs extends runt
   where?: Prisma.PasswordResetTokenWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountToolRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ToolRunWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1494,6 +1648,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   prompts?: boolean | Prisma.User$promptsArgs<ExtArgs>
   activationTokens?: boolean | Prisma.User$activationTokensArgs<ExtArgs>
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
+  toolRuns?: boolean | Prisma.User$toolRunsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1545,6 +1700,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   prompts?: boolean | Prisma.User$promptsArgs<ExtArgs>
   activationTokens?: boolean | Prisma.User$activationTokensArgs<ExtArgs>
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
+  toolRuns?: boolean | Prisma.User$toolRunsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1565,6 +1721,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     prompts: Prisma.$PromptPayload<ExtArgs>[]
     activationTokens: Prisma.$ActivationTokenPayload<ExtArgs>[]
     passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
+    toolRuns: Prisma.$ToolRunPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1978,6 +2135,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   prompts<T extends Prisma.User$promptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$promptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   activationTokens<T extends Prisma.User$activationTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$activationTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   passwordResetTokens<T extends Prisma.User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  toolRuns<T extends Prisma.User$toolRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$toolRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ToolRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2601,6 +2759,30 @@ export type User$passwordResetTokensArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.PasswordResetTokenScalarFieldEnum | Prisma.PasswordResetTokenScalarFieldEnum[]
+}
+
+/**
+ * User.toolRuns
+ */
+export type User$toolRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ToolRun
+   */
+  select?: Prisma.ToolRunSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ToolRun
+   */
+  omit?: Prisma.ToolRunOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ToolRunInclude<ExtArgs> | null
+  where?: Prisma.ToolRunWhereInput
+  orderBy?: Prisma.ToolRunOrderByWithRelationInput | Prisma.ToolRunOrderByWithRelationInput[]
+  cursor?: Prisma.ToolRunWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ToolRunScalarFieldEnum | Prisma.ToolRunScalarFieldEnum[]
 }
 
 /**

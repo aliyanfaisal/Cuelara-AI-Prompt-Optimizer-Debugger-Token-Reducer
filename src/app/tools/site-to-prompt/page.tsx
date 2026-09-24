@@ -14,6 +14,7 @@ import type { DesignDna } from "@/lib/site-to-prompt/types";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { notifyToolUsageChanged } from "@/lib/tool-usage-events";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
+import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 const EXTENSION_URL = process.env.NEXT_PUBLIC_EXTENSION_URL || "";
 type Stage = "idle" | "analysing" | "analysed" | "generating" | "done";
@@ -222,6 +223,21 @@ export default function SiteToPromptPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extVersion]);
 
+  // Reopened from history: show the saved measurement, picks and prompt without the extension or any request.
+  const saved = useSavedRun<{ dna: DesignDna; target: string; goal: string; selectedSections: number[] }, { prompt: string }>("site-to-prompt");
+  useEffect(() => {
+    const run = saved.run;
+    if (!run) return;
+    const { dna: savedDna, selectedSections: picked } = run.input;
+    setUrl(savedDna.source.url ?? "");
+    setDna(savedDna);
+    setSelectedSections(new Set(picked.length > 0 ? picked : savedDna.layout.sections.map((_, i) => i)));
+    setTarget(TARGETS.find((t) => t === run.input.target) ?? TARGETS[0]);
+    setGoal(run.input.goal ?? "");
+    setPrompt(run.result.prompt);
+    setStage("done");
+  }, [saved.run]);
+
   const handleGenerate = async () => {
     if (!dna || stage === "generating") return;
     setStage("generating");
@@ -232,7 +248,7 @@ export default function SiteToPromptPage() {
       const res = await fetch("/api/tools/site-to-prompt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dna, target, goal, selectedSections: [...selectedSections] }),
+        body: JSON.stringify({ dna, target, goal, selectedSections: [...selectedSections], historyId: saved.run?.id }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -299,10 +315,12 @@ export default function SiteToPromptPage() {
         </p>
       </motion.div>
 
+      <SavedRunBanner saved={saved} tool="site-to-prompt" />
+
       {/* Step 1: input (or install prompt) */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
         className="bg-card border border-border shadow-sm rounded-2xl overflow-hidden flex flex-col mb-8">
-        {!extVersion ? (
+        {!extVersion && !saved.run ? (
           <div className="p-6 md:p-8 flex flex-col items-start gap-5">
             <div className="p-2.5 bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-500 rounded-xl">
               <Puzzle className="w-5 h-5" />

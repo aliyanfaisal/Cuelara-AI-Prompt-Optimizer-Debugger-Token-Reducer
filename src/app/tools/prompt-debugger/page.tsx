@@ -15,6 +15,7 @@ import {
   type DebuggerIssue, type DebuggerPassedCheck,
 } from "@/lib/prompt-debugger/constants";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -102,6 +103,19 @@ export default function PromptDebuggerPage() {
     }
   }, [state]);
 
+  const saved = useSavedRun<{ input: string; level: string; focus: string }, { issues: DebuggerIssue[]; passedChecks: DebuggerPassedCheck[] }>("prompt-debugger");
+  useEffect(() => {
+    const run = saved.run;
+    if (!run) return;
+    setInput(run.input.input);
+    setLevel(STRICTNESS_LEVELS.find((l) => l === run.input.level) ?? STRICTNESS_LEVELS[1]);
+    setFocus(FOCUS_AREAS.find((f) => f === run.input.focus) ?? FOCUS_AREAS[0]);
+    setIssues(run.result.issues);
+    setPassedChecks(run.result.passedChecks);
+    setFixesApplied(false);
+    setState("success");
+  }, [saved.run]);
+
   const handleDebug = async () => {
     if (!input.trim() || state === "loading") return;
 
@@ -115,7 +129,7 @@ export default function PromptDebuggerPage() {
       const res = await fetch("/api/tools/prompt-debugger", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input, level, focus }),
+        body: JSON.stringify({ input, level, focus, historyId: saved.run?.id }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -209,6 +223,8 @@ export default function PromptDebuggerPage() {
           Scan your prompts for logical loopholes, contradictory constraints, missing output formats, and hallucination risks before deploying to ChatGPT, Claude, or production LLM systems.
         </p>
       </motion.div>
+
+      <SavedRunBanner saved={saved} tool="prompt-debugger" />
 
       {/* 2. Studio Editor Card */}
       <motion.div

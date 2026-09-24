@@ -12,6 +12,7 @@ import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubjec
 import { CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } from "@/lib/tool-settings-keys";
 import { isGenAITimeout } from "@/lib/genai-timeout";
 import { countPromptTokens } from "@/lib/token-count";
+import { sanitizeExtractorMeta, saveExtractorRun } from "@/lib/rag/history";
 
 const DEFAULT_MAX_FILE_MB = 5;
 
@@ -46,6 +47,12 @@ export async function POST(req: Request) {
     const rawText = formData.get("rawText");
     const searchQuery = formData.get("searchQuery");
     const depth = formData.get("depth");
+    let historyMeta: unknown = null;
+    try {
+      historyMeta = JSON.parse(String(formData.get("history") ?? "null"));
+    } catch {
+      // Optional display metadata for history; a malformed value just means it isn't saved with the run.
+    }
 
     if (typeof searchQuery !== "string" || !searchQuery.trim()) {
       return NextResponse.json({ error: "A search target is required." }, { status: 400 });
@@ -127,6 +134,15 @@ export async function POST(req: Request) {
     // Only counts against quota once the costly work has actually happened — uploading
     // a document spends both a "document" slot and a "prompt" slot (this first query).
     await Promise.all([consumeDailyLimit(subjectKey, DOCUMENT_TOOL), consumeDailyLimit(subjectKey, PROMPT_TOOL)]);
+    await saveExtractorRun({
+      userId: subject.userId,
+      meta: { ...sanitizeExtractorMeta(historyMeta), sourceMode: hasFile ? "file" : "text", filename: hasFile ? filename : "", fileSize: sanitizeExtractorMeta(historyMeta).fileSize },
+      searchQuery,
+      depth: k === 5 ? "top5" : "top3",
+      documentId,
+      originalTokens,
+      snippets,
+    });
 
     const [documentsUsed, promptsUsed] = await Promise.all([
       getUsedToday(subjectKey, DOCUMENT_TOOL),

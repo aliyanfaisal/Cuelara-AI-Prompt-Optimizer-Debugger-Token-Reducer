@@ -23,6 +23,10 @@ const STEPS = [
     dir: '20260924210000_pricing_and_contact',
     isApplied: `select 1 from information_schema.tables where table_name = 'ContactMessage'`,
   },
+  {
+    dir: '20260924220000_tool_runs',
+    isApplied: `select 1 from information_schema.tables where table_name = 'ToolRun'`,
+  },
 ];
 
 async function main() {

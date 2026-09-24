@@ -70,6 +70,7 @@ export const ModelName = {
   ActivationToken: 'ActivationToken',
   PasswordResetToken: 'PasswordResetToken',
   Plan: 'Plan',
+  ToolRun: 'ToolRun',
   ContactMessage: 'ContactMessage',
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
@@ -347,6 +348,20 @@ export const PlanScalarFieldEnum = {
 } as const
 
 export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+export const ToolRunScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tool: 'tool',
+  title: 'title',
+  input: 'input',
+  result: 'result',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ToolRunScalarFieldEnum = (typeof ToolRunScalarFieldEnum)[keyof typeof ToolRunScalarFieldEnum]
 
 
 export const ContactMessageScalarFieldEnum = {
