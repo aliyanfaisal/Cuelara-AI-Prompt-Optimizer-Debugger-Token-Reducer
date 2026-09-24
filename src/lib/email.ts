@@ -2,7 +2,7 @@ import "server-only";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
 
-export const EMAIL_TYPES = ["activation", "password-reset", "plan-change"] as const;
+export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "contact"] as const;
 export type EmailType = (typeof EMAIL_TYPES)[number];
 
 let transporter: nodemailer.Transporter | null = null;
@@ -43,6 +43,8 @@ export interface SendEmailParams {
   subject: string;
   html: string;
   text: string;
+  /** Where a reply should go (e.g. the person who filled in the contact form). */
+  replyTo?: string;
 }
 
 /** Best-effort — a logging failure must never break the send it's recording. */
@@ -64,7 +66,7 @@ async function logEmail(params: { type: EmailType; to: string; subject: string; 
 export async function sendEmail(params: SendEmailParams): Promise<void> {
   try {
     const transport = getTransporter();
-    await transport.sendMail({ from: fromAddress(), to: params.to, subject: params.subject, html: params.html, text: params.text });
+    await transport.sendMail({ from: fromAddress(), to: params.to, subject: params.subject, html: params.html, text: params.text, replyTo: params.replyTo });
     await logEmail({ type: params.type, to: params.to, subject: params.subject, success: true });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -160,4 +162,56 @@ export async function sendPlanChangeEmail(to: string, planName: string): Promise
   );
   const text = `Your Cuelara plan was updated to: ${planName}.\n\nGo to your tools: ${process.env.NEXTAUTH_URL || ""}/tools${textFooter()}`;
   await sendEmail({ type: "plan-change", to, subject: `Your Cuelara plan is now ${planName}`, html, text });
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+export interface ContactEmailData {
+  name: string;
+  email: string;
+  subject: string | null;
+  message: string;
+  plan: string | null;
+}
+
+/** Where contact form submissions are delivered: CONTACT_TO_EMAIL, else the mailbox we send from. */
+export function contactRecipient(): string {
+  return process.env.CONTACT_TO_EMAIL || process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || "";
+}
+
+/** Tells the team about a new contact form message. Reply-To is the sender, so replying goes straight to them. */
+export async function sendContactNotificationEmail(data: ContactEmailData): Promise<void> {
+  const to = contactRecipient();
+  if (!to) throw new Error("No contact recipient configured (CONTACT_TO_EMAIL / SMTP_FROM_EMAIL / SMTP_USER).");
+
+  const subject = `New contact message${data.subject ? `: ${data.subject}` : ` from ${data.name}`}`;
+  const rows = [
+    ["Name", data.name],
+    ["Email", data.email],
+    ...(data.plan ? [["Plan of interest", data.plan]] : []),
+    ...(data.subject ? [["Subject", data.subject]] : []),
+  ];
+  const html = emailShell(
+    "New contact message",
+    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px;">
+       ${rows.map(([k, v]) => `<tr><td style="padding:2px 16px 2px 0;color:#71717a;">${k}</td><td>${escapeHtml(v)}</td></tr>`).join("")}
+     </table>
+     <p style="white-space:pre-wrap;background:#fafafa;border:1px solid #e4e4e7;border-radius:10px;padding:14px;margin:0;">${escapeHtml(data.message)}</p>`
+  );
+  const text = `New contact message\n\n${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\n${data.message}${textFooter()}`;
+  await sendEmail({ type: "contact", to, subject, html, text, replyTo: data.email });
+}
+
+/** Acknowledges the sender so they know the message arrived. */
+export async function sendContactReceiptEmail(data: ContactEmailData): Promise<void> {
+  const html = emailShell(
+    "We got your message",
+    `<p>Hi ${escapeHtml(data.name)}, thanks for reaching out. We read every message and will get back to you by email as soon as we can.</p>
+     <p style="color:#71717a;font-size:12px;margin-bottom:6px;">Your message:</p>
+     <p style="white-space:pre-wrap;background:#fafafa;border:1px solid #e4e4e7;border-radius:10px;padding:14px;margin:0;">${escapeHtml(data.message)}</p>`
+  );
+  const text = `We got your message\n\nHi ${data.name}, thanks for reaching out. We will reply by email as soon as we can.\n\nYour message:\n${data.message}${textFooter()}`;
+  await sendEmail({ type: "contact", to: data.email, subject: "We received your message", html, text });
 }

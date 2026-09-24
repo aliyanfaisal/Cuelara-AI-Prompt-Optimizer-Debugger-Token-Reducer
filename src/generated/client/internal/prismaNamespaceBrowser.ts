@@ -70,6 +70,7 @@ export const ModelName = {
   ActivationToken: 'ActivationToken',
   PasswordResetToken: 'PasswordResetToken',
   Plan: 'Plan',
+  ContactMessage: 'ContactMessage',
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
@@ -339,11 +340,28 @@ export const PlanScalarFieldEnum = {
   priceMonthlyCents: 'priceMonthlyCents',
   isDefault: 'isDefault',
   isActive: 'isActive',
+  features: 'features',
+  isFeatured: 'isFeatured',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+export const ContactMessageScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  subject: 'subject',
+  message: 'message',
+  plan: 'plan',
+  isRead: 'isRead',
+  emailSent: 'emailSent',
+  createdAt: 'createdAt'
+} as const
+
+export type ContactMessageScalarFieldEnum = (typeof ContactMessageScalarFieldEnum)[keyof typeof ContactMessageScalarFieldEnum]
 
 
 export const PlanToolLimitScalarFieldEnum = {

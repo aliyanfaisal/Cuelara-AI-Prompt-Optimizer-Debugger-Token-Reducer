@@ -42,6 +42,8 @@ export type PlanMinAggregateOutputType = {
   priceMonthlyCents: number | null
   isDefault: boolean | null
   isActive: boolean | null
+  features: string | null
+  isFeatured: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +56,8 @@ export type PlanMaxAggregateOutputType = {
   priceMonthlyCents: number | null
   isDefault: boolean | null
   isActive: boolean | null
+  features: string | null
+  isFeatured: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +70,8 @@ export type PlanCountAggregateOutputType = {
   priceMonthlyCents: number
   isDefault: number
   isActive: number
+  features: number
+  isFeatured: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -88,6 +94,8 @@ export type PlanMinAggregateInputType = {
   priceMonthlyCents?: true
   isDefault?: true
   isActive?: true
+  features?: true
+  isFeatured?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +108,8 @@ export type PlanMaxAggregateInputType = {
   priceMonthlyCents?: true
   isDefault?: true
   isActive?: true
+  features?: true
+  isFeatured?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +122,8 @@ export type PlanCountAggregateInputType = {
   priceMonthlyCents?: true
   isDefault?: true
   isActive?: true
+  features?: true
+  isFeatured?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -211,6 +223,8 @@ export type PlanGroupByOutputType = {
   priceMonthlyCents: number
   isDefault: boolean
   isActive: boolean
+  features: string | null
+  isFeatured: boolean
   createdAt: Date
   updatedAt: Date
   _count: PlanCountAggregateOutputType | null
@@ -246,6 +260,8 @@ export type PlanWhereInput = {
   priceMonthlyCents?: Prisma.IntFilter<"Plan"> | number
   isDefault?: Prisma.BoolFilter<"Plan"> | boolean
   isActive?: Prisma.BoolFilter<"Plan"> | boolean
+  features?: Prisma.StringNullableFilter<"Plan"> | string | null
+  isFeatured?: Prisma.BoolFilter<"Plan"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   users?: Prisma.UserListRelationFilter
@@ -260,6 +276,8 @@ export type PlanOrderByWithRelationInput = {
   priceMonthlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  features?: Prisma.SortOrderInput | Prisma.SortOrder
+  isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   users?: Prisma.UserOrderByRelationAggregateInput
@@ -277,6 +295,8 @@ export type PlanWhereUniqueInput = Prisma.AtLeast<{
   priceMonthlyCents?: Prisma.IntFilter<"Plan"> | number
   isDefault?: Prisma.BoolFilter<"Plan"> | boolean
   isActive?: Prisma.BoolFilter<"Plan"> | boolean
+  features?: Prisma.StringNullableFilter<"Plan"> | string | null
+  isFeatured?: Prisma.BoolFilter<"Plan"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   users?: Prisma.UserListRelationFilter
@@ -291,6 +311,8 @@ export type PlanOrderByWithAggregationInput = {
   priceMonthlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  features?: Prisma.SortOrderInput | Prisma.SortOrder
+  isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PlanCountOrderByAggregateInput
@@ -311,6 +333,8 @@ export type PlanScalarWhereWithAggregatesInput = {
   priceMonthlyCents?: Prisma.IntWithAggregatesFilter<"Plan"> | number
   isDefault?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   isActive?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
+  features?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
+  isFeatured?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
 }
@@ -323,6 +347,8 @@ export type PlanCreateInput = {
   priceMonthlyCents?: number
   isDefault?: boolean
   isActive?: boolean
+  features?: string | null
+  isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutPlanInput
@@ -337,6 +363,8 @@ export type PlanUncheckedCreateInput = {
   priceMonthlyCents?: number
   isDefault?: boolean
   isActive?: boolean
+  features?: string | null
+  isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutPlanInput
@@ -351,6 +379,8 @@ export type PlanUpdateInput = {
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutPlanNestedInput
@@ -365,6 +395,8 @@ export type PlanUncheckedUpdateInput = {
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutPlanNestedInput
@@ -379,6 +411,8 @@ export type PlanCreateManyInput = {
   priceMonthlyCents?: number
   isDefault?: boolean
   isActive?: boolean
+  features?: string | null
+  isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -391,6 +425,8 @@ export type PlanUpdateManyMutationInput = {
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -403,6 +439,8 @@ export type PlanUncheckedUpdateManyInput = {
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -420,6 +458,8 @@ export type PlanCountOrderByAggregateInput = {
   priceMonthlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  features?: Prisma.SortOrder
+  isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -436,6 +476,8 @@ export type PlanMaxOrderByAggregateInput = {
   priceMonthlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  features?: Prisma.SortOrder
+  isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -448,6 +490,8 @@ export type PlanMinOrderByAggregateInput = {
   priceMonthlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  features?: Prisma.SortOrder
+  isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -499,6 +543,8 @@ export type PlanCreateWithoutUsersInput = {
   priceMonthlyCents?: number
   isDefault?: boolean
   isActive?: boolean
+  features?: string | null
+  isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   limits?: Prisma.PlanToolLimitCreateNestedManyWithoutPlanInput
@@ -512,6 +558,8 @@ export type PlanUncheckedCreateWithoutUsersInput = {
   priceMonthlyCents?: number
   isDefault?: boolean
   isActive?: boolean
+  features?: string | null
+  isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   limits?: Prisma.PlanToolLimitUncheckedCreateNestedManyWithoutPlanInput
@@ -541,6 +589,8 @@ export type PlanUpdateWithoutUsersInput = {
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   limits?: Prisma.PlanToolLimitUpdateManyWithoutPlanNestedInput
@@ -554,6 +604,8 @@ export type PlanUncheckedUpdateWithoutUsersInput = {
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   limits?: Prisma.PlanToolLimitUncheckedUpdateManyWithoutPlanNestedInput
@@ -567,6 +619,8 @@ export type PlanCreateWithoutLimitsInput = {
   priceMonthlyCents?: number
   isDefault?: boolean
   isActive?: boolean
+  features?: string | null
+  isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutPlanInput
@@ -580,6 +634,8 @@ export type PlanUncheckedCreateWithoutLimitsInput = {
   priceMonthlyCents?: number
   isDefault?: boolean
   isActive?: boolean
+  features?: string | null
+  isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutPlanInput
@@ -609,6 +665,8 @@ export type PlanUpdateWithoutLimitsInput = {
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutPlanNestedInput
@@ -622,6 +680,8 @@ export type PlanUncheckedUpdateWithoutLimitsInput = {
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutPlanNestedInput
@@ -675,6 +735,8 @@ export type PlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   priceMonthlyCents?: boolean
   isDefault?: boolean
   isActive?: boolean
+  features?: boolean
+  isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
@@ -690,6 +752,8 @@ export type PlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   priceMonthlyCents?: boolean
   isDefault?: boolean
   isActive?: boolean
+  features?: boolean
+  isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["plan"]>
@@ -702,6 +766,8 @@ export type PlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   priceMonthlyCents?: boolean
   isDefault?: boolean
   isActive?: boolean
+  features?: boolean
+  isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["plan"]>
@@ -714,11 +780,13 @@ export type PlanSelectScalar = {
   priceMonthlyCents?: boolean
   isDefault?: boolean
   isActive?: boolean
+  features?: boolean
+  isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
+export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
 export type PlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
   limits?: boolean | Prisma.Plan$limitsArgs<ExtArgs>
@@ -741,6 +809,8 @@ export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     priceMonthlyCents: number
     isDefault: boolean
     isActive: boolean
+    features: string | null
+    isFeatured: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["plan"]>
@@ -1175,6 +1245,8 @@ export interface PlanFieldRefs {
   readonly priceMonthlyCents: Prisma.FieldRef<"Plan", 'Int'>
   readonly isDefault: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly isActive: Prisma.FieldRef<"Plan", 'Boolean'>
+  readonly features: Prisma.FieldRef<"Plan", 'String'>
+  readonly isFeatured: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Plan", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Plan", 'DateTime'>
 }

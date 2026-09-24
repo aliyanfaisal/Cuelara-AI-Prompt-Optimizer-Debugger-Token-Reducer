@@ -300,11 +300,30 @@ model Plan {
   priceMonthlyCents Int      @default(0)
   isDefault         Boolean  @default(false)
   isActive          Boolean  @default(true)
+  // Shown on the public /pricing page: one feature per line, and whether to highlight the tier.
+  features          String?  @db.Text
+  isFeatured        Boolean  @default(false)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   users  User[]
   limits PlanToolLimit[]
+}
+
+// A message submitted through the public /contact form.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  plan      String? // slug of the plan the sender was asking about, if they came from /pricing
+  isRead    Boolean  @default(false)
+  emailSent Boolean  @default(false) // whether the notification email to the team went out
+  createdAt DateTime @default(now())
+
+  @@index([isRead, createdAt])
+  @@index([email, createdAt])
 }
 
 // One row per tool a plan overrides the default authenticated daily limit for.

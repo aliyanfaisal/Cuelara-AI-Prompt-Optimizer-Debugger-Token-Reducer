@@ -17,6 +17,7 @@ const TYPE_LABELS: Record<string, string> = {
   activation: "Activation",
   "password-reset": "Password reset",
   "plan-change": "Plan change",
+  contact: "Contact form",
 };
 
 export default function EmailLogTable({ logs, types }: { logs: EmailLogRow[]; types: string[] }) {

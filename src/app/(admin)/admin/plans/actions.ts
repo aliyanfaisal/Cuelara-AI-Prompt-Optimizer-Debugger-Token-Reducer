@@ -17,6 +17,8 @@ export interface PlanRow {
   priceMonthlyCents: number;
   isDefault: boolean;
   isActive: boolean;
+  features: string;
+  isFeatured: boolean;
   createdAt: string;
   userCount: number;
   limits: { tool: string; dailyLimit: number }[];
@@ -35,6 +37,8 @@ export async function getPlans(): Promise<PlanRow[]> {
     priceMonthlyCents: p.priceMonthlyCents,
     isDefault: p.isDefault,
     isActive: p.isActive,
+    features: p.features ?? "",
+    isFeatured: p.isFeatured,
     createdAt: p.createdAt.toISOString(),
     userCount: p._count.users,
     limits: p.limits.map((l) => ({ tool: l.tool, dailyLimit: l.dailyLimit })),
@@ -65,6 +69,8 @@ export async function createPlan(data: {
   priceMonthlyCents: number;
   isDefault: boolean;
   isActive: boolean;
+  features: string;
+  isFeatured: boolean;
   limits: PlanLimitInput[];
 }) {
   const name = data.name.trim();
@@ -89,11 +95,14 @@ export async function createPlan(data: {
           priceMonthlyCents: Math.round(data.priceMonthlyCents),
           isDefault: data.isDefault,
           isActive: data.isActive,
+          features: data.features.trim() || null,
+          isFeatured: data.isFeatured,
           limits: { create: clean },
         },
       });
     });
     revalidatePath("/admin/plans");
+    revalidatePath("/pricing");
     return { success: true };
   } catch (err: unknown) {
     if (err && typeof err === "object" && "code" in err && err.code === "P2002") {
@@ -111,6 +120,8 @@ export async function updatePlan(
     priceMonthlyCents: number;
     isDefault: boolean;
     isActive: boolean;
+    features: string;
+    isFeatured: boolean;
     limits: PlanLimitInput[];
   }
 ) {
@@ -134,6 +145,8 @@ export async function updatePlan(
           priceMonthlyCents: Math.round(data.priceMonthlyCents),
           isDefault: data.isDefault,
           isActive: data.isActive,
+          features: data.features.trim() || null,
+          isFeatured: data.isFeatured,
         },
       });
       // Simplest consistent way to sync the limit set: replace it wholesale.
@@ -143,6 +156,7 @@ export async function updatePlan(
       }
     });
     revalidatePath("/admin/plans");
+    revalidatePath("/pricing");
     return { success: true };
   } catch {
     return { error: "Failed to update plan." };
@@ -155,6 +169,7 @@ export async function deletePlan(id: string) {
   try {
     await prisma.plan.delete({ where: { id } });
     revalidatePath("/admin/plans");
+    revalidatePath("/pricing");
     return { success: true };
   } catch {
     return { error: "Failed to delete plan." };

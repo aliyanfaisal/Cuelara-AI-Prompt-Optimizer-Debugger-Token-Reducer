@@ -137,6 +137,11 @@ export type PasswordResetToken = Prisma.PasswordResetTokenModel
  */
 export type Plan = Prisma.PlanModel
 /**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel
+/**
  * Model PlanToolLimit
  * 
  */

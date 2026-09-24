@@ -16,6 +16,8 @@ interface FormState {
   priceDollars: string;
   isDefault: boolean;
   isActive: boolean;
+  isFeatured: boolean;
+  features: string;
   limits: Record<string, string>; // tool -> string input, blank = no override
 }
 
@@ -25,6 +27,8 @@ const EMPTY_FORM: FormState = {
   priceDollars: "0",
   isDefault: false,
   isActive: true,
+  isFeatured: false,
+  features: "",
   limits: {},
 };
 
@@ -37,6 +41,8 @@ function planToForm(plan: PlanRow): FormState {
     priceDollars: (plan.priceMonthlyCents / 100).toString(),
     isDefault: plan.isDefault,
     isActive: plan.isActive,
+    isFeatured: plan.isFeatured,
+    features: plan.features,
     limits,
   };
 }
@@ -81,6 +87,8 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
       priceMonthlyCents: Math.round(Number(form.priceDollars || 0) * 100),
       isDefault: form.isDefault,
       isActive: form.isActive,
+      features: form.features,
+      isFeatured: form.isFeatured,
       limits: formToLimits(form),
     };
 
@@ -216,18 +224,18 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Description (optional)</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Description (optional, shown on /pricing)</label>
                 <input
                   type="text"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Shown to admins only"
+                  placeholder="Short tagline shown under the plan name on /pricing"
                   className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Monthly price (USD) — display only, no billing yet</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Monthly price (USD): display only, no billing yet</label>
                 <input
                   type="number"
                   min="0"
@@ -238,7 +246,22 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                 />
               </div>
 
-              <div className="flex items-center gap-6">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Features shown on /pricing (one per line)</label>
+                <textarea
+                  rows={5}
+                  value={form.features}
+                  onChange={(e) => setForm({ ...form, features: e.target.value })}
+                  placeholder={"All 8 tools included\n15 runs per tool, per day"}
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-6">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} className="rounded" />
+                  Highlight as &ldquo;Most popular&rdquo;
+                </label>
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="rounded" />
                   Active

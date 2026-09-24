@@ -19,6 +19,10 @@ const STEPS = [
     dir: '20260924200000_cookbook_external_id',
     isApplied: `select 1 from information_schema.columns where table_name = 'CookbookPrompt' and column_name = 'externalId'`,
   },
+  {
+    dir: '20260924210000_pricing_and_contact',
+    isApplied: `select 1 from information_schema.tables where table_name = 'ContactMessage'`,
+  },
 ];
 
 async function main() {

@@ -27,8 +27,8 @@ after(async () => {
 describe("sitemap.xml", () => {
   it("lists the static public pages, and not admin, auth or noindex placeholder pages", async () => {
     const urls = (await sitemap()).map((e) => e.url);
-    for (const path of ["/", "/tools", "/tools/prompt-optimizer", "/blog", "/cookbook"]) assert.ok(urls.includes(`${BASE}${path}`), path);
-    for (const path of ["/admin", "/login", "/pricing", "/docs", "/privacy"]) assert.ok(!urls.some((u) => u.startsWith(`${BASE}${path}`)), path);
+    for (const path of ["/", "/tools", "/tools/prompt-optimizer", "/blog", "/cookbook", "/pricing", "/contact"]) assert.ok(urls.includes(`${BASE}${path}`), path);
+    for (const path of ["/admin", "/login", "/docs", "/privacy"]) assert.ok(!urls.some((u) => u.startsWith(`${BASE}${path}`)), path);
   });
 
   it("picks up newly published posts on the very next call, with lastModified", async () => {
