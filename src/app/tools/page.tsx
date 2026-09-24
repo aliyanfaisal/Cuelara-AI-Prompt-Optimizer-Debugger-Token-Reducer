@@ -90,7 +90,7 @@ const TOOLS = [
     href: "/tools/site-to-prompt",
     docs: "/cookbook",
     icon: Palette,
-    description: "Paste a website and get a prompt that recreates its real colors, fonts, spacing and layout for v0, Bolt, Claude or Midjourney.",
+    description: "Turn a website's design into a ready-to-use AI prompt: exact colors, fonts, layout and tech stack for v0, Bolt, Claude or Midjourney.",
     color: "text-fuchsia-500",
     bg: "bg-fuchsia-500/10",
     border: "border-fuchsia-500/20",

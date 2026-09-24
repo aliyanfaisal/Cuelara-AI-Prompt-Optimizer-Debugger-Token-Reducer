@@ -254,7 +254,7 @@ export default function SiteToPromptPage() {
           <h1 className="text-2xl font-bold text-foreground">Site to Prompt</h1>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Paste a website and get a prompt that recreates its look. We measure the real colors, fonts, spacing and layout from the rendered page — then write the prompt for v0, Bolt, Claude, ChatGPT, Midjourney or FLUX.
+          Paste a URL and get a prompt that lets v0, Bolt, Claude or Midjourney rebuild its design: colors, fonts, layout, sections and tech stack. We measure the real page in your own browser, then write the prompt for the tool you choose.
         </p>
       </motion.div>
 

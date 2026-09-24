@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Site to Prompt | Turn Any Website's Design into an AI Prompt for v0, Bolt & Midjourney",
-  description: "Paste a URL and get a precise prompt that recreates its design. We measure the real colors, fonts, spacing, radii and layout from the rendered page, then write a prompt tuned for v0, Bolt, Claude, ChatGPT, Midjourney or FLUX.",
+  description: "Get a prompt that recreates any website's design: colors, typography, spacing, layout, sections and tech stack, ready for v0, Bolt, Claude, ChatGPT, Midjourney or FLUX. We measure the real rendered page, not a screenshot.",
   keywords: [
     "Website to Prompt",
     "Site to Prompt",
@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     "Midjourney UI Prompt",
     "Design Tokens Extractor",
     "CSS to Prompt",
+    "Website Layout to Prompt",
+    "Detect Website Tech Stack",
+    "Recreate Website Design with AI",
   ],
   authors: [{ name: "Cuelara" }],
   creator: "Cuelara",
@@ -21,7 +24,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/tools/site-to-prompt" },
   openGraph: {
     title: "Site to Prompt | Turn Any Website's Design into an AI Prompt",
-    description: "Measure a site's real design tokens and get a ready-to-paste prompt for AI UI builders and image generators.",
+    description: "Turn a website's design into a ready-to-use AI prompt: exact colors, fonts, layout, sections and tech stack, for AI UI builders and image generators.",
     url: "https://cuelara.com/tools/site-to-prompt",
     siteName: "Cuelara",
     type: "website",
@@ -30,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Site to Prompt | Website Design to AI Prompt",
-    description: "Paste a URL, get a prompt that recreates its colors, type, spacing and layout.",
+    description: "Paste a URL, get a prompt that rebuilds its design: colors, fonts, layout, sections and tech stack.",
   },
   robots: {
     index: true,

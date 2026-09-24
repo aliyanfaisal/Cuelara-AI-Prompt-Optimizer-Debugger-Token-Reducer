@@ -323,7 +323,7 @@ export default function Home() {
               href="/tools/site-to-prompt"
               icon={<Palette className="h-6 w-6 text-fuchsia-500" />}
               title="Site to Prompt"
-              description="Measures a website's real colors, fonts and spacing, then writes a prompt that recreates its look in v0, Bolt, Claude or Midjourney."
+              description="Measures a website's real colors, fonts, layout and tech stack, then writes a prompt that lets v0, Bolt, Claude or Midjourney rebuild its design."
             />
           </motion.div>
         </div>
