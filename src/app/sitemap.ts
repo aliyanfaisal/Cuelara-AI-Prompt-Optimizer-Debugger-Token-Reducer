@@ -55,12 +55,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap: could not load cookbook prompts", error);
   }
 
+  // Category filters have their own canonical URL and title, so they are worth indexing once they hold a prompt.
+  let cookbookCategories: { slug: string }[] = [];
+  try {
+    cookbookCategories = await prisma.cookbookCategory.findMany({
+      where: {
+        parentId: null,
+        OR: [{ prompts: { some: publishedCookbookWhere() } }, { children: { some: { prompts: { some: publishedCookbookWhere() } } } }],
+      },
+      orderBy: { name: "asc" },
+      select: { slug: true },
+    });
+  } catch (error) {
+    console.error("Sitemap: could not load cookbook categories", error);
+  }
+
   const latestPost = posts.reduce<Date | undefined>((latest, p) => (!latest || p.updatedAt > latest ? p.updatedAt : latest), undefined);
 
   return [
     ...STATIC_PATHS.map((path) => ({ url: `${base}${path}` })),
     { url: `${base}/blog`, lastModified: latestPost },
     ...posts.map((p) => ({ url: `${base}/blog/${p.slug}`, lastModified: p.updatedAt })),
+    ...cookbookCategories.map((c) => ({ url: `${base}/cookbook?category=${c.slug}` })),
     ...cookbookPrompts.map((p) => ({ url: `${base}/prompt/${p.slug}`, lastModified: p.updatedAt })),
   ];
 }

@@ -3,6 +3,7 @@ import { siteUrl } from "@/lib/blog";
 import { isAuthorizedBearer } from "@/lib/blog-sync/auth";
 import { blogPostPayloadSchema, formatValidationErrors } from "@/lib/blog-sync/schema";
 import { upsertBlogPost } from "@/lib/blog-sync/upsert";
+import { blogPostUrl, notifyGoogle } from "@/lib/google-indexing";
 
 export const runtime = "nodejs";
 
@@ -38,6 +39,10 @@ export async function POST(req: Request) {
     }
 
     const { id, slug, created } = await upsertBlogPost(parsed.data);
+
+    // Only posts that are live right now are worth telling Google about; drafts and scheduled posts 404.
+    const { status, published_at } = parsed.data;
+    if (status === "published" && (!published_at || new Date(published_at) <= new Date())) void notifyGoogle(blogPostUrl(slug));
 
     return NextResponse.json(
       {

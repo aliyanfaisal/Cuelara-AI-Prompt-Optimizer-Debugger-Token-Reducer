@@ -4,6 +4,7 @@ import { isAuthorizedBearer } from "@/lib/blog-sync/auth";
 import { formatValidationErrors } from "@/lib/blog-sync/schema";
 import { cookbookPromptPayloadSchema } from "@/lib/cookbook-sync/schema";
 import { UnknownCategoryError, upsertCookbookPrompt } from "@/lib/cookbook-sync/upsert";
+import { notifyGoogle, promptUrl } from "@/lib/google-indexing";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -38,7 +39,9 @@ export async function POST(req: Request) {
 
     const { id, slug, created } = await upsertCookbookPrompt(parsed.data);
 
-    // /cookbook and /prompt/[slug] are force-dynamic, so there is no cached page to revalidate.
+    // /cookbook, /prompt/[slug] and the sitemap are all dynamic, so the page and its sitemap entry are live already.
+    // Fire and forget: a Google hiccup must not fail the delivery.
+    if (parsed.data.published) void notifyGoogle(promptUrl(slug));
     return NextResponse.json(
       { id, external_id: parsed.data.external_id, status: created ? "created" : "updated", url: `${siteUrl()}/prompt/${slug}` },
       { status: created ? 201 : 200 }

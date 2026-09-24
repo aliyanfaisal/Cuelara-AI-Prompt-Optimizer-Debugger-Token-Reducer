@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { authOptions } from "@/lib/auth";
 import { publishedAtFor } from "@/lib/blog";
+import { blogPostUrl, notifyGoogle } from "@/lib/google-indexing";
 import { prisma } from "@/lib/prisma";
 
 // Server actions can be invoked outside the /admin pages the middleware guards, so check the role here too.
@@ -28,8 +29,16 @@ export async function setBlogPostStatus(id: string, status: "draft" | "published
 
     const publishedAt = publishedAtFor(status, post.publishedAt);
 
-    await prisma.blogPost.update({ where: { id }, data: { status, published: status === "published", publishedAt } });
+    const updated = await prisma.blogPost.update({
+      where: { id },
+      data: { status, published: status === "published", publishedAt },
+      select: { slug: true },
+    });
     revalidate();
+    // A scheduled (future-dated) post isn't live yet, so there is nothing for Google to fetch.
+    const live = status === "published" && (!publishedAt || publishedAt <= new Date());
+    if (live) void notifyGoogle(blogPostUrl(updated.slug));
+    else if (status === "draft") void notifyGoogle(blogPostUrl(updated.slug), "URL_DELETED");
     return { success: true };
   } catch {
     return { error: "Failed to update post" };
@@ -40,8 +49,9 @@ export async function deleteBlogPost(id: string) {
   if (!(await isAdmin())) return { error: "Unauthorized" };
 
   try {
-    await prisma.blogPost.delete({ where: { id } });
+    const deleted = await prisma.blogPost.delete({ where: { id }, select: { slug: true, status: true } });
     revalidate();
+    if (deleted.status === "published") void notifyGoogle(blogPostUrl(deleted.slug), "URL_DELETED");
     return { success: true };
   } catch {
     return { error: "Failed to delete post" };

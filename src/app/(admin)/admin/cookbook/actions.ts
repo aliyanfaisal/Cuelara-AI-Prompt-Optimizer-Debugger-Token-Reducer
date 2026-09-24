@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { notifyGoogle, promptUrl } from "@/lib/google-indexing";
 
 // --- Cookbook Category Actions ---
 
@@ -77,8 +78,9 @@ export async function deleteCookbookCategory(id: string) {
 
 export async function createCookbookPrompt(data: any) {
   try {
-    await prisma.cookbookPrompt.create({ data });
+    const created = await prisma.cookbookPrompt.create({ data, select: { slug: true, published: true } });
     revalidatePath("/admin/cookbook");
+    if (created.published) void notifyGoogle(promptUrl(created.slug));
     return { success: true };
   } catch (error: any) {
     if (error.code === 'P2002') return { error: "A cookbook prompt with this slug already exists." };
@@ -88,8 +90,9 @@ export async function createCookbookPrompt(data: any) {
 
 export async function updateCookbookPrompt(id: string, data: any) {
   try {
-    await prisma.cookbookPrompt.update({ where: { id }, data });
+    const updated = await prisma.cookbookPrompt.update({ where: { id }, data, select: { slug: true, published: true } });
     revalidatePath("/admin/cookbook");
+    if (updated.published) void notifyGoogle(promptUrl(updated.slug));
     return { success: true };
   } catch (error: any) {
     if (error.code === 'P2002') return { error: "A cookbook prompt with this slug already exists." };
@@ -99,8 +102,9 @@ export async function updateCookbookPrompt(id: string, data: any) {
 
 export async function deleteCookbookPrompt(id: string) {
   try {
-    await prisma.cookbookPrompt.delete({ where: { id } });
+    const deleted = await prisma.cookbookPrompt.delete({ where: { id }, select: { slug: true, published: true } });
     revalidatePath("/admin/cookbook");
+    if (deleted.published) void notifyGoogle(promptUrl(deleted.slug), "URL_DELETED");
     return { success: true };
   } catch (error) {
     return { error: "Failed to delete cookbook prompt." };
@@ -109,8 +113,9 @@ export async function deleteCookbookPrompt(id: string) {
 
 export async function toggleCookbookPromptPublish(id: string, published: boolean) {
   try {
-    await prisma.cookbookPrompt.update({ where: { id }, data: { published } });
+    const prompt = await prisma.cookbookPrompt.update({ where: { id }, data: { published }, select: { slug: true } });
     revalidatePath("/admin/cookbook");
+    void notifyGoogle(promptUrl(prompt.slug), published ? "URL_UPDATED" : "URL_DELETED");
     return { success: true };
   } catch (error) {
     return { error: "Failed to update publish status." };
