@@ -1,4 +1,4 @@
-import { CUELARA_ORIGINS, MEASURE_ERROR, measureTab, parseWebUrl } from "./shared.js";
+import { BRIDGE_MATCH_PATTERNS, CUELARA_ORIGINS, MEASURE_ERROR, measureTab, parseWebUrl } from "./shared.js";
 
 const LOAD_TIMEOUT_MS = 20000;
 const SETTLE_MS = 1500;
@@ -50,6 +50,28 @@ async function takePending() {
   if (pending) await chrome.storage.session.remove("pending");
   return pending || null;
 }
+
+// The manifest's declared content script only runs on a NEW navigation — a Cuelara tab that was
+// already open when the extension gets installed (very likely, since that's where the install
+// instructions are shown) never receives bridge.js on its own, so the page's ping keeps timing out
+// until the user manually reloads. Inject it into any matching tab immediately on install/update.
+async function injectBridgeIntoOpenTabs() {
+  try {
+    const tabs = await chrome.tabs.query({ url: BRIDGE_MATCH_PATTERNS });
+    await Promise.all(
+      tabs
+        .filter((tab) => tab.id !== undefined)
+        .map((tab) => chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["bridge.js"] }).catch(() => {}))
+    );
+  } catch {
+    // Best-effort — the page's own reload (or its "unlocks automatically" poll after a manual
+    // refresh) still works even if this injection fails for some reason.
+  }
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  injectBridgeIntoOpenTabs();
+});
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Only the bridge running on Cuelara's own pages may ask for these.

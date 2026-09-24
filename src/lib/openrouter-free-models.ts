@@ -10,6 +10,7 @@ interface OpenRouterModelEntry {
   id: string;
   pricing?: { prompt?: string; completion?: string };
   context_length?: number;
+  architecture?: { output_modalities?: string[] };
 }
 
 const MODELS_URL = "https://openrouter.ai/api/v1/models";
@@ -36,6 +37,17 @@ function isFree(model: OpenRouterModelEntry): boolean {
   return prompt === 0 && completion === 0;
 }
 
+// A $0-priced model isn't necessarily a text chat model — OpenRouter's catalog includes
+// free audio/music-generation models (e.g. Google Lyria) that would just error on a plain
+// text prompt. Only keep models that actually output text; input modality is unrestricted
+// since every call here sends plain text content.
+function isTextGenerationModel(model: OpenRouterModelEntry): boolean {
+  const outputs = model.architecture?.output_modalities;
+  // Require text-only output — a model that ALSO outputs audio/image (e.g. Google Lyria,
+  // a free music-generation model) isn't reliably usable through a plain chat-completions call.
+  return !outputs || (outputs.length === 1 && outputs[0] === "text");
+}
+
 function toMaxPromptChars(contextLength: number | undefined): number | undefined {
   if (!contextLength || contextLength <= COMPLETION_TOKEN_RESERVE) return undefined;
   return Math.floor((contextLength - COMPLETION_TOKEN_RESERVE) * CHARS_PER_TOKEN);
@@ -55,7 +67,7 @@ export async function getFreeOpenRouterModels(): Promise<FreeOpenRouterModel[]> 
     const data = (await res.json()) as { data?: OpenRouterModelEntry[] };
 
     const models = (data.data ?? [])
-      .filter(isFree)
+      .filter((m) => isFree(m) && isTextGenerationModel(m))
       .sort((a, b) => (b.context_length ?? 0) - (a.context_length ?? 0))
       .slice(0, MAX_FREE_MODELS)
       .map((m) => ({ id: m.id, maxPromptChars: toMaxPromptChars(m.context_length) }));
