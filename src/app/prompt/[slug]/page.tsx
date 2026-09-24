@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 import { ArrowLeft, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { plainTextSummary, siteUrl, formatDate } from "@/lib/blog";
-import { publishedCookbookWhere, cookbookPromptCardSelect, type CookbookPromptCardData } from "@/lib/cookbook";
+import { publishedCookbookWhere, cookbookPromptCardSelect, parseFaqs, type CookbookPromptCardData } from "@/lib/cookbook";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { markdownProseClass } from "@/components/markdown/prose";
 import { PostImage } from "@/app/blog/PostCard";
@@ -44,8 +44,19 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title,
     description,
+    keywords: [prompt.category.name, "AI prompt", "prompt template", "ChatGPT prompt", "Claude prompt"],
     alternates: { canonical: url },
-    openGraph: { type: "article", url, title, description, images: prompt.image ? [prompt.image] : undefined },
+    openGraph: {
+      type: "article",
+      url,
+      siteName: "Cuelara",
+      title,
+      description,
+      publishedTime: prompt.createdAt.toISOString(),
+      modifiedTime: prompt.updatedAt.toISOString(),
+      section: prompt.category.name,
+      images: prompt.image ? [prompt.image] : undefined,
+    },
     twitter: { card: prompt.image ? "summary_large_image" : "summary", title, description, images: prompt.image ? [prompt.image] : undefined },
   };
 }
@@ -57,17 +68,46 @@ export default async function CookbookPromptPage({ params }: { params: Params })
   const related = await getRelatedPrompts(prompt);
   const url = `${siteUrl()}/prompt/${prompt.slug}`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "TechArticle",
-    headline: prompt.title,
-    description: prompt.seoDesc ?? plainTextSummary(prompt.explanation, 160),
-    dateModified: prompt.updatedAt.toISOString(),
-    datePublished: prompt.createdAt.toISOString(),
-    image: prompt.image ?? undefined,
-    mainEntityOfPage: url,
-    articleSection: prompt.category?.name ?? undefined,
-  };
+  const description = prompt.seoDesc ?? plainTextSummary(prompt.explanation, 160);
+  const site = siteUrl();
+  const faqs = parseFaqs(prompt.faqs);
+
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      headline: prompt.seoTitle ?? prompt.title,
+      name: prompt.title,
+      description,
+      dateModified: prompt.updatedAt.toISOString(),
+      datePublished: prompt.createdAt.toISOString(),
+      image: prompt.image ?? undefined,
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      articleSection: prompt.category.name,
+      inLanguage: "en",
+      author: { "@type": "Organization", name: "Cuelara", url: site },
+      publisher: { "@type": "Organization", name: "Cuelara", url: site },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: site },
+        { "@type": "ListItem", position: 2, name: "Cookbook", item: `${site}/cookbook` },
+        { "@type": "ListItem", position: 3, name: prompt.category.name, item: `${site}/cookbook?category=${prompt.category.slug}` },
+        { "@type": "ListItem", position: 4, name: prompt.title, item: url },
+      ],
+    },
+    ...(faqs.length > 0
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })),
+          },
+        ]
+      : []),
+  ];
 
   return (
     <>
@@ -82,24 +122,25 @@ export default async function CookbookPromptPage({ params }: { params: Params })
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to cookbook
         </Link>
 
-        {prompt.category && (
-          <div className="mb-4">
-            <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              {prompt.category.name}
-            </span>
-          </div>
-        )}
+        <div className="mb-4">
+          <Link
+            href={`/cookbook?category=${prompt.category.slug}`}
+            className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
+          >
+            {prompt.category.name}
+          </Link>
+        </div>
 
         <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">{prompt.title}</h1>
 
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-4">
           <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Clock className="h-4 w-4" /> Updated {formatDate(prompt.updatedAt)}
+            <Clock className="h-4 w-4" /> Updated <time dateTime={prompt.updatedAt.toISOString()}>{formatDate(prompt.updatedAt)}</time>
           </span>
           <ShareButtons url={url} title={prompt.title} />
         </div>
 
-        {prompt.image && <PostImage src={prompt.image} alt="" className="mb-10 h-64 w-full rounded-2xl border border-border md:h-80" />}
+        {prompt.image && <PostImage src={prompt.image} alt={prompt.title} className="mb-10 h-64 w-full rounded-2xl border border-border md:h-80" />}
 
         <section className={markdownProseClass}>
           <ReactMarkdown components={{ pre: CodeBlock }}>{prompt.explanation}</ReactMarkdown>

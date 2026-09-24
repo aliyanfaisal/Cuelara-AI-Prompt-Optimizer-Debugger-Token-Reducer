@@ -1,330 +1,272 @@
-"use client";
-
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search, Code, PenTool, BarChart, Image as ImageIcon, Settings, Copy, ArrowRight, ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, ChevronRight, Search, X } from "lucide-react";
+import type { Prisma } from "@/generated/client/client";
+import { prisma } from "@/lib/prisma";
+import { plainTextSummary, siteUrl } from "@/lib/blog";
+import { COOKBOOK_PER_PAGE, cookbookListSelect, publishedCookbookWhere } from "@/lib/cookbook";
 
-const CATEGORIES = [
-  { id: "all", label: "All Prompts", icon: null },
-  { id: "engineering", label: "Engineering", icon: Code },
-  { id: "content", label: "Content & SEO", icon: PenTool },
-  { id: "data", label: "Data Analysis", icon: BarChart },
-  { id: "image", label: "Image Gen", icon: ImageIcon },
-  { id: "system", label: "System", icon: Settings },
-];
+export const dynamic = "force-dynamic";
 
-const MOCK_PROMPTS = [
-  {
-    id: 1,
-    title: "Senior React Developer Persona",
-    slug: "senior-react-developer-persona",
-    category: "engineering",
-    model: "Claude 3.5 Sonnet",
-    description: "A highly constrained system prompt for generating clean, modern React code using Tailwind and Framer Motion.",
-    snippet: `You are a Senior Frontend Engineer specializing in React, Next.js, and Tailwind CSS.
-Your code must adhere to the following rules:
-1. Always use functional components with TypeScript.
-2. Favor Tailwind utility classes over custom CSS.
-3. Use Framer Motion for any micro-interactions.
-4. Provide ONLY the code block, no markdown explanations unless asked.`,
-  },
-  {
-    id: 2,
-    title: "High-Converting SEO Blog Post",
-    slug: "high-converting-seo-blog-post",
-    category: "content",
-    model: "GPT-4o",
-    description: "Generate an SEO-optimized blog article with LSI keywords, compelling meta descriptions, and proper H-tags.",
-    snippet: `Act as a top-tier SEO copywriter. Write a 1,500-word blog post about [TOPIC].
-Constraints:
-- Include the primary keyword "[KEYWORD]" in the H1 and at least two H2s.
-- Keep paragraphs under 3 sentences for readability.
-- Write a 160-character meta description at the very end.`,
-  },
-  {
-    id: 3,
-    title: "JSON Data Extraction Pipeline",
-    slug: "json-data-extraction-pipeline",
-    category: "data",
-    model: "GPT-4o Mini",
-    description: "Extract specific data points from messy unstructured text and strictly format it into a JSON array.",
-    snippet: `Extract the following entities from the provided text: [Company Name, Revenue, CEO Name, Industry].
-Output strictly as a JSON array of objects.
-Do not wrap the output in markdown code blocks.
-Do not include any pleasantries or explanation text.
-If a value is missing, use null.`,
-  },
-  {
-    id: 4,
-    title: "Cinematic Product Photography",
-    slug: "cinematic-product-photography",
-    category: "image",
-    model: "Midjourney v6",
-    description: "A highly detailed prompt for generating photorealistic product shots with dramatic studio lighting.",
-    snippet: `Commercial product photography of a sleek minimalist smart watch on a dark slate podium.
-Lighting: Dramatic studio lighting, rim light, softbox reflections.
-Atmosphere: Moody, premium, luxurious.
-Camera: Shot on 85mm lens, f/1.8, high resolution, 8k --ar 16:9 --style raw --v 6.0`,
-  },
-  {
-    id: 5,
-    title: "Secure API Request Handler",
-    slug: "secure-api-request-handler",
-    category: "engineering",
-    model: "Claude 3 Haiku",
-    description: "Generate a secure Express/Node.js route handler with input validation and rate limiting.",
-    snippet: `Write a Node.js Express route handler for a POST request to '/api/users'.
-Requirements:
-- Validate input using Zod.
-- Sanitize data to prevent SQL injection.
-- Wrap the logic in a try/catch block.
-- Return standardized error responses (e.g., 400 for bad request, 500 for server error).`,
-  },
-  {
-    id: 6,
-    title: "SaaS Onboarding Email Sequence",
-    slug: "saas-onboarding-email-sequence",
-    category: "content",
-    model: "Claude 3.5 Sonnet",
-    description: "Write a 3-part automated email sequence to welcome new users and drive feature adoption.",
-    snippet: `Write a 3-part email onboarding sequence for a B2B SaaS product called [PRODUCT].
-Email 1: Welcome & quick win (Send immediately).
-Email 2: Discovering the core feature (Send Day 2).
-Email 3: Invitation to join the community/webinar (Send Day 4).
-Tone: Conversational, helpful, and concise.`,
-  },
-];
+type SearchParams = Promise<{ category?: string; q?: string; page?: string }>;
 
-export default function CookbookPage() {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+const TITLE = "Prompt Cookbook: Free, Tested AI Prompt Templates";
+const DESCRIPTION =
+  "A curated library of production-ready prompt templates for ChatGPT, Claude and Gemini. Browse by category, copy the prompt, and see a worked example for coding, SEO, data extraction, marketing and more.";
 
-  const filteredPrompts = MOCK_PROMPTS.filter((prompt) => {
-    const matchesCategory = activeCategory === "all" || prompt.category === activeCategory;
-    const matchesSearch = prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          prompt.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+function cookbookHref({ category, q, page }: { category?: string; q?: string; page?: number }) {
+  const params = new URLSearchParams();
+  if (category) params.set("category", category);
+  if (q) params.set("q", q);
+  if (page && page > 1) params.set("page", String(page));
+  const query = params.toString();
+  return query ? `/cookbook?${query}` : "/cookbook";
+}
+
+// A category also matches prompts filed under its sub-categories.
+function categoryFilter(slug: string): Prisma.CookbookPromptWhereInput {
+  return { OR: [{ category: { slug } }, { category: { parent: { slug } } }] };
+}
+
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const { category, q, page } = await searchParams;
+  const base = siteUrl();
+
+  if (category && !q) {
+    const cat = await prisma.cookbookCategory.findUnique({ where: { slug: category }, select: { name: true, description: true } });
+    if (cat) {
+      const title = `${cat.name} Prompts: Copy-Paste AI Prompt Templates`;
+      const description = cat.description ?? `Browse ${cat.name} prompt templates from the Cuelara cookbook, each with a worked example.`;
+      const canonical = `${base}${cookbookHref({ category })}`;
+      return {
+        title,
+        description,
+        alternates: { canonical },
+        openGraph: { type: "website", url: canonical, title, description },
+        twitter: { card: "summary", title, description },
+        // Deep pages of a filtered list add little on their own.
+        robots: page && page !== "1" ? { index: false, follow: true } : undefined,
+      };
+    }
+  }
+
+  return {
+    title: TITLE,
+    description: DESCRIPTION,
+    alternates: { canonical: `${base}/cookbook` },
+    openGraph: { type: "website", url: `${base}/cookbook`, title: TITLE, description: DESCRIPTION },
+    twitter: { card: "summary", title: TITLE, description: DESCRIPTION },
+    // Search results and paginated pages are thin duplicates of the main list: keep them out of the index.
+    robots: q || (page && page !== "1") ? { index: false, follow: true } : undefined,
+  };
+}
+
+export default async function CookbookPage({ searchParams }: { searchParams: SearchParams }) {
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const q = sp.q?.trim().slice(0, 100) || undefined;
+  const category = sp.category || undefined;
+
+  const filters: Prisma.CookbookPromptWhereInput[] = [publishedCookbookWhere()];
+  if (category) filters.push(categoryFilter(category));
+  if (q) {
+    filters.push({
+      OR: [
+        { title: { contains: q, mode: "insensitive" } },
+        { explanation: { contains: q, mode: "insensitive" } },
+        { promptTemplate: { contains: q, mode: "insensitive" } },
+      ],
+    });
+  }
+  const where: Prisma.CookbookPromptWhereInput = { AND: filters };
+
+  const [prompts, total, categories] = await Promise.all([
+    prisma.cookbookPrompt.findMany({
+      where,
+      orderBy: { updatedAt: "desc" },
+      skip: (page - 1) * COOKBOOK_PER_PAGE,
+      take: COOKBOOK_PER_PAGE,
+      select: cookbookListSelect,
+    }),
+    prisma.cookbookPrompt.count({ where }),
+    // Only top-level categories that actually hold published prompts (directly or via a sub-category).
+    prisma.cookbookCategory.findMany({
+      where: {
+        parentId: null,
+        OR: [{ prompts: { some: publishedCookbookWhere() } }, { children: { some: { prompts: { some: publishedCookbookWhere() } } } }],
+      },
+      orderBy: { name: "asc" },
+      select: { name: true, slug: true },
+    }),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(total / COOKBOOK_PER_PAGE));
+  const base = siteUrl();
+  const activeCategory = categories.find((c) => c.slug === category);
+
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: activeCategory ? `${activeCategory.name} Prompts` : "Prompt Cookbook",
+      description: DESCRIPTION,
+      url: `${base}${cookbookHref({ category })}`,
+      isPartOf: { "@type": "WebSite", name: "Cuelara", url: base },
+      mainEntity: {
+        "@type": "ItemList",
+        numberOfItems: total,
+        itemListElement: prompts.map((p, i) => ({
+          "@type": "ListItem",
+          position: (page - 1) * COOKBOOK_PER_PAGE + i + 1,
+          url: `${base}/prompt/${p.slug}`,
+          name: p.title,
+        })),
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: base },
+        { "@type": "ListItem", position: 2, name: "Cookbook", item: `${base}/cookbook` },
+        ...(activeCategory
+          ? [{ "@type": "ListItem", position: 3, name: activeCategory.name, item: `${base}${cookbookHref({ category })}` }]
+          : []),
+      ],
+    },
+  ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background w-full">
-      
-      {/* 1. Hero & Search Section */}
-      <section className="relative w-full pt-32 pb-12 md:pt-40 md:pb-16 overflow-hidden flex flex-col items-center border-b border-border/40">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none" />
-        
-        <div className="max-w-4xl mx-auto px-6 relative z-10 w-full text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-          >
-            <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-4">
-              Prompt Cookbook
-            </h1>
-            <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-              A curated library of production-ready prompts. Search, copy, and deploy highly optimized instructions for any model.
-            </p>
+    <div className="flex min-h-screen w-full flex-col bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
 
-            {/* Search Bar */}
-            <div className="relative max-w-2xl mx-auto group">
-              <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl group-hover:bg-primary/30 transition-colors opacity-50" />
-              <div className="relative flex items-center bg-card border border-border/60 rounded-2xl p-2 shadow-sm">
-                <div className="pl-4 pr-2 text-muted-foreground">
-                  <Search className="w-5 h-5" />
-                </div>
-                <input 
-                  type="text"
-                  placeholder="Search prompts (e.g., 'React', 'SEO', 'Data')..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent border-none focus:ring-0 text-foreground text-sm py-3 px-2 focus-visible:outline-none placeholder:text-muted-foreground/60"
-                />
-                <div className="pr-2 hidden sm:block">
-                  <span className="px-2 py-1 bg-muted rounded text-[10px] font-bold text-muted-foreground border border-border/50">⌘K</span>
-                </div>
-              </div>
+      <section className="relative flex w-full flex-col items-center overflow-hidden border-b border-border/40 pb-12 pt-32 md:pb-16 md:pt-40">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
+        <div className="relative z-10 mx-auto w-full max-w-4xl px-6 text-center">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-foreground md:text-5xl">
+            {activeCategory ? `${activeCategory.name} Prompts` : "Prompt Cookbook"}
+          </h1>
+          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
+            A curated library of production-ready prompts. Search, copy, and deploy highly optimized instructions for any model.
+          </p>
+
+          {/* Plain GET form: works without JavaScript and keeps search state in the URL. */}
+          <form action="/cookbook" method="get" role="search" className="relative mx-auto max-w-2xl">
+            {category && <input type="hidden" name="category" value={category} />}
+            <div className="flex items-center rounded-2xl border border-border/60 bg-card p-2 shadow-sm">
+              <Search className="ml-4 mr-2 h-5 w-5 text-muted-foreground" aria-hidden />
+              <input
+                type="search"
+                name="q"
+                defaultValue={q}
+                aria-label="Search prompts"
+                placeholder="Search prompts (e.g., 'React', 'SEO', 'Data')..."
+                className="flex-1 border-none bg-transparent px-2 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus-visible:outline-none"
+              />
+              <button type="submit" className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90">
+                Search
+              </button>
             </div>
-          </motion.div>
+          </form>
         </div>
       </section>
 
-      {/* 2. Main Content Area */}
-      <div className="max-w-6xl mx-auto px-6 w-full py-12 flex flex-col">
-        
-        {/* Horizontal Centered Filters */}
-        <div className="flex flex-col items-center mb-12">
-          <div className="inline-flex items-center gap-1 p-1 bg-muted/40 border border-border/50 rounded-xl overflow-x-auto max-w-full scrollbar-hide">
-            {CATEGORIES.map((category) => {
-              const isActive = activeCategory === category.id;
-              const Icon = category.icon;
+      <div className="mx-auto flex w-full max-w-6xl flex-col px-6 py-12">
+        <nav aria-label="Prompt categories" className="mb-12 flex flex-col items-center">
+          <div className="inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-border/50 bg-muted/40 p-1">
+            {[{ name: "All Prompts", slug: undefined }, ...categories].map((c) => {
+              const isActive = c.slug === category;
               return (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveCategory(category.id)}
-                  className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                    isActive ? "text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                <Link
+                  key={c.slug ?? "all"}
+                  href={cookbookHref({ category: c.slug, q })}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
+                    isActive
+                      ? "border border-border/60 bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   }`}
                 >
-                  {isActive && (
-                    <motion.div
-                      layoutId="cookbookCategory"
-                      className="absolute inset-0 bg-background border border-border/60 rounded-lg"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10 flex items-center gap-2">
-                    {Icon && <Icon className="w-4 h-4" />}
-                    {category.label}
-                  </span>
-                </button>
+                  {c.name}
+                </Link>
               );
             })}
           </div>
-        </div>
+          {q && (
+            <p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
+              {total} result{total === 1 ? "" : "s"} for &ldquo;{q}&rdquo;
+              <Link href={cookbookHref({ category })} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                <X className="h-3.5 w-3.5" /> Clear
+              </Link>
+            </p>
+          )}
+        </nav>
 
-        {/* 3. Prompt Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredPrompts.length > 0 ? (
-              filteredPrompts.map((prompt, i) => (
-                <motion.div
-                  key={prompt.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3, delay: i * 0.05 }}
-                  className="h-full"
-                >
-                  <Link
-                    href={`/prompt/${prompt.slug}`}
-                    className="group flex flex-col bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all h-full hover:border-primary/40 relative"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    
-                    <div className="p-6 relative z-10 flex flex-col h-full">
-                      {/* Header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="px-2.5 py-1 rounded-md bg-muted text-[10px] font-bold text-muted-foreground uppercase tracking-wider border border-border/50">
-                          {prompt.model}
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
-                          <ArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform" />
-                        </div>
-                      </div>
-                      
-                      <h3 className="text-lg font-bold text-foreground mb-2 leading-tight">
-                        {prompt.title}
-                      </h3>
-                      
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-6">
-                        {prompt.description}
-                      </p>
-                      
-                      {/* Snippet Preview */}
-                      <div className="mt-auto bg-muted/40 border border-border/50 rounded-xl p-4 relative overflow-hidden group/snippet">
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-muted/90 z-10" />
-                        <pre className="text-xs font-mono text-muted-foreground leading-relaxed whitespace-pre-wrap line-clamp-4">
-                          {prompt.snippet}
-                        </pre>
-                        
-                        {/* Overlay Copy Button */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 opacity-0 group-hover/snippet:opacity-100 transition-opacity">
-                          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background border border-border text-foreground text-xs font-bold shadow-md hover:bg-muted">
-                            <Copy className="w-3.5 h-3.5" /> Quick Copy
-                          </button>
-                        </div>
-                      </div>
-                      
-                    </div>
-                  </Link>
-                </motion.div>
-              ))
-            ) : (
-              <div className="col-span-full py-20 text-center">
-                <p className="text-muted-foreground mb-2">No prompts found matching your search.</p>
-                <button 
-                  onClick={() => { setSearchQuery(""); setActiveCategory("all"); }}
-                  className="text-primary font-bold text-sm hover:underline"
-                >
-                  Clear filters
-                </button>
-              </div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Pagination UI */}
-        <div className="flex items-center justify-center gap-2 mt-16">
-          <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50">
-            <ChevronRight className="w-5 h-5 rotate-180" />
-          </button>
-          
-          {[1, 2, 3].map((page) => (
-            <button
-              key={page}
-              className={`w-10 h-10 rounded-lg text-sm font-bold flex items-center justify-center transition-colors ${
-                page === 1 
-                  ? "bg-primary text-primary-foreground shadow-md" 
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          
-          <span className="text-muted-foreground px-2">...</span>
-          
-          <button className="w-10 h-10 rounded-lg text-sm font-bold flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-            8
-          </button>
-          
-          <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Newsletter CTA */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mt-24 p-1 rounded-3xl bg-gradient-to-r from-primary/30 via-violet-500/30 to-primary/30"
-        >
-          <div className="bg-card rounded-[22px] p-8 md:p-12 text-center relative overflow-hidden">
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(var(--foreground)_1px,transparent_1px)] [background-size:20px_20px]" />
-            
-            <div className="relative z-10 max-w-2xl mx-auto">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
-                <Code className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-3xl font-bold text-foreground mb-4">Never write a prompt from scratch</h3>
-              <p className="text-muted-foreground mb-8">
-                Get new optimized prompt templates delivered to your inbox every week. We test them, you copy them.
-              </p>
-              
-              <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  className="flex-1 px-5 py-3 rounded-xl bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
-                  required
-                />
-                <button 
-                  type="submit"
-                  className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-[0_0_20px_rgba(var(--primary),0.2)] hover:shadow-[0_0_25px_rgba(var(--primary),0.3)] transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Get Free Prompts
-                </button>
-              </form>
-            </div>
+        {prompts.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {prompts.map((p) => (
+              <Link
+                key={p.id}
+                href={`/prompt/${p.slug}`}
+                className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all hover:border-primary/40 hover:shadow-lg"
+              >
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="relative z-10 flex h-full flex-col p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <span className="rounded-md border border-border/50 bg-muted px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      {p.category.name}
+                    </span>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                      <ArrowRight className="h-4 w-4 -rotate-45 transition-transform group-hover:rotate-0" />
+                    </span>
+                  </div>
+                  <h2 className="mb-2 text-lg font-bold leading-tight text-foreground">{p.title}</h2>
+                  <p className="mb-6 line-clamp-2 text-sm text-muted-foreground">{plainTextSummary(p.explanation, 140)}</p>
+                  <div className="relative mt-auto overflow-hidden rounded-xl border border-border/50 bg-muted/40 p-4">
+                    <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-transparent to-muted/90" />
+                    <pre className="line-clamp-4 whitespace-pre-wrap font-mono text-xs leading-relaxed text-muted-foreground">{p.promptTemplate}</pre>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
-        </motion.div>
+        ) : (
+          <div className="py-20 text-center">
+            <p className="mb-2 text-muted-foreground">No prompts found{q ? " matching your search" : ""}.</p>
+            <Link href="/cookbook" className="text-sm font-bold text-primary hover:underline">
+              Clear filters
+            </Link>
+          </div>
+        )}
 
+        {totalPages > 1 && (
+          <nav aria-label="Pagination" className="mt-16 flex items-center justify-center gap-2">
+            {page > 1 && (
+              <Link href={cookbookHref({ category, q, page: page - 1 })} rel="prev" aria-label="Previous page" className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
+                <ChevronRight className="h-5 w-5 rotate-180" />
+              </Link>
+            )}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <Link
+                key={n}
+                href={cookbookHref({ category, q, page: n })}
+                aria-current={n === page ? "page" : undefined}
+                className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold transition-colors ${
+                  n === page ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {n}
+              </Link>
+            ))}
+            {page < totalPages && (
+              <Link href={cookbookHref({ category, q, page: page + 1 })} rel="next" aria-label="Next page" className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
+                <ChevronRight className="h-5 w-5" />
+              </Link>
+            )}
+          </nav>
+        )}
       </div>
     </div>
   );
