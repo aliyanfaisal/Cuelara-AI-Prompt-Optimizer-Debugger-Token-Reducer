@@ -20,12 +20,23 @@ export type CookbookPromptModel = runtime.Types.Result.DefaultSelection<Prisma.$
 
 export type AggregateCookbookPrompt = {
   _count: CookbookPromptCountAggregateOutputType | null
+  _avg: CookbookPromptAvgAggregateOutputType | null
+  _sum: CookbookPromptSumAggregateOutputType | null
   _min: CookbookPromptMinAggregateOutputType | null
   _max: CookbookPromptMaxAggregateOutputType | null
 }
 
+export type CookbookPromptAvgAggregateOutputType = {
+  externalId: number | null
+}
+
+export type CookbookPromptSumAggregateOutputType = {
+  externalId: number | null
+}
+
 export type CookbookPromptMinAggregateOutputType = {
   id: string | null
+  externalId: number | null
   title: string | null
   slug: string | null
   image: string | null
@@ -47,6 +58,7 @@ export type CookbookPromptMinAggregateOutputType = {
 
 export type CookbookPromptMaxAggregateOutputType = {
   id: string | null
+  externalId: number | null
   title: string | null
   slug: string | null
   image: string | null
@@ -68,6 +80,7 @@ export type CookbookPromptMaxAggregateOutputType = {
 
 export type CookbookPromptCountAggregateOutputType = {
   id: number
+  externalId: number
   title: number
   slug: number
   image: number
@@ -89,8 +102,17 @@ export type CookbookPromptCountAggregateOutputType = {
 }
 
 
+export type CookbookPromptAvgAggregateInputType = {
+  externalId?: true
+}
+
+export type CookbookPromptSumAggregateInputType = {
+  externalId?: true
+}
+
 export type CookbookPromptMinAggregateInputType = {
   id?: true
+  externalId?: true
   title?: true
   slug?: true
   image?: true
@@ -112,6 +134,7 @@ export type CookbookPromptMinAggregateInputType = {
 
 export type CookbookPromptMaxAggregateInputType = {
   id?: true
+  externalId?: true
   title?: true
   slug?: true
   image?: true
@@ -133,6 +156,7 @@ export type CookbookPromptMaxAggregateInputType = {
 
 export type CookbookPromptCountAggregateInputType = {
   id?: true
+  externalId?: true
   title?: true
   slug?: true
   image?: true
@@ -191,6 +215,18 @@ export type CookbookPromptAggregateArgs<ExtArgs extends runtime.Types.Extensions
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: CookbookPromptAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: CookbookPromptSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: CookbookPromptMinAggregateInputType
@@ -221,12 +257,15 @@ export type CookbookPromptGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   _count?: CookbookPromptCountAggregateInputType | true
+  _avg?: CookbookPromptAvgAggregateInputType
+  _sum?: CookbookPromptSumAggregateInputType
   _min?: CookbookPromptMinAggregateInputType
   _max?: CookbookPromptMaxAggregateInputType
 }
 
 export type CookbookPromptGroupByOutputType = {
   id: string
+  externalId: number | null
   title: string
   slug: string
   image: string | null
@@ -245,6 +284,8 @@ export type CookbookPromptGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   _count: CookbookPromptCountAggregateOutputType | null
+  _avg: CookbookPromptAvgAggregateOutputType | null
+  _sum: CookbookPromptSumAggregateOutputType | null
   _min: CookbookPromptMinAggregateOutputType | null
   _max: CookbookPromptMaxAggregateOutputType | null
 }
@@ -269,6 +310,7 @@ export type CookbookPromptWhereInput = {
   OR?: Prisma.CookbookPromptWhereInput[]
   NOT?: Prisma.CookbookPromptWhereInput | Prisma.CookbookPromptWhereInput[]
   id?: Prisma.StringFilter<"CookbookPrompt"> | string
+  externalId?: Prisma.IntNullableFilter<"CookbookPrompt"> | number | null
   title?: Prisma.StringFilter<"CookbookPrompt"> | string
   slug?: Prisma.StringFilter<"CookbookPrompt"> | string
   image?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
@@ -291,6 +333,7 @@ export type CookbookPromptWhereInput = {
 
 export type CookbookPromptOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -313,6 +356,7 @@ export type CookbookPromptOrderByWithRelationInput = {
 
 export type CookbookPromptWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  externalId?: number
   slug?: string
   AND?: Prisma.CookbookPromptWhereInput | Prisma.CookbookPromptWhereInput[]
   OR?: Prisma.CookbookPromptWhereInput[]
@@ -334,10 +378,11 @@ export type CookbookPromptWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"CookbookPrompt"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CookbookPrompt"> | Date | string
   category?: Prisma.XOR<Prisma.CookbookCategoryScalarRelationFilter, Prisma.CookbookCategoryWhereInput>
-}, "id" | "slug">
+}, "id" | "externalId" | "slug">
 
 export type CookbookPromptOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -356,8 +401,10 @@ export type CookbookPromptOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CookbookPromptCountOrderByAggregateInput
+  _avg?: Prisma.CookbookPromptAvgOrderByAggregateInput
   _max?: Prisma.CookbookPromptMaxOrderByAggregateInput
   _min?: Prisma.CookbookPromptMinOrderByAggregateInput
+  _sum?: Prisma.CookbookPromptSumOrderByAggregateInput
 }
 
 export type CookbookPromptScalarWhereWithAggregatesInput = {
@@ -365,6 +412,7 @@ export type CookbookPromptScalarWhereWithAggregatesInput = {
   OR?: Prisma.CookbookPromptScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CookbookPromptScalarWhereWithAggregatesInput | Prisma.CookbookPromptScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
+  externalId?: Prisma.IntNullableWithAggregatesFilter<"CookbookPrompt"> | number | null
   title?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
   slug?: Prisma.StringWithAggregatesFilter<"CookbookPrompt"> | string
   image?: Prisma.StringNullableWithAggregatesFilter<"CookbookPrompt"> | string | null
@@ -386,6 +434,7 @@ export type CookbookPromptScalarWhereWithAggregatesInput = {
 
 export type CookbookPromptCreateInput = {
   id?: string
+  externalId?: number | null
   title: string
   slug: string
   image?: string | null
@@ -407,6 +456,7 @@ export type CookbookPromptCreateInput = {
 
 export type CookbookPromptUncheckedCreateInput = {
   id?: string
+  externalId?: number | null
   title: string
   slug: string
   image?: string | null
@@ -428,6 +478,7 @@ export type CookbookPromptUncheckedCreateInput = {
 
 export type CookbookPromptUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -449,6 +500,7 @@ export type CookbookPromptUpdateInput = {
 
 export type CookbookPromptUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -470,6 +522,7 @@ export type CookbookPromptUncheckedUpdateInput = {
 
 export type CookbookPromptCreateManyInput = {
   id?: string
+  externalId?: number | null
   title: string
   slug: string
   image?: string | null
@@ -491,6 +544,7 @@ export type CookbookPromptCreateManyInput = {
 
 export type CookbookPromptUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -511,6 +565,7 @@ export type CookbookPromptUpdateManyMutationInput = {
 
 export type CookbookPromptUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -542,6 +597,7 @@ export type CookbookPromptOrderByRelationAggregateInput = {
 
 export type CookbookPromptCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   image?: Prisma.SortOrder
@@ -561,8 +617,13 @@ export type CookbookPromptCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type CookbookPromptAvgOrderByAggregateInput = {
+  externalId?: Prisma.SortOrder
+}
+
 export type CookbookPromptMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   image?: Prisma.SortOrder
@@ -584,6 +645,7 @@ export type CookbookPromptMaxOrderByAggregateInput = {
 
 export type CookbookPromptMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   image?: Prisma.SortOrder
@@ -601,6 +663,10 @@ export type CookbookPromptMinOrderByAggregateInput = {
   seoDesc?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type CookbookPromptSumOrderByAggregateInput = {
+  externalId?: Prisma.SortOrder
 }
 
 export type CookbookPromptCreateNestedManyWithoutCategoryInput = {
@@ -647,6 +713,7 @@ export type CookbookPromptUncheckedUpdateManyWithoutCategoryNestedInput = {
 
 export type CookbookPromptCreateWithoutCategoryInput = {
   id?: string
+  externalId?: number | null
   title: string
   slug: string
   image?: string | null
@@ -667,6 +734,7 @@ export type CookbookPromptCreateWithoutCategoryInput = {
 
 export type CookbookPromptUncheckedCreateWithoutCategoryInput = {
   id?: string
+  externalId?: number | null
   title: string
   slug: string
   image?: string | null
@@ -716,6 +784,7 @@ export type CookbookPromptScalarWhereInput = {
   OR?: Prisma.CookbookPromptScalarWhereInput[]
   NOT?: Prisma.CookbookPromptScalarWhereInput | Prisma.CookbookPromptScalarWhereInput[]
   id?: Prisma.StringFilter<"CookbookPrompt"> | string
+  externalId?: Prisma.IntNullableFilter<"CookbookPrompt"> | number | null
   title?: Prisma.StringFilter<"CookbookPrompt"> | string
   slug?: Prisma.StringFilter<"CookbookPrompt"> | string
   image?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
@@ -737,6 +806,7 @@ export type CookbookPromptScalarWhereInput = {
 
 export type CookbookPromptCreateManyCategoryInput = {
   id?: string
+  externalId?: number | null
   title: string
   slug: string
   image?: string | null
@@ -757,6 +827,7 @@ export type CookbookPromptCreateManyCategoryInput = {
 
 export type CookbookPromptUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -777,6 +848,7 @@ export type CookbookPromptUpdateWithoutCategoryInput = {
 
 export type CookbookPromptUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -797,6 +869,7 @@ export type CookbookPromptUncheckedUpdateWithoutCategoryInput = {
 
 export type CookbookPromptUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -819,6 +892,7 @@ export type CookbookPromptUncheckedUpdateManyWithoutCategoryInput = {
 
 export type CookbookPromptSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  externalId?: boolean
   title?: boolean
   slug?: boolean
   image?: boolean
@@ -841,6 +915,7 @@ export type CookbookPromptSelect<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type CookbookPromptSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  externalId?: boolean
   title?: boolean
   slug?: boolean
   image?: boolean
@@ -863,6 +938,7 @@ export type CookbookPromptSelectCreateManyAndReturn<ExtArgs extends runtime.Type
 
 export type CookbookPromptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  externalId?: boolean
   title?: boolean
   slug?: boolean
   image?: boolean
@@ -885,6 +961,7 @@ export type CookbookPromptSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
 
 export type CookbookPromptSelectScalar = {
   id?: boolean
+  externalId?: boolean
   title?: boolean
   slug?: boolean
   image?: boolean
@@ -904,7 +981,7 @@ export type CookbookPromptSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CookbookPromptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "image" | "categoryId" | "explanation" | "whenToUse" | "commonMistakes" | "bestPractices" | "promptTemplate" | "exampleInput" | "exampleOutput" | "faqs" | "published" | "seoTitle" | "seoDesc" | "createdAt" | "updatedAt", ExtArgs["result"]["cookbookPrompt"]>
+export type CookbookPromptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "title" | "slug" | "image" | "categoryId" | "explanation" | "whenToUse" | "commonMistakes" | "bestPractices" | "promptTemplate" | "exampleInput" | "exampleOutput" | "faqs" | "published" | "seoTitle" | "seoDesc" | "createdAt" | "updatedAt", ExtArgs["result"]["cookbookPrompt"]>
 export type CookbookPromptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CookbookCategoryDefaultArgs<ExtArgs>
 }
@@ -922,6 +999,7 @@ export type $CookbookPromptPayload<ExtArgs extends runtime.Types.Extensions.Inte
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    externalId: number | null
     title: string
     slug: string
     image: string | null
@@ -1364,6 +1442,7 @@ export interface Prisma__CookbookPromptClient<T, Null = never, ExtArgs extends r
  */
 export interface CookbookPromptFieldRefs {
   readonly id: Prisma.FieldRef<"CookbookPrompt", 'String'>
+  readonly externalId: Prisma.FieldRef<"CookbookPrompt", 'Int'>
   readonly title: Prisma.FieldRef<"CookbookPrompt", 'String'>
   readonly slug: Prisma.FieldRef<"CookbookPrompt", 'String'>
   readonly image: Prisma.FieldRef<"CookbookPrompt", 'String'>

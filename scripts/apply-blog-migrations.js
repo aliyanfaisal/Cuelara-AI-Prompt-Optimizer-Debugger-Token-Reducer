@@ -15,6 +15,10 @@ const STEPS = [
     dir: '20260921010000_blog_card_summary',
     isApplied: `select 1 from information_schema.columns where table_name = 'BlogPost' and column_name = 'readingMinutes'`,
   },
+  {
+    dir: '20260924200000_cookbook_external_id',
+    isApplied: `select 1 from information_schema.columns where table_name = 'CookbookPrompt' and column_name = 'externalId'`,
+  },
 ];
 
 async function main() {

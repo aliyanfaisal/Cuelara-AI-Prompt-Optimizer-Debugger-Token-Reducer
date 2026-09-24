@@ -177,6 +177,8 @@ model CookbookCategory {
 
 model CookbookPrompt {
   id         String           @id @default(cuid())
+  // ID assigned by the automation that publishes via POST /api/cookbook-prompts; makes retries idempotent.
+  externalId Int?             @unique
   title      String
   slug       String           @unique
   image      String?

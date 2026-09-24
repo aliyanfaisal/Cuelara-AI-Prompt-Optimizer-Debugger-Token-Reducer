@@ -2320,6 +2320,7 @@ export type CookbookCategoryScalarFieldEnum = (typeof CookbookCategoryScalarFiel
 
 export const CookbookPromptScalarFieldEnum = {
   id: 'id',
+  externalId: 'externalId',
   title: 'title',
   slug: 'slug',
   image: 'image',

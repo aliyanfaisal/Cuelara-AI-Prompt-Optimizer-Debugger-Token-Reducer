@@ -3,7 +3,7 @@ import { PrismaPGlite } from "pglite-prisma-adapter";
 import { readFileSync, readdirSync } from "node:fs";
 import { PrismaClient } from "@/generated/client/client";
 
-// The BlogPost table as it existed before the blog sync feature; the real migrations are applied on top of it.
+// The BlogPost (and a stub User) table as they existed before the migrations; the real migrations are applied on top of it.
 const LEGACY_BLOG_POST = `
 CREATE TABLE "BlogPost" (
   "id" TEXT NOT NULL, "title" TEXT NOT NULL, "slug" TEXT NOT NULL, "content" TEXT NOT NULL,
@@ -12,6 +12,8 @@ CREATE TABLE "BlogPost" (
   CONSTRAINT "BlogPost_pkey" PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX "BlogPost_slug_key" ON "BlogPost"("slug");
+-- Later migrations (plans, email log) alter or reference "User", which was also created before Migrate.
+CREATE TABLE "User" ("id" TEXT NOT NULL, CONSTRAINT "User_pkey" PRIMARY KEY ("id"));
 `;
 
 /**

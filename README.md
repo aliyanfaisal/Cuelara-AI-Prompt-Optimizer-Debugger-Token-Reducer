@@ -248,6 +248,31 @@ curl -i -X POST http://localhost:3000/api/blog-posts \
 # 422: invalid payload -> same request with a Bearer token and  -d '{"title": ""}'
 ```
 
+### Cookbook prompt API
+
+`POST /api/cookbook-prompts` creates or updates a cookbook prompt (page: `/prompt/<slug>`). Same auth, idempotency and error conventions as `/api/blog-posts`.
+
+- **Auth:** `Authorization: Bearer <PORTFOLIO_API_TOKEN>`.
+- **Idempotency:** `external_id` is the key; the same id updates the same prompt. An existing prompt's slug never changes; a slug used by a different prompt gets `-2`, `-3`, ...
+- **Fields:** all Markdown except `prompt_template`, `example_input`, `example_output` (plain text). `faqs` must be 3 to 5 entries written as `### Question` followed by the answer (they become FAQPage JSON-LD). `seo_title` 30 to 60 chars, `seo_desc` 120 to 160 chars. `category` is the slug of an existing category (unknown slugs get a 422, categories are never auto-created).
+- **Images:** `image_url` is hotlinked, never downloaded (same as blog posts). Optional.
+- `GET /api/cookbook-prompts` (same auth) returns `next_external_id`, the valid `categories`, and existing `prompts` so a publisher can pick a fresh topic and avoid duplicates.
+
+```bash
+curl -i -X POST http://localhost:3000/api/cookbook-prompts \
+  -H "Authorization: Bearer $PORTFOLIO_API_TOKEN" -H "Content-Type: application/json" \
+  -d '{
+    "external_id": 11, "title": "Bug Report Triage Prompt", "slug": "bug-report-triage-prompt",
+    "category": "engineering",
+    "explanation": "A **prompt** that ...", "when_to_use": "- ...", "best_practices": "- ...", "common_mistakes": "- ...",
+    "prompt_template": "You are ...\n\nReport: [REPORT]", "example_input": "...", "example_output": "...",
+    "faqs": "### Q1?\nA1\n\n### Q2?\nA2\n\n### Q3?\nA3",
+    "seo_title": "Bug Report Triage Prompt for ChatGPT and Claude",
+    "seo_desc": "Turn messy bug reports into a triaged, prioritized ticket with reproduction steps. Copy this prompt for ChatGPT or Claude and see a worked example.",
+    "image_url": null, "published": true
+  }'
+```
+
 Run the tests (in-memory Postgres, no external database needed) with `npm test`.
 
 The schema changes live in `prisma/migrations/`. This database has no Prisma Migrate history, so apply them with `node scripts/apply-blog-migrations.js` (idempotent, one transaction) rather than `prisma migrate deploy`.
