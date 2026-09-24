@@ -11,6 +11,13 @@ export interface ProviderChainLink {
   /** The specific model this link calls — logged with every attempt for the admin dashboard. */
   model: string;
   generate: GenerateFn;
+  /**
+   * Rough char budget (≈4 chars/token) below which this link's own rate limit
+   * (e.g. a free-tier tokens-per-minute cap) can realistically fit the prompt.
+   * Prompts over this are skipped for this link instead of wasting a call on a
+   * guaranteed 413.
+   */
+  maxPromptChars?: number;
 }
 
 /** Thrown by an OpenAI-compatible call so isRetryableProviderError can read `.status`. */
@@ -89,13 +96,21 @@ export async function generateWithFallback(
 ): Promise<{ text: string; provider: Provider }> {
   let lastError: unknown;
 
-  for (const { provider, model, generate } of chain) {
+  for (const { provider, model, generate, maxPromptChars } of chain) {
+    if (maxPromptChars && prompt.length > maxPromptChars) continue;
+
     try {
       const text = await callWithKeyRotation(provider, (apiKey) => generate(apiKey, prompt), { tool, model });
       return { text, provider };
     } catch (error) {
+      // A missing config is the least informative failure a link can report —
+      // never let it paper over a real error (overload, too-large) a previous
+      // link already hit, so the final message reflects what actually went wrong.
+      if (error instanceof NoApiKeysConfiguredError) {
+        if (!lastError) lastError = error;
+        continue;
+      }
       lastError = error;
-      if (error instanceof NoApiKeysConfiguredError) continue;
       if (!isRetryableProviderError(error) && !isRequestTooLargeForProvider(error)) throw error;
     }
   }

@@ -1,4 +1,4 @@
-export const STATS_RANGES = ["day", "week", "month"] as const;
+export const STATS_RANGES = ["day", "week", "month", "custom"] as const;
 export type StatsRange = (typeof STATS_RANGES)[number];
 
 export function isStatsRange(value: unknown): value is StatsRange {

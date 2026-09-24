@@ -9,6 +9,11 @@ export const GEMINI_MODEL = "gemini-3.6-flash";
 // changing this away from a currently-free model.
 const GROQ_MODEL = "openai/gpt-oss-120b";
 const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
+// gpt-oss-120b's free tier caps at 8,000 tokens/minute for prompt+completion combined
+// (Groq account limit, not configurable). ~3.5 chars/token for JSON-heavy prompts,
+// minus headroom for the completion, leaves room for well under that in the prompt
+// itself — anything bigger is a guaranteed 413, so skip Groq rather than waste the call.
+const GROQ_MAX_PROMPT_CHARS = 16_000;
 
 // OpenRouter's free catalog (the ":free" suffix) rotates constantly — check
 // https://openrouter.ai/models?order=top-weekly&max_price=0 before changing this.
@@ -26,7 +31,12 @@ const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 export function buildTextGenerationChain(timeoutMs: number = GENAI_TIMEOUT_MS): ProviderChainLink[] {
   return [
     { provider: "gemini", model: GEMINI_MODEL, generate: geminiGenerate(GEMINI_MODEL, timeoutMs) },
-    { provider: "groq", model: GROQ_MODEL, generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL, undefined, timeoutMs) },
+    {
+      provider: "groq",
+      model: GROQ_MODEL,
+      generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL, undefined, timeoutMs),
+      maxPromptChars: GROQ_MAX_PROMPT_CHARS,
+    },
     {
       provider: "openrouter",
       model: OPENROUTER_MODEL,

@@ -108,6 +108,7 @@ export default function SiteToPromptPage() {
   const [extChecked, setExtChecked] = useState(false);
   const [url, setUrl] = useState("");
   const [dna, setDna] = useState<DesignDna | null>(null);
+  const [selectedSections, setSelectedSections] = useState<Set<number>>(new Set());
   const [target, setTarget] = useState<Target>(TARGETS[0]);
   const [isTargetOpen, setIsTargetOpen] = useState(false);
   const [goal, setGoal] = useState("");
@@ -172,6 +173,7 @@ export default function SiteToPromptPage() {
         return;
       }
       setDna(data.dna);
+      setSelectedSections(new Set((data.dna as DesignDna).layout.sections.map((_: unknown, i: number) => i)));
       setUsage((u) => ({
         isAuthenticated: !!data.isAuthenticated,
         analysesRemaining: data.analysesRemaining,
@@ -230,7 +232,7 @@ export default function SiteToPromptPage() {
       const res = await fetch("/api/tools/site-to-prompt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dna, target, goal }),
+        body: JSON.stringify({ dna, target, goal, selectedSections: [...selectedSections] }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -265,6 +267,20 @@ export default function SiteToPromptPage() {
 
   const setColor = (key: "background" | "surface" | "text" | "mutedText" | "accent" | "heading" | "border", v: string) =>
     setDna((d) => (d ? { ...d, colors: { ...d.colors, [key]: v } } : d));
+
+  const toggleSection = (i: number) => {
+    setSelectedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) {
+        if (next.size > 1) next.delete(i); // always keep at least one section selected
+      } else {
+        next.add(i);
+      }
+      return next;
+    });
+  };
+
+  const selectAllSections = () => dna && setSelectedSections(new Set(dna.layout.sections.map((_, i) => i)));
 
   const busy = stage === "analysing" || stage === "generating";
 
@@ -530,26 +546,47 @@ export default function SiteToPromptPage() {
 
               {dna.layout.sections.length > 0 && (
                 <div className="px-5 md:px-6 pb-6">
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
-                    Page structure · {dna.layout.sections.length} sections
-                  </h3>
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Page structure · {selectedSections.size} / {dna.layout.sections.length} sections selected
+                    </h3>
+                    {selectedSections.size < dna.layout.sections.length && (
+                      <button onClick={selectAllSections} className="text-[11px] font-semibold text-fuchsia-600 dark:text-fuchsia-400 hover:underline cursor-pointer">
+                        Select all
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">
+                    Uncheck any sections you don&apos;t need in the prompt. Fewer sections means a smaller, faster request — the more you include, the longer generation takes and the more likely a free AI model is to run out of capacity for it.
+                  </p>
                   <div className="space-y-2">
-                    {dna.layout.sections.map((sec, i) => (
-                      <details key={i} className="group rounded-xl border border-border bg-background">
-                        <summary className="flex items-center gap-3 px-3.5 py-2.5 cursor-pointer text-xs list-none">
-                          <span className="w-2.5 h-2.5 rounded-full border border-border shrink-0" style={{ background: sec.background ?? "transparent" }} />
-                          <span className="font-semibold text-foreground capitalize">{i + 1}. {sec.role}</span>
-                          {sec.heading && <span className="text-muted-foreground truncate">“{sec.heading}”</span>}
-                          <span className="ml-auto text-muted-foreground shrink-0">{sec.height}px</span>
-                          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform group-open:rotate-180" />
-                        </summary>
-                        <ul className="px-4 pb-3 pt-1 space-y-1.5 text-[11px] leading-relaxed text-muted-foreground list-disc pl-8 border-t border-border/50">
-                          {sec.summary.length > 0
-                            ? sec.summary.map((line, j) => <li key={j}>{line}</li>)
-                            : <li>No structure captured for this section.</li>}
-                        </ul>
-                      </details>
-                    ))}
+                    {dna.layout.sections.map((sec, i) => {
+                      const checked = selectedSections.has(i);
+                      return (
+                        <details key={i} className={`group rounded-xl border border-border bg-background ${checked ? "" : "opacity-50"}`}>
+                          <summary className="flex items-center gap-3 px-3.5 py-2.5 cursor-pointer text-xs list-none">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={() => toggleSection(i)}
+                              aria-label={`Include section ${i + 1} (${sec.role}) in the prompt`}
+                              className="w-3.5 h-3.5 shrink-0 rounded border-border accent-fuchsia-600 cursor-pointer"
+                            />
+                            <span className="w-2.5 h-2.5 rounded-full border border-border shrink-0" style={{ background: sec.background ?? "transparent" }} />
+                            <span className="font-semibold text-foreground capitalize">{i + 1}. {sec.role}</span>
+                            {sec.heading && <span className="text-muted-foreground truncate">“{sec.heading}”</span>}
+                            <span className="ml-auto text-muted-foreground shrink-0">{sec.height}px</span>
+                            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform group-open:rotate-180" />
+                          </summary>
+                          <ul className="px-4 pb-3 pt-1 space-y-1.5 text-[11px] leading-relaxed text-muted-foreground list-disc pl-8 border-t border-border/50">
+                            {sec.summary.length > 0
+                              ? sec.summary.map((line, j) => <li key={j}>{line}</li>)
+                              : <li>No structure captured for this section.</li>}
+                          </ul>
+                        </details>
+                      );
+                    })}
                   </div>
                 </div>
               )}
