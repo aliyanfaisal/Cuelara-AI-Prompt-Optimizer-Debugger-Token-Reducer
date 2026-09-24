@@ -70,22 +70,42 @@ describe("saveToolRun", () => {
     assert.equal(id, null);
   });
 
-  it("keeps only the newest runs per tool", async () => {
-    await db.toolRun.deleteMany({ where: { userId: "bob", tool: "intelligence-score" } });
-    await db.toolRun.createMany({
-      data: Array.from({ length: history.MAX_RUNS_PER_TOOL }, (_, i) => ({
-        userId: "bob",
-        tool: "intelligence-score",
-        title: `old ${i}`,
-        input: {},
-        result: {},
-        updatedAt: new Date(Date.now() - (i + 10) * 60_000),
-      })),
-    });
-    await history.saveToolRun({ userId: "bob", tool: "intelligence-score", title: "newest", input: {}, result: {} });
-    assert.equal(await db.toolRun.count({ where: { userId: "bob", tool: "intelligence-score" } }), history.MAX_RUNS_PER_TOOL);
-    assert.ok(await db.toolRun.findFirst({ where: { title: "newest" } }));
-    assert.equal(await db.toolRun.findFirst({ where: { title: `old ${history.MAX_RUNS_PER_TOOL - 1}` } }), null);
+  it("keeps only as many runs per tool as the user's plan allows, and the default without a plan", async () => {
+    await db.$executeRawUnsafe(`INSERT INTO "Plan" ("id","name","slug","priceMonthlyCents","isDefault","isActive","historyPerTool","updatedAt") VALUES ('p3','Tiny','tiny',0,false,true,3,now())`);
+    await db.$executeRawUnsafe(`UPDATE "User" SET "planId" = 'p3' WHERE "id" = 'bob'`);
+    assert.equal(await history.historyLimitForUser("bob"), 3);
+    assert.equal(await history.historyLimitForUser("alice"), history.DEFAULT_HISTORY_PER_TOOL);
+
+    for (let i = 0; i < 5; i++) {
+      await history.saveToolRun({ userId: "bob", tool: "intelligence-score", title: `run ${i}`, input: {}, result: {} });
+      await new Promise((r) => setTimeout(r, 5)); // distinct updatedAt so "oldest" is well defined
+    }
+    const kept = await db.toolRun.findMany({ where: { userId: "bob", tool: "intelligence-score" }, orderBy: { updatedAt: "desc" } });
+    assert.deepEqual(kept.map((r) => r.title), ["run 4", "run 3", "run 2"]);
+
+    // Another tool has its own allowance.
+    await history.saveToolRun({ userId: "bob", tool: "prompt-debugger", title: "other tool", input: {}, result: {} });
+    assert.equal(await db.toolRun.count({ where: { userId: "bob", tool: "prompt-debugger" } }), 1);
+  });
+
+  it("uses the default when the plan is inactive", async () => {
+    await db.$executeRawUnsafe(`UPDATE "Plan" SET "isActive" = false WHERE "id" = 'p3'`);
+    assert.equal(await history.historyLimitForUser("bob"), history.DEFAULT_HISTORY_PER_TOOL);
+    await db.$executeRawUnsafe(`UPDATE "Plan" SET "isActive" = true WHERE "id" = 'p3'`);
+  });
+
+  it("pruneToolRuns trims every tool to a smaller limit (used on downgrade)", async () => {
+    await db.toolRun.deleteMany({ where: { userId: "alice" } });
+    for (const tool of ["prompt-optimizer", "token-optimizer"] as const) {
+      await db.toolRun.createMany({
+        data: Array.from({ length: 4 }, (_, i) => ({ userId: "alice", tool, title: `${tool} ${i}`, input: {}, result: {}, updatedAt: new Date(Date.now() - i * 60_000) })),
+      });
+    }
+    assert.equal(await history.pruneToolRuns("alice", 2), 4);
+    assert.equal(await db.toolRun.count({ where: { userId: "alice", tool: "prompt-optimizer" } }), 2);
+    assert.equal(await db.toolRun.count({ where: { userId: "alice", tool: "token-optimizer" } }), 2);
+    assert.ok(await db.toolRun.findFirst({ where: { title: "prompt-optimizer 0" } }));
+    assert.equal(await db.toolRun.findFirst({ where: { title: "prompt-optimizer 3" } }), null);
   });
 });
 

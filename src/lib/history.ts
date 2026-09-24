@@ -25,8 +25,25 @@ export function historyToolLabel(id: string): string {
 
 /** A run larger than this (input + result as JSON) is not saved: the tool still works, it just isn't in history. */
 const MAX_RUN_BYTES = 1_000_000;
-/** Oldest runs beyond this many per tool are dropped, so history can't grow without bound. */
-export const MAX_RUNS_PER_TOOL = 200;
+/** Per-tool history size for a user with no active plan; plans set their own (Plan.historyPerTool). */
+export const DEFAULT_HISTORY_PER_TOOL = 20;
+
+/** How many saved runs per tool this user's plan keeps. */
+export async function historyLimitForUser(userId: string): Promise<number> {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { plan: { select: { isActive: true, historyPerTool: true } } } });
+  return user?.plan?.isActive ? user.plan.historyPerTool : DEFAULT_HISTORY_PER_TOOL;
+}
+
+/** Drops each tool's oldest runs beyond `limit` for one user (or just one tool). Returns how many were deleted. */
+export async function pruneToolRuns(userId: string, limit: number, onlyTool?: string): Promise<number> {
+  const tools = onlyTool ? [onlyTool] : HISTORY_TOOLS.map((t) => t.id as string);
+  let deleted = 0;
+  for (const tool of tools) {
+    const stale = await prisma.toolRun.findMany({ where: { userId, tool }, orderBy: { updatedAt: "desc" }, skip: limit, select: { id: true } });
+    if (stale.length > 0) deleted += (await prisma.toolRun.deleteMany({ where: { id: { in: stale.map((r) => r.id) } } })).count;
+  }
+  return deleted;
+}
 
 /** One-line label for a history row, cut from the start of whatever the user typed. */
 export function titleFrom(text: string, fallback = "Untitled run"): string {
@@ -72,13 +89,7 @@ export async function saveToolRun({ userId, tool, title, input, result, historyI
 
     const created = await prisma.toolRun.create({ data: { userId, tool, title, input: input as Prisma.InputJsonValue, result: result as Prisma.InputJsonValue }, select: { id: true } });
 
-    const stale = await prisma.toolRun.findMany({
-      where: { userId, tool },
-      orderBy: { updatedAt: "desc" },
-      skip: MAX_RUNS_PER_TOOL,
-      select: { id: true },
-    });
-    if (stale.length > 0) await prisma.toolRun.deleteMany({ where: { id: { in: stale.map((r) => r.id) } } });
+    await pruneToolRuns(userId, await historyLimitForUser(userId), tool);
 
     return created.id;
   } catch (error) {

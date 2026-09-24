@@ -304,6 +304,8 @@ model Plan {
   // Shown on the public /pricing page: one feature per line, and whether to highlight the tier.
   features          String?  @db.Text
   isFeatured        Boolean  @default(false)
+  // How many saved runs per tool this plan keeps in the user's dashboard history (oldest are dropped).
+  historyPerTool    Int      @default(20)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

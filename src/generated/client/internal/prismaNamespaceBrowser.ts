@@ -343,6 +343,7 @@ export const PlanScalarFieldEnum = {
   isActive: 'isActive',
   features: 'features',
   isFeatured: 'isFeatured',
+  historyPerTool: 'historyPerTool',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

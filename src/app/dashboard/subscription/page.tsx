@@ -9,24 +9,26 @@ import { PlanActions } from "./PlanActions";
 
 export const metadata = { title: "Subscription" };
 
+const weekAgo = () => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
 export default async function SubscriptionPage() {
   const session = (await getSessionUser())!;
 
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: session.id },
-    select: { email: true, plan: { select: { id: true, name: true, description: true, priceMonthlyCents: true, features: true } } },
+    select: { email: true, plan: { select: { id: true, name: true, description: true, priceMonthlyCents: true, features: true, historyPerTool: true } } },
   });
 
   const [plans, usage, requests] = await Promise.all([
     prisma.plan.findMany({
       where: { isActive: true },
       orderBy: { priceMonthlyCents: "asc" },
-      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true },
+      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, historyPerTool: true },
     }),
     subjectForUser(session.id).then(getSubjectDailyUsage),
     // Upgrade requests from the last week, so a plan already asked for shows as requested.
     prisma.contactMessage.findMany({
-      where: { email: user.email ?? "", subject: { startsWith: "Upgrade request:" }, createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
+      where: { email: user.email ?? "", subject: { startsWith: "Upgrade request:" }, createdAt: { gte: weekAgo() } },
       select: { plan: true },
     }),
   ]);
@@ -59,6 +61,10 @@ export default async function SubscriptionPage() {
 
         <h4 className="mb-3 mt-6 text-sm font-bold text-foreground">Daily limits</h4>
         <dl className="grid grid-cols-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
+          <div className="flex items-center justify-between border-b border-border/60 py-1.5">
+            <dt className="text-muted-foreground">Saved history</dt>
+            <dd className="font-semibold tabular-nums text-foreground">{current?.historyPerTool ?? 20} runs / tool</dd>
+          </div>
           {usage.map((u) => (
             <div key={u.id} className="flex items-center justify-between border-b border-border/60 py-1.5">
               <dt className="text-muted-foreground">{u.label}</dt>
@@ -94,7 +100,7 @@ export default async function SubscriptionPage() {
                       </li>
                     ))}
                   </ul>
-                  <PlanActions planId={plan.id} planName={plan.name} kind={kind} requested={requestedSlugs.has(plan.slug)} />
+                  <PlanActions planId={plan.id} planName={plan.name} kind={kind} requested={requestedSlugs.has(plan.slug)} historyPerTool={plan.historyPerTool} />
                 </div>
               );
             })}

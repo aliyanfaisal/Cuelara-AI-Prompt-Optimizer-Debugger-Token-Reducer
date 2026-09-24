@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { History } from "lucide-react";
-import { HISTORY_TOOLS, isHistoryTool } from "@/lib/history";
+import { HISTORY_TOOLS, historyLimitForUser, isHistoryTool } from "@/lib/history";
 import { describeRun } from "@/lib/history-display";
 import { formatDate } from "@/lib/blog";
 import { prisma } from "@/lib/prisma";
@@ -20,7 +20,7 @@ export default async function ToolHistoryPage({ searchParams }: { searchParams: 
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const toolLabel = HISTORY_TOOLS.find((t) => t.id === tool)!.label;
 
-  const [runs, total, counts] = await Promise.all([
+  const [runs, total, counts, historyLimit] = await Promise.all([
     prisma.toolRun.findMany({
       where: { userId: session.id, tool },
       orderBy: { updatedAt: "desc" },
@@ -30,6 +30,7 @@ export default async function ToolHistoryPage({ searchParams }: { searchParams: 
     }),
     prisma.toolRun.count({ where: { userId: session.id, tool } }),
     prisma.toolRun.groupBy({ by: ["tool"], where: { userId: session.id }, _count: { _all: true } }),
+    historyLimitForUser(session.id),
   ]);
   const countByTool = new Map(counts.map((c) => [c.tool, c._count._all]));
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
@@ -40,6 +41,10 @@ export default async function ToolHistoryPage({ searchParams }: { searchParams: 
         <h2 className="text-xl font-bold text-foreground">Tool history</h2>
         <p className="text-sm text-muted-foreground">
           Runs you make while signed in are saved here. <strong className="font-semibold">Edit</strong> opens the tool in a new tab with your saved inputs and result, ready to change and run again.
+        </p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Your plan keeps your latest <strong className="font-semibold text-foreground">{historyLimit} runs per tool</strong>; older ones are removed as you add new ones.{" "}
+          <Link href="/dashboard/subscription" className="font-semibold text-primary hover:underline">See plans</Link>
         </p>
       </div>
 

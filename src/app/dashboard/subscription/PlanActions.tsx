@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { downgradePlan, requestUpgrade } from "../actions";
 
-export function PlanActions({ planId, planName, kind, requested }: { planId: string; planName: string; kind: "upgrade" | "downgrade"; requested: boolean }) {
+export function PlanActions({ planId, planName, kind, requested, historyPerTool }: { planId: string; planName: string; kind: "upgrade" | "downgrade"; requested: boolean; historyPerTool: number }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<{ ok?: string; error?: string }>({});
 
   function run() {
-    if (kind === "downgrade" && !confirm(`Switch to the ${planName} plan now? Your daily limits change immediately.`)) return;
+    if (kind === "downgrade" && !confirm(`Switch to the ${planName} plan now?\n\nYour daily limits change immediately, and your history is trimmed to the latest ${historyPerTool} runs per tool. Older saved runs are deleted and can't be recovered.`)) return;
     setFeedback({});
     startTransition(async () => {
       const result = kind === "upgrade" ? await requestUpgrade(planId) : await downgradePlan(planId);

@@ -252,7 +252,7 @@ curl -i -X POST http://localhost:3000/api/blog-posts \
 
 Signed-in users get a dashboard at `/dashboard` (overview stats, tool history, profile, subscription, payment methods placeholder). It is protected by `src/middleware.ts` and never indexed.
 
-- **History is saved server-side**, inside each tool's API route, only when the caller is signed in (`saveToolRun` in `src/lib/history.ts`). Anonymous runs are never stored. Diff & Cost Estimate compares in the browser, so it saves through `POST /api/history`. At most 200 runs per tool are kept, and a run over ~1 MB is skipped.
+- **History is saved server-side**, inside each tool's API route, only when the caller is signed in (`saveToolRun` in `src/lib/history.ts`). Anonymous runs are never stored. Diff & Cost Estimate compares in the browser, so it saves through `POST /api/history`. How many runs per tool are kept is set per plan (`Plan.historyPerTool`: Free 20, Pro 50, Team 100; editable in admin Plans). The oldest are dropped when a new run is saved, and immediately on a downgrade. A run over ~1 MB is skipped.
 - **Edit** in the dashboard opens `/tools/<tool>?run=<id>` in a new tab. The tool page loads the run from `GET /api/history/<id>` (owner only, via `useSavedRun`), shows the saved inputs and result without calling the tool, and sends the run's id as `historyId` on the next submit so the run is updated in place.
 - **Upgrades are requests** (payments aren't live): they create a `ContactMessage` (visible in admin Messages, emailed to the team). **Downgrades** to a cheaper plan are immediate and send the plan-change email.
 - The Privacy Policy describes this history; keep it in step if what is stored changes.

@@ -19,6 +19,7 @@ export interface PlanRow {
   isActive: boolean;
   features: string;
   isFeatured: boolean;
+  historyPerTool: number;
   createdAt: string;
   userCount: number;
   limits: { tool: string; dailyLimit: number }[];
@@ -39,6 +40,7 @@ export async function getPlans(): Promise<PlanRow[]> {
     isActive: p.isActive,
     features: p.features ?? "",
     isFeatured: p.isFeatured,
+    historyPerTool: p.historyPerTool,
     createdAt: p.createdAt.toISOString(),
     userCount: p._count.users,
     limits: p.limits.map((l) => ({ tool: l.tool, dailyLimit: l.dailyLimit })),
@@ -71,12 +73,16 @@ export async function createPlan(data: {
   isActive: boolean;
   features: string;
   isFeatured: boolean;
+  historyPerTool: number;
   limits: PlanLimitInput[];
 }) {
   const name = data.name.trim();
   if (!name) return { error: "Plan name is required." };
   if (!Number.isFinite(data.priceMonthlyCents) || data.priceMonthlyCents < 0) {
     return { error: "Monthly price must be a non-negative number." };
+  }
+  if (!Number.isInteger(data.historyPerTool) || data.historyPerTool < 1 || data.historyPerTool > 1000) {
+    return { error: "History per tool must be a whole number from 1 to 1000." };
   }
   const { error, clean } = validateLimits(data.limits);
   if (error) return { error };
@@ -97,6 +103,7 @@ export async function createPlan(data: {
           isActive: data.isActive,
           features: data.features.trim() || null,
           isFeatured: data.isFeatured,
+          historyPerTool: Math.floor(data.historyPerTool),
           limits: { create: clean },
         },
       });
@@ -122,6 +129,7 @@ export async function updatePlan(
     isActive: boolean;
     features: string;
     isFeatured: boolean;
+    historyPerTool: number;
     limits: PlanLimitInput[];
   }
 ) {
@@ -129,6 +137,9 @@ export async function updatePlan(
   if (!name) return { error: "Plan name is required." };
   if (!Number.isFinite(data.priceMonthlyCents) || data.priceMonthlyCents < 0) {
     return { error: "Monthly price must be a non-negative number." };
+  }
+  if (!Number.isInteger(data.historyPerTool) || data.historyPerTool < 1 || data.historyPerTool > 1000) {
+    return { error: "History per tool must be a whole number from 1 to 1000." };
   }
   const { error, clean } = validateLimits(data.limits);
   if (error) return { error };
@@ -147,6 +158,7 @@ export async function updatePlan(
           isActive: data.isActive,
           features: data.features.trim() || null,
           isFeatured: data.isFeatured,
+          historyPerTool: Math.floor(data.historyPerTool),
         },
       });
       // Simplest consistent way to sync the limit set: replace it wholesale.

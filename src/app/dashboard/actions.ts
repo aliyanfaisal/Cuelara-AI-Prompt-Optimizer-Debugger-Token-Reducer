@@ -2,7 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
-import { isHistoryTool } from "@/lib/history";
+import { isHistoryTool, pruneToolRuns } from "@/lib/history";
 import { sendContactNotificationEmail, sendContactReceiptEmail, sendPlanChangeEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/session-user";
@@ -95,7 +95,7 @@ export async function downgradePlan(planId: string): Promise<Result> {
 
   const [user, target] = await Promise.all([
     prisma.user.findUnique({ where: { id: session.id }, select: { email: true, plan: { select: { priceMonthlyCents: true } } } }),
-    prisma.plan.findFirst({ where: { id: planId, isActive: true }, select: { id: true, name: true, priceMonthlyCents: true } }),
+    prisma.plan.findFirst({ where: { id: planId, isActive: true }, select: { id: true, name: true, priceMonthlyCents: true, historyPerTool: true } }),
   ]);
   if (!user || !target) return { error: "That plan is not available." };
   if (target.priceMonthlyCents >= (user.plan?.priceMonthlyCents ?? 0)) {
@@ -103,6 +103,8 @@ export async function downgradePlan(planId: string): Promise<Result> {
   }
 
   await prisma.user.update({ where: { id: session.id }, data: { planId: target.id } });
+  // The smaller plan keeps fewer runs per tool, so trim now rather than leaving history the plan doesn't include.
+  await pruneToolRuns(session.id, target.historyPerTool);
   if (user.email) await sendPlanChangeEmail(user.email, target.name).catch((e) => console.error("Plan change email failed:", e));
   revalidatePath("/dashboard", "layout");
   return { success: true, message: `You're now on the ${target.name} plan.` };

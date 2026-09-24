@@ -27,6 +27,10 @@ const STEPS = [
     dir: '20260924220000_tool_runs',
     isApplied: `select 1 from information_schema.tables where table_name = 'ToolRun'`,
   },
+  {
+    dir: '20260925000000_plan_history_limit',
+    isApplied: `select 1 from information_schema.columns where table_name = 'Plan' and column_name = 'historyPerTool'`,
+  },
 ];
 
 async function main() {

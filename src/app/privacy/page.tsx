@@ -35,7 +35,7 @@ Cuelara ("we", "us") runs the website at cuelara.com and the tools, cookbook and
 
 ## 3. Your tool history
 
-If you use the tools while **signed in**, we save each run to your account so you can find it again: the text you entered (or, for Site to Prompt, the design measurements of the page), the options you chose, and the result. You can open, edit, re-run and delete any saved run from your dashboard, or clear a tool's whole history at once. Only you can see your history, and deleted items are removed from our database. We keep at most the 200 most recent runs per tool.
+If you use the tools while **signed in**, we save each run to your account so you can find it again: the text you entered (or, for Site to Prompt, the design measurements of the page), the options you chose, and the result. You can open, edit, re-run and delete any saved run from your dashboard, or clear a tool's whole history at once. Only you can see your history, and deleted items are removed from our database. How many runs we keep depends on your plan (currently 20 per tool on Free, 50 on Pro and 100 on Team); older runs are removed automatically as you add new ones, and when you move to a plan that keeps fewer.
 
 If you use the tools **without signing in**, nothing you enter is saved: it is processed to give you a result and then discarded. In both cases we do not use your content to train models, and it is handled by the AI providers described in section 5 while the request is processed.
 

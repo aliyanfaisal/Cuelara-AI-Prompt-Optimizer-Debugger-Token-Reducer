@@ -24,7 +24,8 @@ const PLANS = [
     priceMonthlyCents: 0,
     isDefault: true,
     isFeatured: false,
-    features: ["All 8 tools included", "15 runs per tool, per day", "Context Extractor: 5 documents and 100 prompts a day", "Prompt Cookbook access", "Community support"].join("\n"),
+    historyPerTool: 20,
+    features: ["All 8 tools included", "15 runs per tool, per day", "Context Extractor: 5 documents and 100 prompts a day", "Saves your last 20 runs per tool", "Prompt Cookbook access", "Community support"].join("\n"),
     limits: limitsFor(15, 5, 100),
   },
   {
@@ -34,7 +35,8 @@ const PLANS = [
     priceMonthlyCents: 1200,
     isDefault: false,
     isFeatured: true,
-    features: ["Everything in Free", "100 runs per tool, per day", "Context Extractor: 30 documents and 500 prompts a day", "Priority processing", "Email support"].join("\n"),
+    historyPerTool: 50,
+    features: ["Everything in Free", "100 runs per tool, per day", "Context Extractor: 30 documents and 500 prompts a day", "Saves your last 50 runs per tool", "Priority processing", "Email support"].join("\n"),
     limits: limitsFor(100, 30, 500),
   },
   {
@@ -44,7 +46,8 @@ const PLANS = [
     priceMonthlyCents: 3900,
     isDefault: false,
     isFeatured: false,
-    features: ["Everything in Pro", "500 runs per tool, per day", "Context Extractor: 150 documents and 2,000 prompts a day", "Shared workspaces (coming soon)", "Priority support"].join("\n"),
+    historyPerTool: 100,
+    features: ["Everything in Pro", "500 runs per tool, per day", "Context Extractor: 150 documents and 2,000 prompts a day", "Saves your last 100 runs per tool", "Shared workspaces (coming soon)", "Priority support"].join("\n"),
     limits: limitsFor(500, 150, 2000),
   },
 ];

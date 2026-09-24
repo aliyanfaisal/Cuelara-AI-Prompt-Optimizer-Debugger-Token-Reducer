@@ -28,10 +28,12 @@ export type AggregatePlan = {
 
 export type PlanAvgAggregateOutputType = {
   priceMonthlyCents: number | null
+  historyPerTool: number | null
 }
 
 export type PlanSumAggregateOutputType = {
   priceMonthlyCents: number | null
+  historyPerTool: number | null
 }
 
 export type PlanMinAggregateOutputType = {
@@ -44,6 +46,7 @@ export type PlanMinAggregateOutputType = {
   isActive: boolean | null
   features: string | null
   isFeatured: boolean | null
+  historyPerTool: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +61,7 @@ export type PlanMaxAggregateOutputType = {
   isActive: boolean | null
   features: string | null
   isFeatured: boolean | null
+  historyPerTool: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +76,7 @@ export type PlanCountAggregateOutputType = {
   isActive: number
   features: number
   isFeatured: number
+  historyPerTool: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,10 +85,12 @@ export type PlanCountAggregateOutputType = {
 
 export type PlanAvgAggregateInputType = {
   priceMonthlyCents?: true
+  historyPerTool?: true
 }
 
 export type PlanSumAggregateInputType = {
   priceMonthlyCents?: true
+  historyPerTool?: true
 }
 
 export type PlanMinAggregateInputType = {
@@ -96,6 +103,7 @@ export type PlanMinAggregateInputType = {
   isActive?: true
   features?: true
   isFeatured?: true
+  historyPerTool?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +118,7 @@ export type PlanMaxAggregateInputType = {
   isActive?: true
   features?: true
   isFeatured?: true
+  historyPerTool?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +133,7 @@ export type PlanCountAggregateInputType = {
   isActive?: true
   features?: true
   isFeatured?: true
+  historyPerTool?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +235,7 @@ export type PlanGroupByOutputType = {
   isActive: boolean
   features: string | null
   isFeatured: boolean
+  historyPerTool: number
   createdAt: Date
   updatedAt: Date
   _count: PlanCountAggregateOutputType | null
@@ -262,6 +273,7 @@ export type PlanWhereInput = {
   isActive?: Prisma.BoolFilter<"Plan"> | boolean
   features?: Prisma.StringNullableFilter<"Plan"> | string | null
   isFeatured?: Prisma.BoolFilter<"Plan"> | boolean
+  historyPerTool?: Prisma.IntFilter<"Plan"> | number
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   users?: Prisma.UserListRelationFilter
@@ -278,6 +290,7 @@ export type PlanOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  historyPerTool?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   users?: Prisma.UserOrderByRelationAggregateInput
@@ -297,6 +310,7 @@ export type PlanWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"Plan"> | boolean
   features?: Prisma.StringNullableFilter<"Plan"> | string | null
   isFeatured?: Prisma.BoolFilter<"Plan"> | boolean
+  historyPerTool?: Prisma.IntFilter<"Plan"> | number
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   users?: Prisma.UserListRelationFilter
@@ -313,6 +327,7 @@ export type PlanOrderByWithAggregationInput = {
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  historyPerTool?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PlanCountOrderByAggregateInput
@@ -335,6 +350,7 @@ export type PlanScalarWhereWithAggregatesInput = {
   isActive?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   features?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
   isFeatured?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
+  historyPerTool?: Prisma.IntWithAggregatesFilter<"Plan"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
 }
@@ -349,6 +365,7 @@ export type PlanCreateInput = {
   isActive?: boolean
   features?: string | null
   isFeatured?: boolean
+  historyPerTool?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutPlanInput
@@ -365,6 +382,7 @@ export type PlanUncheckedCreateInput = {
   isActive?: boolean
   features?: string | null
   isFeatured?: boolean
+  historyPerTool?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutPlanInput
@@ -381,6 +399,7 @@ export type PlanUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutPlanNestedInput
@@ -397,6 +416,7 @@ export type PlanUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutPlanNestedInput
@@ -413,6 +433,7 @@ export type PlanCreateManyInput = {
   isActive?: boolean
   features?: string | null
   isFeatured?: boolean
+  historyPerTool?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -427,6 +448,7 @@ export type PlanUpdateManyMutationInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -441,6 +463,7 @@ export type PlanUncheckedUpdateManyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -460,12 +483,14 @@ export type PlanCountOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  historyPerTool?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type PlanAvgOrderByAggregateInput = {
   priceMonthlyCents?: Prisma.SortOrder
+  historyPerTool?: Prisma.SortOrder
 }
 
 export type PlanMaxOrderByAggregateInput = {
@@ -478,6 +503,7 @@ export type PlanMaxOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  historyPerTool?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -492,12 +518,14 @@ export type PlanMinOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  historyPerTool?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type PlanSumOrderByAggregateInput = {
   priceMonthlyCents?: Prisma.SortOrder
+  historyPerTool?: Prisma.SortOrder
 }
 
 export type PlanScalarRelationFilter = {
@@ -545,6 +573,7 @@ export type PlanCreateWithoutUsersInput = {
   isActive?: boolean
   features?: string | null
   isFeatured?: boolean
+  historyPerTool?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   limits?: Prisma.PlanToolLimitCreateNestedManyWithoutPlanInput
@@ -560,6 +589,7 @@ export type PlanUncheckedCreateWithoutUsersInput = {
   isActive?: boolean
   features?: string | null
   isFeatured?: boolean
+  historyPerTool?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   limits?: Prisma.PlanToolLimitUncheckedCreateNestedManyWithoutPlanInput
@@ -591,6 +621,7 @@ export type PlanUpdateWithoutUsersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   limits?: Prisma.PlanToolLimitUpdateManyWithoutPlanNestedInput
@@ -606,6 +637,7 @@ export type PlanUncheckedUpdateWithoutUsersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   limits?: Prisma.PlanToolLimitUncheckedUpdateManyWithoutPlanNestedInput
@@ -621,6 +653,7 @@ export type PlanCreateWithoutLimitsInput = {
   isActive?: boolean
   features?: string | null
   isFeatured?: boolean
+  historyPerTool?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutPlanInput
@@ -636,6 +669,7 @@ export type PlanUncheckedCreateWithoutLimitsInput = {
   isActive?: boolean
   features?: string | null
   isFeatured?: boolean
+  historyPerTool?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutPlanInput
@@ -667,6 +701,7 @@ export type PlanUpdateWithoutLimitsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutPlanNestedInput
@@ -682,6 +717,7 @@ export type PlanUncheckedUpdateWithoutLimitsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutPlanNestedInput
@@ -737,6 +773,7 @@ export type PlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   isActive?: boolean
   features?: boolean
   isFeatured?: boolean
+  historyPerTool?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
@@ -754,6 +791,7 @@ export type PlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isActive?: boolean
   features?: boolean
   isFeatured?: boolean
+  historyPerTool?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["plan"]>
@@ -768,6 +806,7 @@ export type PlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isActive?: boolean
   features?: boolean
   isFeatured?: boolean
+  historyPerTool?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["plan"]>
@@ -782,11 +821,12 @@ export type PlanSelectScalar = {
   isActive?: boolean
   features?: boolean
   isFeatured?: boolean
+  historyPerTool?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
+export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "historyPerTool" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
 export type PlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
   limits?: boolean | Prisma.Plan$limitsArgs<ExtArgs>
@@ -811,6 +851,7 @@ export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     isActive: boolean
     features: string | null
     isFeatured: boolean
+    historyPerTool: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["plan"]>
@@ -1247,6 +1288,7 @@ export interface PlanFieldRefs {
   readonly isActive: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly features: Prisma.FieldRef<"Plan", 'String'>
   readonly isFeatured: Prisma.FieldRef<"Plan", 'Boolean'>
+  readonly historyPerTool: Prisma.FieldRef<"Plan", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Plan", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Plan", 'DateTime'>
 }

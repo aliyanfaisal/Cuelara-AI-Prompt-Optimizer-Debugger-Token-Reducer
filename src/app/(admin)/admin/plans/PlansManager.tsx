@@ -18,6 +18,7 @@ interface FormState {
   isActive: boolean;
   isFeatured: boolean;
   features: string;
+  historyPerTool: string;
   limits: Record<string, string>; // tool -> string input, blank = no override
 }
 
@@ -29,6 +30,7 @@ const EMPTY_FORM: FormState = {
   isActive: true,
   isFeatured: false,
   features: "",
+  historyPerTool: "20",
   limits: {},
 };
 
@@ -43,6 +45,7 @@ function planToForm(plan: PlanRow): FormState {
     isActive: plan.isActive,
     isFeatured: plan.isFeatured,
     features: plan.features,
+    historyPerTool: String(plan.historyPerTool),
     limits,
   };
 }
@@ -89,6 +92,7 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
       isActive: form.isActive,
       features: form.features,
       isFeatured: form.isFeatured,
+      historyPerTool: Number(form.historyPerTool),
       limits: formToLimits(form),
     };
 
@@ -253,6 +257,19 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                   value={form.features}
                   onChange={(e) => setForm({ ...form, features: e.target.value })}
                   placeholder={"All 8 tools included\n15 runs per tool, per day"}
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Saved history per tool (runs kept in each user&rsquo;s dashboard; older ones are deleted)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  step="1"
+                  value={form.historyPerTool}
+                  onChange={(e) => setForm({ ...form, historyPerTool: e.target.value })}
                   className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>
