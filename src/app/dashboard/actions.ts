@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { isHistoryTool, pruneToolRuns } from "@/lib/history";
 import { sendContactNotificationEmail, sendContactReceiptEmail, sendPlanChangeEmail } from "@/lib/email";
+import { getEffectivePlan } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/session-user";
 
@@ -93,12 +94,13 @@ export async function downgradePlan(planId: string): Promise<Result> {
   const session = await getSessionUser();
   if (!session) return UNAUTHORIZED;
 
-  const [user, target] = await Promise.all([
-    prisma.user.findUnique({ where: { id: session.id }, select: { email: true, plan: { select: { priceMonthlyCents: true } } } }),
+  const [user, current, target] = await Promise.all([
+    prisma.user.findUnique({ where: { id: session.id }, select: { email: true } }),
+    getEffectivePlan(session.id),
     prisma.plan.findFirst({ where: { id: planId, isActive: true }, select: { id: true, name: true, priceMonthlyCents: true, historyPerTool: true } }),
   ]);
   if (!user || !target) return { error: "That plan is not available." };
-  if (target.priceMonthlyCents >= (user.plan?.priceMonthlyCents ?? 0)) {
+  if (target.priceMonthlyCents >= (current?.priceMonthlyCents ?? 0)) {
     return { error: "You can only move to a cheaper plan here. Upgrades are arranged with our team." };
   }
 
@@ -118,12 +120,13 @@ export async function requestUpgrade(planId: string): Promise<Result> {
   const session = await getSessionUser();
   if (!session) return UNAUTHORIZED;
 
-  const [user, target] = await Promise.all([
-    prisma.user.findUnique({ where: { id: session.id }, select: { name: true, email: true, plan: { select: { name: true, priceMonthlyCents: true } } } }),
+  const [user, current, target] = await Promise.all([
+    prisma.user.findUnique({ where: { id: session.id }, select: { name: true, email: true } }),
+    getEffectivePlan(session.id),
     prisma.plan.findFirst({ where: { id: planId, isActive: true }, select: { name: true, slug: true, priceMonthlyCents: true } }),
   ]);
   if (!user?.email || !target) return { error: "That plan is not available." };
-  if (target.priceMonthlyCents <= (user.plan?.priceMonthlyCents ?? 0)) return { error: "That is not an upgrade from your current plan." };
+  if (target.priceMonthlyCents <= (current?.priceMonthlyCents ?? 0)) return { error: "That is not an upgrade from your current plan." };
 
   const subject = `Upgrade request: ${target.name}`;
   const already = await prisma.contactMessage.findFirst({
@@ -133,7 +136,7 @@ export async function requestUpgrade(planId: string): Promise<Result> {
   if (already) return { success: true, message: "We already have your request and will be in touch soon." };
 
   const name = user.name || user.email;
-  const message = `${name} (${user.email}) would like to upgrade from ${user.plan?.name ?? "no plan"} to ${target.name}, requested from the dashboard.`;
+  const message = `${name} (${user.email}) would like to upgrade from ${current?.name ?? "no plan"} to ${target.name}, requested from the dashboard.`;
   const saved = await prisma.contactMessage.create({ data: { name, email: user.email, subject, message, plan: target.slug } });
 
   const mail = { name, email: user.email, subject, message, plan: target.slug };

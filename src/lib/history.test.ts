@@ -109,6 +109,33 @@ describe("saveToolRun", () => {
   });
 });
 
+describe("effective plan (users without a plan follow the default plan)", () => {
+  it("falls back to the default plan for a user with no plan, and to the built-in default if there is none", async () => {
+    const plans = await import("./plans");
+    await db.$executeRawUnsafe(`INSERT INTO "User" ("id") VALUES ('carol')`);
+    assert.equal(await plans.getEffectivePlan("carol"), null);
+    assert.equal(await history.historyLimitForUser("carol"), history.DEFAULT_HISTORY_PER_TOOL);
+
+    await db.$executeRawUnsafe(`INSERT INTO "Plan" ("id","name","slug","priceMonthlyCents","isDefault","isActive","historyPerTool","updatedAt") VALUES ('pd','Starter','starter',0,true,true,7,now())`);
+    await db.$executeRawUnsafe(`INSERT INTO "PlanToolLimit" ("id","planId","tool","dailyLimit") VALUES ('l1','pd','prompt-optimizer',10)`);
+
+    const plan = await plans.getEffectivePlan("carol");
+    assert.equal(plan?.name, "Starter");
+    assert.deepEqual(plan?.limits, [{ tool: "prompt-optimizer", dailyLimit: 10 }]);
+    assert.equal(await history.historyLimitForUser("carol"), 7);
+
+    // Their own active plan still wins over the default.
+    await db.$executeRawUnsafe(`UPDATE "User" SET "planId" = 'p3' WHERE "id" = 'carol'`);
+    assert.equal((await plans.getEffectivePlan("carol"))?.name, "Tiny");
+    // ...but an inactive own plan falls back to the default again.
+    await db.$executeRawUnsafe(`UPDATE "Plan" SET "isActive" = false WHERE "id" = 'p3'`);
+    assert.equal((await plans.getEffectivePlan("carol"))?.name, "Starter");
+
+    await db.$executeRawUnsafe(`UPDATE "Plan" SET "isActive" = true WHERE "id" = 'p3'`);
+    await db.$executeRawUnsafe(`DELETE FROM "Plan" WHERE "id" = 'pd'`);
+  });
+});
+
 describe("getRunForUser", () => {
   it("returns the owner's run and nothing for anyone else", async () => {
     const id = (await history.saveToolRun({ userId: "alice", tool: "prompt-optimizer", title: "private", input: { secret: 1 }, result: {} }))!;

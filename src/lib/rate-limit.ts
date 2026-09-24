@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getEffectivePlan } from "@/lib/plans";
 
 export function getClientIp(req: Request): string {
   const forwardedFor = req.headers.get("x-forwarded-for");
@@ -42,16 +43,10 @@ export async function getRequestSubject(req: Request): Promise<RequestSubject> {
   return { subjectKey: `ip:${hashIp(ip)}`, isAuthenticated: false, userId: null, planLimits: null };
 }
 
-/** The rate-limit subject for a signed-in user, including their active plan's per-tool limits. */
+/** The rate-limit subject for a signed-in user, including their effective plan's per-tool limits (see getEffectivePlan). */
 export async function subjectForUser(userId: string): Promise<RequestSubject> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { plan: { select: { isActive: true, limits: { select: { tool: true, dailyLimit: true } } } } },
-  });
-  const planLimits =
-    user?.plan?.isActive && user.plan.limits.length > 0
-      ? Object.fromEntries(user.plan.limits.map((l) => [l.tool, l.dailyLimit]))
-      : null;
+  const plan = await getEffectivePlan(userId);
+  const planLimits = plan && plan.limits.length > 0 ? Object.fromEntries(plan.limits.map((l) => [l.tool, l.dailyLimit])) : null;
   return { subjectKey: `user:${userId}`, isAuthenticated: true, userId, planLimits };
 }
 

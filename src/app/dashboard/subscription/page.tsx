@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { getSubjectDailyUsage } from "@/lib/dashboard-usage";
+import { getEffectivePlan } from "@/lib/plans";
 import { formatPlanPrice, planFeatures } from "@/lib/pricing";
 import { subjectForUser } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
@@ -14,10 +15,10 @@ const weekAgo = () => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 export default async function SubscriptionPage() {
   const session = (await getSessionUser())!;
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { id: session.id },
-    select: { email: true, plan: { select: { id: true, name: true, description: true, priceMonthlyCents: true, features: true, historyPerTool: true } } },
-  });
+  const [user, current] = await Promise.all([
+    prisma.user.findUniqueOrThrow({ where: { id: session.id }, select: { email: true } }),
+    getEffectivePlan(session.id),
+  ]);
 
   const [plans, usage, requests] = await Promise.all([
     prisma.plan.findMany({
@@ -33,7 +34,6 @@ export default async function SubscriptionPage() {
     }),
   ]);
 
-  const current = user.plan;
   const currentPrice = current?.priceMonthlyCents ?? 0;
   const requestedSlugs = new Set(requests.map((r) => r.plan));
   const others = plans.filter((p) => p.id !== current?.id);

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { HISTORY_TOOLS, historyToolLabel } from "@/lib/history";
 import { getSubjectDailyUsage } from "@/lib/dashboard-usage";
+import { getEffectivePlan } from "@/lib/plans";
 import { subjectForUser } from "@/lib/rate-limit";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -23,8 +24,8 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
   const since = new Date(Date.now() - 6 * DAY_MS);
   since.setUTCHours(0, 0, 0, 0);
 
-  const [user, totalRuns, weekRuns, byTool, recent, subject] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId }, select: { plan: { select: { name: true } } } }),
+  const [plan, totalRuns, weekRuns, byTool, recent, subject] = await Promise.all([
+    getEffectivePlan(userId),
     prisma.toolRun.count({ where: { userId } }),
     prisma.toolRun.findMany({ where: { userId, createdAt: { gte: since } }, select: { createdAt: true } }),
     prisma.toolRun.groupBy({ by: ["tool"], where: { userId }, _count: { _all: true } }),
@@ -43,7 +44,7 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
   const perToolCounts = new Map(byTool.map((t) => [t.tool, t._count._all]));
 
   return {
-    planName: user?.plan?.name ?? null,
+    planName: plan?.name ?? null,
     totalRuns,
     runsToday: usage.reduce((sum, u) => sum + u.used, 0),
     runsThisWeek: weekRuns.length,

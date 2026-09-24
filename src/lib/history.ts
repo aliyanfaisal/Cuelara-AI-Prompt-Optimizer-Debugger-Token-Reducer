@@ -1,4 +1,5 @@
 import type { Prisma } from "@/generated/client/client";
+import { getEffectivePlan } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
 
 /** The tools that record history. `id` is the tool's URL slug (/tools/<id>) and what ToolRun.tool holds. */
@@ -25,13 +26,12 @@ export function historyToolLabel(id: string): string {
 
 /** A run larger than this (input + result as JSON) is not saved: the tool still works, it just isn't in history. */
 const MAX_RUN_BYTES = 1_000_000;
-/** Per-tool history size for a user with no active plan; plans set their own (Plan.historyPerTool). */
+/** Per-tool history size when there is no plan at all (not even a default one); plans set their own (Plan.historyPerTool). */
 export const DEFAULT_HISTORY_PER_TOOL = 20;
 
 /** How many saved runs per tool this user's plan keeps. */
 export async function historyLimitForUser(userId: string): Promise<number> {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { plan: { select: { isActive: true, historyPerTool: true } } } });
-  return user?.plan?.isActive ? user.plan.historyPerTool : DEFAULT_HISTORY_PER_TOOL;
+  return (await getEffectivePlan(userId))?.historyPerTool ?? DEFAULT_HISTORY_PER_TOOL;
 }
 
 /** Drops each tool's oldest runs beyond `limit` for one user (or just one tool). Returns how many were deleted. */
