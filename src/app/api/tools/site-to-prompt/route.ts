@@ -9,6 +9,7 @@ import { getSiteToPromptLimits } from "@/lib/site-to-prompt/limits";
 import { PROMPT_TOOL, MAX_GOAL_LENGTH, isTarget } from "@/lib/site-to-prompt/constants";
 import { designDnaSchema } from "@/lib/site-to-prompt/schema";
 import { buildSitePrompt, stripFences } from "@/lib/site-to-prompt/prompt";
+import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 
 // A whole page's structure in, a long build prompt out — slower than the other tools' short prompts.
 const GENERATION_TIMEOUT_MS = 150_000;
@@ -18,9 +19,6 @@ export const maxDuration = 300;
 // Gemini answers "high demand" (503) in short spikes, and the free fallbacks can't take a prompt this large,
 // so a brief pause and another pass through the chain usually succeeds where an immediate error would not.
 const RETRY_DELAYS_MS = [0, 5_000, 12_000];
-
-const HIGH_DEMAND_MESSAGE =
-  "Our free AI models are experiencing heavy demand right now. Please wait a minute and try again.";
 
 async function generateWithRetry(chain: ProviderChainLink[], prompt: string, compactPrompt: string) {
   let lastError: unknown;

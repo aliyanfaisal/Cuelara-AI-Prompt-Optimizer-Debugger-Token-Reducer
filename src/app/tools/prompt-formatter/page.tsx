@@ -12,14 +12,16 @@ import {
 } from "lucide-react";
 import { FORMAT_STYLES, INDENT_SIZES, type FormatStyle, type IndentSize } from "@/lib/prompt-formatter/constants";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
+import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 
 type GenerationState = "idle" | "loading" | "success";
 
-const LOADING_PHRASES = [
-  "Parsing raw input and identifying logical section boundaries...",
-  "Applying semantic delimiters (Role, Task, Constraints, Output)...",
-  "Normalizing whitespace, bulleting, and tag indentation...",
-  "Generating standardized, model-friendly output..."
+// Paced to a typical ~14s format call (one retry on a bad JSON parse for the JSON output style).
+const LOADING_STEPS: ProgressStep[] = [
+  { label: "Parsing raw input and identifying logical section boundaries...", seconds: 3 },
+  { label: "Applying semantic delimiters (Role, Task, Constraints, Output)...", seconds: 4 },
+  { label: "Normalizing whitespace, bulleting, and tag indentation...", seconds: 4 },
+  { label: "Generating standardized, model-friendly output...", seconds: 3 },
 ];
 
 const FAQS = [
@@ -56,11 +58,12 @@ export default function PromptFormatterPage() {
   const [isFormatOpen, setIsFormatOpen] = useState(false);
   const [isIndentOpen, setIsIndentOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [formatted, setFormatted] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [usage, setUsage] = useState<FormatterUsage | null>(null);
+  // Holds the real result while TimedProgress finishes its own fill/hold animation — see onFinished below.
+  const [pendingResult, setPendingResult] = useState<{ formatted: string; usage: FormatterUsage | null } | null>(null);
   const [viewMode, setViewMode] = useState<PromptViewMode>("rendered");
 
   const outputRef = useRef<HTMLDivElement>(null);
@@ -82,17 +85,6 @@ export default function PromptFormatterPage() {
   }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (state === "loading") {
-      setLoadingStep(0);
-      interval = setInterval(() => {
-        setLoadingStep((prev) => (prev + 1) % LOADING_PHRASES.length);
-      }, 650);
-    }
-    return () => clearInterval(interval);
-  }, [state]);
-
-  useEffect(() => {
     if (state !== "idle" && outputRef.current) {
       setTimeout(() => {
         outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -105,6 +97,7 @@ export default function PromptFormatterPage() {
 
     setState("loading");
     setErrorMessage(null);
+    setPendingResult(null);
 
     try {
       const res = await fetch("/api/tools/prompt-formatter", {
@@ -121,15 +114,14 @@ export default function PromptFormatterPage() {
         return;
       }
 
-      setFormatted(typeof data.formatted === "string" ? data.formatted : "");
-      if (typeof data.promptsLimit === "number") {
-        setUsage({
-          isAuthenticated: !!data.isAuthenticated,
-          promptsRemaining: data.promptsRemaining,
-          promptsLimit: data.promptsLimit,
-        });
-      }
-      setState("success");
+      // Stashed here, not applied yet — TimedProgress finishes its own fill/hold animation first (see onFinished).
+      setPendingResult({
+        formatted: typeof data.formatted === "string" ? data.formatted : "",
+        usage:
+          typeof data.promptsLimit === "number"
+            ? { isAuthenticated: !!data.isAuthenticated, promptsRemaining: data.promptsRemaining, promptsLimit: data.promptsLimit }
+            : null,
+      });
     } catch {
       setErrorMessage("Network error — please check your connection and try again.");
       setState("idle");
@@ -315,42 +307,22 @@ export default function PromptFormatterPage() {
 
           {/* Loading Animation Stage */}
           {state === "loading" && (
-            <motion.div
+            <TimedProgress
               key="loading"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="bg-card border border-border rounded-2xl p-8 shadow-sm text-center"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-500 flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <Paintbrush className="w-6 h-6 animate-spin" />
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.h3 
-                  key={loadingStep}
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -2 }}
-                  transition={{ duration: 0.2 }}
-                  className="font-semibold text-sm text-foreground mb-1.5"
-                >
-                  {LOADING_PHRASES[loadingStep]}
-                </motion.h3>
-              </AnimatePresence>
-              <p className="text-xs text-muted-foreground mb-6">Synthesizing hierarchy, indentation, and semantic delimiters...</p>
-
-              <div className="flex justify-center gap-1.5 max-w-xs mx-auto">
-                {LOADING_PHRASES.map((_, idx) => (
-                  <div 
-                    key={idx}
-                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                      idx <= loadingStep ? "bg-pink-500" : "bg-muted"
-                    }`}
-                  />
-                ))}
-              </div>
-            </motion.div>
+              accent="primary"
+              icon={Paintbrush}
+              steps={LOADING_STEPS}
+              subtitle="Synthesizing hierarchy, indentation, and semantic delimiters..."
+              slowHint="Still formatting — a busy free model queue can take a little longer."
+              done={pendingResult !== null}
+              onFinished={() => {
+                if (!pendingResult) return;
+                setFormatted(pendingResult.formatted);
+                if (pendingResult.usage) setUsage(pendingResult.usage);
+                setPendingResult(null);
+                setState("success");
+              }}
+            />
           )}
 
           {/* Success Output View */}

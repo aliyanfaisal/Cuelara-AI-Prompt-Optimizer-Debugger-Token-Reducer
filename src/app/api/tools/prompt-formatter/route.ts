@@ -10,9 +10,10 @@ import {
   type FormatStyle,
   type IndentSize,
 } from "@/lib/prompt-formatter/constants";
-import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
-import { generateWithFallback } from "@/lib/llm-generate";
+import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
+import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { buildTextGenerationChain } from "@/lib/model-chain";
+import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 
 const TOOL = "prompt-formatter";
 
@@ -133,11 +134,8 @@ export async function POST(req: Request) {
         { status: 504 }
       );
     }
-    if (isRetryableProviderError(error)) {
-      return NextResponse.json(
-        { error: "All configured API keys are currently rate-limited. Please try again shortly." },
-        { status: 429 }
-      );
+    if (isRetryableProviderError(error) || isRequestTooLargeForProvider(error) || error instanceof AllProvidersExhaustedError) {
+      return NextResponse.json({ error: HIGH_DEMAND_MESSAGE }, { status: 429 });
     }
     return NextResponse.json({ error: "Something went wrong while formatting your prompt." }, { status: 500 });
   }

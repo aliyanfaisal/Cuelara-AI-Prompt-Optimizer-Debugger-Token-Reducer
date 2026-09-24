@@ -5,9 +5,10 @@ import { getTokenOptimizerLimit } from "@/lib/token-optimizer/limits";
 import { isCompressionLevel, isPreserveOption, LEVEL_GUIDANCE, type CompressionLevel, type PreserveOption } from "@/lib/token-optimizer/constants";
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
-import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
-import { generateWithFallback } from "@/lib/llm-generate";
+import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
+import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { buildTextGenerationChain } from "@/lib/model-chain";
+import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 
 const TOOL = "token-optimizer";
 
@@ -166,12 +167,9 @@ export async function POST(req: Request) {
         { status: 504 }
       );
     }
-    // Every key in the rotation pool was tried and all hit a rate limit/quota error.
-    if (isRetryableProviderError(error)) {
-      return NextResponse.json(
-        { error: "All configured API keys are currently rate-limited. Please try again shortly." },
-        { status: 429 }
-      );
+    // Every provider in the fallback chain either rate-limited, overloaded, or rejected the request as too large.
+    if (isRetryableProviderError(error) || isRequestTooLargeForProvider(error) || error instanceof AllProvidersExhaustedError) {
+      return NextResponse.json({ error: HIGH_DEMAND_MESSAGE }, { status: 429 });
     }
     return NextResponse.json({ error: "Something went wrong while compressing your prompt." }, { status: 500 });
   }

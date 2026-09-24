@@ -14,14 +14,17 @@ import { MODES, LEVELS, type OptimizerMode, type OptimizerLevel } from "@/lib/pr
 import { splitStreamTrailer } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
+import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 
 type GenerationState = "idle" | "loading" | "success";
 
-const LOADING_PHRASES = [
-  "Structuring role persona and domain context...",
-  "Synthesizing explicit constraints and boundary rules...",
-  "Calibrating output formatting and step-by-step logic...",
-  "Finalizing model-optimized prompt template..."
+// Gemini streams tokens directly, so "loading" here only lasts until the first token
+// arrives (typically a few seconds) — sized shorter than a full-generation wait.
+const LOADING_STEPS: ProgressStep[] = [
+  { label: "Structuring role persona and domain context...", seconds: 3 },
+  { label: "Synthesizing explicit constraints and boundary rules...", seconds: 3 },
+  { label: "Calibrating output formatting and step-by-step logic...", seconds: 2 },
+  { label: "Finalizing model-optimized prompt template...", seconds: 2 },
 ];
 
 const FAQS = [
@@ -61,7 +64,6 @@ export default function PromptOptimizerPage() {
   const [isModeOpen, setIsModeOpen] = useState(false);
   const [isLevelOpen, setIsLevelOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [optimizedPrompt, setOptimizedPrompt] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -88,17 +90,6 @@ export default function PromptOptimizerPage() {
   useEffect(() => {
     refreshUsage();
   }, []);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (state === "loading") {
-      setLoadingStep(0);
-      interval = setInterval(() => {
-        setLoadingStep((prev) => (prev + 1) % LOADING_PHRASES.length);
-      }, 700);
-    }
-    return () => clearInterval(interval);
-  }, [state]);
 
   useEffect(() => {
     if (state !== "idle" && outputRef.current) {
@@ -339,42 +330,14 @@ export default function PromptOptimizerPage() {
           
           {/* Loading Animation Stage */}
           {state === "loading" && (
-            <motion.div
+            <TimedProgress
               key="loading"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="bg-card border border-border rounded-2xl p-8 shadow-sm text-center"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <Sparkles className="w-6 h-6 animate-spin" />
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.h3 
-                  key={loadingStep}
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -2 }}
-                  transition={{ duration: 0.2 }}
-                  className="font-semibold text-sm text-foreground mb-1.5"
-                >
-                  {LOADING_PHRASES[loadingStep]}
-                </motion.h3>
-              </AnimatePresence>
-              <p className="text-xs text-muted-foreground mb-6">Structuring domain context, negative constraints, and output schema...</p>
-
-              <div className="flex justify-center gap-1.5 max-w-xs mx-auto">
-                {LOADING_PHRASES.map((_, idx) => (
-                  <div 
-                    key={idx}
-                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                      idx <= loadingStep ? "bg-primary" : "bg-muted"
-                    }`}
-                  />
-                ))}
-              </div>
-            </motion.div>
+              accent="primary"
+              icon={Sparkles}
+              steps={LOADING_STEPS}
+              subtitle="Structuring domain context, negative constraints, and output schema..."
+              slowHint="Still working — a busy free model queue can take a little longer to start responding."
+            />
           )}
 
           {/* Success Output Card */}

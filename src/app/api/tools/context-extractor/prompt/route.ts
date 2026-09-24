@@ -5,7 +5,8 @@ import { loadDocumentForSubject, DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/do
 import { getContextExtractorLimits } from "@/lib/rag/limits";
 import { hasReachedDailyLimit, consumeDailyLimit, getUsedToday, getRequestSubject } from "@/lib/rate-limit";
 import { isGenAITimeout } from "@/lib/genai-timeout";
-import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
+import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
+import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 
 // Re-runs a different query against a document that was already uploaded, parsed,
 // chunked and embedded — only the new query gets embedded here, so this only ever
@@ -83,12 +84,9 @@ export async function POST(req: Request) {
         { status: 504 }
       );
     }
-    // Every key in the rotation pool was tried and all hit a rate limit/quota error.
-    if (isRetryableProviderError(error)) {
-      return NextResponse.json(
-        { error: "All configured API keys are currently rate-limited. Please try again shortly." },
-        { status: 429 }
-      );
+    // Every key in the rotation pool was tried and all hit a rate limit/quota/overload error.
+    if (isRetryableProviderError(error) || isRequestTooLargeForProvider(error)) {
+      return NextResponse.json({ error: HIGH_DEMAND_MESSAGE }, { status: 429 });
     }
     return NextResponse.json({ error: "Something went wrong while generating this prompt." }, { status: 500 });
   }

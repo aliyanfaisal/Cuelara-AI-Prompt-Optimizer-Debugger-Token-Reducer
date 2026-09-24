@@ -5,9 +5,10 @@ import { GENAI_TIMEOUT_MS, isGenAITimeout } from "@/lib/genai-timeout";
 import { getPromptOptimizerLimit } from "@/lib/prompt-optimizer/limits";
 import { isOptimizerMode, isOptimizerLevel, MODE_EXEMPLARS, LEVEL_GUIDANCE } from "@/lib/prompt-optimizer/constants";
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
-import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
-import { generateWithFallback } from "@/lib/llm-generate";
+import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
+import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { buildTextGenerationChain, GEMINI_MODEL } from "@/lib/model-chain";
+import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 
 const TOOL = "prompt-optimizer";
 
@@ -141,12 +142,9 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
         { status: 504 }
       );
     }
-    // Every key in the rotation pool was tried and all hit a rate limit/quota error.
-    if (isRetryableProviderError(error)) {
-      return NextResponse.json(
-        { error: "All configured API keys are currently rate-limited. Please try again shortly." },
-        { status: 429 }
-      );
+    // Every provider in the fallback chain either rate-limited, overloaded, or rejected the request as too large.
+    if (isRetryableProviderError(error) || isRequestTooLargeForProvider(error) || error instanceof AllProvidersExhaustedError) {
+      return NextResponse.json({ error: HIGH_DEMAND_MESSAGE }, { status: 429 });
     }
     return NextResponse.json({ error: "Something went wrong while optimizing your prompt." }, { status: 500 });
   }

@@ -14,14 +14,17 @@ import { COMPRESSION_LEVELS, PRESERVE_OPTIONS, type CompressionLevel, type Prese
 import { splitStreamTrailer } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
+import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 
 type GenerationState = "idle" | "loading" | "success";
 
-const LOADING_PHRASES = [
-  "Removing conversational fluff and politeness tokens...",
-  "Consolidating redundant adjectives and filler verbs...",
-  "Minifying prompt syntax while locking core constraints...",
-  "Calculating net token reduction and cost delta..."
+// The compressed result is fully generated server-side (and re-validated with a possible
+// retry pass) before anything streams to the client, so this covers the full call, not just TTFT.
+const LOADING_STEPS: ProgressStep[] = [
+  { label: "Removing conversational fluff and politeness tokens...", seconds: 4 },
+  { label: "Consolidating redundant adjectives and filler verbs...", seconds: 4 },
+  { label: "Minifying prompt syntax while locking core constraints...", seconds: 5 },
+  { label: "Calculating net token reduction and cost delta...", seconds: 4 },
 ];
 
 const FAQS = [
@@ -62,7 +65,6 @@ export default function TokenOptimizerPage() {
   const [isLevelOpen, setIsLevelOpen] = useState(false);
   const [isPreserveOpen, setIsPreserveOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [compressedText, setCompressedText] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -87,17 +89,6 @@ export default function TokenOptimizerPage() {
   useEffect(() => {
     refreshUsage();
   }, []);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (state === "loading") {
-      setLoadingStep(0);
-      interval = setInterval(() => {
-        setLoadingStep((prev) => (prev + 1) % LOADING_PHRASES.length);
-      }, 700);
-    }
-    return () => clearInterval(interval);
-  }, [state]);
 
   useEffect(() => {
     if (state !== "idle" && outputRef.current) {
@@ -325,34 +316,14 @@ export default function TokenOptimizerPage() {
       <div ref={outputRef} className="scroll-mt-24 mb-16">
         <AnimatePresence mode="wait">
           {state === "loading" && (
-            <motion.div
+            <TimedProgress
               key="loading"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="bg-card border border-border rounded-2xl p-6 shadow-sm mt-4"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <Scissors className="w-5 h-5 text-amber-500 animate-pulse" />
-                <AnimatePresence mode="wait">
-                  <motion.h3 
-                    key={loadingStep}
-                    initial={{ opacity: 0, y: 2 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -2 }}
-                    transition={{ duration: 0.2 }}
-                    className="font-semibold text-sm text-foreground"
-                  >
-                    {LOADING_PHRASES[loadingStep]}
-                  </motion.h3>
-                </AnimatePresence>
-              </div>
-              <div className="space-y-3">
-                <div className="h-3.5 bg-muted/60 rounded-md w-3/4 animate-pulse" />
-                <div className="h-3.5 bg-muted/60 rounded-md w-full animate-pulse" />
-                <div className="h-3.5 bg-muted/60 rounded-md w-1/2 animate-pulse" />
-              </div>
-            </motion.div>
+              accent="primary"
+              icon={Scissors}
+              steps={LOADING_STEPS}
+              subtitle="Compressing while locking every constraint and variable in place..."
+              slowHint="Still compressing — a busy free model queue can take a little longer."
+            />
           )}
 
           {state === "success" && (

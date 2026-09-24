@@ -7,12 +7,13 @@ import {
   FileText, Upload, Check, Copy, AlertCircle,
   Sparkles, Layers, RefreshCcw, Download,
   CheckCircle2, XCircle, Info, ChevronDown, ChevronUp, FileCode,
-  Sliders, Database, Search, Cpu, FileCheck2, Trash2,
+  Sliders, FileCheck2, Trash2,
   HelpCircle, ArrowRight, ShieldCheck, Zap, Code2, Terminal,
   BookOpen, Lock, Scale, DollarSign
 } from "lucide-react";
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
+import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 
 type ProcessingState = "idle" | "loading" | "success";
 
@@ -82,12 +83,19 @@ const SAMPLE_DOCS = [
 
 const MAX_FILE_MB = 5;
 
-const PROCESSING_STEPS = [
-  { text: "Ingesting and chunking document data...", icon: Layers },
-  { text: "Generating vector embeddings with gemini-embedding-001...", icon: Cpu },
-  { text: "Searching and scoring relevant data snippets...", icon: Database },
-  { text: "Filtering out non-essential document bloat...", icon: Search },
-  { text: "Assembling your optimized, model-ready prompt...", icon: Sparkles }
+// A fresh upload chunks, embeds, and searches the whole document — the reuse path (same
+// document, new query) skips ingest/embedding and is much faster.
+const UPLOAD_STEPS: ProgressStep[] = [
+  { label: "Ingesting and chunking document data...", seconds: 5 },
+  { label: "Generating vector embeddings with gemini-embedding-001...", seconds: 8 },
+  { label: "Searching and scoring relevant data snippets...", seconds: 4 },
+  { label: "Filtering out non-essential document bloat...", seconds: 3 },
+  { label: "Assembling your optimized, model-ready prompt...", seconds: 4 },
+];
+const REUSE_STEPS: ProgressStep[] = [
+  { label: "Searching and scoring relevant data snippets...", seconds: 3 },
+  { label: "Filtering out non-essential document bloat...", seconds: 2 },
+  { label: "Assembling your optimized, model-ready prompt...", seconds: 3 },
 ];
 
 const FAQS = [
@@ -150,31 +158,23 @@ export default function ContextExtractorPage() {
   const [activeTab, setActiveTab] = useState<"prompt" | "data">("prompt");
   const [promptViewMode, setPromptViewMode] = useState<PromptViewMode>("rendered");
   const [isCopied, setIsCopied] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
   const [showDosDonts, setShowDosDonts] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const [extractedData, setExtractedData] = useState<ExtractedDataSnippet[]>([]);
+  // Holds the real result while TimedProgress finishes its own fill/hold animation — see onFinished below.
+  const [pendingResult, setPendingResult] = useState<{
+    snippets?: ExtractedDataSnippet[];
+    originalTokens?: number;
+    documentId?: string | null;
+    usage?: { documentsRemaining?: number; documentsLimit?: number; promptsRemaining?: number; promptsLimit?: number };
+  } | null>(null);
   const outputRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check for keywords where RAG is contraindicated
   const isSummarizeQuery = /(summarize|summary|entire document|whole document|all pages|rewrite all|everything)/i.test(searchQuery);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (state === "loading") {
-      setCurrentStep(0);
-      interval = setInterval(() => {
-        setCurrentStep((prev) => {
-          if (prev < PROCESSING_STEPS.length - 1) return prev + 1;
-          return prev;
-        });
-      }, 650);
-    }
-    return () => clearInterval(interval);
-  }, [state]);
 
   useEffect(() => {
     if (state === "success" && outputRef.current) {
@@ -274,12 +274,11 @@ export default function ContextExtractorPage() {
 
     setErrorMessage(null);
     setState("loading");
+    setPendingResult(null);
 
     // Sample documents stay a canned demo — no API call, no quota used.
     if (isSample) {
-      setTimeout(() => {
-        setState("success");
-      }, 1500);
+      setTimeout(() => setPendingResult({}), 1500);
       return;
     }
 
@@ -319,11 +318,8 @@ export default function ContextExtractorPage() {
         throw new Error(data.error || "Something went wrong while processing your document.");
       }
 
-      setExtractedData(data.snippets);
-      setServerOriginalTokens(data.originalTokens);
-      setDocumentId(data.documentId);
-      applyUsage(data);
-      setState("success");
+      // Stashed here, not applied yet — TimedProgress finishes its own fill/hold animation first (see onFinished).
+      setPendingResult({ snippets: data.snippets, originalTokens: data.originalTokens, documentId: data.documentId, usage: data });
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setState("idle");
@@ -806,45 +802,24 @@ export default function ContextExtractorPage() {
 
           {/* Loading Animation Stage */}
           {state === "loading" && (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="bg-card border border-border rounded-2xl p-8 shadow-sm text-center"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center mx-auto mb-4">
-                {(() => {
-                  const CurrentIcon = PROCESSING_STEPS[currentStep].icon;
-                  return <CurrentIcon className="w-6 h-6 animate-spin" />;
-                })()}
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.h3
-                  key={currentStep}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.2 }}
-                  className="font-semibold text-sm text-foreground mb-1.5"
-                >
-                  {PROCESSING_STEPS[currentStep].text}
-                </motion.h3>
-              </AnimatePresence>
-              <p className="text-xs text-muted-foreground mb-6">Running similarity match against document vector coordinates...</p>
-
-              {/* Step indicator progress pills */}
-              <div className="flex justify-center gap-1.5 max-w-xs mx-auto">
-                {PROCESSING_STEPS.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${idx <= currentStep ? "bg-primary" : "bg-muted"
-                      }`}
-                  />
-                ))}
-              </div>
-            </motion.div>
+            <TimedProgress
+              key={willReuseDocument || isSample ? "reuse" : "upload"}
+              accent="primary"
+              icon={Layers}
+              steps={willReuseDocument || isSample ? REUSE_STEPS : UPLOAD_STEPS}
+              subtitle="Running similarity match against document vector coordinates..."
+              slowHint="Still working — a large document or a busy free model queue can take a little longer."
+              done={pendingResult !== null}
+              onFinished={() => {
+                if (!pendingResult) return;
+                if (pendingResult.snippets) setExtractedData(pendingResult.snippets);
+                if (typeof pendingResult.originalTokens === "number") setServerOriginalTokens(pendingResult.originalTokens);
+                if ("documentId" in pendingResult) setDocumentId(pendingResult.documentId ?? null);
+                if (pendingResult.usage) applyUsage(pendingResult.usage);
+                setPendingResult(null);
+                setState("success");
+              }}
+            />
           )}
 
           {/* Success / Result View */}

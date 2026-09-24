@@ -14,15 +14,17 @@ import {
   type StrictnessLevel, type FocusArea,
   type DebuggerIssue, type DebuggerPassedCheck,
 } from "@/lib/prompt-debugger/constants";
+import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 
 type GenerationState = "idle" | "loading" | "success";
 
-const LOADING_PHRASES = [
-  "Scanning for logical inconsistencies and semantic contradictions...",
-  "Analyzing edge-case vulnerabilities and unbounded scope risks...",
-  "Checking output parsing constraints against strict schemas...",
-  "Evaluating tone stability and bias boundaries...",
-  "Compiling comprehensive prompt audit report..."
+// Paced to a real audit call's typical ~18s round trip (JSON report generation, one retry on a bad parse).
+const LOADING_STEPS: ProgressStep[] = [
+  { label: "Scanning for logical inconsistencies and semantic contradictions...", seconds: 4 },
+  { label: "Analyzing edge-case vulnerabilities and unbounded scope risks...", seconds: 4 },
+  { label: "Checking output parsing constraints against strict schemas...", seconds: 4 },
+  { label: "Evaluating tone stability and bias boundaries...", seconds: 3 },
+  { label: "Compiling comprehensive prompt audit report...", seconds: 3 },
 ];
 
 const FAQS = [
@@ -59,12 +61,17 @@ export default function PromptDebuggerPage() {
   const [isLevelOpen, setIsLevelOpen] = useState(false);
   const [isFocusOpen, setIsFocusOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [loadingStep, setLoadingStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [issues, setIssues] = useState<DebuggerIssue[]>([]);
   const [passedChecks, setPassedChecks] = useState<DebuggerPassedCheck[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [usage, setUsage] = useState<DebuggerUsage | null>(null);
+  // Holds the real result while TimedProgress finishes its own fill/hold animation — see onFinished below.
+  const [pendingResult, setPendingResult] = useState<{
+    issues: DebuggerIssue[];
+    passedChecks: DebuggerPassedCheck[];
+    usage: DebuggerUsage | null;
+  } | null>(null);
   const [isApplyingFixes, setIsApplyingFixes] = useState(false);
   const [applyFixesError, setApplyFixesError] = useState<string | null>(null);
   const [fixesApplied, setFixesApplied] = useState(false);
@@ -88,17 +95,6 @@ export default function PromptDebuggerPage() {
   }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (state === "loading") {
-      setLoadingStep(0);
-      interval = setInterval(() => {
-        setLoadingStep((prev) => (prev + 1) % LOADING_PHRASES.length);
-      }, 650);
-    }
-    return () => clearInterval(interval);
-  }, [state]);
-
-  useEffect(() => {
     if (state !== "idle" && outputRef.current) {
       setTimeout(() => {
         outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -113,6 +109,7 @@ export default function PromptDebuggerPage() {
     setErrorMessage(null);
     setApplyFixesError(null);
     setFixesApplied(false);
+    setPendingResult(null);
 
     try {
       const res = await fetch("/api/tools/prompt-debugger", {
@@ -129,16 +126,15 @@ export default function PromptDebuggerPage() {
         return;
       }
 
-      setIssues(Array.isArray(data.issues) ? data.issues : []);
-      setPassedChecks(Array.isArray(data.passedChecks) ? data.passedChecks : []);
-      if (typeof data.promptsLimit === "number") {
-        setUsage({
-          isAuthenticated: !!data.isAuthenticated,
-          promptsRemaining: data.promptsRemaining,
-          promptsLimit: data.promptsLimit,
-        });
-      }
-      setState("success");
+      // Stashed here, not applied yet — TimedProgress finishes its own fill/hold animation first (see onFinished).
+      setPendingResult({
+        issues: Array.isArray(data.issues) ? data.issues : [],
+        passedChecks: Array.isArray(data.passedChecks) ? data.passedChecks : [],
+        usage:
+          typeof data.promptsLimit === "number"
+            ? { isAuthenticated: !!data.isAuthenticated, promptsRemaining: data.promptsRemaining, promptsLimit: data.promptsLimit }
+            : null,
+      });
     } catch {
       setErrorMessage("Network error — please check your connection and try again.");
       setState("idle");
@@ -353,42 +349,23 @@ export default function PromptDebuggerPage() {
 
           {/* Loading Animation Stage */}
           {state === "loading" && (
-            <motion.div
+            <TimedProgress
               key="loading"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="bg-card border border-border rounded-2xl p-8 shadow-sm text-center"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <Bug className="w-6 h-6 animate-spin" />
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.h3
-                  key={loadingStep}
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -2 }}
-                  transition={{ duration: 0.2 }}
-                  className="font-semibold text-sm text-foreground mb-1.5"
-                >
-                  {LOADING_PHRASES[loadingStep]}
-                </motion.h3>
-              </AnimatePresence>
-              <p className="text-xs text-muted-foreground mb-6">Running heuristic logic evaluation and constraint boundary checks...</p>
-
-              <div className="flex justify-center gap-1.5 max-w-xs mx-auto">
-                {LOADING_PHRASES.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                      idx <= loadingStep ? "bg-emerald-500" : "bg-muted"
-                    }`}
-                  />
-                ))}
-              </div>
-            </motion.div>
+              accent="primary"
+              icon={Bug}
+              steps={LOADING_STEPS}
+              subtitle="Running heuristic logic evaluation and constraint boundary checks..."
+              slowHint="Still auditing — a stricter scan on a long prompt takes a little longer."
+              done={pendingResult !== null}
+              onFinished={() => {
+                if (!pendingResult) return;
+                setIssues(pendingResult.issues);
+                setPassedChecks(pendingResult.passedChecks);
+                if (pendingResult.usage) setUsage(pendingResult.usage);
+                setPendingResult(null);
+                setState("success");
+              }}
+            />
           )}
 
           {/* Success / Report View */}
