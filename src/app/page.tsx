@@ -290,6 +290,12 @@ export default function Home() {
               description="Extract only the relevant data from large documents via RAG to slash token usage and eliminate hallucinations in your LLM."
             />
             <FeatureCard
+              href="/tools/site-to-prompt"
+              icon={<Palette className="h-6 w-6 text-fuchsia-500" />}
+              title="Site to Prompt"
+              description="Measures a website's real colors, fonts, layout and tech stack, then writes a prompt that lets v0, Bolt, Claude or Midjourney rebuild its design."
+            />
+            <FeatureCard
               href="/tools/token-optimizer"
               icon={<Zap className="h-6 w-6 text-amber-500" />}
               title="Token Optimizer"
@@ -318,12 +324,6 @@ export default function Home() {
               icon={<Terminal className="h-6 w-6 text-pink-500" />}
               title="Prompt Formatter"
               description="Instantly converts unstructured walls of text into standardized, model-friendly sections (Role, Task, Constraints)."
-            />
-            <FeatureCard
-              href="/tools/site-to-prompt"
-              icon={<Palette className="h-6 w-6 text-fuchsia-500" />}
-              title="Site to Prompt"
-              description="Measures a website's real colors, fonts, layout and tech stack, then writes a prompt that lets v0, Bolt, Claude or Midjourney rebuild its design."
             />
           </motion.div>
         </div>
