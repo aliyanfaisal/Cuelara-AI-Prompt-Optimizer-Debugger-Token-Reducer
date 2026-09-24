@@ -6,8 +6,9 @@ const TOOL = "intelligence-score";
 
 export async function GET(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const limit = await getIntelligenceScoreLimit(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const limit = await getIntelligenceScoreLimit(subject);
     const used = await getUsedToday(subjectKey, TOOL);
 
     return NextResponse.json({

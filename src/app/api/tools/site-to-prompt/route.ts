@@ -39,8 +39,9 @@ async function generateWithRetry(chain: ProviderChainLink[], prompt: string, com
 
 export async function POST(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const { promptLimit } = await getSiteToPromptLimits(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey } = subject;
+    const { promptLimit } = await getSiteToPromptLimits(subject);
 
     if (await hasReachedDailyLimit(subjectKey, PROMPT_TOOL, promptLimit)) {
       return NextResponse.json(

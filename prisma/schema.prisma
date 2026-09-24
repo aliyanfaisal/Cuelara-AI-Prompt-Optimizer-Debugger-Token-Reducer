@@ -229,11 +229,17 @@ model User {
   isActive      Boolean   @default(false) // For magic link activation
   createdAt     DateTime  @default(now())
 
-  accounts         Account[]
-  sessions         Session[]
-  workspaces       Workspace[]
-  prompts          Prompt[]
-  activationTokens ActivationToken[]
+  planId String?
+  plan   Plan?   @relation(fields: [planId], references: [id])
+
+  accounts            Account[]
+  sessions            Session[]
+  workspaces          Workspace[]
+  prompts             Prompt[]
+  activationTokens    ActivationToken[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@index([planId])
 }
 
 model Role {
@@ -253,6 +259,46 @@ model ActivationToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   expiresAt DateTime
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+// A subscription tier: no payment processor wired up yet, so a plan is purely an
+// admin-assigned label that carries its own per-tool daily limits. Assigning a
+// plan to a user (see admin/users) is how they get higher (or custom) limits
+// instead of the flat authenticated default.
+model Plan {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  slug              String   @unique
+  description       String?
+  priceMonthlyCents Int      @default(0)
+  isDefault         Boolean  @default(false)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  users  User[]
+  limits PlanToolLimit[]
+}
+
+// One row per tool a plan overrides the default authenticated daily limit for.
+// A tool the plan doesn't list falls back to that tool's normal authenticated limit.
+model PlanToolLimit {
+  id         String @id @default(cuid())
+  planId     String
+  plan       Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  tool       String
+  dailyLimit Int
+
+  @@unique([planId, tool])
 }
 
 model VerificationToken {

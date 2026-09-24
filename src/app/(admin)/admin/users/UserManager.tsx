@@ -6,13 +6,22 @@ import { updateUser, toggleUserStatus, deleteUser, createUser } from "./actions"
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function UserManager({ initialUsers, availableRoles }: { initialUsers: any[], availableRoles: any[] }) {
+export default function UserManager({
+  initialUsers,
+  availableRoles,
+  availablePlans,
+}: {
+  initialUsers: any[];
+  availableRoles: any[];
+  availablePlans: { id: string; name: string }[];
+}) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [editingUser, setEditingUser] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('edit');
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPassword, setEditPassword] = useState("");
@@ -29,6 +38,7 @@ export default function UserManager({ initialUsers, availableRoles }: { initialU
     setEditName("");
     setEditEmail("");
     setEditPassword("");
+    setSelectedPlanId("");
     // By default select USER role if it exists
     const userRole = availableRoles.find(r => r.name === 'USER');
     setSelectedRoles(userRole ? [userRole.id] : []);
@@ -42,6 +52,7 @@ export default function UserManager({ initialUsers, availableRoles }: { initialU
     setEditEmail(user.email || "");
     setEditPassword(""); // Not typically editing password here, but clear it
     setSelectedRoles(user.roles.map((r: any) => r.id));
+    setSelectedPlanId(user.planId || "");
     setIsModalOpen(true);
   }
 
@@ -62,13 +73,15 @@ export default function UserManager({ initialUsers, availableRoles }: { initialU
         name: editName,
         email: editEmail,
         password: editPassword,
-        roles: selectedRoles
+        roles: selectedRoles,
+        planId: selectedPlanId || null,
       });
     } else {
       result = await updateUser(editingUser.id, {
         name: editName,
         email: editEmail,
-        roles: selectedRoles
+        roles: selectedRoles,
+        planId: selectedPlanId || null,
       });
     }
 
@@ -128,6 +141,7 @@ export default function UserManager({ initialUsers, availableRoles }: { initialU
                 <th className="p-4 font-semibold text-sm text-muted-foreground">User</th>
                 <th className="p-4 font-semibold text-sm text-muted-foreground">Status</th>
                 <th className="p-4 font-semibold text-sm text-muted-foreground">Roles</th>
+                <th className="p-4 font-semibold text-sm text-muted-foreground">Plan</th>
                 <th className="p-4 font-semibold text-sm text-muted-foreground">Joined</th>
                 <th className="p-4 font-semibold text-sm text-muted-foreground text-right">Actions</th>
               </tr>
@@ -166,6 +180,13 @@ export default function UserManager({ initialUsers, availableRoles }: { initialU
                       ))}
                     </div>
                   </td>
+                  <td className="p-4">
+                    {user.plan ? (
+                      <span className="text-[10px] uppercase font-bold px-2 py-1 rounded-md bg-primary/10 text-primary">{user.plan.name}</span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
+                  </td>
                   <td className="p-4 text-sm text-muted-foreground">
                     {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </td>
@@ -187,7 +208,7 @@ export default function UserManager({ initialUsers, availableRoles }: { initialU
               
               {filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
                     No users found matching "{searchTerm}"
                   </td>
                 </tr>
@@ -231,8 +252,8 @@ export default function UserManager({ initialUsers, availableRoles }: { initialU
                 {modalMode === 'create' && (
                   <div>
                     <label className="block text-xs font-medium text-muted-foreground mb-1">Password</label>
-                    <input 
-                      type="password" 
+                    <input
+                      type="password"
                       value={editPassword}
                       onChange={(e) => setEditPassword(e.target.value)}
                       className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -240,6 +261,22 @@ export default function UserManager({ initialUsers, availableRoles }: { initialU
                     />
                   </div>
                 )}
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Subscription plan</label>
+                  <select
+                    value={selectedPlanId}
+                    onChange={(e) => setSelectedPlanId(e.target.value)}
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="">No plan (normal limits)</option>
+                    {availablePlans.map((plan) => (
+                      <option key={plan.id} value={plan.id}>{plan.name}</option>
+                    ))}
+                  </select>
+                  {modalMode === 'edit' && (
+                    <p className="text-[11px] text-muted-foreground mt-1">Changing this emails the user that their plan was updated.</p>
+                  )}
+                </div>
               </div>
             </div>
             

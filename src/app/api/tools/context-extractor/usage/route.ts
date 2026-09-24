@@ -5,8 +5,9 @@ import { getUsedToday, getRequestSubject } from "@/lib/rate-limit";
 
 export async function GET(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const { documentLimit, promptLimit } = await getContextExtractorLimits(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const { documentLimit, promptLimit } = await getContextExtractorLimits(subject);
 
     const [documentsUsed, promptsUsed] = await Promise.all([
       getUsedToday(subjectKey, DOCUMENT_TOOL),

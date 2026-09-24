@@ -61,8 +61,9 @@ Return only the final prompt text — no meta-commentary, no explanation, no mar
 
 export async function POST(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const limit = await getTokenOptimizerLimit(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const limit = await getTokenOptimizerLimit(subject);
 
     if (await hasReachedDailyLimit(subjectKey, TOOL, limit)) {
       return NextResponse.json(

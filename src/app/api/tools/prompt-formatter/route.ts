@@ -64,8 +64,9 @@ function finalizeOutput(rawText: string, format: FormatStyle, indent: IndentSize
 
 export async function POST(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const limit = await getPromptFormatterLimit(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const limit = await getPromptFormatterLimit(subject);
 
     if (await hasReachedDailyLimit(subjectKey, TOOL, limit)) {
       return NextResponse.json(

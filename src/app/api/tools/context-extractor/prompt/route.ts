@@ -13,8 +13,9 @@ import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 // spends a "prompt" slot, never a "document" slot.
 export async function POST(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const { documentLimit, promptLimit } = await getContextExtractorLimits(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const { documentLimit, promptLimit } = await getContextExtractorLimits(subject);
 
     if (await hasReachedDailyLimit(subjectKey, PROMPT_TOOL, promptLimit)) {
       return NextResponse.json(

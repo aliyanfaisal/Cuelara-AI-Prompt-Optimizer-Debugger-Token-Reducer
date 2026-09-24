@@ -20,23 +20,39 @@ function todayUtc(): string {
 export interface RequestSubject {
   subjectKey: string;
   isAuthenticated: boolean;
+  /** This user's per-tool plan overrides (tool id -> daily limit), or null if unauthenticated / no active plan. */
+  planLimits: Record<string, number> | null;
 }
 
 /**
  * Identifies who a request should be rate-limited as: a signed-in user's quota
  * follows their account ("user:<id>", stable across networks/devices), an
- * anonymous visitor's follows their IP ("ip:<hash>").
+ * anonymous visitor's follows their IP ("ip:<hash>"). Also resolves the signed-in
+ * user's active plan (if any) so its per-tool limit overrides can be applied.
  */
 export async function getRequestSubject(req: Request): Promise<RequestSubject> {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string } | undefined)?.id;
 
   if (userId) {
-    return { subjectKey: `user:${userId}`, isAuthenticated: true };
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { plan: { select: { isActive: true, limits: { select: { tool: true, dailyLimit: true } } } } },
+    });
+    const planLimits =
+      user?.plan?.isActive && user.plan.limits.length > 0
+        ? Object.fromEntries(user.plan.limits.map((l) => [l.tool, l.dailyLimit]))
+        : null;
+    return { subjectKey: `user:${userId}`, isAuthenticated: true, planLimits };
   }
 
   const ip = getClientIp(req);
-  return { subjectKey: `ip:${hashIp(ip)}`, isAuthenticated: false };
+  return { subjectKey: `ip:${hashIp(ip)}`, isAuthenticated: false, planLimits: null };
+}
+
+/** A plan's per-tool override wins over the tool's normal authenticated/anonymous default when present. */
+export function resolvePlanLimit(subject: RequestSubject, tool: string, defaultLimit: number): number {
+  return subject.planLimits?.[tool] ?? defaultLimit;
 }
 
 export async function getDailyLimit(settingKey: string, fallback: number): Promise<number> {

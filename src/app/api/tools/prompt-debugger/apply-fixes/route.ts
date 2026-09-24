@@ -27,8 +27,9 @@ Return only the rewritten prompt text — no meta-commentary, no explanation of 
 
 export async function POST(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const limit = await getPromptDebuggerLimit(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const limit = await getPromptDebuggerLimit(subject);
 
     if (await hasReachedDailyLimit(subjectKey, TOOL, limit)) {
       return NextResponse.json(

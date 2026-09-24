@@ -182,9 +182,14 @@ function LoginForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium leading-6 text-slate-700 dark:text-zinc-300">
-                Password
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-medium leading-6 text-slate-700 dark:text-zinc-300">
+                  Password
+                </label>
+                <Link href="/forgot-password" className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
               <div className="mt-2 relative group/input">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-slate-400 dark:text-zinc-500 group-focus-within/input:text-primary transition-colors" />

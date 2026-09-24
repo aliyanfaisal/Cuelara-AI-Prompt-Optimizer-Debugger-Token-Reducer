@@ -5,8 +5,9 @@ import { EXTRACT_TOOL, PROMPT_TOOL } from "@/lib/site-to-prompt/constants";
 
 export async function GET(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const { extractLimit, promptLimit } = await getSiteToPromptLimits(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const { extractLimit, promptLimit } = await getSiteToPromptLimits(subject);
     const [extractUsed, promptUsed] = await Promise.all([getUsedToday(subjectKey, EXTRACT_TOOL), getUsedToday(subjectKey, PROMPT_TOOL)]);
     return NextResponse.json({
       isAuthenticated,

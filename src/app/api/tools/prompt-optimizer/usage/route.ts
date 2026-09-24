@@ -6,8 +6,9 @@ const TOOL = "prompt-optimizer";
 
 export async function GET(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const limit = await getPromptOptimizerLimit(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const limit = await getPromptOptimizerLimit(subject);
     const used = await getUsedToday(subjectKey, TOOL);
 
     return NextResponse.json({

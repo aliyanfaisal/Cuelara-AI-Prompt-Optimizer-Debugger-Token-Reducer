@@ -14,8 +14,9 @@ const TOOL = "prompt-optimizer";
 
 export async function POST(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const limit = await getPromptOptimizerLimit(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const limit = await getPromptOptimizerLimit(subject);
 
     if (await hasReachedDailyLimit(subjectKey, TOOL, limit)) {
       return NextResponse.json(

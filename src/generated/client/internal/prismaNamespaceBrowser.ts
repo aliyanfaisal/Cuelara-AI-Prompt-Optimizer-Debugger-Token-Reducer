@@ -67,6 +67,9 @@ export const ModelName = {
   User: 'User',
   Role: 'Role',
   ActivationToken: 'ActivationToken',
+  PasswordResetToken: 'PasswordResetToken',
+  Plan: 'Plan',
+  PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
   Prompt: 'Prompt'
@@ -273,7 +276,8 @@ export const UserScalarFieldEnum = {
   image: 'image',
   password: 'password',
   isActive: 'isActive',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  planId: 'planId'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -299,6 +303,42 @@ export const ActivationTokenScalarFieldEnum = {
 } as const
 
 export type ActivationTokenScalarFieldEnum = (typeof ActivationTokenScalarFieldEnum)[keyof typeof ActivationTokenScalarFieldEnum]
+
+
+export const PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
+
+
+export const PlanScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  priceMonthlyCents: 'priceMonthlyCents',
+  isDefault: 'isDefault',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+export const PlanToolLimitScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  tool: 'tool',
+  dailyLimit: 'dailyLimit'
+} as const
+
+export type PlanToolLimitScalarFieldEnum = (typeof PlanToolLimitScalarFieldEnum)[keyof typeof PlanToolLimitScalarFieldEnum]
 
 
 export const VerificationTokenScalarFieldEnum = {

@@ -98,6 +98,21 @@ export type Role = Prisma.RoleModel
  */
 export type ActivationToken = Prisma.ActivationTokenModel
 /**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel
+/**
+ * Model Plan
+ * 
+ */
+export type Plan = Prisma.PlanModel
+/**
+ * Model PlanToolLimit
+ * 
+ */
+export type PlanToolLimit = Prisma.PlanToolLimitModel
+/**
  * Model VerificationToken
  * 
  */

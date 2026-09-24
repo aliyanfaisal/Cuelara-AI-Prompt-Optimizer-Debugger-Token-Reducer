@@ -11,8 +11,9 @@ const MAX_BODY_BYTES = 2_000_000;
 /** The extension measures the page in the user's browser; this route turns those measurements into the Design DNA. */
 export async function POST(req: Request) {
   try {
-    const { subjectKey, isAuthenticated } = await getRequestSubject(req);
-    const { extractLimit } = await getSiteToPromptLimits(isAuthenticated);
+    const subject = await getRequestSubject(req);
+    const { subjectKey, isAuthenticated } = subject;
+    const { extractLimit } = await getSiteToPromptLimits(subject);
 
     if (await hasReachedDailyLimit(subjectKey, EXTRACT_TOOL, extractLimit)) {
       return NextResponse.json(
