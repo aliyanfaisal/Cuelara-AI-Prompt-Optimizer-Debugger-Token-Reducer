@@ -7,7 +7,7 @@ import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
 import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { generateWithFallback } from "@/lib/llm-generate";
-import { TEXT_GENERATION_CHAIN } from "@/lib/model-chain";
+import { buildTextGenerationChain } from "@/lib/model-chain";
 
 const TOOL = "token-optimizer";
 
@@ -92,8 +92,9 @@ export async function POST(req: Request) {
     try {
       // Gemini's own claim of "compressed" isn't trustworthy on its own — verify with
       // the same tokenizer the UI uses before trusting the result.
+      const chain = await buildTextGenerationChain();
       const firstAttempt = await generateWithFallback(
-        TEXT_GENERATION_CHAIN,
+        chain,
         buildCompressionPrompt(trimmedInput, level, preserveFormatting),
         TOOL
       );
@@ -103,7 +104,7 @@ export async function POST(req: Request) {
       // so a slow/failing retry falls back to the first result instead of failing outright.
       if (compressed && countPromptTokens(compressed) >= originalTokenCount) {
         try {
-          const retry = await generateWithFallback(TEXT_GENERATION_CHAIN, buildRetryPrompt(trimmedInput, compressed), TOOL);
+          const retry = await generateWithFallback(chain, buildRetryPrompt(trimmedInput, compressed), TOOL);
           const retryText = retry.text.trim();
           if (retryText && countPromptTokens(retryText) < countPromptTokens(compressed)) {
             compressed = retryText;

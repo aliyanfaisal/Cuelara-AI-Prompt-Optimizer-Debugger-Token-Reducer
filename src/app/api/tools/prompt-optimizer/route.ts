@@ -7,7 +7,7 @@ import { isOptimizerMode, isOptimizerLevel, MODE_EXEMPLARS, LEVEL_GUIDANCE } fro
 import { encodeStreamMeta, encodeStreamError } from "@/lib/stream-protocol";
 import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { generateWithFallback } from "@/lib/llm-generate";
-import { TEXT_GENERATION_CHAIN, GEMINI_MODEL } from "@/lib/model-chain";
+import { buildTextGenerationChain, GEMINI_MODEL } from "@/lib/model-chain";
 
 const TOOL = "prompt-optimizer";
 
@@ -72,7 +72,8 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
       // Gemini is unconfigured or its whole pool is rate-limited — fall back to the
       // free-tier overflow providers (Groq, then OpenRouter). This propagates out of
       // the route (to the outer catch) if those are exhausted too.
-      const fallback = await generateWithFallback(TEXT_GENERATION_CHAIN.slice(1), metaPrompt, TOOL);
+      const chain = await buildTextGenerationChain();
+      const fallback = await generateWithFallback(chain.slice(1), metaPrompt, TOOL);
       fallbackText = fallback.text;
     }
 

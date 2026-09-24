@@ -92,15 +92,22 @@ export class AllProvidersExhaustedError extends Error {
 export async function generateWithFallback(
   chain: ProviderChainLink[],
   prompt: string,
-  tool: string
+  tool: string,
+  /**
+   * A smaller prompt to use instead, for links whose own limit the default
+   * `prompt` doesn't fit — lets a tight-budget fallback (e.g. Groq's free TPM
+   * cap) still get a real attempt instead of being skipped outright.
+   */
+  promptOverrides?: Partial<Record<Provider, string>>
 ): Promise<{ text: string; provider: Provider }> {
   let lastError: unknown;
 
   for (const { provider, model, generate, maxPromptChars } of chain) {
-    if (maxPromptChars && prompt.length > maxPromptChars) continue;
+    const effectivePrompt = promptOverrides?.[provider] ?? prompt;
+    if (maxPromptChars && effectivePrompt.length > maxPromptChars) continue;
 
     try {
-      const text = await callWithKeyRotation(provider, (apiKey) => generate(apiKey, prompt), { tool, model });
+      const text = await callWithKeyRotation(provider, (apiKey) => generate(apiKey, effectivePrompt), { tool, model });
       return { text, provider };
     } catch (error) {
       // A missing config is the least informative failure a link can report —

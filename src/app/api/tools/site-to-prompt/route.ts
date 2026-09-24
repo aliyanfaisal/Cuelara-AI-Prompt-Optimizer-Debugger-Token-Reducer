@@ -4,6 +4,7 @@ import { isGenAITimeout } from "@/lib/genai-timeout";
 import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
 import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { buildTextGenerationChain } from "@/lib/model-chain";
+import type { ProviderChainLink } from "@/lib/llm-generate";
 import { getSiteToPromptLimits } from "@/lib/site-to-prompt/limits";
 import { PROMPT_TOOL, MAX_GOAL_LENGTH, isTarget } from "@/lib/site-to-prompt/constants";
 import { designDnaSchema } from "@/lib/site-to-prompt/schema";
@@ -11,7 +12,6 @@ import { buildSitePrompt, stripFences } from "@/lib/site-to-prompt/prompt";
 
 // A whole page's structure in, a long build prompt out — slower than the other tools' short prompts.
 const GENERATION_TIMEOUT_MS = 150_000;
-const CHAIN = buildTextGenerationChain(GENERATION_TIMEOUT_MS);
 
 export const maxDuration = 300;
 
@@ -22,12 +22,15 @@ const RETRY_DELAYS_MS = [0, 5_000, 12_000];
 const HIGH_DEMAND_MESSAGE =
   "Our free AI models are experiencing heavy demand right now. Please wait a minute and try again.";
 
-async function generateWithRetry(prompt: string) {
+async function generateWithRetry(chain: ProviderChainLink[], prompt: string, compactPrompt: string) {
   let lastError: unknown;
   for (const delay of RETRY_DELAYS_MS) {
     if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
     try {
-      return await generateWithFallback(CHAIN, prompt, PROMPT_TOOL);
+      // Groq and OpenRouter's free tiers can't take the full prompt Gemini gets (its
+      // context window dwarfs theirs) — give them the outline-free compact version
+      // instead of skipping them outright when Gemini's pool is exhausted or overloaded.
+      return await generateWithFallback(chain, prompt, PROMPT_TOOL, { groq: compactPrompt, openrouter: compactPrompt });
     } catch (error) {
       lastError = error;
       if (!isRetryableProviderError(error) && !isRequestTooLargeForProvider(error)) throw error;
@@ -69,7 +72,10 @@ export async function POST(req: Request) {
 
     let text: string;
     try {
-      const attempt = await generateWithRetry(buildSitePrompt(dna, body.target, goal));
+      const fullPrompt = buildSitePrompt(dna, body.target, goal);
+      const compactPrompt = buildSitePrompt(dna, body.target, goal, { includeOutlines: false });
+      const chain = await buildTextGenerationChain(GENERATION_TIMEOUT_MS);
+      const attempt = await generateWithRetry(chain, fullPrompt, compactPrompt);
       text = stripFences(attempt.text);
     } catch (error) {
       if (error instanceof NoApiKeysConfiguredError) {

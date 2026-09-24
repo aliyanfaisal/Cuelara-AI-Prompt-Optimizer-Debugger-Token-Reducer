@@ -7,15 +7,18 @@ import ApiKeysManager from "./ApiKeysManager";
 import type { ToolSettings } from "./actions";
 import type { ApiKeyRow } from "./api-key-actions";
 import type { Provider } from "@/lib/providers";
+import type { OpenRouterModelMode } from "@/lib/openrouter-mode";
 
 type Tab = "limits" | "keys";
 
 export default function SettingsTabs({
   initialSettings,
   initialKeys,
+  initialOpenRouterMode,
 }: {
   initialSettings: ToolSettings;
   initialKeys: Record<Provider, ApiKeyRow[]>;
+  initialOpenRouterMode: OpenRouterModelMode;
 }) {
   const [tab, setTab] = useState<Tab>("limits");
 
@@ -45,7 +48,7 @@ export default function SettingsTabs({
       {tab === "limits" ? (
         <SettingsManager initialSettings={initialSettings} />
       ) : (
-        <ApiKeysManager initialKeys={initialKeys} />
+        <ApiKeysManager initialKeys={initialKeys} initialOpenRouterMode={initialOpenRouterMode} />
       )}
     </div>
   );

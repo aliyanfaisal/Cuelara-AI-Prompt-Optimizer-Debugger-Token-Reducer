@@ -15,7 +15,7 @@ import {
 } from "@/lib/prompt-debugger/constants";
 import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { generateWithFallback } from "@/lib/llm-generate";
-import { TEXT_GENERATION_CHAIN } from "@/lib/model-chain";
+import { buildTextGenerationChain } from "@/lib/model-chain";
 
 const TOOL = "prompt-debugger";
 
@@ -125,13 +125,14 @@ export async function POST(req: Request) {
 
     let report: DebuggerReport | null = null;
     try {
-      const attempt = await generateWithFallback(TEXT_GENERATION_CHAIN, buildAuditPrompt(trimmedInput, level, focus), TOOL);
+      const chain = await buildTextGenerationChain();
+      const attempt = await generateWithFallback(chain, buildAuditPrompt(trimmedInput, level, focus), TOOL);
       report = parseReport(attempt.text);
 
       if (!report) {
         // The model didn't return clean JSON — one retry with a sharper reminder.
         const retry = await generateWithFallback(
-          TEXT_GENERATION_CHAIN,
+          chain,
           `${buildAuditPrompt(trimmedInput, level, focus)}\n\nReturn ONLY the raw JSON object. No markdown fences, no leading or trailing text.`,
           TOOL
         );

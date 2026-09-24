@@ -12,7 +12,7 @@ import {
 } from "@/lib/prompt-formatter/constants";
 import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { generateWithFallback } from "@/lib/llm-generate";
-import { TEXT_GENERATION_CHAIN } from "@/lib/model-chain";
+import { buildTextGenerationChain } from "@/lib/model-chain";
 
 const TOOL = "prompt-formatter";
 
@@ -92,13 +92,14 @@ export async function POST(req: Request) {
 
     let formatted: string | null = null;
     try {
-      const attempt = await generateWithFallback(TEXT_GENERATION_CHAIN, buildFormatPrompt(trimmedInput, format), TOOL);
+      const chain = await buildTextGenerationChain();
+      const attempt = await generateWithFallback(chain, buildFormatPrompt(trimmedInput, format), TOOL);
       formatted = finalizeOutput(attempt.text, format, indent);
 
       if (!formatted) {
         // The model didn't return a clean, parseable result — one retry with a sharper reminder.
         const retry = await generateWithFallback(
-          TEXT_GENERATION_CHAIN,
+          chain,
           `${buildFormatPrompt(trimmedInput, format)}\n\nReturn ONLY the raw formatted result. No markdown fences, no leading or trailing text.`,
           TOOL
         );

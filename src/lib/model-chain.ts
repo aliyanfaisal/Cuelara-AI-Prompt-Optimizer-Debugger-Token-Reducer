@@ -1,6 +1,8 @@
 import "server-only";
 import { geminiGenerate, openAICompatibleGenerate, type ProviderChainLink } from "@/lib/llm-generate";
 import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
+import { getFreeOpenRouterModels } from "@/lib/openrouter-free-models";
+import { getOpenRouterModelMode } from "@/lib/openrouter-mode";
 
 export const GEMINI_MODEL = "gemini-3.6-flash";
 
@@ -15,20 +17,37 @@ const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
 // itself — anything bigger is a guaranteed 413, so skip Groq rather than waste the call.
 const GROQ_MAX_PROMPT_CHARS = 16_000;
 
-// OpenRouter's free catalog (the ":free" suffix) rotates constantly — check
-// https://openrouter.ai/models?order=top-weekly&max_price=0 before changing this.
-const OPENROUTER_MODEL = "deepseek/deepseek-chat-v3-0324:free";
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+const OPENROUTER_HEADERS = { "HTTP-Referer": "https://cuelara.com", "X-Title": "Cuelara" };
+
+function openRouterLink(model: string, timeoutMs: number, maxPromptChars: number | undefined): ProviderChainLink {
+  return {
+    provider: "openrouter",
+    model,
+    generate: openAICompatibleGenerate(OPENROUTER_BASE_URL, model, OPENROUTER_HEADERS, timeoutMs),
+    maxPromptChars,
+  };
+}
 
 /**
  * Shared text-generation fallback chain for the free-form generation tools
- * (Prompt Optimizer, Token Optimizer). Gemini is tried first (primary, highest
- * quality); Groq and OpenRouter are free-tier overflow for when Gemini's pool
- * is exhausted or unconfigured. Context Extractor is intentionally excluded —
- * it needs Gemini's embedding model specifically, and mixing embedding spaces
- * across providers would break similarity search against already-stored vectors.
+ * (Prompt Optimizer, Token Optimizer, Site to Prompt, ...). Gemini is tried
+ * first (primary, highest quality); Groq and OpenRouter are free-tier overflow
+ * for when Gemini's pool is exhausted or unconfigured. Context Extractor is
+ * intentionally excluded — it needs Gemini's embedding model specifically, and
+ * mixing embedding spaces across providers would break similarity search
+ * against already-stored vectors.
+ *
+ * The OpenRouter leg is resolved dynamically: the admin "free vs paid" setting
+ * decides the mode ("paid" isn't wired to a model yet, see openrouter-mode.ts),
+ * and in "free" mode the currently-free catalog is fetched (cached hourly) so a
+ * model OpenRouter retires or paywalls doesn't quietly dead-end the chain — one
+ * link per free model (richest context first) gives a few real attempts instead of one.
  */
-export function buildTextGenerationChain(timeoutMs: number = GENAI_TIMEOUT_MS): ProviderChainLink[] {
+export async function buildTextGenerationChain(timeoutMs: number = GENAI_TIMEOUT_MS): Promise<ProviderChainLink[]> {
+  const mode = await getOpenRouterModelMode();
+  const freeModels = mode === "free" ? await getFreeOpenRouterModels() : [];
+
   return [
     { provider: "gemini", model: GEMINI_MODEL, generate: geminiGenerate(GEMINI_MODEL, timeoutMs) },
     {
@@ -37,17 +56,6 @@ export function buildTextGenerationChain(timeoutMs: number = GENAI_TIMEOUT_MS): 
       generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL, undefined, timeoutMs),
       maxPromptChars: GROQ_MAX_PROMPT_CHARS,
     },
-    {
-      provider: "openrouter",
-      model: OPENROUTER_MODEL,
-      generate: openAICompatibleGenerate(
-        OPENROUTER_BASE_URL,
-        OPENROUTER_MODEL,
-        { "HTTP-Referer": "https://cuelara.com", "X-Title": "Cuelara" },
-        timeoutMs
-      ),
-    },
+    ...freeModels.map((m) => openRouterLink(m.id, timeoutMs, m.maxPromptChars)),
   ];
 }
-
-export const TEXT_GENERATION_CHAIN: ProviderChainLink[] = buildTextGenerationChain();

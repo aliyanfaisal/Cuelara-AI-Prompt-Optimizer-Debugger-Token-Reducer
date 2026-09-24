@@ -4,7 +4,7 @@ import { isGenAITimeout } from "@/lib/genai-timeout";
 import { getPromptDebuggerLimit } from "@/lib/prompt-debugger/limits";
 import { NoApiKeysConfiguredError, isRetryableProviderError } from "@/lib/api-keys";
 import { generateWithFallback } from "@/lib/llm-generate";
-import { TEXT_GENERATION_CHAIN } from "@/lib/model-chain";
+import { buildTextGenerationChain } from "@/lib/model-chain";
 
 const TOOL = "prompt-debugger";
 
@@ -49,7 +49,8 @@ export async function POST(req: Request) {
 
     let rewritten: string;
     try {
-      const attempt = await generateWithFallback(TEXT_GENERATION_CHAIN, buildRewritePrompt(rawInput.trim(), fixes), TOOL);
+      const chain = await buildTextGenerationChain();
+      const attempt = await generateWithFallback(chain, buildRewritePrompt(rawInput.trim(), fixes), TOOL);
       rewritten = attempt.text.trim();
     } catch (error) {
       if (error instanceof NoApiKeysConfiguredError) {

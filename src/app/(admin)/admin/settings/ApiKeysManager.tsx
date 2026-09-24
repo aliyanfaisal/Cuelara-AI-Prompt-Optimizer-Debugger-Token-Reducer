@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, KeyRound, ShieldAlert, Loader2 } from "lucide-react";
+import { Plus, Trash2, KeyRound, ShieldAlert, Loader2, Sparkles } from "lucide-react";
 import { PROVIDERS, PROVIDER_LABELS, type Provider } from "@/lib/providers";
-import { addApiKey, deleteApiKey, setApiKeyActive, type ApiKeyRow } from "./api-key-actions";
+import { addApiKey, deleteApiKey, setApiKeyActive, updateOpenRouterModelMode, type ApiKeyRow } from "./api-key-actions";
+import type { OpenRouterModelMode } from "@/lib/openrouter-mode";
 
 function maskKey(key: string): string {
   if (key.length <= 4) return "••••";
@@ -19,14 +20,59 @@ const PROVIDER_HINTS: Record<Provider, string> = {
   claude: "Not wired into any tool yet — stored for future use.",
 };
 
+function OpenRouterModeToggle({ mode, onChange }: { mode: OpenRouterModelMode; onChange: (mode: OpenRouterModelMode) => void }) {
+  const [isSaving, setIsSaving] = useState(false);
+
+  async function handlePick(next: OpenRouterModelMode) {
+    if (next === mode || isSaving) return;
+    setIsSaving(true);
+    const result = await updateOpenRouterModelMode(next);
+    setIsSaving(false);
+    if (result.error) {
+      alert(result.error);
+      return;
+    }
+    onChange(next);
+  }
+
+  return (
+    <div className="mx-6 mb-6 p-4 rounded-lg border border-border bg-muted/30">
+      <p className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-1">
+        <Sparkles className="w-3.5 h-3.5 text-primary" /> Model source
+      </p>
+      <p className="text-xs text-muted-foreground mb-3">
+        Free mode fetches OpenRouter&rsquo;s currently-free model list (refreshed hourly) and tries a few of the
+        richest-context ones in turn, instead of one hardcoded model that can be retired or paywalled at any time.
+      </p>
+      <div className="inline-flex p-1 rounded-lg bg-background border border-border">
+        {(["free", "paid"] as const).map((m) => (
+          <button
+            key={m}
+            onClick={() => handlePick(m)}
+            disabled={isSaving || m === "paid"}
+            title={m === "paid" ? "Not available yet — no paid model has been configured." : undefined}
+            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold capitalize transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+              mode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {m}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProviderCard({
   provider,
   keys,
   onChange,
+  extra,
 }: {
   provider: Provider;
   keys: ApiKeyRow[];
   onChange: (provider: Provider, keys: ApiKeyRow[]) => void;
+  extra?: React.ReactNode;
 }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newKey, setNewKey] = useState("");
@@ -96,6 +142,8 @@ function ProviderCard({
           {activeCount} active
         </span>
       </div>
+
+      {extra}
 
       <div className="p-6 space-y-3">
         {keys.length === 0 && !isAdding && (
@@ -177,8 +225,15 @@ function ProviderCard({
   );
 }
 
-export default function ApiKeysManager({ initialKeys }: { initialKeys: Record<Provider, ApiKeyRow[]> }) {
+export default function ApiKeysManager({
+  initialKeys,
+  initialOpenRouterMode,
+}: {
+  initialKeys: Record<Provider, ApiKeyRow[]>;
+  initialOpenRouterMode: OpenRouterModelMode;
+}) {
   const [keysByProvider, setKeysByProvider] = useState(initialKeys);
+  const [openRouterMode, setOpenRouterMode] = useState(initialOpenRouterMode);
 
   function handleChange(provider: Provider, keys: ApiKeyRow[]) {
     setKeysByProvider((prev) => ({ ...prev, [provider]: keys }));
@@ -200,6 +255,7 @@ export default function ApiKeysManager({ initialKeys }: { initialKeys: Record<Pr
           provider={provider}
           keys={keysByProvider[provider]}
           onChange={handleChange}
+          extra={provider === "openrouter" ? <OpenRouterModeToggle mode={openRouterMode} onChange={setOpenRouterMode} /> : undefined}
         />
       ))}
     </div>

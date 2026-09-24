@@ -28,7 +28,7 @@ function sectionsBlock(dna: DesignDna, withOutlines: boolean): string {
     .join("\n\n");
 }
 
-export function buildSitePrompt(dna: DesignDna, target: Target, goal: string): string {
+export function buildSitePrompt(dna: DesignDna, target: Target, goal: string, opts?: { includeOutlines?: boolean }): string {
   const goalBlock = goal
     ? `The user wants to build: "${goal}". Apply this style and structure to that subject, writing placeholder content that suits it.`
     : "The user did not say what they are building, so keep the content generic and reusable.";
@@ -36,7 +36,7 @@ export function buildSitePrompt(dna: DesignDna, target: Target, goal: string): s
   const { layout, source, ...tokens } = dna;
   void source;
   const globalTokens = JSON.stringify({ ...tokens, layout: { ...layout, sections: undefined } });
-  const withOutlines = STRUCTURAL_TARGETS.includes(target);
+  const withOutlines = (opts?.includeOutlines ?? true) && STRUCTURAL_TARGETS.includes(target);
 
   return `You are an expert at writing prompts for AI design and code tools. Below is DESIGN DATA measured from a real website's rendered page: global design tokens, then each section top to bottom with plain-language facts and (where useful) a styled layout outline. Turn it into one excellent prompt.
 
