@@ -43,6 +43,9 @@ export interface FailedCall {
 
 export interface ApiCallStats {
   range: StatsRange;
+  /** Echoed back for "custom" so the dashboard can keep the date inputs filled in after a refresh. */
+  from: string;
+  to: string;
   totalCalls: number;
   successCount: number;
   failureCount: number;
@@ -53,14 +56,48 @@ export interface ApiCallStats {
   recentFailures: FailedCall[];
 }
 
-const RANGE_CONFIG: Record<StatsRange, { spanMs: number; bucketMs: number; buckets: number }> = {
+const RANGE_CONFIG: Record<Exclude<StatsRange, "custom">, { spanMs: number; bucketMs: number; buckets: number }> = {
   day: { spanMs: 24 * 60 * 60 * 1000, bucketMs: 60 * 60 * 1000, buckets: 24 },
   week: { spanMs: 7 * 24 * 60 * 60 * 1000, bucketMs: 24 * 60 * 60 * 1000, buckets: 7 },
   month: { spanMs: 30 * 24 * 60 * 60 * 1000, bucketMs: 24 * 60 * 60 * 1000, buckets: 30 },
 };
 
-function formatBucketLabel(range: StatsRange, date: Date): string {
-  if (range === "day") {
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+const MAX_CUSTOM_BUCKETS = 60;
+
+interface RangeWindow {
+  from: Date;
+  to: Date;
+  bucketMs: number;
+  buckets: number;
+}
+
+/** Custom ranges have no fixed span, so bucket size and count are derived from how wide the picked range is. */
+function resolveWindow(range: StatsRange, customFrom?: string, customTo?: string): RangeWindow {
+  const now = new Date();
+
+  if (range !== "custom") {
+    const config = RANGE_CONFIG[range];
+    return { from: new Date(now.getTime() - config.spanMs), to: now, bucketMs: config.bucketMs, buckets: config.buckets };
+  }
+
+  const parsedFrom = customFrom ? new Date(customFrom) : null;
+  const parsedTo = customTo ? new Date(customTo) : null;
+  const to = parsedTo && !Number.isNaN(parsedTo.getTime()) ? parsedTo : now;
+  const from =
+    parsedFrom && !Number.isNaN(parsedFrom.getTime()) && parsedFrom.getTime() < to.getTime()
+      ? parsedFrom
+      : new Date(to.getTime() - RANGE_CONFIG.day.spanMs);
+
+  const spanMs = Math.max(to.getTime() - from.getTime(), HOUR_MS);
+  const bucketMs = spanMs <= 2 * DAY_MS ? HOUR_MS : DAY_MS;
+  const buckets = Math.min(MAX_CUSTOM_BUCKETS, Math.max(1, Math.ceil(spanMs / bucketMs)));
+  return { from, to, bucketMs, buckets };
+}
+
+function formatBucketLabel(bucketMs: number, date: Date): string {
+  if (bucketMs < DAY_MS) {
     return new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: true }).format(date);
   }
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(date);
@@ -68,27 +105,25 @@ function formatBucketLabel(range: StatsRange, date: Date): string {
 
 const FAILURE_LIST_LIMIT = 50;
 
-export async function getApiCallStats(range: StatsRange): Promise<ApiCallStats> {
-  const config = RANGE_CONFIG[range];
-  const now = Date.now();
-  const cutoff = new Date(now - config.spanMs);
+export async function getApiCallStats(range: StatsRange, customFrom?: string, customTo?: string): Promise<ApiCallStats> {
+  const { from: cutoff, to: until, bucketMs, buckets: bucketCount } = resolveWindow(range, customFrom, customTo);
 
   const [rows, recentFailureRows] = await Promise.all([
     prisma.apiCallLog.findMany({
-      where: { createdAt: { gte: cutoff } },
+      where: { createdAt: { gte: cutoff, lte: until } },
       select: { provider: true, model: true, tool: true, success: true, createdAt: true },
       orderBy: { createdAt: "asc" },
     }),
     prisma.apiCallLog.findMany({
-      where: { success: false, createdAt: { gte: cutoff } },
+      where: { success: false, createdAt: { gte: cutoff, lte: until } },
       orderBy: { createdAt: "desc" },
       take: FAILURE_LIST_LIMIT,
     }),
   ]);
 
   // Pre-seed every bucket (including empty ones) so the chart shows real gaps, not a skipped axis.
-  const buckets: TimeSeriesPoint[] = Array.from({ length: config.buckets }, (_, i) => ({
-    label: formatBucketLabel(range, new Date(cutoff.getTime() + i * config.bucketMs)),
+  const buckets: TimeSeriesPoint[] = Array.from({ length: bucketCount }, (_, i) => ({
+    label: formatBucketLabel(bucketMs, new Date(cutoff.getTime() + i * bucketMs)),
     success: 0,
     failure: 0,
   }));
@@ -103,10 +138,7 @@ export async function getApiCallStats(range: StatsRange): Promise<ApiCallStats> 
     if (row.success) successCount++;
     else failureCount++;
 
-    const bucketIndex = Math.min(
-      config.buckets - 1,
-      Math.max(0, Math.floor((row.createdAt.getTime() - cutoff.getTime()) / config.bucketMs))
-    );
+    const bucketIndex = Math.min(bucketCount - 1, Math.max(0, Math.floor((row.createdAt.getTime() - cutoff.getTime()) / bucketMs)));
     if (row.success) buckets[bucketIndex].success++;
     else buckets[bucketIndex].failure++;
 
@@ -132,6 +164,8 @@ export async function getApiCallStats(range: StatsRange): Promise<ApiCallStats> 
 
   return {
     range,
+    from: cutoff.toISOString(),
+    to: until.toISOString(),
     totalCalls: rows.length,
     successCount,
     failureCount,
