@@ -6,8 +6,8 @@ import { prisma } from "@/lib/prisma";
 // Rendered per request so newly pushed posts show up immediately instead of waiting for the next build.
 export const dynamic = "force-dynamic";
 
-// The "coming soon" pages (docs, changelog, about, privacy, terms) are left out on
-// purpose while they are noindex — add them here when their real content ships.
+// The "coming soon" page (docs) is left out on purpose while it is noindex —
+// add it here when its real content ships.
 const STATIC_PATHS = [
   "/",
   "/tools",
@@ -22,6 +22,9 @@ const STATIC_PATHS = [
   "/cookbook",
   "/pricing",
   "/contact",
+  "/about",
+  "/privacy",
+  "/terms",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

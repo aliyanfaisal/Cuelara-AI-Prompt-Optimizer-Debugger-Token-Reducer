@@ -76,7 +76,6 @@ export function Footer() {
             <Link href="/blog" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Blog</Link>
             <Link href="/docs" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">API Documentation</Link>
             <Link href="/pricing" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Pricing</Link>
-            <Link href="/changelog" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Changelog</Link>
           </div>
           
           <div className="flex flex-col gap-4">
