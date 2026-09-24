@@ -11,6 +11,7 @@
 export type * from './models/Setting'
 export type * from './models/ApiKey'
 export type * from './models/ApiCallLog'
+export type * from './models/EmailLog'
 export type * from './models/ToolUsageDaily'
 export type * from './models/ExtractedDocument'
 export type * from './models/ExtractedDocumentChunk'

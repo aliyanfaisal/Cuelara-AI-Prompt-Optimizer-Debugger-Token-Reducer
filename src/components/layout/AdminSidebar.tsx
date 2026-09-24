@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   BarChart3,
   Newspaper,
-  CreditCard
+  CreditCard,
+  Mail
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -25,6 +26,7 @@ const navigation = [
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Plans", href: "/admin/plans", icon: CreditCard },
+  { name: "Emails", href: "/admin/emails", icon: Mail },
   { name: "Roles", href: "/admin/roles", icon: ShieldCheck },
   { name: "Prompts", href: "/admin/prompts", icon: FileText },
   { name: "Cookbook", href: "/admin/cookbook", icon: BookOpen },

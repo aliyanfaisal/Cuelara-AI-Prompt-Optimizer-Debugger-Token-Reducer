@@ -54,6 +54,22 @@ model ApiCallLog {
   @@index([success, createdAt])
 }
 
+// One row per outbound SMTP send attempt (activation, password reset, plan change, ...) —
+// used by the admin email dashboard to verify delivery, since sendMail() is otherwise fire-and-forget.
+model EmailLog {
+  id           String   @id @default(cuid())
+  type         String // "activation" | "password-reset" | "plan-change"
+  to           String
+  subject      String
+  success      Boolean
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type, createdAt])
+  @@index([success, createdAt])
+}
+
 // subjectKey identifies who is being rate-limited: "user:<id>" for a signed-in
 // user (so their quota follows their account, not their network), else "ip:<hash>".
 model ToolUsageDaily {

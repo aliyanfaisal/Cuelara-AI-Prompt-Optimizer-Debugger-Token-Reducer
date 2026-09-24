@@ -400,6 +400,7 @@ export const ModelName = {
   Setting: 'Setting',
   ApiKey: 'ApiKey',
   ApiCallLog: 'ApiCallLog',
+  EmailLog: 'EmailLog',
   ToolUsageDaily: 'ToolUsageDaily',
   ExtractedDocument: 'ExtractedDocument',
   ExtractedDocumentChunk: 'ExtractedDocumentChunk',
@@ -434,7 +435,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "apiKey" | "apiCallLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "planToolLimit" | "verificationToken" | "workspace" | "prompt"
+    modelProps: "setting" | "apiKey" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "planToolLimit" | "verificationToken" | "workspace" | "prompt"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -657,6 +658,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ApiCallLogCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ApiCallLogCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmailLog: {
+      payload: Prisma.$EmailLogPayload<ExtArgs>
+      fields: Prisma.EmailLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmailLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmailLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>
+        }
+        findFirst: {
+          args: Prisma.EmailLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmailLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>
+        }
+        findMany: {
+          args: Prisma.EmailLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>[]
+        }
+        create: {
+          args: Prisma.EmailLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>
+        }
+        createMany: {
+          args: Prisma.EmailLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmailLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>[]
+        }
+        delete: {
+          args: Prisma.EmailLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>
+        }
+        update: {
+          args: Prisma.EmailLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmailLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmailLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmailLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.EmailLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailLogPayload>
+        }
+        aggregate: {
+          args: Prisma.EmailLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmailLog>
+        }
+        groupBy: {
+          args: Prisma.EmailLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmailLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailLogCountAggregateOutputType> | number
         }
       }
     }
@@ -2142,6 +2217,19 @@ export const ApiCallLogScalarFieldEnum = {
 export type ApiCallLogScalarFieldEnum = (typeof ApiCallLogScalarFieldEnum)[keyof typeof ApiCallLogScalarFieldEnum]
 
 
+export const EmailLogScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  to: 'to',
+  subject: 'subject',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
+
+
 export const ToolUsageDailyScalarFieldEnum = {
   id: 'id',
   subjectKey: 'subjectKey',
@@ -2683,6 +2771,7 @@ export type GlobalOmitConfig = {
   setting?: Prisma.SettingOmit
   apiKey?: Prisma.ApiKeyOmit
   apiCallLog?: Prisma.ApiCallLogOmit
+  emailLog?: Prisma.EmailLogOmit
   toolUsageDaily?: Prisma.ToolUsageDailyOmit
   extractedDocument?: Prisma.ExtractedDocumentOmit
   extractedDocumentChunk?: Prisma.ExtractedDocumentChunkOmit

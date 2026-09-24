@@ -54,6 +54,7 @@ export const ModelName = {
   Setting: 'Setting',
   ApiKey: 'ApiKey',
   ApiCallLog: 'ApiCallLog',
+  EmailLog: 'EmailLog',
   ToolUsageDaily: 'ToolUsageDaily',
   ExtractedDocument: 'ExtractedDocument',
   ExtractedDocumentChunk: 'ExtractedDocumentChunk',
@@ -126,6 +127,19 @@ export const ApiCallLogScalarFieldEnum = {
 } as const
 
 export type ApiCallLogScalarFieldEnum = (typeof ApiCallLogScalarFieldEnum)[keyof typeof ApiCallLogScalarFieldEnum]
+
+
+export const EmailLogScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  to: 'to',
+  subject: 'subject',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
 
 
 export const ToolUsageDailyScalarFieldEnum = {

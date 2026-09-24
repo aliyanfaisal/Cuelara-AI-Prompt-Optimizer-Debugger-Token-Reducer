@@ -1,5 +1,9 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import { prisma } from "@/lib/prisma";
+
+export const EMAIL_TYPES = ["activation", "password-reset", "plan-change"] as const;
+export type EmailType = (typeof EMAIL_TYPES)[number];
 
 let transporter: nodemailer.Transporter | null = null;
 let transporterError: string | null = null;
@@ -34,21 +38,39 @@ function fromAddress(): string {
 }
 
 export interface SendEmailParams {
+  type: EmailType;
   to: string;
   subject: string;
   html: string;
   text: string;
 }
 
+/** Best-effort — a logging failure must never break the send it's recording. */
+async function logEmail(params: { type: EmailType; to: string; subject: string; success: boolean; errorMessage?: string }): Promise<void> {
+  try {
+    await prisma.emailLog.create({ data: params });
+  } catch (err) {
+    console.error("Failed to write email log:", err);
+  }
+}
+
 /**
- * Sends one email over SMTP. Callers should treat a failure as best-effort where the
- * flow it supports (e.g. activation) already gives the user another path — never let
- * an email failure alone block something the user is actively waiting on synchronously
- * unless that email IS the only way forward (e.g. delivering a reset link).
+ * Sends one email over SMTP and records the attempt (success or failure) to EmailLog
+ * for the admin dashboard. Callers should treat a failure as best-effort where the flow
+ * it supports (e.g. activation) already gives the user another path — never let an email
+ * failure alone block something the user is actively waiting on synchronously unless that
+ * email IS the only way forward (e.g. delivering a reset link).
  */
 export async function sendEmail(params: SendEmailParams): Promise<void> {
-  const transport = getTransporter();
-  await transport.sendMail({ from: fromAddress(), to: params.to, subject: params.subject, html: params.html, text: params.text });
+  try {
+    const transport = getTransporter();
+    await transport.sendMail({ from: fromAddress(), to: params.to, subject: params.subject, html: params.html, text: params.text });
+    await logEmail({ type: params.type, to: params.to, subject: params.subject, success: true });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    await logEmail({ type: params.type, to: params.to, subject: params.subject, success: false, errorMessage: errorMessage.slice(0, 500) });
+    throw error;
+  }
 }
 
 const BRAND_COLOR = "#7c3aed";
@@ -101,7 +123,7 @@ export async function sendActivationEmail(to: string, activationUrl: string): Pr
      <p style="color:#71717a;font-size:12px;">This link expires in 24 hours. If the button doesn't work, paste this into your browser:<br/><span style="word-break:break-all;">${activationUrl}</span></p>`
   );
   const text = `Confirm your email\n\nActivate your Cuelara account: ${activationUrl}\n\nThis link expires in 24 hours.`;
-  await sendEmail({ to, subject: "Activate your Cuelara account", html, text });
+  await sendEmail({ type: "activation", to, subject: "Activate your Cuelara account", html, text });
 }
 
 export async function sendPasswordResetEmail(to: string, resetUrl: string): Promise<void> {
@@ -112,7 +134,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
      <p style="color:#71717a;font-size:12px;">This link expires in 1 hour. If the button doesn't work, paste this into your browser:<br/><span style="word-break:break-all;">${resetUrl}</span></p>`
   );
   const text = `Reset your password\n\nReset your Cuelara password: ${resetUrl}\n\nThis link expires in 1 hour.`;
-  await sendEmail({ to, subject: "Reset your Cuelara password", html, text });
+  await sendEmail({ type: "password-reset", to, subject: "Reset your Cuelara password", html, text });
 }
 
 export async function sendPlanChangeEmail(to: string, planName: string): Promise<void> {
@@ -122,5 +144,5 @@ export async function sendPlanChangeEmail(to: string, planName: string): Promise
      ${button(`${process.env.NEXTAUTH_URL || ""}/tools`, "Go to your tools")}`
   );
   const text = `Your Cuelara plan was updated to: ${planName}.\n\nGo to your tools: ${process.env.NEXTAUTH_URL || ""}/tools`;
-  await sendEmail({ to, subject: `Your Cuelara plan is now ${planName}`, html, text });
+  await sendEmail({ type: "plan-change", to, subject: `Your Cuelara plan is now ${planName}`, html, text });
 }
