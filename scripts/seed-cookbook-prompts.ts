@@ -4,7 +4,7 @@ import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 // Seeds 10 published cookbook prompts across the 8 top-level categories (see seed-cookbook-categories.ts).
-// Safe to re-run: prompts are upserted by slug, so edits made here overwrite the DB copy.
+// CREATE-ONLY: a prompt whose slug already exists is left untouched, so edits made in the admin are never overwritten.
 // Rich-text fields are Markdown. `faqs` uses "### Question" headings so the public page can emit FAQPage JSON-LD.
 
 const prisma = new PrismaClient({ adapter: new PrismaPg(new Pool({ connectionString: process.env.DATABASE_URL })) });
@@ -574,12 +574,12 @@ async function main() {
     const category = await prisma.cookbookCategory.findUnique({ where: { slug: p.category } });
     if (!category) throw new Error(`Missing category "${p.category}". Run scripts/seed-cookbook-categories.ts first.`);
     const { category: _c, ...fields } = p;
-    await prisma.cookbookPrompt.upsert({
-      where: { slug: p.slug },
-      update: { ...fields, categoryId: category.id, published: true },
-      create: { ...fields, categoryId: category.id, published: true },
-    });
-    console.log(`- ${p.category.padEnd(17)} ${p.slug}`);
+    if (await prisma.cookbookPrompt.findUnique({ where: { slug: p.slug }, select: { id: true } })) {
+      console.log(`- ${p.category.padEnd(17)} ${p.slug} (exists, left untouched)`);
+      continue;
+    }
+    await prisma.cookbookPrompt.create({ data: { ...fields, categoryId: category.id, published: true } });
+    console.log(`- ${p.category.padEnd(17)} ${p.slug} (created)`);
   }
   console.log(`Seeded ${PROMPTS.length} prompts.`);
 }

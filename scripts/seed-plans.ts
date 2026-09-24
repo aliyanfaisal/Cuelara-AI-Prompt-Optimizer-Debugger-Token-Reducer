@@ -3,8 +3,9 @@ import { PrismaClient } from "../src/generated/client/client";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-// Seeds the three public tiers shown on /pricing. Safe to re-run: plans are upserted by slug, so this
-// overwrites edits made to these three plans in the admin. The Free limits mirror the built-in
+// Creates the three starter tiers shown on /pricing, for a fresh database. CREATE-ONLY: a plan whose slug
+// already exists is left completely alone, so edits made in the admin Plans page are never overwritten and
+// this is safe to run again. (Change a plan in the admin, not here.) The Free limits mirror the built-in
 // signed-in defaults (15 runs/day per tool, 5 documents and 100 prompts for the Context Extractor).
 const prisma = new PrismaClient({ adapter: new PrismaPg(new Pool({ connectionString: process.env.DATABASE_URL })) });
 
@@ -54,10 +55,13 @@ const PLANS = [
 
 async function main() {
   for (const { limits, ...plan } of PLANS) {
-    const saved = await prisma.plan.upsert({ where: { slug: plan.slug }, update: plan, create: plan });
-    await prisma.planToolLimit.deleteMany({ where: { planId: saved.id } });
+    if (await prisma.plan.findUnique({ where: { slug: plan.slug }, select: { id: true } })) {
+      console.log(`- ${plan.name.padEnd(5)} already exists, left untouched`);
+      continue;
+    }
+    const saved = await prisma.plan.create({ data: plan });
     await prisma.planToolLimit.createMany({ data: limits.map((l) => ({ ...l, planId: saved.id })) });
-    console.log(`- ${plan.name.padEnd(5)} $${(plan.priceMonthlyCents / 100).toFixed(2)}/mo, ${limits.length} limits`);
+    console.log(`- ${plan.name.padEnd(5)} created: $${(plan.priceMonthlyCents / 100).toFixed(2)}/mo, ${limits.length} limits`);
   }
 }
 
