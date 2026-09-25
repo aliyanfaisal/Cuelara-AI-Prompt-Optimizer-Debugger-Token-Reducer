@@ -2,6 +2,7 @@ import "server-only";
 
 export interface FreeOpenRouterModel {
   id: string;
+  contextLength?: number;
   /** Rough char budget derived from the model's reported context window, for the same guard used elsewhere in the chain. */
   maxPromptChars: number | undefined;
 }
@@ -58,7 +59,7 @@ function toMaxPromptChars(contextLength: number | undefined): number | undefined
  * hourly. Lets the fallback chain use whatever is currently free instead of one hardcoded
  * model id that OpenRouter can retire or paywall at any time.
  */
-export async function getFreeOpenRouterModels(): Promise<FreeOpenRouterModel[]> {
+export async function listFreeOpenRouterModels(): Promise<FreeOpenRouterModel[]> {
   if (cache && cache.expiresAt > Date.now()) return cache.models;
 
   try {
@@ -69,8 +70,7 @@ export async function getFreeOpenRouterModels(): Promise<FreeOpenRouterModel[]> 
     const models = (data.data ?? [])
       .filter((m) => isFree(m) && isTextGenerationModel(m))
       .sort((a, b) => (b.context_length ?? 0) - (a.context_length ?? 0))
-      .slice(0, MAX_FREE_MODELS)
-      .map((m) => ({ id: m.id, maxPromptChars: toMaxPromptChars(m.context_length) }));
+      .map((m) => ({ id: m.id, contextLength: m.context_length, maxPromptChars: toMaxPromptChars(m.context_length) }));
 
     const resolved = models.length > 0 ? models : HARDCODED_FALLBACK;
     cache = { models: resolved, expiresAt: Date.now() + CACHE_TTL_MS };
@@ -80,4 +80,9 @@ export async function getFreeOpenRouterModels(): Promise<FreeOpenRouterModel[]> 
     // keep serving the last good list (even stale) rather than collapsing to one model.
     return cache?.models ?? HARDCODED_FALLBACK;
   }
+}
+
+/** The richest-context few, used when the admin hasn't picked specific models. */
+export async function getFreeOpenRouterModels(): Promise<FreeOpenRouterModel[]> {
+  return (await listFreeOpenRouterModels()).slice(0, MAX_FREE_MODELS);
 }

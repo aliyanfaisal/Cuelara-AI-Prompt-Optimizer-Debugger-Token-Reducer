@@ -5,7 +5,7 @@ import { Sliders, KeyRound } from "lucide-react";
 import SettingsManager from "./SettingsManager";
 import ApiKeysManager from "./ApiKeysManager";
 import type { ToolSettings } from "./actions";
-import type { ApiKeyRow } from "./api-key-actions";
+import type { ApiKeyRow, ModelConfig } from "./api-key-actions";
 import type { Provider } from "@/lib/providers";
 import type { OpenRouterModelMode } from "@/lib/openrouter-mode";
 
@@ -15,10 +15,12 @@ export default function SettingsTabs({
   initialSettings,
   initialKeys,
   initialOpenRouterMode,
+  initialModelConfig,
 }: {
   initialSettings: ToolSettings;
   initialKeys: Record<Provider, ApiKeyRow[]>;
   initialOpenRouterMode: OpenRouterModelMode;
+  initialModelConfig: ModelConfig;
 }) {
   const [tab, setTab] = useState<Tab>("limits");
 
@@ -48,7 +50,7 @@ export default function SettingsTabs({
       {tab === "limits" ? (
         <SettingsManager initialSettings={initialSettings} />
       ) : (
-        <ApiKeysManager initialKeys={initialKeys} initialOpenRouterMode={initialOpenRouterMode} />
+        <ApiKeysManager initialKeys={initialKeys} initialOpenRouterMode={initialOpenRouterMode} initialModelConfig={initialModelConfig} />
       )}
     </div>
   );

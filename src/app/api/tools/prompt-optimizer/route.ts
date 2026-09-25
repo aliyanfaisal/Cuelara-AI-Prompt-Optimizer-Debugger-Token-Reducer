@@ -61,22 +61,30 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
     let responseStream: Awaited<ReturnType<GoogleGenAI["models"]["generateContentStream"]>> | null = null;
     let fallbackText: string | null = null;
 
-    try {
-      responseStream = await callWithKeyRotation(
-        "gemini",
-        (apiKey) => {
-          const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
-          return ai.models.generateContentStream({ model: GEMINI_MODEL, contents: metaPrompt });
-        },
-        { tool: TOOL, model: GEMINI_MODEL }
-      );
-    } catch (error) {
-      if (!(error instanceof NoApiKeysConfiguredError) && !isRetryableProviderError(error)) throw error;
-      // Gemini is unconfigured or its whole pool is rate-limited — fall back to the
-      // free-tier overflow providers (Groq, then OpenRouter). This propagates out of
-      // the route (to the outer catch) if those are exhausted too.
-      const chain = await buildTextGenerationChain();
-      const fallback = await generateWithFallback(chain.slice(1), metaPrompt, TOOL);
+    const chain = await buildTextGenerationChain();
+    let remainingChain = chain;
+
+    // Gemini is the only link that streams natively — use that path when it's first in the admin's priority order.
+    if (chain[0]?.provider === "gemini") {
+      remainingChain = chain.slice(1);
+      try {
+        responseStream = await callWithKeyRotation(
+          "gemini",
+          (apiKey) => {
+            const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: GENAI_TIMEOUT_MS } });
+            return ai.models.generateContentStream({ model: GEMINI_MODEL, contents: metaPrompt });
+          },
+          { tool: TOOL, model: GEMINI_MODEL }
+        );
+      } catch (error) {
+        if (!(error instanceof NoApiKeysConfiguredError) && !isRetryableProviderError(error)) throw error;
+      }
+    }
+
+    if (!responseStream) {
+      // Gemini isn't first, is unconfigured, or its whole pool is rate-limited — walk the rest of
+      // the admin's priority list. This propagates out of the route if that is exhausted too.
+      const fallback = await generateWithFallback(remainingChain, metaPrompt, TOOL);
       fallbackText = fallback.text;
     }
 

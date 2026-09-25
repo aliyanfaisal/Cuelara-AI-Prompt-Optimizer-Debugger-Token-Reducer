@@ -118,6 +118,9 @@ export async function generateWithFallback(
         continue;
       }
       lastError = error;
+      // A specific OpenRouter model can be retired, paywalled (402) or reject the request (400/404)
+      // independently of the others — always try the next model in the queue.
+      if (provider === "openrouter" && error instanceof ProviderHttpError) continue;
       if (!isRetryableProviderError(error) && !isRequestTooLargeForProvider(error)) throw error;
     }
   }

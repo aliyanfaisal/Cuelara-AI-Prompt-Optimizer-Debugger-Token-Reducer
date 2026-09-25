@@ -1,7 +1,9 @@
 import "server-only";
 import { geminiGenerate, openAICompatibleGenerate, type ProviderChainLink } from "@/lib/llm-generate";
 import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
-import { getFreeOpenRouterModels } from "@/lib/openrouter-free-models";
+import { getFreeOpenRouterModels, listFreeOpenRouterModels } from "@/lib/openrouter-free-models";
+import { getModelOrder, getSelectedOpenRouterModels } from "@/lib/model-settings";
+import type { OrderableProvider } from "@/lib/model-order";
 import { getOpenRouterModelMode } from "@/lib/openrouter-mode";
 
 export const GEMINI_MODEL = "gemini-3.6-flash";
@@ -31,31 +33,41 @@ function openRouterLink(model: string, timeoutMs: number, maxPromptChars: number
 
 /**
  * Shared text-generation fallback chain for the free-form generation tools
- * (Prompt Optimizer, Token Optimizer, Site to Prompt, ...). Gemini is tried
- * first (primary, highest quality); Groq and OpenRouter are free-tier overflow
- * for when Gemini's pool is exhausted or unconfigured. Context Extractor is
+ * (Prompt Optimizer, Token Optimizer, Site to Prompt, ...). The order of the
+ * providers is admin-controlled (drag-and-drop in Settings → API Keys); a
+ * provider with no active keys is skipped at call time. Context Extractor is
  * intentionally excluded — it needs Gemini's embedding model specifically, and
  * mixing embedding spaces across providers would break similarity search
  * against already-stored vectors.
  *
- * The OpenRouter leg is resolved dynamically: the admin "free vs paid" setting
- * decides the mode ("paid" isn't wired to a model yet, see openrouter-mode.ts),
- * and in "free" mode the currently-free catalog is fetched (cached hourly) so a
- * model OpenRouter retires or paywalls doesn't quietly dead-end the chain — one
- * link per free model (richest context first) gives a few real attempts instead of one.
+ * OpenRouter contributes one link per model: the (up to two) free models the
+ * admin picked, tried in order — or, if none are picked, the richest-context
+ * free models from OpenRouter's live catalog (cached hourly).
  */
 export async function buildTextGenerationChain(timeoutMs: number = GENAI_TIMEOUT_MS): Promise<ProviderChainLink[]> {
-  const mode = await getOpenRouterModelMode();
-  const freeModels = mode === "free" ? await getFreeOpenRouterModels() : [];
+  const [order, mode, selected] = await Promise.all([getModelOrder(), getOpenRouterModelMode(), getSelectedOpenRouterModels()]);
 
-  return [
-    { provider: "gemini", model: GEMINI_MODEL, generate: geminiGenerate(GEMINI_MODEL, timeoutMs) },
-    {
-      provider: "groq",
-      model: GROQ_MODEL,
-      generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL, undefined, timeoutMs),
-      maxPromptChars: GROQ_MAX_PROMPT_CHARS,
-    },
-    ...freeModels.map((m) => openRouterLink(m.id, timeoutMs, m.maxPromptChars)),
-  ];
+  async function openRouterLinks(): Promise<ProviderChainLink[]> {
+    if (mode !== "free") return [];
+    if (selected.length > 0) {
+      const catalog = await listFreeOpenRouterModels();
+      return selected.map((id) => openRouterLink(id, timeoutMs, catalog.find((m) => m.id === id)?.maxPromptChars));
+    }
+    return (await getFreeOpenRouterModels()).map((m) => openRouterLink(m.id, timeoutMs, m.maxPromptChars));
+  }
+
+  const linksByProvider: Record<OrderableProvider, () => Promise<ProviderChainLink[]>> = {
+    gemini: async () => [{ provider: "gemini", model: GEMINI_MODEL, generate: geminiGenerate(GEMINI_MODEL, timeoutMs) }],
+    groq: async () => [
+      {
+        provider: "groq",
+        model: GROQ_MODEL,
+        generate: openAICompatibleGenerate(GROQ_BASE_URL, GROQ_MODEL, undefined, timeoutMs),
+        maxPromptChars: GROQ_MAX_PROMPT_CHARS,
+      },
+    ],
+    openrouter: openRouterLinks,
+  };
+
+  return (await Promise.all(order.map((p) => linksByProvider[p]()))).flat();
 }

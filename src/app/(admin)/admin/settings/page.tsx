@@ -1,5 +1,5 @@
 import { getToolSettings } from "./actions";
-import { getApiKeysGrouped } from "./api-key-actions";
+import { getApiKeysGrouped, getModelConfig } from "./api-key-actions";
 import { getOpenRouterModelMode } from "@/lib/openrouter-mode";
 import SettingsTabs from "./SettingsTabs";
 
@@ -8,7 +8,12 @@ export const metadata = {
 };
 
 export default async function SettingsPage() {
-  const [settings, apiKeys, openRouterMode] = await Promise.all([getToolSettings(), getApiKeysGrouped(), getOpenRouterModelMode()]);
+  const [settings, apiKeys, openRouterMode, modelConfig] = await Promise.all([
+    getToolSettings(),
+    getApiKeysGrouped(),
+    getOpenRouterModelMode(),
+    getModelConfig(),
+  ]);
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -17,7 +22,7 @@ export default async function SettingsPage() {
         <p className="text-muted-foreground">Configure limits and API key pools for public-facing tools.</p>
       </div>
 
-      <SettingsTabs initialSettings={settings} initialKeys={apiKeys} initialOpenRouterMode={openRouterMode} />
+      <SettingsTabs initialSettings={settings} initialKeys={apiKeys} initialOpenRouterMode={openRouterMode} initialModelConfig={modelConfig} />
     </div>
   );
 }

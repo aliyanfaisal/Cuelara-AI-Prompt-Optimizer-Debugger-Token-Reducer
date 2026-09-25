@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell,
 } from "recharts";
 import { Activity, CheckCircle2, XCircle, Percent, RefreshCcw, AlertTriangle, ShieldCheck } from "lucide-react";
-import { getApiCallStats, type ApiCallStats } from "./actions";
+import { getApiCallStats, resetApiCallStats, type ApiCallStats } from "./actions";
 import { STATS_RANGES, type StatsRange } from "./constants";
 import { PROVIDER_LABELS, PROVIDER_CHART_COLORS, isProvider } from "@/lib/providers";
 
@@ -88,6 +88,19 @@ export default function AnalyticsDashboard({ initialStats }: { initialStats: Api
     });
   }
 
+  function handleReset() {
+    if (!confirm("Reset analytics? This permanently deletes every logged API call and cannot be undone.")) return;
+    startTransition(async () => {
+      const result = await resetApiCallStats();
+      if ("error" in result) {
+        alert(result.error);
+        return;
+      }
+      setStats(await getApiCallStats(range === "custom" ? "day" : range));
+      if (range === "custom") setRange("day");
+    });
+  }
+
   const successRate = stats.totalCalls > 0 ? Math.round((stats.successCount / stats.totalCalls) * 100) : 100;
   const xAxisInterval =
     range === "day" ? 2 : range === "month" ? 3 : range === "custom" ? Math.max(0, Math.floor(stats.timeSeries.length / 10)) : 0;
@@ -126,12 +139,21 @@ export default function AnalyticsDashboard({ initialStats }: { initialStats: Api
             </button>
           ))}
         </div>
-        {isPending && (
-          <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-            <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
-            Updating...
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {isPending && (
+            <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+              <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
+              Updating...
+            </span>
+          )}
+          <button
+            onClick={handleReset}
+            disabled={isPending}
+            className="px-3.5 py-1.5 rounded-lg text-sm font-semibold border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
+          >
+            Reset analytics
+          </button>
+        </div>
       </div>
 
       {range === "custom" && (

@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import type { StatsRange } from "./constants";
 
 export interface TimeSeriesPoint {
@@ -183,4 +184,15 @@ export async function getApiCallStats(range: StatsRange, customFrom?: string, cu
       createdAt: row.createdAt.toISOString(),
     })),
   };
+}
+
+/** Wipes every logged provider call — the dashboard starts counting from zero again. */
+export async function resetApiCallStats(): Promise<{ success: true; deleted: number } | { error: string }> {
+  try {
+    const { count } = await prisma.apiCallLog.deleteMany({});
+    revalidatePath("/admin/analytics");
+    return { success: true, deleted: count };
+  } catch {
+    return { error: "Failed to reset analytics." };
+  }
 }

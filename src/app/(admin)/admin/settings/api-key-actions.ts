@@ -3,6 +3,9 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { isProvider, type Provider } from "@/lib/providers";
+import { getModelOrder, setModelOrder, getSelectedOpenRouterModels, setSelectedOpenRouterModels } from "@/lib/model-settings";
+import { ORDERABLE_PROVIDERS, MAX_OPENROUTER_MODELS, type OrderableProvider } from "@/lib/model-order";
+import { listFreeOpenRouterModels } from "@/lib/openrouter-free-models";
 import { setOpenRouterModelMode, OPENROUTER_MODEL_MODES, type OpenRouterModelMode } from "@/lib/openrouter-mode";
 
 export async function updateOpenRouterModelMode(mode: string) {
@@ -78,5 +81,39 @@ export async function setApiKeyActive(id: string, isActive: boolean) {
     return { success: true };
   } catch {
     return { error: "Failed to update API key." };
+  }
+}
+
+export interface ModelConfig {
+  order: OrderableProvider[];
+  openRouterModels: string[];
+  freeModels: { id: string; contextLength?: number }[];
+}
+
+export async function getModelConfig(): Promise<ModelConfig> {
+  const [order, openRouterModels, free] = await Promise.all([getModelOrder(), getSelectedOpenRouterModels(), listFreeOpenRouterModels()]);
+  return { order, openRouterModels, freeModels: free.map((m) => ({ id: m.id, contextLength: m.contextLength })) };
+}
+
+export async function updateModelOrder(order: string[]) {
+  const valid = order.length === ORDERABLE_PROVIDERS.length && ORDERABLE_PROVIDERS.every((p) => order.includes(p));
+  if (!valid) return { error: "Invalid model order." };
+  try {
+    await setModelOrder(order as OrderableProvider[]);
+    revalidatePath("/admin/settings");
+    return { success: true };
+  } catch {
+    return { error: "Failed to save model order." };
+  }
+}
+
+export async function updateOpenRouterModels(models: string[]) {
+  const cleaned = Array.from(new Set(models.map((m) => m.trim()).filter(Boolean))).slice(0, MAX_OPENROUTER_MODELS);
+  try {
+    await setSelectedOpenRouterModels(cleaned);
+    revalidatePath("/admin/settings");
+    return { success: true };
+  } catch {
+    return { error: "Failed to save OpenRouter models." };
   }
 }
