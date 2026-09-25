@@ -384,11 +384,13 @@ model ContactMessage {
 // One row per tool a plan overrides the default authenticated daily limit for.
 // A tool the plan doesn't list falls back to that tool's normal authenticated limit.
 model PlanToolLimit {
-  id         String @id @default(cuid())
-  planId     String
-  plan       Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
-  tool       String
-  dailyLimit Int
+  id             String @id @default(cuid())
+  planId         String
+  plan           Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  tool           String
+  dailyLimit     Int
+  // Runs per day the WHOLE team shares on this tool, for plans that host teams. Null = no shared pool for this tool.
+  teamDailyLimit Int?
 
   @@unique([planId, tool])
 }
@@ -411,7 +413,9 @@ model Workspace {
   createdAt DateTime @default(now())
 
   // "personal" (one per user, private) or "team" (shared; `userId` is the owner/manager).
-  type String @default("personal")
+  type          String  @default("personal")
+  // Team only: whether members' tool runs appear in the team's shared history (the owner can switch it off for everyone).
+  sharedHistory Boolean @default(true)
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -426,13 +430,15 @@ model Workspace {
 
 // Who belongs to a workspace and in what role: OWNER (the team manager), ADMIN (can invite and remove members) or MEMBER.
 model WorkspaceMember {
-  id          String    @id @default(cuid())
-  workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role        String    @default("MEMBER")
-  createdAt   DateTime  @default(now())
+  id           String    @id @default(cuid())
+  workspaceId  String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role         String    @default("MEMBER")
+  // Whether this member's runs (from the day they joined) are visible to the rest of the team. Members can opt out.
+  shareHistory Boolean   @default(true)
+  createdAt    DateTime  @default(now())
 
   @@unique([workspaceId, userId])
   @@index([userId])

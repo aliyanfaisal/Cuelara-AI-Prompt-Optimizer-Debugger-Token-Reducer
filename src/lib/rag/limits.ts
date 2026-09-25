@@ -22,7 +22,7 @@ export async function getContextExtractorLimits(subject: RequestSubject): Promis
         getDailyLimit(CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY, DEFAULT_PROMPT_DAILY_LIMIT),
       ]);
   return {
-    documentLimit: resolvePlanLimit(subject, "context-extractor-document", documentLimit),
-    promptLimit: resolvePlanLimit(subject, "context-extractor-prompt", promptLimit),
+    documentLimit: await resolvePlanLimit(subject, "context-extractor-document", documentLimit),
+    promptLimit: await resolvePlanLimit(subject, "context-extractor-prompt", promptLimit),
   };
 }

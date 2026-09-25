@@ -23,6 +23,7 @@ interface FormState {
   features: string;
   historyPerTool: string;
   limits: Record<string, string>; // tool -> string input, blank = no override
+  pools: Record<string, string>; // tool -> shared team pool per day, blank = no pool
 }
 
 const EMPTY_FORM: FormState = {
@@ -38,11 +39,16 @@ const EMPTY_FORM: FormState = {
   features: "",
   historyPerTool: "20",
   limits: {},
+  pools: {},
 };
 
 function planToForm(plan: PlanRow): FormState {
   const limits: Record<string, string> = {};
-  for (const l of plan.limits) limits[l.tool] = String(l.dailyLimit);
+  const pools: Record<string, string> = {};
+  for (const l of plan.limits) {
+    limits[l.tool] = String(l.dailyLimit);
+    if (l.teamDailyLimit) pools[l.tool] = String(l.teamDailyLimit);
+  }
   return {
     name: plan.name,
     description: plan.description ?? "",
@@ -56,11 +62,12 @@ function planToForm(plan: PlanRow): FormState {
     features: plan.features,
     historyPerTool: String(plan.historyPerTool),
     limits,
+    pools,
   };
 }
 
 function formToLimits(form: FormState): PlanLimitInput[] {
-  return PLAN_TOOLS.map((t) => ({ tool: t.id, dailyLimit: Number(form.limits[t.id] || 0) }));
+  return PLAN_TOOLS.map((t) => ({ tool: t.id, dailyLimit: Number(form.limits[t.id] || 0), teamDailyLimit: Number(form.maxSeats || 0) > 0 ? Number(form.pools[t.id] || 0) || null : null }));
 }
 
 export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[] }) {
@@ -325,6 +332,7 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
               <div>
                 <label className="block text-xs font-semibold text-muted-foreground mb-2">
                   Per-tool daily limits — leave blank to use the tool&rsquo;s normal authenticated limit
+                  {Number(form.maxSeats || 0) > 0 && " · the second column is a shared daily pool for the whole team (blank = no pool)"}
                 </label>
                 <div className="space-y-2">
                   {PLAN_TOOLS.map((t) => (
@@ -338,6 +346,17 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                         onChange={(e) => setForm({ ...form, limits: { ...form.limits, [t.id]: e.target.value } })}
                         className="w-24 bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
+                      {Number(form.maxSeats || 0) > 0 && (
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="team pool"
+                          aria-label={`${t.label} team pool per day`}
+                          value={form.pools[t.id] ?? ""}
+                          onChange={(e) => setForm({ ...form, pools: { ...form.pools, [t.id]: e.target.value } })}
+                          className="w-24 bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                      )}
                     </div>
                   ))}
                 </div>

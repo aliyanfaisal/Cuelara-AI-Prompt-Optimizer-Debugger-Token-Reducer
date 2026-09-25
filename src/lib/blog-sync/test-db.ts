@@ -31,6 +31,12 @@ CREATE TABLE "ApiKey" (
   "isActive" BOOLEAN NOT NULL DEFAULT true, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "ApiKey_pkey" PRIMARY KEY ("id")
 );
+CREATE TABLE "ToolUsageDaily" (
+  "id" TEXT NOT NULL, "subjectKey" TEXT NOT NULL, "tool" TEXT NOT NULL, "date" TEXT NOT NULL,
+  "count" INTEGER NOT NULL DEFAULT 0, "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "ToolUsageDaily_pkey" PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "ToolUsageDaily_subjectKey_tool_date_key" ON "ToolUsageDaily"("subjectKey", "tool", "date");
 CREATE TABLE "ApiCallLog" (
   "id" TEXT NOT NULL, "provider" TEXT NOT NULL, "model" TEXT NOT NULL, "tool" TEXT NOT NULL,
   "success" BOOLEAN NOT NULL, "statusCode" INTEGER, "errorMessage" TEXT,

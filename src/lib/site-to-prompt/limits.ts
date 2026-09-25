@@ -18,5 +18,5 @@ export async function getSiteToPromptLimits(subject: RequestSubject): Promise<{ 
         getDailyLimit(SITE_TO_PROMPT_EXTRACT_DAILY_LIMIT_KEY, 3),
         getDailyLimit(SITE_TO_PROMPT_DAILY_LIMIT_KEY, 6),
       ]);
-  return { extractLimit, promptLimit: resolvePlanLimit(subject, "site-to-prompt", promptLimit) };
+  return { extractLimit, promptLimit: await resolvePlanLimit(subject, "site-to-prompt", promptLimit) };
 }

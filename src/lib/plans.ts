@@ -11,7 +11,7 @@ const planSelect = {
   allowsOwnKeys: true,
   allowsMultipleSessions: true,
   maxSeats: true,
-  limits: { select: { tool: true, dailyLimit: true } },
+  limits: { select: { tool: true, dailyLimit: true, teamDailyLimit: true } },
 } as const;
 
 /**
@@ -26,26 +26,37 @@ export async function getOwnPlan(userId: string) {
   return prisma.plan.findFirst({ where: { isDefault: true, isActive: true }, select: { ...planSelect, isActive: true } });
 }
 
-/** The plans of the managers of every team workspace this user belongs to (only managers whose plan can still host a team). */
-async function teamPlans(userId: string) {
+/** The team workspaces this user belongs to, each with its manager's plan (only managers whose plan can still host a team). */
+async function teamMemberships(userId: string) {
   const memberships = await prisma.workspaceMember.findMany({
     where: { userId, workspace: { type: "team" } },
-    select: { workspace: { select: { user: { select: { plan: { select: { ...planSelect, isActive: true } } } } } } },
+    orderBy: { createdAt: "asc" },
+    select: { workspaceId: true, workspace: { select: { user: { select: { plan: { select: { ...planSelect, isActive: true } } } } } } },
   });
-  return memberships.map((m) => m.workspace.user.plan).filter((p): p is NonNullable<typeof p> => !!p && p.isActive && p.maxSeats > 0);
+  return memberships
+    .map((m) => ({ workspaceId: m.workspaceId, plan: m.workspace.user.plan }))
+    .filter((m): m is { workspaceId: string; plan: NonNullable<typeof m.plan> } => !!m.plan && m.plan.isActive && m.plan.maxSeats > 0);
 }
 
 /**
- * The plan that governs a signed-in user: their own plan, or — if they belong to a team whose manager is on a
- * plan that hosts teams — that team plan when it is the better (higher-priced) one. Being invited into a team is
- * how a member gets the Team plan's limits and multi-browser sign-in without paying for a seat themselves.
+ * The plan that governs a signed-in user, plus the team it comes from when that is a team plan: their own plan, or —
+ * if they belong to a team whose manager is on a plan that hosts teams — that team plan when it is at least as good
+ * (a manager is a member of their own team, so on a tie the team wins and its shared pool applies). Being invited into
+ * a team is how a member gets the Team plan's limits and multi-browser sign-in without paying for a seat themselves.
  */
-export async function getEffectivePlan(userId: string) {
+export async function getPlanContext(userId: string) {
   const own = await getOwnPlan(userId);
-  const shared = await teamPlans(userId);
-  let best = own;
-  for (const plan of shared) {
-    if (!best || plan.priceMonthlyCents > best.priceMonthlyCents) best = plan;
+  let plan = own;
+  let team: { workspaceId: string } | null = null;
+  for (const t of await teamMemberships(userId)) {
+    if (!plan || t.plan.priceMonthlyCents >= plan.priceMonthlyCents) {
+      plan = t.plan;
+      team = { workspaceId: t.workspaceId };
+    }
   }
-  return best;
+  return { plan, team };
+}
+
+export async function getEffectivePlan(userId: string) {
+  return (await getPlanContext(userId)).plan;
 }

@@ -121,7 +121,7 @@ describe("effective plan (users without a plan follow the default plan)", () => 
 
     const plan = await plans.getEffectivePlan("carol");
     assert.equal(plan?.name, "Starter");
-    assert.deepEqual(plan?.limits, [{ tool: "prompt-optimizer", dailyLimit: 10 }]);
+    assert.deepEqual(plan?.limits, [{ tool: "prompt-optimizer", dailyLimit: 10, teamDailyLimit: null }]);
     assert.equal(await history.historyLimitForUser("carol"), 7);
 
     // Their own active plan still wins over the default.

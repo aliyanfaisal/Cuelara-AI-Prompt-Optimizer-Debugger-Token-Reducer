@@ -29,6 +29,7 @@ export type WorkspaceMinAggregateOutputType = {
   name: string | null
   createdAt: Date | null
   type: string | null
+  sharedHistory: boolean | null
   userId: string | null
 }
 
@@ -37,6 +38,7 @@ export type WorkspaceMaxAggregateOutputType = {
   name: string | null
   createdAt: Date | null
   type: string | null
+  sharedHistory: boolean | null
   userId: string | null
 }
 
@@ -45,6 +47,7 @@ export type WorkspaceCountAggregateOutputType = {
   name: number
   createdAt: number
   type: number
+  sharedHistory: number
   userId: number
   _all: number
 }
@@ -55,6 +58,7 @@ export type WorkspaceMinAggregateInputType = {
   name?: true
   createdAt?: true
   type?: true
+  sharedHistory?: true
   userId?: true
 }
 
@@ -63,6 +67,7 @@ export type WorkspaceMaxAggregateInputType = {
   name?: true
   createdAt?: true
   type?: true
+  sharedHistory?: true
   userId?: true
 }
 
@@ -71,6 +76,7 @@ export type WorkspaceCountAggregateInputType = {
   name?: true
   createdAt?: true
   type?: true
+  sharedHistory?: true
   userId?: true
   _all?: true
 }
@@ -152,6 +158,7 @@ export type WorkspaceGroupByOutputType = {
   name: string
   createdAt: Date
   type: string
+  sharedHistory: boolean
   userId: string
   _count: WorkspaceCountAggregateOutputType | null
   _min: WorkspaceMinAggregateOutputType | null
@@ -181,6 +188,7 @@ export type WorkspaceWhereInput = {
   name?: Prisma.StringFilter<"Workspace"> | string
   createdAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
   type?: Prisma.StringFilter<"Workspace"> | string
+  sharedHistory?: Prisma.BoolFilter<"Workspace"> | boolean
   userId?: Prisma.StringFilter<"Workspace"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   prompts?: Prisma.PromptListRelationFilter
@@ -194,6 +202,7 @@ export type WorkspaceOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  sharedHistory?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   prompts?: Prisma.PromptOrderByRelationAggregateInput
@@ -210,6 +219,7 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Workspace"> | string
   createdAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
   type?: Prisma.StringFilter<"Workspace"> | string
+  sharedHistory?: Prisma.BoolFilter<"Workspace"> | boolean
   userId?: Prisma.StringFilter<"Workspace"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   prompts?: Prisma.PromptListRelationFilter
@@ -223,6 +233,7 @@ export type WorkspaceOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  sharedHistory?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.WorkspaceCountOrderByAggregateInput
   _max?: Prisma.WorkspaceMaxOrderByAggregateInput
@@ -237,6 +248,7 @@ export type WorkspaceScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Workspace"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Workspace"> | Date | string
   type?: Prisma.StringWithAggregatesFilter<"Workspace"> | string
+  sharedHistory?: Prisma.BoolWithAggregatesFilter<"Workspace"> | boolean
   userId?: Prisma.StringWithAggregatesFilter<"Workspace"> | string
 }
 
@@ -245,6 +257,7 @@ export type WorkspaceCreateInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   user: Prisma.UserCreateNestedOneWithoutWorkspacesInput
   prompts?: Prisma.PromptCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -257,6 +270,7 @@ export type WorkspaceUncheckedCreateInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   userId: string
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -269,6 +283,7 @@ export type WorkspaceUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutWorkspacesNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -281,6 +296,7 @@ export type WorkspaceUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -293,6 +309,7 @@ export type WorkspaceCreateManyInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   userId: string
 }
 
@@ -301,6 +318,7 @@ export type WorkspaceUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type WorkspaceUncheckedUpdateManyInput = {
@@ -308,6 +326,7 @@ export type WorkspaceUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -326,6 +345,7 @@ export type WorkspaceCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  sharedHistory?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -334,6 +354,7 @@ export type WorkspaceMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  sharedHistory?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -342,6 +363,7 @@ export type WorkspaceMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  sharedHistory?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -460,6 +482,7 @@ export type WorkspaceCreateWithoutUserInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   prompts?: Prisma.PromptCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.WorkspaceInviteCreateNestedManyWithoutWorkspaceInput
@@ -471,6 +494,7 @@ export type WorkspaceUncheckedCreateWithoutUserInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -511,6 +535,7 @@ export type WorkspaceScalarWhereInput = {
   name?: Prisma.StringFilter<"Workspace"> | string
   createdAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
   type?: Prisma.StringFilter<"Workspace"> | string
+  sharedHistory?: Prisma.BoolFilter<"Workspace"> | boolean
   userId?: Prisma.StringFilter<"Workspace"> | string
 }
 
@@ -519,6 +544,7 @@ export type WorkspaceCreateWithoutMembersInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   user: Prisma.UserCreateNestedOneWithoutWorkspacesInput
   prompts?: Prisma.PromptCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.WorkspaceInviteCreateNestedManyWithoutWorkspaceInput
@@ -530,6 +556,7 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   userId: string
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -557,6 +584,7 @@ export type WorkspaceUpdateWithoutMembersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutWorkspacesNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.WorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
@@ -568,6 +596,7 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -579,6 +608,7 @@ export type WorkspaceCreateWithoutInvitesInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   user: Prisma.UserCreateNestedOneWithoutWorkspacesInput
   prompts?: Prisma.PromptCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -590,6 +620,7 @@ export type WorkspaceUncheckedCreateWithoutInvitesInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   userId: string
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -617,6 +648,7 @@ export type WorkspaceUpdateWithoutInvitesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutWorkspacesNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -628,6 +660,7 @@ export type WorkspaceUncheckedUpdateWithoutInvitesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -639,6 +672,7 @@ export type WorkspaceCreateWithoutSavedPromptsInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   user: Prisma.UserCreateNestedOneWithoutWorkspacesInput
   prompts?: Prisma.PromptCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -650,6 +684,7 @@ export type WorkspaceUncheckedCreateWithoutSavedPromptsInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   userId: string
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -677,6 +712,7 @@ export type WorkspaceUpdateWithoutSavedPromptsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutWorkspacesNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -688,6 +724,7 @@ export type WorkspaceUncheckedUpdateWithoutSavedPromptsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -699,6 +736,7 @@ export type WorkspaceCreateWithoutPromptsInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   user: Prisma.UserCreateNestedOneWithoutWorkspacesInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.WorkspaceInviteCreateNestedManyWithoutWorkspaceInput
@@ -710,6 +748,7 @@ export type WorkspaceUncheckedCreateWithoutPromptsInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
   userId: string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -737,6 +776,7 @@ export type WorkspaceUpdateWithoutPromptsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutWorkspacesNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.WorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
@@ -748,6 +788,7 @@ export type WorkspaceUncheckedUpdateWithoutPromptsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -759,6 +800,7 @@ export type WorkspaceCreateManyUserInput = {
   name: string
   createdAt?: Date | string
   type?: string
+  sharedHistory?: boolean
 }
 
 export type WorkspaceUpdateWithoutUserInput = {
@@ -766,6 +808,7 @@ export type WorkspaceUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   prompts?: Prisma.PromptUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.WorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
@@ -777,6 +820,7 @@ export type WorkspaceUncheckedUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -788,6 +832,7 @@ export type WorkspaceUncheckedUpdateManyWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedHistory?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -853,6 +898,7 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   name?: boolean
   createdAt?: boolean
   type?: boolean
+  sharedHistory?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   prompts?: boolean | Prisma.Workspace$promptsArgs<ExtArgs>
@@ -867,6 +913,7 @@ export type WorkspaceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   name?: boolean
   createdAt?: boolean
   type?: boolean
+  sharedHistory?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workspace"]>
@@ -876,6 +923,7 @@ export type WorkspaceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   name?: boolean
   createdAt?: boolean
   type?: boolean
+  sharedHistory?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workspace"]>
@@ -885,10 +933,11 @@ export type WorkspaceSelectScalar = {
   name?: boolean
   createdAt?: boolean
   type?: boolean
+  sharedHistory?: boolean
   userId?: boolean
 }
 
-export type WorkspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "createdAt" | "type" | "userId", ExtArgs["result"]["workspace"]>
+export type WorkspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "createdAt" | "type" | "sharedHistory" | "userId", ExtArgs["result"]["workspace"]>
 export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   prompts?: boolean | Prisma.Workspace$promptsArgs<ExtArgs>
@@ -918,6 +967,7 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     name: string
     createdAt: Date
     type: string
+    sharedHistory: boolean
     userId: string
   }, ExtArgs["result"]["workspace"]>
   composites: {}
@@ -1351,6 +1401,7 @@ export interface WorkspaceFieldRefs {
   readonly name: Prisma.FieldRef<"Workspace", 'String'>
   readonly createdAt: Prisma.FieldRef<"Workspace", 'DateTime'>
   readonly type: Prisma.FieldRef<"Workspace", 'String'>
+  readonly sharedHistory: Prisma.FieldRef<"Workspace", 'Boolean'>
   readonly userId: Prisma.FieldRef<"Workspace", 'String'>
 }
     

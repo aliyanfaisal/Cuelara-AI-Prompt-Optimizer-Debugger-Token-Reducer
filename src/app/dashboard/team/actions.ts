@@ -6,6 +6,7 @@ import { sendTeamInviteEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/session-user";
 import * as team from "@/lib/workspace";
+import { setMemberShareHistory, setTeamSharedHistory } from "@/lib/team-history";
 
 type Result = { success: true; message?: string } | { error: string };
 
@@ -109,4 +110,22 @@ export async function acceptInviteAction(token: string): Promise<Result & { work
   const r = await team.acceptInvite(token, me.id, user.email);
   refresh();
   return r.ok ? { success: true, workspaceId: r.workspaceId } : { error: r.error };
+}
+
+/** A member opts their own runs in or out of the team's shared history. */
+export async function setMyHistorySharing(workspaceId: string, share: boolean): Promise<Result> {
+  const me = await getSessionUser();
+  if (!me) return UNAUTHORIZED;
+  const r = await setMemberShareHistory(me.id, workspaceId, share);
+  refresh();
+  return done(r as team.Result);
+}
+
+/** The owner turns the team's shared history on or off for everyone. */
+export async function setTeamHistoryEnabled(workspaceId: string, enabled: boolean): Promise<Result> {
+  const me = await getSessionUser();
+  if (!me) return UNAUTHORIZED;
+  const r = await setTeamSharedHistory(me.id, workspaceId, enabled);
+  refresh();
+  return done(r as team.Result);
 }

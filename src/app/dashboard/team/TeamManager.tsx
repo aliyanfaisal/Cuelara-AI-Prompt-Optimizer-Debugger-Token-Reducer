@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, Mail, Trash2, UserMinus, Users } from "lucide-react";
 import {
   changeTeamMemberRole, createTeam, deleteTeam, inviteMember, leaveTeamWorkspace, removeTeamMember, renameTeam, revokeInvite,
+  setMyHistorySharing, setTeamHistoryEnabled,
 } from "./actions";
 
 export interface TeamData {
@@ -13,6 +14,9 @@ export interface TeamData {
   myRole: "OWNER" | "ADMIN" | "MEMBER";
   myId: string;
   seats: { used: number; pending: number; max: number };
+  pool: { tool: string; label: string; used: number; limit: number }[];
+  sharedHistory: boolean;
+  myShare: boolean;
   members: { userId: string; name: string | null; email: string; role: string; joinedAt: string }[];
   invites: { id: string; email: string; role: string; expiresAt: string; expired: boolean }[];
 }
@@ -173,8 +177,52 @@ export function TeamManager({ team }: { team: TeamData }) {
         </div>
       )}
 
+      {team.pool.length > 0 && (
+        <div>
+          <h4 className="mb-1 text-sm font-bold text-foreground">Shared daily pool</h4>
+          <p className="mb-3 text-xs text-muted-foreground">Everyone on the team draws from these shared runs each day (UTC), on top of each person&rsquo;s own limit. When a pool runs out, nobody on the team can use that tool until tomorrow.</p>
+          <ul className="grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
+            {team.pool.map((p) => {
+              const pct = Math.min(100, Math.round((p.used / p.limit) * 100));
+              return (
+                <li key={p.tool}>
+                  <div className="flex items-center justify-between"><span className="text-muted-foreground">{p.label}</span><span className="font-semibold tabular-nums text-foreground">{p.used} / {p.limit}</span></div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuenow={p.used} aria-valuemin={0} aria-valuemax={p.limit} aria-label={`${p.label} pool used`}>
+                    <div className={`h-full rounded-full ${pct >= 90 ? "bg-rose-500" : pct >= 70 ? "bg-amber-500" : "bg-primary"}`} style={{ width: `${pct}%` }} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      <div className="space-y-3 rounded-xl border border-border bg-background p-4">
+        <h4 className="text-sm font-bold text-foreground">Team history</h4>
+        <label className="flex cursor-pointer items-start gap-3 text-sm">
+          <input type="checkbox" checked={team.myShare} disabled={pending || !team.sharedHistory} onChange={(e) => run(() => setMyHistorySharing(team.id, e.target.checked))} className="mt-1 h-4 w-4 accent-[var(--primary)]" />
+          <span>
+            <span className="block font-semibold text-foreground">Share my tool runs with the team</span>
+            <span className="block text-xs text-muted-foreground">Teammates can see and reopen your runs from the day you joined. Turn it off to keep your runs private; nothing you did before joining is ever shared.</span>
+          </span>
+        </label>
+        {isOwner && (
+          <label className="flex cursor-pointer items-start gap-3 border-t border-border pt-3 text-sm">
+            <input type="checkbox" checked={team.sharedHistory} disabled={pending} onChange={(e) => run(() => setTeamHistoryEnabled(team.id, e.target.checked))} className="mt-1 h-4 w-4 accent-[var(--primary)]" />
+            <span>
+              <span className="block font-semibold text-foreground">Enable shared history for this team</span>
+              <span className="block text-xs text-muted-foreground">When off, nobody&rsquo;s runs are visible to the team, whatever they chose individually.</span>
+            </span>
+          </label>
+        )}
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-sm">
-        <a href={`/dashboard/workspace?w=${team.id}`} className="font-semibold text-primary hover:underline">Open the team&rsquo;s prompt library →</a>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <a href={`/dashboard/workspace?w=${team.id}`} className="font-semibold text-primary hover:underline">Prompt library →</a>
+          <a href={`/dashboard/team/activity?w=${team.id}`} className="font-semibold text-primary hover:underline">Team activity →</a>
+          {canManage && <a href={`/dashboard/team/analytics?w=${team.id}`} className="font-semibold text-primary hover:underline">Usage analytics →</a>}
+        </div>
         {isOwner ? (
           <button onClick={() => confirm("Delete this team? Its shared prompt library is deleted for everyone and members lose the team plan. This can't be undone.") && run(() => deleteTeam(team.id), () => router.refresh())} disabled={pending} className="rounded-lg border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-500 hover:bg-rose-500/10 disabled:opacity-50">
             Delete team

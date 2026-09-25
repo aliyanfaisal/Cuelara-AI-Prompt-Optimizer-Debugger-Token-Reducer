@@ -8,6 +8,8 @@ import { assertAdmin } from "@/lib/admin-auth";
 export interface PlanLimitInput {
   tool: string;
   dailyLimit: number;
+  /** Runs per day the whole team shares on this tool (plans with seats only); null/0 = no shared pool. */
+  teamDailyLimit?: number | null;
 }
 
 export interface PlanRow {
@@ -26,7 +28,7 @@ export interface PlanRow {
   historyPerTool: number;
   createdAt: string;
   userCount: number;
-  limits: { tool: string; dailyLimit: number }[];
+  limits: { tool: string; dailyLimit: number; teamDailyLimit: number | null }[];
 }
 
 export async function getPlans(): Promise<PlanRow[]> {
@@ -51,7 +53,7 @@ export async function getPlans(): Promise<PlanRow[]> {
     historyPerTool: p.historyPerTool,
     createdAt: p.createdAt.toISOString(),
     userCount: p._count.users,
-    limits: p.limits.map((l) => ({ tool: l.tool, dailyLimit: l.dailyLimit })),
+    limits: p.limits.map((l) => ({ tool: l.tool, dailyLimit: l.dailyLimit, teamDailyLimit: l.teamDailyLimit })),
   }));
 }
 
@@ -67,8 +69,13 @@ function validateLimits(limits: PlanLimitInput[]): { error?: string; clean?: Pla
   const clean: PlanLimitInput[] = [];
   for (const l of limits) {
     if (!isPlanToolId(l.tool)) return { error: `Unknown tool: ${l.tool}` };
-    if (!Number.isFinite(l.dailyLimit) || l.dailyLimit <= 0) continue; // 0/blank = "no override for this tool"
-    clean.push({ tool: l.tool, dailyLimit: Math.floor(l.dailyLimit) });
+    const pool = Number.isFinite(l.teamDailyLimit) && (l.teamDailyLimit as number) > 0 ? Math.floor(l.teamDailyLimit as number) : null;
+    if (!Number.isFinite(l.dailyLimit) || l.dailyLimit <= 0) {
+      // 0/blank = "no override for this tool" — but a shared pool sits on top of a per-person limit, so it needs one.
+      if (pool) return { error: `Set a per-person daily limit for ${l.tool} before giving it a team pool.` };
+      continue;
+    }
+    clean.push({ tool: l.tool, dailyLimit: Math.floor(l.dailyLimit), teamDailyLimit: pool });
   }
   return { clean };
 }
@@ -186,7 +193,7 @@ export async function updatePlan(
       // Simplest consistent way to sync the limit set: replace it wholesale.
       await tx.planToolLimit.deleteMany({ where: { planId: id } });
       if (clean && clean.length > 0) {
-        await tx.planToolLimit.createMany({ data: clean!.map((l) => ({ planId: id, tool: l.tool, dailyLimit: l.dailyLimit })) });
+        await tx.planToolLimit.createMany({ data: clean!.map((l) => ({ planId: id, tool: l.tool, dailyLimit: l.dailyLimit, teamDailyLimit: l.teamDailyLimit ?? null })) });
       }
     });
     revalidatePath("/admin/plans");

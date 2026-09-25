@@ -28,10 +28,12 @@ export type AggregatePlanToolLimit = {
 
 export type PlanToolLimitAvgAggregateOutputType = {
   dailyLimit: number | null
+  teamDailyLimit: number | null
 }
 
 export type PlanToolLimitSumAggregateOutputType = {
   dailyLimit: number | null
+  teamDailyLimit: number | null
 }
 
 export type PlanToolLimitMinAggregateOutputType = {
@@ -39,6 +41,7 @@ export type PlanToolLimitMinAggregateOutputType = {
   planId: string | null
   tool: string | null
   dailyLimit: number | null
+  teamDailyLimit: number | null
 }
 
 export type PlanToolLimitMaxAggregateOutputType = {
@@ -46,6 +49,7 @@ export type PlanToolLimitMaxAggregateOutputType = {
   planId: string | null
   tool: string | null
   dailyLimit: number | null
+  teamDailyLimit: number | null
 }
 
 export type PlanToolLimitCountAggregateOutputType = {
@@ -53,16 +57,19 @@ export type PlanToolLimitCountAggregateOutputType = {
   planId: number
   tool: number
   dailyLimit: number
+  teamDailyLimit: number
   _all: number
 }
 
 
 export type PlanToolLimitAvgAggregateInputType = {
   dailyLimit?: true
+  teamDailyLimit?: true
 }
 
 export type PlanToolLimitSumAggregateInputType = {
   dailyLimit?: true
+  teamDailyLimit?: true
 }
 
 export type PlanToolLimitMinAggregateInputType = {
@@ -70,6 +77,7 @@ export type PlanToolLimitMinAggregateInputType = {
   planId?: true
   tool?: true
   dailyLimit?: true
+  teamDailyLimit?: true
 }
 
 export type PlanToolLimitMaxAggregateInputType = {
@@ -77,6 +85,7 @@ export type PlanToolLimitMaxAggregateInputType = {
   planId?: true
   tool?: true
   dailyLimit?: true
+  teamDailyLimit?: true
 }
 
 export type PlanToolLimitCountAggregateInputType = {
@@ -84,6 +93,7 @@ export type PlanToolLimitCountAggregateInputType = {
   planId?: true
   tool?: true
   dailyLimit?: true
+  teamDailyLimit?: true
   _all?: true
 }
 
@@ -178,6 +188,7 @@ export type PlanToolLimitGroupByOutputType = {
   planId: string
   tool: string
   dailyLimit: number
+  teamDailyLimit: number | null
   _count: PlanToolLimitCountAggregateOutputType | null
   _avg: PlanToolLimitAvgAggregateOutputType | null
   _sum: PlanToolLimitSumAggregateOutputType | null
@@ -208,6 +219,7 @@ export type PlanToolLimitWhereInput = {
   planId?: Prisma.StringFilter<"PlanToolLimit"> | string
   tool?: Prisma.StringFilter<"PlanToolLimit"> | string
   dailyLimit?: Prisma.IntFilter<"PlanToolLimit"> | number
+  teamDailyLimit?: Prisma.IntNullableFilter<"PlanToolLimit"> | number | null
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
 }
 
@@ -216,6 +228,7 @@ export type PlanToolLimitOrderByWithRelationInput = {
   planId?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   dailyLimit?: Prisma.SortOrder
+  teamDailyLimit?: Prisma.SortOrderInput | Prisma.SortOrder
   plan?: Prisma.PlanOrderByWithRelationInput
 }
 
@@ -228,6 +241,7 @@ export type PlanToolLimitWhereUniqueInput = Prisma.AtLeast<{
   planId?: Prisma.StringFilter<"PlanToolLimit"> | string
   tool?: Prisma.StringFilter<"PlanToolLimit"> | string
   dailyLimit?: Prisma.IntFilter<"PlanToolLimit"> | number
+  teamDailyLimit?: Prisma.IntNullableFilter<"PlanToolLimit"> | number | null
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
 }, "id" | "planId_tool">
 
@@ -236,6 +250,7 @@ export type PlanToolLimitOrderByWithAggregationInput = {
   planId?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   dailyLimit?: Prisma.SortOrder
+  teamDailyLimit?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PlanToolLimitCountOrderByAggregateInput
   _avg?: Prisma.PlanToolLimitAvgOrderByAggregateInput
   _max?: Prisma.PlanToolLimitMaxOrderByAggregateInput
@@ -251,12 +266,14 @@ export type PlanToolLimitScalarWhereWithAggregatesInput = {
   planId?: Prisma.StringWithAggregatesFilter<"PlanToolLimit"> | string
   tool?: Prisma.StringWithAggregatesFilter<"PlanToolLimit"> | string
   dailyLimit?: Prisma.IntWithAggregatesFilter<"PlanToolLimit"> | number
+  teamDailyLimit?: Prisma.IntNullableWithAggregatesFilter<"PlanToolLimit"> | number | null
 }
 
 export type PlanToolLimitCreateInput = {
   id?: string
   tool: string
   dailyLimit: number
+  teamDailyLimit?: number | null
   plan: Prisma.PlanCreateNestedOneWithoutLimitsInput
 }
 
@@ -265,12 +282,14 @@ export type PlanToolLimitUncheckedCreateInput = {
   planId: string
   tool: string
   dailyLimit: number
+  teamDailyLimit?: number | null
 }
 
 export type PlanToolLimitUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   dailyLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  teamDailyLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plan?: Prisma.PlanUpdateOneRequiredWithoutLimitsNestedInput
 }
 
@@ -279,6 +298,7 @@ export type PlanToolLimitUncheckedUpdateInput = {
   planId?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   dailyLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  teamDailyLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type PlanToolLimitCreateManyInput = {
@@ -286,12 +306,14 @@ export type PlanToolLimitCreateManyInput = {
   planId: string
   tool: string
   dailyLimit: number
+  teamDailyLimit?: number | null
 }
 
 export type PlanToolLimitUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   dailyLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  teamDailyLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type PlanToolLimitUncheckedUpdateManyInput = {
@@ -299,6 +321,7 @@ export type PlanToolLimitUncheckedUpdateManyInput = {
   planId?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   dailyLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  teamDailyLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type PlanToolLimitListRelationFilter = {
@@ -321,10 +344,12 @@ export type PlanToolLimitCountOrderByAggregateInput = {
   planId?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   dailyLimit?: Prisma.SortOrder
+  teamDailyLimit?: Prisma.SortOrder
 }
 
 export type PlanToolLimitAvgOrderByAggregateInput = {
   dailyLimit?: Prisma.SortOrder
+  teamDailyLimit?: Prisma.SortOrder
 }
 
 export type PlanToolLimitMaxOrderByAggregateInput = {
@@ -332,6 +357,7 @@ export type PlanToolLimitMaxOrderByAggregateInput = {
   planId?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   dailyLimit?: Prisma.SortOrder
+  teamDailyLimit?: Prisma.SortOrder
 }
 
 export type PlanToolLimitMinOrderByAggregateInput = {
@@ -339,10 +365,12 @@ export type PlanToolLimitMinOrderByAggregateInput = {
   planId?: Prisma.SortOrder
   tool?: Prisma.SortOrder
   dailyLimit?: Prisma.SortOrder
+  teamDailyLimit?: Prisma.SortOrder
 }
 
 export type PlanToolLimitSumOrderByAggregateInput = {
   dailyLimit?: Prisma.SortOrder
+  teamDailyLimit?: Prisma.SortOrder
 }
 
 export type PlanToolLimitCreateNestedManyWithoutPlanInput = {
@@ -391,12 +419,14 @@ export type PlanToolLimitCreateWithoutPlanInput = {
   id?: string
   tool: string
   dailyLimit: number
+  teamDailyLimit?: number | null
 }
 
 export type PlanToolLimitUncheckedCreateWithoutPlanInput = {
   id?: string
   tool: string
   dailyLimit: number
+  teamDailyLimit?: number | null
 }
 
 export type PlanToolLimitCreateOrConnectWithoutPlanInput = {
@@ -433,30 +463,35 @@ export type PlanToolLimitScalarWhereInput = {
   planId?: Prisma.StringFilter<"PlanToolLimit"> | string
   tool?: Prisma.StringFilter<"PlanToolLimit"> | string
   dailyLimit?: Prisma.IntFilter<"PlanToolLimit"> | number
+  teamDailyLimit?: Prisma.IntNullableFilter<"PlanToolLimit"> | number | null
 }
 
 export type PlanToolLimitCreateManyPlanInput = {
   id?: string
   tool: string
   dailyLimit: number
+  teamDailyLimit?: number | null
 }
 
 export type PlanToolLimitUpdateWithoutPlanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   dailyLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  teamDailyLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type PlanToolLimitUncheckedUpdateWithoutPlanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   dailyLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  teamDailyLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type PlanToolLimitUncheckedUpdateManyWithoutPlanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tool?: Prisma.StringFieldUpdateOperationsInput | string
   dailyLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  teamDailyLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -466,6 +501,7 @@ export type PlanToolLimitSelect<ExtArgs extends runtime.Types.Extensions.Interna
   planId?: boolean
   tool?: boolean
   dailyLimit?: boolean
+  teamDailyLimit?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["planToolLimit"]>
 
@@ -474,6 +510,7 @@ export type PlanToolLimitSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   planId?: boolean
   tool?: boolean
   dailyLimit?: boolean
+  teamDailyLimit?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["planToolLimit"]>
 
@@ -482,6 +519,7 @@ export type PlanToolLimitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   planId?: boolean
   tool?: boolean
   dailyLimit?: boolean
+  teamDailyLimit?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["planToolLimit"]>
 
@@ -490,9 +528,10 @@ export type PlanToolLimitSelectScalar = {
   planId?: boolean
   tool?: boolean
   dailyLimit?: boolean
+  teamDailyLimit?: boolean
 }
 
-export type PlanToolLimitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "planId" | "tool" | "dailyLimit", ExtArgs["result"]["planToolLimit"]>
+export type PlanToolLimitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "planId" | "tool" | "dailyLimit" | "teamDailyLimit", ExtArgs["result"]["planToolLimit"]>
 export type PlanToolLimitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
 }
@@ -513,6 +552,7 @@ export type $PlanToolLimitPayload<ExtArgs extends runtime.Types.Extensions.Inter
     planId: string
     tool: string
     dailyLimit: number
+    teamDailyLimit: number | null
   }, ExtArgs["result"]["planToolLimit"]>
   composites: {}
 }
@@ -941,6 +981,7 @@ export interface PlanToolLimitFieldRefs {
   readonly planId: Prisma.FieldRef<"PlanToolLimit", 'String'>
   readonly tool: Prisma.FieldRef<"PlanToolLimit", 'String'>
   readonly dailyLimit: Prisma.FieldRef<"PlanToolLimit", 'Int'>
+  readonly teamDailyLimit: Prisma.FieldRef<"PlanToolLimit", 'Int'>
 }
     
 

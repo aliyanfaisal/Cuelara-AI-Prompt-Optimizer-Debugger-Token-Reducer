@@ -407,7 +407,8 @@ export const PlanToolLimitScalarFieldEnum = {
   id: 'id',
   planId: 'planId',
   tool: 'tool',
-  dailyLimit: 'dailyLimit'
+  dailyLimit: 'dailyLimit',
+  teamDailyLimit: 'teamDailyLimit'
 } as const
 
 export type PlanToolLimitScalarFieldEnum = (typeof PlanToolLimitScalarFieldEnum)[keyof typeof PlanToolLimitScalarFieldEnum]
@@ -427,6 +428,7 @@ export const WorkspaceScalarFieldEnum = {
   name: 'name',
   createdAt: 'createdAt',
   type: 'type',
+  sharedHistory: 'sharedHistory',
   userId: 'userId'
 } as const
 
@@ -438,6 +440,7 @@ export const WorkspaceMemberScalarFieldEnum = {
   workspaceId: 'workspaceId',
   userId: 'userId',
   role: 'role',
+  shareHistory: 'shareHistory',
   createdAt: 'createdAt'
 } as const
 

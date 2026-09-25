@@ -47,6 +47,10 @@ const STEPS = [
     dir: '20260927100000_workspaces_and_teams',
     isApplied: `select 1 from information_schema.tables where table_name = 'SavedPrompt'`,
   },
+  {
+    dir: '20260928100000_team_history_and_pool',
+    isApplied: `select 1 from information_schema.columns where table_name = 'PlanToolLimit' and column_name = 'teamDailyLimit'`,
+  },
 ];
 
 async function main() {

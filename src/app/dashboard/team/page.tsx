@@ -3,6 +3,7 @@ import { Users } from "lucide-react";
 import { getOwnPlan } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/session-user";
+import { getPoolToday } from "@/lib/team-analytics";
 import { listWorkspaces, seatUsage } from "@/lib/workspace";
 import { CreateTeamForm, TeamManager, type TeamData } from "./TeamManager";
 
@@ -17,14 +18,16 @@ export default async function TeamPage() {
   const data: TeamData[] = await Promise.all(
     teams.map(async (t) => {
       const canSee = t.role === "OWNER" || t.role === "ADMIN";
-      const [members, invites, seats] = await Promise.all([
+      const [members, invites, seats, pool, ws] = await Promise.all([
         prisma.workspaceMember.findMany({
           where: { workspaceId: t.id },
-          select: { role: true, createdAt: true, user: { select: { id: true, name: true, email: true } } },
+          select: { role: true, createdAt: true, shareHistory: true, user: { select: { id: true, name: true, email: true } } },
           orderBy: { createdAt: "asc" },
         }),
         canSee ? prisma.workspaceInvite.findMany({ where: { workspaceId: t.id }, orderBy: { createdAt: "desc" } }) : Promise.resolve([]),
         seatUsage(t.id),
+        getPoolToday(t.id),
+        prisma.workspace.findUnique({ where: { id: t.id }, select: { sharedHistory: true } }),
       ]);
       return {
         id: t.id,
@@ -32,6 +35,9 @@ export default async function TeamPage() {
         myRole: t.role,
         myId: session.id,
         seats,
+        pool,
+        sharedHistory: ws?.sharedHistory ?? true,
+        myShare: members.find((m) => m.user.id === session.id)?.shareHistory ?? true,
         members: members.map((m) => ({ userId: m.user.id, name: m.user.name, email: m.user.email ?? "", role: m.role, joinedAt: m.createdAt.toISOString() })),
         invites: invites.map((i) => ({ id: i.id, email: i.email, role: i.role, expiresAt: i.expiresAt.toISOString(), expired: i.expiresAt < new Date() })),
       };

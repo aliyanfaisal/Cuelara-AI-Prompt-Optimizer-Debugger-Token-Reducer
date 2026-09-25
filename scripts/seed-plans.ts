@@ -11,11 +11,15 @@ const prisma = new PrismaClient({ adapter: new PrismaPg(new Pool({ connectionStr
 
 const TOOLS = ["prompt-builder", "prompt-optimizer", "token-optimizer", "prompt-debugger", "prompt-formatter", "intelligence-score", "site-to-prompt"];
 
-const limitsFor = (perTool: number, documents: number, prompts: number) => [
-  ...TOOLS.map((tool) => ({ tool, dailyLimit: perTool })),
-  { tool: "context-extractor-document", dailyLimit: documents },
-  { tool: "context-extractor-prompt", dailyLimit: prompts },
-];
+// `poolFactor` (team plans only) also gives every tool a shared daily pool for the whole team: that many times one person's limit.
+const limitsFor = (perTool: number, documents: number, prompts: number, poolFactor?: number) => {
+  const rows = [
+    ...TOOLS.map((tool) => ({ tool, dailyLimit: perTool })),
+    { tool: "context-extractor-document", dailyLimit: documents },
+    { tool: "context-extractor-prompt", dailyLimit: prompts },
+  ];
+  return rows.map((r) => ({ ...r, teamDailyLimit: poolFactor ? r.dailyLimit * poolFactor : null }));
+};
 
 const PLANS = [
   {
@@ -50,8 +54,8 @@ const PLANS = [
     historyPerTool: 100,
     allowsMultipleSessions: true,
     maxSeats: 5,
-    features: ["Everything in Pro", "500 runs per tool, per day", "Context Extractor: 150 documents and 2,000 prompts a day", "Saves your last 100 runs per tool", "A shared team workspace with 5 seats", "Priority support"].join("\n"),
-    limits: limitsFor(500, 150, 2000),
+    features: ["Everything in Pro", "500 runs per tool, per day", "Context Extractor: 150 documents and 2,000 prompts a day", "Saves your last 100 runs per tool", "A shared team workspace with 5 seats, shared prompt library and team run history", "A shared daily usage pool and usage analytics for the team manager", "Priority support"].join("\n"),
+    limits: limitsFor(500, 150, 2000, 2),
   },
   {
     name: "Own Keys",
@@ -73,11 +77,11 @@ const PLANS = [
 async function backfillNewToolLimits() {
   const NEW_TOOL = "prompt-builder";
   const LIKE_TOOL = "prompt-formatter";
-  for (const plan of await prisma.plan.findMany({ select: { id: true, name: true, limits: { select: { tool: true, dailyLimit: true } } } })) {
+  for (const plan of await prisma.plan.findMany({ select: { id: true, name: true, limits: { select: { tool: true, dailyLimit: true, teamDailyLimit: true } } } })) {
     if (plan.limits.some((l) => l.tool === NEW_TOOL)) continue;
     const like = plan.limits.find((l) => l.tool === LIKE_TOOL);
     if (!like) continue;
-    await prisma.planToolLimit.create({ data: { planId: plan.id, tool: NEW_TOOL, dailyLimit: like.dailyLimit } });
+    await prisma.planToolLimit.create({ data: { planId: plan.id, tool: NEW_TOOL, dailyLimit: like.dailyLimit, teamDailyLimit: like.teamDailyLimit } });
     console.log(`- ${plan.name}: added ${NEW_TOOL} limit (${like.dailyLimit}/day)`);
   }
 }
