@@ -17,6 +17,8 @@ interface FormState {
   isDefault: boolean;
   isActive: boolean;
   isFeatured: boolean;
+  allowsOwnKeys: boolean;
+  allowsMultipleSessions: boolean;
   features: string;
   historyPerTool: string;
   limits: Record<string, string>; // tool -> string input, blank = no override
@@ -29,6 +31,8 @@ const EMPTY_FORM: FormState = {
   isDefault: false,
   isActive: true,
   isFeatured: false,
+  allowsOwnKeys: false,
+  allowsMultipleSessions: false,
   features: "",
   historyPerTool: "20",
   limits: {},
@@ -44,6 +48,8 @@ function planToForm(plan: PlanRow): FormState {
     isDefault: plan.isDefault,
     isActive: plan.isActive,
     isFeatured: plan.isFeatured,
+    allowsOwnKeys: plan.allowsOwnKeys,
+    allowsMultipleSessions: plan.allowsMultipleSessions,
     features: plan.features,
     historyPerTool: String(plan.historyPerTool),
     limits,
@@ -92,6 +98,8 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
       isActive: form.isActive,
       features: form.features,
       isFeatured: form.isFeatured,
+      allowsOwnKeys: form.allowsOwnKeys,
+      allowsMultipleSessions: form.allowsMultipleSessions,
       historyPerTool: Number(form.historyPerTool),
       limits: formToLimits(form),
     };
@@ -286,6 +294,14 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <input type="checkbox" checked={form.isDefault} onChange={(e) => setForm({ ...form, isDefault: e.target.checked })} className="rounded" />
                   Default plan for new signups
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={form.allowsOwnKeys} onChange={(e) => setForm({ ...form, allowsOwnKeys: e.target.checked })} className="rounded" />
+                  Bring-your-own-keys plan (customers add their own model keys)
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={form.allowsMultipleSessions} onChange={(e) => setForm({ ...form, allowsMultipleSessions: e.target.checked })} className="rounded" />
+                  Allow several browsers signed in at once
                 </label>
               </div>
 

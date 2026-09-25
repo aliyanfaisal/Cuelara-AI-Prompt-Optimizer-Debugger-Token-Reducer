@@ -3,6 +3,7 @@ import { geminiGenerate, openAICompatibleGenerate, type ProviderChainLink } from
 import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
 import { getFreeOpenRouterModels, listFreeOpenRouterModels } from "@/lib/openrouter-free-models";
 import { getModelOrder, getSelectedOpenRouterModels } from "@/lib/model-settings";
+import { getOwnKeyContext } from "@/lib/user-keys";
 import type { OrderableProvider } from "@/lib/model-order";
 import { getOpenRouterModelMode } from "@/lib/openrouter-mode";
 
@@ -45,7 +46,12 @@ function openRouterLink(model: string, timeoutMs: number, maxPromptChars: number
  * free models from OpenRouter's live catalog (cached hourly).
  */
 export async function buildTextGenerationChain(timeoutMs: number = GENAI_TIMEOUT_MS): Promise<ProviderChainLink[]> {
-  const [order, mode, selected] = await Promise.all([getModelOrder(), getOpenRouterModelMode(), getSelectedOpenRouterModels()]);
+  // A bring-your-own-keys customer gets their own order and models, limited to providers they added keys for.
+  const own = await getOwnKeyContext();
+  const [platformOrder, platformMode, platformSelected] = await Promise.all([getModelOrder(), getOpenRouterModelMode(), getSelectedOpenRouterModels()]);
+  const order = own ? own.order.filter((p) => (own.keys[p]?.length ?? 0) > 0) : platformOrder;
+  const mode = own ? "free" : platformMode;
+  const selected = own ? own.openRouterModels : platformSelected;
 
   async function openRouterLinks(): Promise<ProviderChainLink[]> {
     if (mode !== "free") return [];

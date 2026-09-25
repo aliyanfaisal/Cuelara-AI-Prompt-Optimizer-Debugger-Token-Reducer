@@ -48,8 +48,21 @@ const PLANS = [
     isDefault: false,
     isFeatured: false,
     historyPerTool: 100,
+    allowsMultipleSessions: true,
     features: ["Everything in Pro", "500 runs per tool, per day", "Context Extractor: 150 documents and 2,000 prompts a day", "Saves your last 100 runs per tool", "Shared workspaces (coming soon)", "Priority support"].join("\n"),
     limits: limitsFor(500, 150, 2000),
+  },
+  {
+    name: "Own Keys",
+    slug: "own-keys",
+    description: "Bring your own AI provider keys and use them across every tool.",
+    priceMonthlyCents: 0,
+    isDefault: false,
+    isFeatured: false,
+    allowsOwnKeys: true,
+    historyPerTool: 50,
+    features: ["Use your own Gemini, Groq and OpenRouter keys", "Choose the order your models are tried in", "500 runs per tool, per day", "Context Extractor: 100 documents and 500 prompts a day", "Saves your last 50 runs per tool", "Email support"].join("\n"),
+    limits: limitsFor(500, 100, 500),
   },
 ];
 

@@ -111,12 +111,12 @@ export async function getApiCallStats(range: StatsRange, customFrom?: string, cu
 
   const [rows, recentFailureRows] = await Promise.all([
     prisma.apiCallLog.findMany({
-      where: { createdAt: { gte: cutoff, lte: until } },
+      where: { ownKey: false, createdAt: { gte: cutoff, lte: until } },
       select: { provider: true, model: true, tool: true, success: true, createdAt: true },
       orderBy: { createdAt: "asc" },
     }),
     prisma.apiCallLog.findMany({
-      where: { success: false, createdAt: { gte: cutoff, lte: until } },
+      where: { ownKey: false, success: false, createdAt: { gte: cutoff, lte: until } },
       orderBy: { createdAt: "desc" },
       take: FAILURE_LIST_LIMIT,
     }),

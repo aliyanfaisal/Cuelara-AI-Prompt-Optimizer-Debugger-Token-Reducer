@@ -23,7 +23,9 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   
-  const error = searchParams?.get("error");
+  const errorParam = searchParams?.get("error");
+  const error =
+    errorParam === "SessionReplaced" ? "You were signed out because your account was signed in on another browser." : errorParam;
   const success = searchParams?.get("success");
   // Only same-site relative paths ("/dashboard"), never "//evil.com" or a full URL.
   const callbackParam = searchParams?.get("callbackUrl");

@@ -42,6 +42,7 @@ export type ApiCallLogMinAggregateOutputType = {
   success: boolean | null
   statusCode: number | null
   errorMessage: string | null
+  ownKey: boolean | null
   createdAt: Date | null
 }
 
@@ -53,6 +54,7 @@ export type ApiCallLogMaxAggregateOutputType = {
   success: boolean | null
   statusCode: number | null
   errorMessage: string | null
+  ownKey: boolean | null
   createdAt: Date | null
 }
 
@@ -64,6 +66,7 @@ export type ApiCallLogCountAggregateOutputType = {
   success: number
   statusCode: number
   errorMessage: number
+  ownKey: number
   createdAt: number
   _all: number
 }
@@ -85,6 +88,7 @@ export type ApiCallLogMinAggregateInputType = {
   success?: true
   statusCode?: true
   errorMessage?: true
+  ownKey?: true
   createdAt?: true
 }
 
@@ -96,6 +100,7 @@ export type ApiCallLogMaxAggregateInputType = {
   success?: true
   statusCode?: true
   errorMessage?: true
+  ownKey?: true
   createdAt?: true
 }
 
@@ -107,6 +112,7 @@ export type ApiCallLogCountAggregateInputType = {
   success?: true
   statusCode?: true
   errorMessage?: true
+  ownKey?: true
   createdAt?: true
   _all?: true
 }
@@ -205,6 +211,7 @@ export type ApiCallLogGroupByOutputType = {
   success: boolean
   statusCode: number | null
   errorMessage: string | null
+  ownKey: boolean
   createdAt: Date
   _count: ApiCallLogCountAggregateOutputType | null
   _avg: ApiCallLogAvgAggregateOutputType | null
@@ -239,6 +246,7 @@ export type ApiCallLogWhereInput = {
   success?: Prisma.BoolFilter<"ApiCallLog"> | boolean
   statusCode?: Prisma.IntNullableFilter<"ApiCallLog"> | number | null
   errorMessage?: Prisma.StringNullableFilter<"ApiCallLog"> | string | null
+  ownKey?: Prisma.BoolFilter<"ApiCallLog"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ApiCallLog"> | Date | string
 }
 
@@ -250,6 +258,7 @@ export type ApiCallLogOrderByWithRelationInput = {
   success?: Prisma.SortOrder
   statusCode?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  ownKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -264,6 +273,7 @@ export type ApiCallLogWhereUniqueInput = Prisma.AtLeast<{
   success?: Prisma.BoolFilter<"ApiCallLog"> | boolean
   statusCode?: Prisma.IntNullableFilter<"ApiCallLog"> | number | null
   errorMessage?: Prisma.StringNullableFilter<"ApiCallLog"> | string | null
+  ownKey?: Prisma.BoolFilter<"ApiCallLog"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ApiCallLog"> | Date | string
 }, "id">
 
@@ -275,6 +285,7 @@ export type ApiCallLogOrderByWithAggregationInput = {
   success?: Prisma.SortOrder
   statusCode?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  ownKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ApiCallLogCountOrderByAggregateInput
   _avg?: Prisma.ApiCallLogAvgOrderByAggregateInput
@@ -294,6 +305,7 @@ export type ApiCallLogScalarWhereWithAggregatesInput = {
   success?: Prisma.BoolWithAggregatesFilter<"ApiCallLog"> | boolean
   statusCode?: Prisma.IntNullableWithAggregatesFilter<"ApiCallLog"> | number | null
   errorMessage?: Prisma.StringNullableWithAggregatesFilter<"ApiCallLog"> | string | null
+  ownKey?: Prisma.BoolWithAggregatesFilter<"ApiCallLog"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ApiCallLog"> | Date | string
 }
 
@@ -305,6 +317,7 @@ export type ApiCallLogCreateInput = {
   success: boolean
   statusCode?: number | null
   errorMessage?: string | null
+  ownKey?: boolean
   createdAt?: Date | string
 }
 
@@ -316,6 +329,7 @@ export type ApiCallLogUncheckedCreateInput = {
   success: boolean
   statusCode?: number | null
   errorMessage?: string | null
+  ownKey?: boolean
   createdAt?: Date | string
 }
 
@@ -327,6 +341,7 @@ export type ApiCallLogUpdateInput = {
   success?: Prisma.BoolFieldUpdateOperationsInput | boolean
   statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -338,6 +353,7 @@ export type ApiCallLogUncheckedUpdateInput = {
   success?: Prisma.BoolFieldUpdateOperationsInput | boolean
   statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -349,6 +365,7 @@ export type ApiCallLogCreateManyInput = {
   success: boolean
   statusCode?: number | null
   errorMessage?: string | null
+  ownKey?: boolean
   createdAt?: Date | string
 }
 
@@ -360,6 +377,7 @@ export type ApiCallLogUpdateManyMutationInput = {
   success?: Prisma.BoolFieldUpdateOperationsInput | boolean
   statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -371,6 +389,7 @@ export type ApiCallLogUncheckedUpdateManyInput = {
   success?: Prisma.BoolFieldUpdateOperationsInput | boolean
   statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -382,6 +401,7 @@ export type ApiCallLogCountOrderByAggregateInput = {
   success?: Prisma.SortOrder
   statusCode?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
+  ownKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -397,6 +417,7 @@ export type ApiCallLogMaxOrderByAggregateInput = {
   success?: Prisma.SortOrder
   statusCode?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
+  ownKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -408,6 +429,7 @@ export type ApiCallLogMinOrderByAggregateInput = {
   success?: Prisma.SortOrder
   statusCode?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
+  ownKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -433,6 +455,7 @@ export type ApiCallLogSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   success?: boolean
   statusCode?: boolean
   errorMessage?: boolean
+  ownKey?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["apiCallLog"]>
 
@@ -444,6 +467,7 @@ export type ApiCallLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   success?: boolean
   statusCode?: boolean
   errorMessage?: boolean
+  ownKey?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["apiCallLog"]>
 
@@ -455,6 +479,7 @@ export type ApiCallLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   success?: boolean
   statusCode?: boolean
   errorMessage?: boolean
+  ownKey?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["apiCallLog"]>
 
@@ -466,10 +491,11 @@ export type ApiCallLogSelectScalar = {
   success?: boolean
   statusCode?: boolean
   errorMessage?: boolean
+  ownKey?: boolean
   createdAt?: boolean
 }
 
-export type ApiCallLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "provider" | "model" | "tool" | "success" | "statusCode" | "errorMessage" | "createdAt", ExtArgs["result"]["apiCallLog"]>
+export type ApiCallLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "provider" | "model" | "tool" | "success" | "statusCode" | "errorMessage" | "ownKey" | "createdAt", ExtArgs["result"]["apiCallLog"]>
 
 export type $ApiCallLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ApiCallLog"
@@ -482,6 +508,7 @@ export type $ApiCallLogPayload<ExtArgs extends runtime.Types.Extensions.Internal
     success: boolean
     statusCode: number | null
     errorMessage: string | null
+    ownKey: boolean
     createdAt: Date
   }, ExtArgs["result"]["apiCallLog"]>
   composites: {}
@@ -913,6 +940,7 @@ export interface ApiCallLogFieldRefs {
   readonly success: Prisma.FieldRef<"ApiCallLog", 'Boolean'>
   readonly statusCode: Prisma.FieldRef<"ApiCallLog", 'Int'>
   readonly errorMessage: Prisma.FieldRef<"ApiCallLog", 'String'>
+  readonly ownKey: Prisma.FieldRef<"ApiCallLog", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"ApiCallLog", 'DateTime'>
 }
     

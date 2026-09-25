@@ -33,7 +33,23 @@ model ApiKey {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Null = a platform key (managed in admin). Set = a customer's own key (bring-your-own-keys plan).
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([provider, isActive])
+  @@index([userId, provider])
+}
+
+// A bring-your-own-keys customer's model settings: whether their keys are used, and the priority order.
+model UserModelConfig {
+  userId           String   @id
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  useOwnKeys       Boolean  @default(false)
+  // JSON string arrays, same shape as the platform AI_MODEL_ORDER / OPENROUTER_SELECTED_MODELS settings.
+  order            String?
+  openRouterModels String?
+  updatedAt        DateTime @updatedAt
 }
 
 // One row per actual outbound call to a provider key (i.e. one row per key
@@ -47,6 +63,8 @@ model ApiCallLog {
   success      Boolean
   statusCode   Int?
   errorMessage String?
+  // True when the call used a customer's own key — kept out of the admin platform analytics.
+  ownKey       Boolean  @default(false)
   createdAt    DateTime @default(now())
 
   @@index([createdAt])
@@ -250,6 +268,12 @@ model User {
   planId String?
   plan   Plan?   @relation(fields: [planId], references: [id])
 
+  // The one login (JWT "sid") currently allowed to act as this user; see src/lib/auth.ts.
+  activeSessionId String?
+
+  apiKeys     ApiKey[]
+  modelConfig UserModelConfig?
+
   accounts            Account[]
   sessions            Session[]
   workspaces          Workspace[]
@@ -294,20 +318,24 @@ model PasswordResetToken {
 // plan to a user (see admin/users) is how they get higher (or custom) limits
 // instead of the flat authenticated default.
 model Plan {
-  id                String   @id @default(cuid())
-  name              String   @unique
-  slug              String   @unique
-  description       String?
-  priceMonthlyCents Int      @default(0)
-  isDefault         Boolean  @default(false)
-  isActive          Boolean  @default(true)
+  id                     String   @id @default(cuid())
+  name                   String   @unique
+  slug                   String   @unique
+  description            String?
+  priceMonthlyCents      Int      @default(0)
+  isDefault              Boolean  @default(false)
+  isActive               Boolean  @default(true)
   // Shown on the public /pricing page: one feature per line, and whether to highlight the tier.
-  features          String?  @db.Text
-  isFeatured        Boolean  @default(false)
+  features               String?  @db.Text
+  isFeatured             Boolean  @default(false)
   // How many saved runs per tool this plan keeps in the user's dashboard history (oldest are dropped).
-  historyPerTool    Int      @default(20)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  historyPerTool         Int      @default(20)
+  // Bring-your-own-keys plan: its users manage their own provider keys in the dashboard (/dashboard/models).
+  allowsOwnKeys          Boolean  @default(false)
+  // Every other plan allows one signed-in browser at a time; a newer login signs the older one out.
+  allowsMultipleSessions Boolean  @default(false)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
   users  User[]
   limits PlanToolLimit[]

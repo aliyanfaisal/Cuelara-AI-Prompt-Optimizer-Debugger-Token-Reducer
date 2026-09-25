@@ -32,7 +32,7 @@ export interface ApiKeyRow {
 }
 
 export async function getApiKeysGrouped(): Promise<Record<Provider, ApiKeyRow[]>> {
-  const rows = await prisma.apiKey.findMany({ orderBy: { createdAt: "asc" } });
+  const rows = await prisma.apiKey.findMany({ where: { userId: null }, orderBy: { createdAt: "asc" } });
   const grouped: Record<Provider, ApiKeyRow[]> = { gemini: [], grok: [], openai: [], claude: [], groq: [], openrouter: [] };
 
   for (const row of rows) {

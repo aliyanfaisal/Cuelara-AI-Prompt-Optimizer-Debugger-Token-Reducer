@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCard, History, LayoutDashboard, User, Wallet } from "lucide-react";
+import { CreditCard, KeyRound, History, LayoutDashboard, User, Wallet } from "lucide-react";
 
 const ITEMS = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { name: "Tool History", href: "/dashboard/tools", icon: History },
+  { name: "AI Models", href: "/dashboard/models", icon: KeyRound },
   { name: "Profile", href: "/dashboard/profile", icon: User },
   { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Payment Methods", href: "/dashboard/payment-methods", icon: Wallet },

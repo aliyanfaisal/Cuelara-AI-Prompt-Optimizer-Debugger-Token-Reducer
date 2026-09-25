@@ -23,7 +23,7 @@ export default async function PricingPage() {
   const plans = await prisma.plan.findMany({
     where: { isActive: true },
     orderBy: { priceMonthlyCents: "asc" },
-    select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, isFeatured: true },
+    select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, isFeatured: true, allowsOwnKeys: true },
   });
 
   const base = siteUrl();
@@ -86,12 +86,12 @@ export default async function PricingPage() {
                     </p>
 
                     <Link
-                      href={isFree ? "/register" : `/contact?plan=${plan.slug}`}
+                      href={plan.allowsOwnKeys ? "/dashboard/models" : isFree ? "/register" : `/contact?plan=${plan.slug}`}
                       className={`mt-8 inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-bold transition-colors ${
                         plan.isFeatured ? "bg-primary text-primary-foreground hover:bg-primary/90" : "border border-border bg-background text-foreground hover:bg-muted"
                       }`}
                     >
-                      {isFree ? "Get started free" : "Contact us"}
+                      {plan.allowsOwnKeys ? "Add your own keys" : isFree ? "Get started free" : "Contact us"}
                     </Link>
 
                     <ul className="mt-8 space-y-3 border-t border-border pt-8 text-sm text-foreground/90">

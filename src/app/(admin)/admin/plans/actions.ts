@@ -19,6 +19,8 @@ export interface PlanRow {
   isActive: boolean;
   features: string;
   isFeatured: boolean;
+  allowsOwnKeys: boolean;
+  allowsMultipleSessions: boolean;
   historyPerTool: number;
   createdAt: string;
   userCount: number;
@@ -40,6 +42,8 @@ export async function getPlans(): Promise<PlanRow[]> {
     isActive: p.isActive,
     features: p.features ?? "",
     isFeatured: p.isFeatured,
+    allowsOwnKeys: p.allowsOwnKeys,
+    allowsMultipleSessions: p.allowsMultipleSessions,
     historyPerTool: p.historyPerTool,
     createdAt: p.createdAt.toISOString(),
     userCount: p._count.users,
@@ -73,6 +77,8 @@ export async function createPlan(data: {
   isActive: boolean;
   features: string;
   isFeatured: boolean;
+  allowsOwnKeys: boolean;
+  allowsMultipleSessions: boolean;
   historyPerTool: number;
   limits: PlanLimitInput[];
 }) {
@@ -103,6 +109,8 @@ export async function createPlan(data: {
           isActive: data.isActive,
           features: data.features.trim() || null,
           isFeatured: data.isFeatured,
+          allowsOwnKeys: data.allowsOwnKeys,
+          allowsMultipleSessions: data.allowsMultipleSessions,
           historyPerTool: Math.floor(data.historyPerTool),
           limits: { create: clean },
         },
@@ -129,6 +137,8 @@ export async function updatePlan(
     isActive: boolean;
     features: string;
     isFeatured: boolean;
+    allowsOwnKeys: boolean;
+    allowsMultipleSessions: boolean;
     historyPerTool: number;
     limits: PlanLimitInput[];
   }
@@ -158,6 +168,8 @@ export async function updatePlan(
           isActive: data.isActive,
           features: data.features.trim() || null,
           isFeatured: data.isFeatured,
+          allowsOwnKeys: data.allowsOwnKeys,
+          allowsMultipleSessions: data.allowsMultipleSessions,
           historyPerTool: Math.floor(data.historyPerTool),
         },
       });

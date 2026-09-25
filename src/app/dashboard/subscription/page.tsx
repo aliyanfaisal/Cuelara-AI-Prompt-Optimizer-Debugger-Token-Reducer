@@ -24,7 +24,7 @@ export default async function SubscriptionPage() {
     prisma.plan.findMany({
       where: { isActive: true },
       orderBy: { priceMonthlyCents: "asc" },
-      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, historyPerTool: true },
+      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, historyPerTool: true, allowsOwnKeys: true },
     }),
     subjectForUser(session.id).then(getSubjectDailyUsage),
     // Upgrade requests from the last week, so a plan already asked for shows as requested.
@@ -100,7 +100,13 @@ export default async function SubscriptionPage() {
                       </li>
                     ))}
                   </ul>
-                  <PlanActions planId={plan.id} planName={plan.name} kind={kind} requested={requestedSlugs.has(plan.slug)} historyPerTool={plan.historyPerTool} />
+                  {plan.allowsOwnKeys ? (
+                    <Link href="/dashboard/models" className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+                      Set up your model keys
+                    </Link>
+                  ) : (
+                    <PlanActions planId={plan.id} planName={plan.name} kind={kind} requested={requestedSlugs.has(plan.slug)} historyPerTool={plan.historyPerTool} />
+                  )}
                 </div>
               );
             })}

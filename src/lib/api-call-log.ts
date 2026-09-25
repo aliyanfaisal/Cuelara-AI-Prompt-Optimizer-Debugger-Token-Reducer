@@ -11,6 +11,7 @@ export interface LogApiCallParams {
   success: boolean;
   statusCode?: number;
   errorMessage?: string;
+  ownKey?: boolean;
 }
 
 /**
@@ -25,6 +26,7 @@ export async function logApiCall(params: LogApiCallParams): Promise<void> {
         model: params.model,
         tool: params.tool,
         success: params.success,
+        ownKey: params.ownKey ?? false,
         statusCode: params.statusCode ?? null,
         errorMessage: params.errorMessage ? params.errorMessage.slice(0, MAX_ERROR_MESSAGE_LENGTH) : null,
       },

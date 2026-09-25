@@ -28,6 +28,11 @@ export type Setting = Prisma.SettingModel
  */
 export type ApiKey = Prisma.ApiKeyModel
 /**
+ * Model UserModelConfig
+ * 
+ */
+export type UserModelConfig = Prisma.UserModelConfigModel
+/**
  * Model ApiCallLog
  * 
  */

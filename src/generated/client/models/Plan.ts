@@ -47,6 +47,8 @@ export type PlanMinAggregateOutputType = {
   features: string | null
   isFeatured: boolean | null
   historyPerTool: number | null
+  allowsOwnKeys: boolean | null
+  allowsMultipleSessions: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +64,8 @@ export type PlanMaxAggregateOutputType = {
   features: string | null
   isFeatured: boolean | null
   historyPerTool: number | null
+  allowsOwnKeys: boolean | null
+  allowsMultipleSessions: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -77,6 +81,8 @@ export type PlanCountAggregateOutputType = {
   features: number
   isFeatured: number
   historyPerTool: number
+  allowsOwnKeys: number
+  allowsMultipleSessions: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -104,6 +110,8 @@ export type PlanMinAggregateInputType = {
   features?: true
   isFeatured?: true
   historyPerTool?: true
+  allowsOwnKeys?: true
+  allowsMultipleSessions?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -119,6 +127,8 @@ export type PlanMaxAggregateInputType = {
   features?: true
   isFeatured?: true
   historyPerTool?: true
+  allowsOwnKeys?: true
+  allowsMultipleSessions?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -134,6 +144,8 @@ export type PlanCountAggregateInputType = {
   features?: true
   isFeatured?: true
   historyPerTool?: true
+  allowsOwnKeys?: true
+  allowsMultipleSessions?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -236,6 +248,8 @@ export type PlanGroupByOutputType = {
   features: string | null
   isFeatured: boolean
   historyPerTool: number
+  allowsOwnKeys: boolean
+  allowsMultipleSessions: boolean
   createdAt: Date
   updatedAt: Date
   _count: PlanCountAggregateOutputType | null
@@ -274,6 +288,8 @@ export type PlanWhereInput = {
   features?: Prisma.StringNullableFilter<"Plan"> | string | null
   isFeatured?: Prisma.BoolFilter<"Plan"> | boolean
   historyPerTool?: Prisma.IntFilter<"Plan"> | number
+  allowsOwnKeys?: Prisma.BoolFilter<"Plan"> | boolean
+  allowsMultipleSessions?: Prisma.BoolFilter<"Plan"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   users?: Prisma.UserListRelationFilter
@@ -291,6 +307,8 @@ export type PlanOrderByWithRelationInput = {
   features?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   historyPerTool?: Prisma.SortOrder
+  allowsOwnKeys?: Prisma.SortOrder
+  allowsMultipleSessions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   users?: Prisma.UserOrderByRelationAggregateInput
@@ -311,6 +329,8 @@ export type PlanWhereUniqueInput = Prisma.AtLeast<{
   features?: Prisma.StringNullableFilter<"Plan"> | string | null
   isFeatured?: Prisma.BoolFilter<"Plan"> | boolean
   historyPerTool?: Prisma.IntFilter<"Plan"> | number
+  allowsOwnKeys?: Prisma.BoolFilter<"Plan"> | boolean
+  allowsMultipleSessions?: Prisma.BoolFilter<"Plan"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   users?: Prisma.UserListRelationFilter
@@ -328,6 +348,8 @@ export type PlanOrderByWithAggregationInput = {
   features?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   historyPerTool?: Prisma.SortOrder
+  allowsOwnKeys?: Prisma.SortOrder
+  allowsMultipleSessions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PlanCountOrderByAggregateInput
@@ -351,6 +373,8 @@ export type PlanScalarWhereWithAggregatesInput = {
   features?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
   isFeatured?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   historyPerTool?: Prisma.IntWithAggregatesFilter<"Plan"> | number
+  allowsOwnKeys?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
+  allowsMultipleSessions?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
 }
@@ -366,6 +390,8 @@ export type PlanCreateInput = {
   features?: string | null
   isFeatured?: boolean
   historyPerTool?: number
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutPlanInput
@@ -383,6 +409,8 @@ export type PlanUncheckedCreateInput = {
   features?: string | null
   isFeatured?: boolean
   historyPerTool?: number
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutPlanInput
@@ -400,6 +428,8 @@ export type PlanUpdateInput = {
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
+  allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutPlanNestedInput
@@ -417,6 +447,8 @@ export type PlanUncheckedUpdateInput = {
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
+  allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutPlanNestedInput
@@ -434,6 +466,8 @@ export type PlanCreateManyInput = {
   features?: string | null
   isFeatured?: boolean
   historyPerTool?: number
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -449,6 +483,8 @@ export type PlanUpdateManyMutationInput = {
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
+  allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -464,6 +500,8 @@ export type PlanUncheckedUpdateManyInput = {
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
+  allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -484,6 +522,8 @@ export type PlanCountOrderByAggregateInput = {
   features?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   historyPerTool?: Prisma.SortOrder
+  allowsOwnKeys?: Prisma.SortOrder
+  allowsMultipleSessions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -504,6 +544,8 @@ export type PlanMaxOrderByAggregateInput = {
   features?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   historyPerTool?: Prisma.SortOrder
+  allowsOwnKeys?: Prisma.SortOrder
+  allowsMultipleSessions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -519,6 +561,8 @@ export type PlanMinOrderByAggregateInput = {
   features?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   historyPerTool?: Prisma.SortOrder
+  allowsOwnKeys?: Prisma.SortOrder
+  allowsMultipleSessions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -574,6 +618,8 @@ export type PlanCreateWithoutUsersInput = {
   features?: string | null
   isFeatured?: boolean
   historyPerTool?: number
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   limits?: Prisma.PlanToolLimitCreateNestedManyWithoutPlanInput
@@ -590,6 +636,8 @@ export type PlanUncheckedCreateWithoutUsersInput = {
   features?: string | null
   isFeatured?: boolean
   historyPerTool?: number
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   limits?: Prisma.PlanToolLimitUncheckedCreateNestedManyWithoutPlanInput
@@ -622,6 +670,8 @@ export type PlanUpdateWithoutUsersInput = {
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
+  allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   limits?: Prisma.PlanToolLimitUpdateManyWithoutPlanNestedInput
@@ -638,6 +688,8 @@ export type PlanUncheckedUpdateWithoutUsersInput = {
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
+  allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   limits?: Prisma.PlanToolLimitUncheckedUpdateManyWithoutPlanNestedInput
@@ -654,6 +706,8 @@ export type PlanCreateWithoutLimitsInput = {
   features?: string | null
   isFeatured?: boolean
   historyPerTool?: number
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutPlanInput
@@ -670,6 +724,8 @@ export type PlanUncheckedCreateWithoutLimitsInput = {
   features?: string | null
   isFeatured?: boolean
   historyPerTool?: number
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutPlanInput
@@ -702,6 +758,8 @@ export type PlanUpdateWithoutLimitsInput = {
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
+  allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutPlanNestedInput
@@ -718,6 +776,8 @@ export type PlanUncheckedUpdateWithoutLimitsInput = {
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   historyPerTool?: Prisma.IntFieldUpdateOperationsInput | number
+  allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutPlanNestedInput
@@ -774,6 +834,8 @@ export type PlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   features?: boolean
   isFeatured?: boolean
   historyPerTool?: boolean
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
@@ -792,6 +854,8 @@ export type PlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   features?: boolean
   isFeatured?: boolean
   historyPerTool?: boolean
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["plan"]>
@@ -807,6 +871,8 @@ export type PlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   features?: boolean
   isFeatured?: boolean
   historyPerTool?: boolean
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["plan"]>
@@ -822,11 +888,13 @@ export type PlanSelectScalar = {
   features?: boolean
   isFeatured?: boolean
   historyPerTool?: boolean
+  allowsOwnKeys?: boolean
+  allowsMultipleSessions?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "historyPerTool" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
+export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "historyPerTool" | "allowsOwnKeys" | "allowsMultipleSessions" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
 export type PlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
   limits?: boolean | Prisma.Plan$limitsArgs<ExtArgs>
@@ -852,6 +920,8 @@ export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     features: string | null
     isFeatured: boolean
     historyPerTool: number
+    allowsOwnKeys: boolean
+    allowsMultipleSessions: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["plan"]>
@@ -1289,6 +1359,8 @@ export interface PlanFieldRefs {
   readonly features: Prisma.FieldRef<"Plan", 'String'>
   readonly isFeatured: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly historyPerTool: Prisma.FieldRef<"Plan", 'Int'>
+  readonly allowsOwnKeys: Prisma.FieldRef<"Plan", 'Boolean'>
+  readonly allowsMultipleSessions: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Plan", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Plan", 'DateTime'>
 }

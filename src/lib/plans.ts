@@ -8,6 +8,8 @@ const planSelect = {
   priceMonthlyCents: true,
   features: true,
   historyPerTool: true,
+  allowsOwnKeys: true,
+  allowsMultipleSessions: true,
   limits: { select: { tool: true, dailyLimit: true } },
 } as const;
 

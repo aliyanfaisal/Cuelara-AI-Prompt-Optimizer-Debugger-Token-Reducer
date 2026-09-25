@@ -100,7 +100,7 @@ export async function downgradePlan(planId: string): Promise<Result> {
     prisma.plan.findFirst({ where: { id: planId, isActive: true }, select: { id: true, name: true, priceMonthlyCents: true, historyPerTool: true } }),
   ]);
   if (!user || !target) return { error: "That plan is not available." };
-  if (target.priceMonthlyCents >= (current?.priceMonthlyCents ?? 0)) {
+  if (target.priceMonthlyCents >= (current?.priceMonthlyCents ?? 0) && !(current?.allowsOwnKeys && target.priceMonthlyCents === 0)) {
     return { error: "You can only move to a cheaper plan here. Upgrades are arranged with our team." };
   }
 

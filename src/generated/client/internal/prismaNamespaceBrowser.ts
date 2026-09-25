@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Setting: 'Setting',
   ApiKey: 'ApiKey',
+  UserModelConfig: 'UserModelConfig',
   ApiCallLog: 'ApiCallLog',
   EmailLog: 'EmailLog',
   ToolUsageDaily: 'ToolUsageDaily',
@@ -111,10 +112,22 @@ export const ApiKeyScalarFieldEnum = {
   label: 'label',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  userId: 'userId'
 } as const
 
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
+
+
+export const UserModelConfigScalarFieldEnum = {
+  userId: 'userId',
+  useOwnKeys: 'useOwnKeys',
+  order: 'order',
+  openRouterModels: 'openRouterModels',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserModelConfigScalarFieldEnum = (typeof UserModelConfigScalarFieldEnum)[keyof typeof UserModelConfigScalarFieldEnum]
 
 
 export const ApiCallLogScalarFieldEnum = {
@@ -125,6 +138,7 @@ export const ApiCallLogScalarFieldEnum = {
   success: 'success',
   statusCode: 'statusCode',
   errorMessage: 'errorMessage',
+  ownKey: 'ownKey',
   createdAt: 'createdAt'
 } as const
 
@@ -294,7 +308,8 @@ export const UserScalarFieldEnum = {
   password: 'password',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  planId: 'planId'
+  planId: 'planId',
+  activeSessionId: 'activeSessionId'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -344,6 +359,8 @@ export const PlanScalarFieldEnum = {
   features: 'features',
   isFeatured: 'isFeatured',
   historyPerTool: 'historyPerTool',
+  allowsOwnKeys: 'allowsOwnKeys',
+  allowsMultipleSessions: 'allowsMultipleSessions',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/session-user";
 import { DashboardNav } from "./DashboardNav";
@@ -11,7 +13,10 @@ export const metadata: Metadata = { title: { default: "Dashboard", template: "%s
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getSessionUser();
-  if (!session) redirect("/login?callbackUrl=/dashboard");
+  if (!session) {
+    const raw = (await getServerSession(authOptions)) as { error?: string } | null;
+    redirect(raw?.error === "SessionReplaced" ? "/login?error=SessionReplaced" : "/login?callbackUrl=/dashboard");
+  }
 
   // The JWT can outlive the account (deleted or deactivated), so confirm the user still exists.
   const user = await prisma.user.findUnique({ where: { id: session.id }, select: { name: true, email: true, isActive: true } });

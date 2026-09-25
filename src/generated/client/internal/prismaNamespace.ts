@@ -399,6 +399,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Setting: 'Setting',
   ApiKey: 'ApiKey',
+  UserModelConfig: 'UserModelConfig',
   ApiCallLog: 'ApiCallLog',
   EmailLog: 'EmailLog',
   ToolUsageDaily: 'ToolUsageDaily',
@@ -437,7 +438,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "apiKey" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "prompt"
+    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "prompt"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -586,6 +587,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ApiKeyCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ApiKeyCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserModelConfig: {
+      payload: Prisma.$UserModelConfigPayload<ExtArgs>
+      fields: Prisma.UserModelConfigFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserModelConfigFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserModelConfigFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>
+        }
+        findFirst: {
+          args: Prisma.UserModelConfigFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserModelConfigFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>
+        }
+        findMany: {
+          args: Prisma.UserModelConfigFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>[]
+        }
+        create: {
+          args: Prisma.UserModelConfigCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>
+        }
+        createMany: {
+          args: Prisma.UserModelConfigCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserModelConfigCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>[]
+        }
+        delete: {
+          args: Prisma.UserModelConfigDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>
+        }
+        update: {
+          args: Prisma.UserModelConfigUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserModelConfigDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserModelConfigUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserModelConfigUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserModelConfigUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserModelConfigPayload>
+        }
+        aggregate: {
+          args: Prisma.UserModelConfigAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserModelConfig>
+        }
+        groupBy: {
+          args: Prisma.UserModelConfigGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserModelConfigGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserModelConfigCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserModelConfigCountAggregateOutputType> | number
         }
       }
     }
@@ -2347,10 +2422,22 @@ export const ApiKeyScalarFieldEnum = {
   label: 'label',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  userId: 'userId'
 } as const
 
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
+
+
+export const UserModelConfigScalarFieldEnum = {
+  userId: 'userId',
+  useOwnKeys: 'useOwnKeys',
+  order: 'order',
+  openRouterModels: 'openRouterModels',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserModelConfigScalarFieldEnum = (typeof UserModelConfigScalarFieldEnum)[keyof typeof UserModelConfigScalarFieldEnum]
 
 
 export const ApiCallLogScalarFieldEnum = {
@@ -2361,6 +2448,7 @@ export const ApiCallLogScalarFieldEnum = {
   success: 'success',
   statusCode: 'statusCode',
   errorMessage: 'errorMessage',
+  ownKey: 'ownKey',
   createdAt: 'createdAt'
 } as const
 
@@ -2530,7 +2618,8 @@ export const UserScalarFieldEnum = {
   password: 'password',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  planId: 'planId'
+  planId: 'planId',
+  activeSessionId: 'activeSessionId'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -2580,6 +2669,8 @@ export const PlanScalarFieldEnum = {
   features: 'features',
   isFeatured: 'isFeatured',
   historyPerTool: 'historyPerTool',
+  allowsOwnKeys: 'allowsOwnKeys',
+  allowsMultipleSessions: 'allowsMultipleSessions',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2953,6 +3044,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   setting?: Prisma.SettingOmit
   apiKey?: Prisma.ApiKeyOmit
+  userModelConfig?: Prisma.UserModelConfigOmit
   apiCallLog?: Prisma.ApiCallLogOmit
   emailLog?: Prisma.EmailLogOmit
   toolUsageDaily?: Prisma.ToolUsageDailyOmit

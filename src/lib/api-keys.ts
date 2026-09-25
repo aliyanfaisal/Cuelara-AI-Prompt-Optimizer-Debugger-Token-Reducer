@@ -1,13 +1,15 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
+import { getOwnKeyContext } from "@/lib/user-keys";
 import { logApiCall, extractProviderErrorStatus, extractProviderErrorMessage } from "@/lib/api-call-log";
 
 export { PROVIDERS, PROVIDER_LABELS, isProvider, type Provider } from "@/lib/providers";
 
-export async function getActiveApiKeys(provider: Provider): Promise<string[]> {
+/** Platform keys (managed in admin) unless a customer's `userId` is given — then that customer's own keys. */
+export async function getActiveApiKeys(provider: Provider, userId: string | null = null): Promise<string[]> {
   const rows = await prisma.apiKey.findMany({
-    where: { provider, isActive: true },
+    where: { provider, isActive: true, userId },
     select: { key: true },
   });
   return rows.map((r) => r.key);
@@ -69,14 +71,19 @@ export async function callWithKeyRotation<T>(
   fn: (apiKey: string) => Promise<T>,
   meta: CallMeta
 ): Promise<T> {
-  const keys = shuffle(await getActiveApiKeys(provider));
+  // A customer on the bring-your-own-keys plan uses their own keys for this provider when they have any,
+  // and the platform pool otherwise (e.g. the Context Extractor's Gemini embeddings).
+  const own = await getOwnKeyContext();
+  const ownKeys = own?.keys[provider] ?? [];
+  const isOwnKey = ownKeys.length > 0;
+  const keys = shuffle(isOwnKey ? ownKeys : await getActiveApiKeys(provider));
   if (keys.length === 0) throw new NoApiKeysConfiguredError(provider);
 
   let lastError: unknown;
   for (const key of keys) {
     try {
       const result = await fn(key);
-      await logApiCall({ provider, model: meta.model, tool: meta.tool, success: true });
+      await logApiCall({ provider, model: meta.model, tool: meta.tool, success: true, ownKey: isOwnKey });
       return result;
     } catch (error) {
       lastError = error;
@@ -85,6 +92,7 @@ export async function callWithKeyRotation<T>(
         model: meta.model,
         tool: meta.tool,
         success: false,
+        ownKey: isOwnKey,
         statusCode: extractProviderErrorStatus(error),
         errorMessage: extractProviderErrorMessage(error),
       });
