@@ -76,6 +76,9 @@ export const ModelName = {
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
+  WorkspaceMember: 'WorkspaceMember',
+  WorkspaceInvite: 'WorkspaceInvite',
+  SavedPrompt: 'SavedPrompt',
   Prompt: 'Prompt',
   RateLimitBucket: 'RateLimitBucket',
   ErrorLog: 'ErrorLog'
@@ -363,6 +366,7 @@ export const PlanScalarFieldEnum = {
   historyPerTool: 'historyPerTool',
   allowsOwnKeys: 'allowsOwnKeys',
   allowsMultipleSessions: 'allowsMultipleSessions',
+  maxSeats: 'maxSeats',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -422,10 +426,51 @@ export const WorkspaceScalarFieldEnum = {
   id: 'id',
   name: 'name',
   createdAt: 'createdAt',
+  type: 'type',
   userId: 'userId'
 } as const
 
 export type WorkspaceScalarFieldEnum = (typeof WorkspaceScalarFieldEnum)[keyof typeof WorkspaceScalarFieldEnum]
+
+
+export const WorkspaceMemberScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  role: 'role',
+  createdAt: 'createdAt'
+} as const
+
+export type WorkspaceMemberScalarFieldEnum = (typeof WorkspaceMemberScalarFieldEnum)[keyof typeof WorkspaceMemberScalarFieldEnum]
+
+
+export const WorkspaceInviteScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  email: 'email',
+  role: 'role',
+  token: 'token',
+  invitedById: 'invitedById',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type WorkspaceInviteScalarFieldEnum = (typeof WorkspaceInviteScalarFieldEnum)[keyof typeof WorkspaceInviteScalarFieldEnum]
+
+
+export const SavedPromptScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  authorId: 'authorId',
+  title: 'title',
+  content: 'content',
+  tags: 'tags',
+  sourceTool: 'sourceTool',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SavedPromptScalarFieldEnum = (typeof SavedPromptScalarFieldEnum)[keyof typeof SavedPromptScalarFieldEnum]
 
 
 export const PromptScalarFieldEnum = {

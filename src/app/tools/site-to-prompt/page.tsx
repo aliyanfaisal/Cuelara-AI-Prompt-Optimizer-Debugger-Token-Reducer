@@ -14,6 +14,7 @@ import type { DesignDna } from "@/lib/site-to-prompt/types";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { notifyToolUsageChanged } from "@/lib/tool-usage-events";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
+import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 const EXTENSION_URL = process.env.NEXT_PUBLIC_EXTENSION_URL || "";
@@ -672,6 +673,7 @@ export default function SiteToPromptPage() {
               <span className="text-sm font-bold text-foreground">Your Prompt <span className="text-xs text-muted-foreground font-normal ml-1">({target})</span></span>
               <div className="flex items-center gap-2">
                 <PromptViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+                <SaveToWorkspaceButton content={prompt} title={`Site to Prompt: ${url}`} tool="site-to-prompt" />
                 <button onClick={handleCopy} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm cursor-pointer">
                   {copied ? <><Check className="w-3.5 h-3.5" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy Prompt</>}
                 </button>

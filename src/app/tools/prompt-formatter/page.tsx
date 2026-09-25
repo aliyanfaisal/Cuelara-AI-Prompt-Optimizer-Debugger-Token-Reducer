@@ -13,6 +13,7 @@ import {
 import { FORMAT_STYLES, INDENT_SIZES, type FormatStyle, type IndentSize } from "@/lib/prompt-formatter/constants";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
@@ -362,6 +363,7 @@ export default function PromptFormatterPage() {
                 
                 <div className="flex items-center gap-2">
                   <PromptViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+                  <SaveToWorkspaceButton content={formatted} title={input} tool="prompt-formatter" />
                   <button
                     onClick={handleCopy}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm cursor-pointer"

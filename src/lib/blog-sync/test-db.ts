@@ -20,7 +20,11 @@ CREATE TABLE "BlogPost" (
 );
 CREATE UNIQUE INDEX "BlogPost_slug_key" ON "BlogPost"("slug");
 -- Later migrations (plans, email log) alter or reference "User", which was also created before Migrate.
-CREATE TABLE "User" ("id" TEXT NOT NULL, CONSTRAINT "User_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "User" (
+  "id" TEXT NOT NULL, "name" TEXT, "email" TEXT, "emailVerified" TIMESTAMP(3), "image" TEXT, "password" TEXT,
+  "isActive" BOOLEAN NOT NULL DEFAULT false, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 -- The provider key pool and its call log were also created before Migrate; later migrations add columns to them.
 CREATE TABLE "ApiKey" (
   "id" TEXT NOT NULL, "provider" TEXT NOT NULL, "key" TEXT NOT NULL, "label" TEXT,

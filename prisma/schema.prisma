@@ -274,6 +274,10 @@ model User {
   apiKeys     ApiKey[]
   modelConfig UserModelConfig?
 
+  workspaceMemberships WorkspaceMember[]
+  sentInvites          WorkspaceInvite[]
+  savedPrompts         SavedPrompt[]
+
   accounts            Account[]
   sessions            Session[]
   workspaces          Workspace[]
@@ -334,6 +338,8 @@ model Plan {
   allowsOwnKeys          Boolean  @default(false)
   // Every other plan allows one signed-in browser at a time; a newer login signs the older one out.
   allowsMultipleSessions Boolean  @default(false)
+  // How many people (including the manager) a team workspace on this plan can hold. 0 = the plan can't create a team.
+  maxSeats               Int      @default(0)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
 
@@ -404,10 +410,67 @@ model Workspace {
   name      String
   createdAt DateTime @default(now())
 
+  // "personal" (one per user, private) or "team" (shared; `userId` is the owner/manager).
+  type String @default("personal")
+
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  prompts Prompt[]
+  prompts      Prompt[]
+  members      WorkspaceMember[]
+  invites      WorkspaceInvite[]
+  savedPrompts SavedPrompt[]
+
+  @@index([userId, type])
+}
+
+// Who belongs to a workspace and in what role: OWNER (the team manager), ADMIN (can invite and remove members) or MEMBER.
+model WorkspaceMember {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        String    @default("MEMBER")
+  createdAt   DateTime  @default(now())
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+// An emailed invitation to join a team workspace. The token in the link is the only credential, so it is single-use and expires.
+model WorkspaceInvite {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  email       String
+  role        String    @default("MEMBER")
+  token       String    @unique
+  invitedById String
+  invitedBy   User      @relation(fields: [invitedById], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@unique([workspaceId, email])
+}
+
+// A prompt saved to a workspace's library (private personal library, or shared with a team). Deliberately separate from
+// `Prompt`, which the admin Prompts page lists — user libraries must never show up there.
+model SavedPrompt {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title       String
+  content     String    @db.Text
+  tags        String[]
+  // The tool it was saved from, e.g. "prompt-builder"; null when written by hand.
+  sourceTool  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([workspaceId, updatedAt])
 }
 
 model Prompt {

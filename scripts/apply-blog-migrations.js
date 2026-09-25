@@ -43,6 +43,10 @@ const STEPS = [
     dir: '20260926110000_error_log',
     isApplied: `select 1 from information_schema.tables where table_name = 'ErrorLog'`,
   },
+  {
+    dir: '20260927100000_workspaces_and_teams',
+    isApplied: `select 1 from information_schema.tables where table_name = 'SavedPrompt'`,
+  },
 ];
 
 async function main() {

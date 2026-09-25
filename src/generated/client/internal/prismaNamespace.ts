@@ -422,6 +422,9 @@ export const ModelName = {
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
+  WorkspaceMember: 'WorkspaceMember',
+  WorkspaceInvite: 'WorkspaceInvite',
+  SavedPrompt: 'SavedPrompt',
   Prompt: 'Prompt',
   RateLimitBucket: 'RateLimitBucket',
   ErrorLog: 'ErrorLog'
@@ -440,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "prompt" | "rateLimitBucket" | "errorLog"
+    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "workspaceMember" | "workspaceInvite" | "savedPrompt" | "prompt" | "rateLimitBucket" | "errorLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2294,6 +2297,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WorkspaceMember: {
+      payload: Prisma.$WorkspaceMemberPayload<ExtArgs>
+      fields: Prisma.WorkspaceMemberFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WorkspaceMemberFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WorkspaceMemberFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>
+        }
+        findFirst: {
+          args: Prisma.WorkspaceMemberFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WorkspaceMemberFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>
+        }
+        findMany: {
+          args: Prisma.WorkspaceMemberFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>[]
+        }
+        create: {
+          args: Prisma.WorkspaceMemberCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>
+        }
+        createMany: {
+          args: Prisma.WorkspaceMemberCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WorkspaceMemberCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>[]
+        }
+        delete: {
+          args: Prisma.WorkspaceMemberDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>
+        }
+        update: {
+          args: Prisma.WorkspaceMemberUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>
+        }
+        deleteMany: {
+          args: Prisma.WorkspaceMemberDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WorkspaceMemberUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WorkspaceMemberUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>[]
+        }
+        upsert: {
+          args: Prisma.WorkspaceMemberUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceMemberPayload>
+        }
+        aggregate: {
+          args: Prisma.WorkspaceMemberAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWorkspaceMember>
+        }
+        groupBy: {
+          args: Prisma.WorkspaceMemberGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkspaceMemberGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WorkspaceMemberCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkspaceMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    WorkspaceInvite: {
+      payload: Prisma.$WorkspaceInvitePayload<ExtArgs>
+      fields: Prisma.WorkspaceInviteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WorkspaceInviteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WorkspaceInviteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>
+        }
+        findFirst: {
+          args: Prisma.WorkspaceInviteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WorkspaceInviteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>
+        }
+        findMany: {
+          args: Prisma.WorkspaceInviteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>[]
+        }
+        create: {
+          args: Prisma.WorkspaceInviteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>
+        }
+        createMany: {
+          args: Prisma.WorkspaceInviteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WorkspaceInviteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>[]
+        }
+        delete: {
+          args: Prisma.WorkspaceInviteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>
+        }
+        update: {
+          args: Prisma.WorkspaceInviteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>
+        }
+        deleteMany: {
+          args: Prisma.WorkspaceInviteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WorkspaceInviteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WorkspaceInviteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>[]
+        }
+        upsert: {
+          args: Prisma.WorkspaceInviteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceInvitePayload>
+        }
+        aggregate: {
+          args: Prisma.WorkspaceInviteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWorkspaceInvite>
+        }
+        groupBy: {
+          args: Prisma.WorkspaceInviteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkspaceInviteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WorkspaceInviteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkspaceInviteCountAggregateOutputType> | number
+        }
+      }
+    }
+    SavedPrompt: {
+      payload: Prisma.$SavedPromptPayload<ExtArgs>
+      fields: Prisma.SavedPromptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SavedPromptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SavedPromptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>
+        }
+        findFirst: {
+          args: Prisma.SavedPromptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SavedPromptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>
+        }
+        findMany: {
+          args: Prisma.SavedPromptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>[]
+        }
+        create: {
+          args: Prisma.SavedPromptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>
+        }
+        createMany: {
+          args: Prisma.SavedPromptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SavedPromptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>[]
+        }
+        delete: {
+          args: Prisma.SavedPromptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>
+        }
+        update: {
+          args: Prisma.SavedPromptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>
+        }
+        deleteMany: {
+          args: Prisma.SavedPromptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SavedPromptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SavedPromptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>[]
+        }
+        upsert: {
+          args: Prisma.SavedPromptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedPromptPayload>
+        }
+        aggregate: {
+          args: Prisma.SavedPromptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSavedPrompt>
+        }
+        groupBy: {
+          args: Prisma.SavedPromptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SavedPromptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SavedPromptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SavedPromptCountAggregateOutputType> | number
+        }
+      }
+    }
     Prompt: {
       payload: Prisma.$PromptPayload<ExtArgs>
       fields: Prisma.PromptFieldRefs
@@ -2821,6 +3046,7 @@ export const PlanScalarFieldEnum = {
   historyPerTool: 'historyPerTool',
   allowsOwnKeys: 'allowsOwnKeys',
   allowsMultipleSessions: 'allowsMultipleSessions',
+  maxSeats: 'maxSeats',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2880,10 +3106,51 @@ export const WorkspaceScalarFieldEnum = {
   id: 'id',
   name: 'name',
   createdAt: 'createdAt',
+  type: 'type',
   userId: 'userId'
 } as const
 
 export type WorkspaceScalarFieldEnum = (typeof WorkspaceScalarFieldEnum)[keyof typeof WorkspaceScalarFieldEnum]
+
+
+export const WorkspaceMemberScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  role: 'role',
+  createdAt: 'createdAt'
+} as const
+
+export type WorkspaceMemberScalarFieldEnum = (typeof WorkspaceMemberScalarFieldEnum)[keyof typeof WorkspaceMemberScalarFieldEnum]
+
+
+export const WorkspaceInviteScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  email: 'email',
+  role: 'role',
+  token: 'token',
+  invitedById: 'invitedById',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type WorkspaceInviteScalarFieldEnum = (typeof WorkspaceInviteScalarFieldEnum)[keyof typeof WorkspaceInviteScalarFieldEnum]
+
+
+export const SavedPromptScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  authorId: 'authorId',
+  title: 'title',
+  content: 'content',
+  tags: 'tags',
+  sourceTool: 'sourceTool',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SavedPromptScalarFieldEnum = (typeof SavedPromptScalarFieldEnum)[keyof typeof SavedPromptScalarFieldEnum]
 
 
 export const PromptScalarFieldEnum = {
@@ -3242,6 +3509,9 @@ export type GlobalOmitConfig = {
   planToolLimit?: Prisma.PlanToolLimitOmit
   verificationToken?: Prisma.VerificationTokenOmit
   workspace?: Prisma.WorkspaceOmit
+  workspaceMember?: Prisma.WorkspaceMemberOmit
+  workspaceInvite?: Prisma.WorkspaceInviteOmit
+  savedPrompt?: Prisma.SavedPromptOmit
   prompt?: Prisma.PromptOmit
   rateLimitBucket?: Prisma.RateLimitBucketOmit
   errorLog?: Prisma.ErrorLogOmit

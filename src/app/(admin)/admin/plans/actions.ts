@@ -22,6 +22,7 @@ export interface PlanRow {
   isFeatured: boolean;
   allowsOwnKeys: boolean;
   allowsMultipleSessions: boolean;
+  maxSeats: number;
   historyPerTool: number;
   createdAt: string;
   userCount: number;
@@ -46,6 +47,7 @@ export async function getPlans(): Promise<PlanRow[]> {
     isFeatured: p.isFeatured,
     allowsOwnKeys: p.allowsOwnKeys,
     allowsMultipleSessions: p.allowsMultipleSessions,
+    maxSeats: p.maxSeats,
     historyPerTool: p.historyPerTool,
     createdAt: p.createdAt.toISOString(),
     userCount: p._count.users,
@@ -81,6 +83,7 @@ export async function createPlan(data: {
   isFeatured: boolean;
   allowsOwnKeys: boolean;
   allowsMultipleSessions: boolean;
+  maxSeats: number;
   historyPerTool: number;
   limits: PlanLimitInput[];
 }) {
@@ -114,6 +117,7 @@ export async function createPlan(data: {
           isFeatured: data.isFeatured,
           allowsOwnKeys: data.allowsOwnKeys,
           allowsMultipleSessions: data.allowsMultipleSessions,
+          maxSeats: Math.max(0, Math.min(1000, Math.floor(data.maxSeats) || 0)),
           historyPerTool: Math.floor(data.historyPerTool),
           limits: { create: clean },
         },
@@ -142,6 +146,7 @@ export async function updatePlan(
     isFeatured: boolean;
     allowsOwnKeys: boolean;
     allowsMultipleSessions: boolean;
+    maxSeats: number;
     historyPerTool: number;
     limits: PlanLimitInput[];
   }
@@ -174,6 +179,7 @@ export async function updatePlan(
           isFeatured: data.isFeatured,
           allowsOwnKeys: data.allowsOwnKeys,
           allowsMultipleSessions: data.allowsMultipleSessions,
+          maxSeats: Math.max(0, Math.min(1000, Math.floor(data.maxSeats) || 0)),
           historyPerTool: Math.floor(data.historyPerTool),
         },
       });

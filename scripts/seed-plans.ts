@@ -49,7 +49,8 @@ const PLANS = [
     isFeatured: false,
     historyPerTool: 100,
     allowsMultipleSessions: true,
-    features: ["Everything in Pro", "500 runs per tool, per day", "Context Extractor: 150 documents and 2,000 prompts a day", "Saves your last 100 runs per tool", "Shared workspaces (coming soon)", "Priority support"].join("\n"),
+    maxSeats: 5,
+    features: ["Everything in Pro", "500 runs per tool, per day", "Context Extractor: 150 documents and 2,000 prompts a day", "Saves your last 100 runs per tool", "A shared team workspace with 5 seats", "Priority support"].join("\n"),
     limits: limitsFor(500, 150, 2000),
   },
   {

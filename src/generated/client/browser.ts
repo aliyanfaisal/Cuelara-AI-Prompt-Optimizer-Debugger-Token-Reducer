@@ -143,6 +143,21 @@ export type VerificationToken = Prisma.VerificationTokenModel
  */
 export type Workspace = Prisma.WorkspaceModel
 /**
+ * Model WorkspaceMember
+ * 
+ */
+export type WorkspaceMember = Prisma.WorkspaceMemberModel
+/**
+ * Model WorkspaceInvite
+ * 
+ */
+export type WorkspaceInvite = Prisma.WorkspaceInviteModel
+/**
+ * Model SavedPrompt
+ * 
+ */
+export type SavedPrompt = Prisma.SavedPromptModel
+/**
  * Model Prompt
  * 
  */

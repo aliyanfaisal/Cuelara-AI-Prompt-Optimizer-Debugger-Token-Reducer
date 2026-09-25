@@ -15,6 +15,7 @@ import { splitStreamTrailer } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
@@ -377,6 +378,7 @@ export default function PromptOptimizerPage() {
                 
                 <div className="flex items-center gap-2">
                   <PromptViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+                  {!isStreaming && optimizedPrompt && <SaveToWorkspaceButton content={optimizedPrompt} title={input} tool="prompt-optimizer" />}
                   <button
                     onClick={handleCopy}
                     disabled={isStreaming}

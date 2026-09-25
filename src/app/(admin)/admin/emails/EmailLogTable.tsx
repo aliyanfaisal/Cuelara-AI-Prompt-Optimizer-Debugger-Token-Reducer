@@ -19,6 +19,7 @@ const TYPE_LABELS: Record<string, string> = {
   "plan-change": "Plan change",
   contact: "Contact form",
   "error-alert": "Error alert",
+  "team-invite": "Team invite",
 };
 
 export default function EmailLogTable({ logs, types }: { logs: EmailLogRow[]; types: string[] }) {

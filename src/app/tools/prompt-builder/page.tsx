@@ -13,6 +13,7 @@ import {
 } from "@/lib/prompt-builder/constants";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
@@ -334,6 +335,7 @@ export default function PromptBuilderPage() {
 
                   <div className="flex items-center gap-2">
                     <PromptViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+                    <SaveToWorkspaceButton content={built} title={idea} tool="prompt-builder" />
                     <button
                       onClick={handleCopy}
                       className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm cursor-pointer"

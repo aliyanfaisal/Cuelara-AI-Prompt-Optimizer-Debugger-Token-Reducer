@@ -2,7 +2,7 @@ import "server-only";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
 
-export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "contact", "error-alert"] as const;
+export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "contact", "error-alert", "team-invite"] as const;
 export type EmailType = (typeof EMAIL_TYPES)[number];
 
 let transporter: nodemailer.Transporter | null = null;
@@ -162,6 +162,22 @@ export async function sendPlanChangeEmail(to: string, planName: string): Promise
   );
   const text = `Your Cuelara plan was updated to: ${planName}.\n\nGo to your tools: ${process.env.NEXTAUTH_URL || ""}/tools${textFooter()}`;
   await sendEmail({ type: "plan-change", to, subject: `Your Cuelara plan is now ${planName}`, html, text });
+}
+
+/** Invites someone to a team workspace. The link is single-use and the recipient must sign in with this address. */
+export async function sendTeamInviteEmail(to: string, params: { workspaceName: string; inviterName: string; role: string; acceptUrl: string }): Promise<void> {
+  const team = escapeHtml(params.workspaceName);
+  const inviter = escapeHtml(params.inviterName);
+  const roleText = params.role === "ADMIN" ? "an admin" : "a member";
+  const html = emailShell(
+    `You're invited to ${team}`,
+    `<p><strong>${inviter}</strong> invited you to join the <strong>${team}</strong> team on Cuelara as ${roleText}.</p>
+     <p>You'll get the team's shared prompt library and the Team plan's daily limits on every tool.</p>
+     ${button(params.acceptUrl, "Accept invitation")}
+     <p style="color:#71717a;font-size:12px;">Sign in (or create an account) with <strong>${escapeHtml(to)}</strong> to accept. This invitation expires in 7 days.</p>`
+  );
+  const text = `${params.inviterName} invited you to join the "${params.workspaceName}" team on Cuelara as ${roleText}.\n\nAccept the invitation: ${params.acceptUrl}\n\nSign in (or create an account) with ${to} to accept. This invitation expires in 7 days.${textFooter()}`;
+  await sendEmail({ type: "team-invite", to, subject: `${params.inviterName} invited you to ${params.workspaceName} on Cuelara`, html, text });
 }
 
 function escapeHtml(value: string): string {

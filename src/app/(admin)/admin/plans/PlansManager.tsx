@@ -19,6 +19,7 @@ interface FormState {
   isFeatured: boolean;
   allowsOwnKeys: boolean;
   allowsMultipleSessions: boolean;
+  maxSeats: string;
   features: string;
   historyPerTool: string;
   limits: Record<string, string>; // tool -> string input, blank = no override
@@ -33,6 +34,7 @@ const EMPTY_FORM: FormState = {
   isFeatured: false,
   allowsOwnKeys: false,
   allowsMultipleSessions: false,
+  maxSeats: "0",
   features: "",
   historyPerTool: "20",
   limits: {},
@@ -50,6 +52,7 @@ function planToForm(plan: PlanRow): FormState {
     isFeatured: plan.isFeatured,
     allowsOwnKeys: plan.allowsOwnKeys,
     allowsMultipleSessions: plan.allowsMultipleSessions,
+    maxSeats: String(plan.maxSeats),
     features: plan.features,
     historyPerTool: String(plan.historyPerTool),
     limits,
@@ -100,6 +103,7 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
       isFeatured: form.isFeatured,
       allowsOwnKeys: form.allowsOwnKeys,
       allowsMultipleSessions: form.allowsMultipleSessions,
+      maxSeats: Number(form.maxSeats || 0),
       historyPerTool: Number(form.historyPerTool),
       limits: formToLimits(form),
     };
@@ -278,6 +282,19 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                   step="1"
                   value={form.historyPerTool}
                   onChange={(e) => setForm({ ...form, historyPerTool: e.target.value })}
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Team seats (people a team on this plan can hold, including the manager; 0 = this plan can&rsquo;t create a team)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="1000"
+                  step="1"
+                  value={form.maxSeats}
+                  onChange={(e) => setForm({ ...form, maxSeats: e.target.value })}
                   className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>

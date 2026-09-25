@@ -226,6 +226,9 @@ export type UserWhereInput = {
   plan?: Prisma.XOR<Prisma.PlanNullableScalarRelationFilter, Prisma.PlanWhereInput> | null
   apiKeys?: Prisma.ApiKeyListRelationFilter
   modelConfig?: Prisma.XOR<Prisma.UserModelConfigNullableScalarRelationFilter, Prisma.UserModelConfigWhereInput> | null
+  workspaceMemberships?: Prisma.WorkspaceMemberListRelationFilter
+  sentInvites?: Prisma.WorkspaceInviteListRelationFilter
+  savedPrompts?: Prisma.SavedPromptListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
   workspaces?: Prisma.WorkspaceListRelationFilter
@@ -250,6 +253,9 @@ export type UserOrderByWithRelationInput = {
   plan?: Prisma.PlanOrderByWithRelationInput
   apiKeys?: Prisma.ApiKeyOrderByRelationAggregateInput
   modelConfig?: Prisma.UserModelConfigOrderByWithRelationInput
+  workspaceMemberships?: Prisma.WorkspaceMemberOrderByRelationAggregateInput
+  sentInvites?: Prisma.WorkspaceInviteOrderByRelationAggregateInput
+  savedPrompts?: Prisma.SavedPromptOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   workspaces?: Prisma.WorkspaceOrderByRelationAggregateInput
@@ -277,6 +283,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   plan?: Prisma.XOR<Prisma.PlanNullableScalarRelationFilter, Prisma.PlanWhereInput> | null
   apiKeys?: Prisma.ApiKeyListRelationFilter
   modelConfig?: Prisma.XOR<Prisma.UserModelConfigNullableScalarRelationFilter, Prisma.UserModelConfigWhereInput> | null
+  workspaceMemberships?: Prisma.WorkspaceMemberListRelationFilter
+  sentInvites?: Prisma.WorkspaceInviteListRelationFilter
+  savedPrompts?: Prisma.SavedPromptListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
   workspaces?: Prisma.WorkspaceListRelationFilter
@@ -332,6 +341,9 @@ export type UserCreateInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -355,6 +367,9 @@ export type UserUncheckedCreateInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -378,6 +393,9 @@ export type UserUpdateInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -401,6 +419,9 @@ export type UserUncheckedUpdateInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -701,6 +722,48 @@ export type UserUpdateOneRequiredWithoutWorkspacesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkspacesInput, Prisma.UserUpdateWithoutWorkspacesInput>, Prisma.UserUncheckedUpdateWithoutWorkspacesInput>
 }
 
+export type UserCreateNestedOneWithoutWorkspaceMembershipsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembershipsInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembershipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspaceMembershipsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutWorkspaceMembershipsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembershipsInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembershipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspaceMembershipsInput
+  upsert?: Prisma.UserUpsertWithoutWorkspaceMembershipsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkspaceMembershipsInput, Prisma.UserUpdateWithoutWorkspaceMembershipsInput>, Prisma.UserUncheckedUpdateWithoutWorkspaceMembershipsInput>
+}
+
+export type UserCreateNestedOneWithoutSentInvitesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSentInvitesInput, Prisma.UserUncheckedCreateWithoutSentInvitesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSentInvitesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSentInvitesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSentInvitesInput, Prisma.UserUncheckedCreateWithoutSentInvitesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSentInvitesInput
+  upsert?: Prisma.UserUpsertWithoutSentInvitesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSentInvitesInput, Prisma.UserUpdateWithoutSentInvitesInput>, Prisma.UserUncheckedUpdateWithoutSentInvitesInput>
+}
+
+export type UserCreateNestedOneWithoutSavedPromptsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSavedPromptsInput, Prisma.UserUncheckedCreateWithoutSavedPromptsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSavedPromptsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSavedPromptsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSavedPromptsInput, Prisma.UserUncheckedCreateWithoutSavedPromptsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSavedPromptsInput
+  upsert?: Prisma.UserUpsertWithoutSavedPromptsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSavedPromptsInput, Prisma.UserUpdateWithoutSavedPromptsInput>, Prisma.UserUncheckedUpdateWithoutSavedPromptsInput>
+}
+
 export type UserCreateNestedOneWithoutPromptsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutPromptsInput, Prisma.UserUncheckedCreateWithoutPromptsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutPromptsInput
@@ -728,6 +791,9 @@ export type UserCreateWithoutApiKeysInput = {
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -750,6 +816,9 @@ export type UserUncheckedCreateWithoutApiKeysInput = {
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -788,6 +857,9 @@ export type UserUpdateWithoutApiKeysInput = {
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -810,6 +882,9 @@ export type UserUncheckedUpdateWithoutApiKeysInput = {
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -832,6 +907,9 @@ export type UserCreateWithoutModelConfigInput = {
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -854,6 +932,9 @@ export type UserUncheckedCreateWithoutModelConfigInput = {
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -892,6 +973,9 @@ export type UserUpdateWithoutModelConfigInput = {
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -914,6 +998,9 @@ export type UserUncheckedUpdateWithoutModelConfigInput = {
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -937,6 +1024,9 @@ export type UserCreateWithoutAccountsInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
@@ -959,6 +1049,9 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
@@ -997,6 +1090,9 @@ export type UserUpdateWithoutAccountsInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
@@ -1019,6 +1115,9 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
@@ -1041,6 +1140,9 @@ export type UserCreateWithoutSessionsInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
@@ -1063,6 +1165,9 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
@@ -1101,6 +1206,9 @@ export type UserUpdateWithoutSessionsInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
@@ -1123,6 +1231,9 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
@@ -1144,6 +1255,9 @@ export type UserCreateWithoutRolesInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -1166,6 +1280,9 @@ export type UserUncheckedCreateWithoutRolesInput = {
   activeSessionId?: string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -1226,6 +1343,9 @@ export type UserCreateWithoutActivationTokensInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -1248,6 +1368,9 @@ export type UserUncheckedCreateWithoutActivationTokensInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -1286,6 +1409,9 @@ export type UserUpdateWithoutActivationTokensInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -1308,6 +1434,9 @@ export type UserUncheckedUpdateWithoutActivationTokensInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -1330,6 +1459,9 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -1352,6 +1484,9 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -1390,6 +1525,9 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -1412,6 +1550,9 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -1433,6 +1574,9 @@ export type UserCreateWithoutPlanInput = {
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -1455,6 +1599,9 @@ export type UserUncheckedCreateWithoutPlanInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -1504,6 +1651,9 @@ export type UserCreateWithoutToolRunsInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -1526,6 +1676,9 @@ export type UserUncheckedCreateWithoutToolRunsInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -1564,6 +1717,9 @@ export type UserUpdateWithoutToolRunsInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -1586,6 +1742,9 @@ export type UserUncheckedUpdateWithoutToolRunsInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -1608,6 +1767,9 @@ export type UserCreateWithoutWorkspacesInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
@@ -1630,6 +1792,9 @@ export type UserUncheckedCreateWithoutWorkspacesInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
@@ -1668,6 +1833,9 @@ export type UserUpdateWithoutWorkspacesInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
@@ -1690,8 +1858,359 @@ export type UserUncheckedUpdateWithoutWorkspacesInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutWorkspaceMembershipsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  activeSessionId?: string | null
+  roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
+  plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  planId?: string | null
+  activeSessionId?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembershipsInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembershipsInput>
+}
+
+export type UserUpsertWithoutWorkspaceMembershipsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWorkspaceMembershipsInput, Prisma.UserUncheckedUpdateWithoutWorkspaceMembershipsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembershipsInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembershipsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWorkspaceMembershipsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWorkspaceMembershipsInput, Prisma.UserUncheckedUpdateWithoutWorkspaceMembershipsInput>
+}
+
+export type UserUpdateWithoutWorkspaceMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
+  plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSentInvitesInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  activeSessionId?: string | null
+  roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
+  plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSentInvitesInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  planId?: string | null
+  activeSessionId?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSentInvitesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSentInvitesInput, Prisma.UserUncheckedCreateWithoutSentInvitesInput>
+}
+
+export type UserUpsertWithoutSentInvitesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSentInvitesInput, Prisma.UserUncheckedUpdateWithoutSentInvitesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSentInvitesInput, Prisma.UserUncheckedCreateWithoutSentInvitesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSentInvitesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSentInvitesInput, Prisma.UserUncheckedUpdateWithoutSentInvitesInput>
+}
+
+export type UserUpdateWithoutSentInvitesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
+  plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSentInvitesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSavedPromptsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  activeSessionId?: string | null
+  roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
+  plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSavedPromptsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  planId?: string | null
+  activeSessionId?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSavedPromptsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSavedPromptsInput, Prisma.UserUncheckedCreateWithoutSavedPromptsInput>
+}
+
+export type UserUpsertWithoutSavedPromptsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSavedPromptsInput, Prisma.UserUncheckedUpdateWithoutSavedPromptsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSavedPromptsInput, Prisma.UserUncheckedCreateWithoutSavedPromptsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSavedPromptsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSavedPromptsInput, Prisma.UserUncheckedUpdateWithoutSavedPromptsInput>
+}
+
+export type UserUpdateWithoutSavedPromptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
+  plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSavedPromptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
   prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -1712,6 +2231,9 @@ export type UserCreateWithoutPromptsInput = {
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -1734,6 +2256,9 @@ export type UserUncheckedCreateWithoutPromptsInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -1772,6 +2297,9 @@ export type UserUpdateWithoutPromptsInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -1794,6 +2322,9 @@ export type UserUncheckedUpdateWithoutPromptsInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -1815,6 +2346,9 @@ export type UserUpdateWithoutRolesInput = {
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -1837,6 +2371,9 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -1884,6 +2421,9 @@ export type UserUpdateWithoutPlanInput = {
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -1906,6 +2446,9 @@ export type UserUncheckedUpdateWithoutPlanInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -1935,6 +2478,9 @@ export type UserUncheckedUpdateManyWithoutPlanInput = {
 export type UserCountOutputType = {
   roles: number
   apiKeys: number
+  workspaceMemberships: number
+  sentInvites: number
+  savedPrompts: number
   accounts: number
   sessions: number
   workspaces: number
@@ -1947,6 +2493,9 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | UserCountOutputTypeCountRolesArgs
   apiKeys?: boolean | UserCountOutputTypeCountApiKeysArgs
+  workspaceMemberships?: boolean | UserCountOutputTypeCountWorkspaceMembershipsArgs
+  sentInvites?: boolean | UserCountOutputTypeCountSentInvitesArgs
+  savedPrompts?: boolean | UserCountOutputTypeCountSavedPromptsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   workspaces?: boolean | UserCountOutputTypeCountWorkspacesArgs
@@ -1978,6 +2527,27 @@ export type UserCountOutputTypeCountRolesArgs<ExtArgs extends runtime.Types.Exte
  */
 export type UserCountOutputTypeCountApiKeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ApiKeyWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWorkspaceMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkspaceMemberWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSentInvitesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkspaceInviteWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSavedPromptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SavedPromptWhereInput
 }
 
 /**
@@ -2045,6 +2615,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
   apiKeys?: boolean | Prisma.User$apiKeysArgs<ExtArgs>
   modelConfig?: boolean | Prisma.User$modelConfigArgs<ExtArgs>
+  workspaceMemberships?: boolean | Prisma.User$workspaceMembershipsArgs<ExtArgs>
+  sentInvites?: boolean | Prisma.User$sentInvitesArgs<ExtArgs>
+  savedPrompts?: boolean | Prisma.User$savedPromptsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   workspaces?: boolean | Prisma.User$workspacesArgs<ExtArgs>
@@ -2102,6 +2675,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
   apiKeys?: boolean | Prisma.User$apiKeysArgs<ExtArgs>
   modelConfig?: boolean | Prisma.User$modelConfigArgs<ExtArgs>
+  workspaceMemberships?: boolean | Prisma.User$workspaceMembershipsArgs<ExtArgs>
+  sentInvites?: boolean | Prisma.User$sentInvitesArgs<ExtArgs>
+  savedPrompts?: boolean | Prisma.User$savedPromptsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   workspaces?: boolean | Prisma.User$workspacesArgs<ExtArgs>
@@ -2125,6 +2701,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     plan: Prisma.$PlanPayload<ExtArgs> | null
     apiKeys: Prisma.$ApiKeyPayload<ExtArgs>[]
     modelConfig: Prisma.$UserModelConfigPayload<ExtArgs> | null
+    workspaceMemberships: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
+    sentInvites: Prisma.$WorkspaceInvitePayload<ExtArgs>[]
+    savedPrompts: Prisma.$SavedPromptPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     workspaces: Prisma.$WorkspacePayload<ExtArgs>[]
@@ -2542,6 +3121,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   plan<T extends Prisma.User$planArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$planArgs<ExtArgs>>): Prisma.Prisma__PlanClient<runtime.Types.Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   apiKeys<T extends Prisma.User$apiKeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$apiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApiKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   modelConfig<T extends Prisma.User$modelConfigArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$modelConfigArgs<ExtArgs>>): Prisma.Prisma__UserModelConfigClient<runtime.Types.Result.GetResult<Prisma.$UserModelConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  workspaceMemberships<T extends Prisma.User$workspaceMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workspaceMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sentInvites<T extends Prisma.User$sentInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sentInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  savedPrompts<T extends Prisma.User$savedPromptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$savedPromptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedPromptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workspaces<T extends Prisma.User$workspacesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workspacesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3072,6 +3654,78 @@ export type User$modelConfigArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   include?: Prisma.UserModelConfigInclude<ExtArgs> | null
   where?: Prisma.UserModelConfigWhereInput
+}
+
+/**
+ * User.workspaceMemberships
+ */
+export type User$workspaceMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkspaceMember
+   */
+  select?: Prisma.WorkspaceMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkspaceMember
+   */
+  omit?: Prisma.WorkspaceMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceMemberInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceMemberWhereInput
+  orderBy?: Prisma.WorkspaceMemberOrderByWithRelationInput | Prisma.WorkspaceMemberOrderByWithRelationInput[]
+  cursor?: Prisma.WorkspaceMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkspaceMemberScalarFieldEnum | Prisma.WorkspaceMemberScalarFieldEnum[]
+}
+
+/**
+ * User.sentInvites
+ */
+export type User$sentInvitesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkspaceInvite
+   */
+  select?: Prisma.WorkspaceInviteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkspaceInvite
+   */
+  omit?: Prisma.WorkspaceInviteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceInviteInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceInviteWhereInput
+  orderBy?: Prisma.WorkspaceInviteOrderByWithRelationInput | Prisma.WorkspaceInviteOrderByWithRelationInput[]
+  cursor?: Prisma.WorkspaceInviteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkspaceInviteScalarFieldEnum | Prisma.WorkspaceInviteScalarFieldEnum[]
+}
+
+/**
+ * User.savedPrompts
+ */
+export type User$savedPromptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SavedPrompt
+   */
+  select?: Prisma.SavedPromptSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SavedPrompt
+   */
+  omit?: Prisma.SavedPromptOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SavedPromptInclude<ExtArgs> | null
+  where?: Prisma.SavedPromptWhereInput
+  orderBy?: Prisma.SavedPromptOrderByWithRelationInput | Prisma.SavedPromptOrderByWithRelationInput[]
+  cursor?: Prisma.SavedPromptWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SavedPromptScalarFieldEnum | Prisma.SavedPromptScalarFieldEnum[]
 }
 
 /**

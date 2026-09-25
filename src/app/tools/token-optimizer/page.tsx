@@ -15,6 +15,7 @@ import { splitStreamTrailer } from "@/lib/stream-protocol";
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
+import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
 type GenerationState = "idle" | "loading" | "success";
@@ -379,6 +380,7 @@ export default function TokenOptimizerPage() {
 
                 <div className="flex items-center gap-2">
                   <PromptViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+                  {!isStreaming && compressedText && <SaveToWorkspaceButton content={compressedText} title={input} tool="token-optimizer" />}
                   <button
                     onClick={handleCopy}
                     disabled={isStreaming}
