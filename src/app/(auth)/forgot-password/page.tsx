@@ -5,12 +5,14 @@ import Link from "next/link";
 import { Mail, ArrowRight, AlertCircle, Sparkles, Sparkle, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { requestPasswordReset } from "@/app/actions/auth";
+import { useTurnstile } from "@/components/security/Turnstile";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const ts = useTurnstile();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,13 +21,16 @@ export default function ForgotPasswordPage() {
     setSuccess(null);
 
     try {
-      const res = await requestPasswordReset(new FormData(e.currentTarget));
+      const formData = new FormData(e.currentTarget);
+      formData.set("turnstileToken", ts.token);
+      const res = await requestPasswordReset(formData);
       if (res.error) setError(res.error);
       else if (res.success) setSuccess(res.success);
     } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
+      ts.reset(); // a token is single-use
     }
   };
 
@@ -83,9 +88,11 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
 
+              {ts.widget}
+
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || ts.blocked}
                 className="flex w-full justify-center items-center gap-2 rounded-xl bg-primary px-3 py-3.5 text-sm font-bold text-white shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] dark:shadow-[0_4px_20px_-4px_rgba(79,70,229,0.5)] hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all disabled:opacity-70 disabled:cursor-not-allowed group/btn hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)]"
               >
                 {loading ? "Sending..." : "Send reset link"}

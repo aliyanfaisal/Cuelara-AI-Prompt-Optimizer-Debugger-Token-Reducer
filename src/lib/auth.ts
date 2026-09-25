@@ -5,6 +5,7 @@ import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { getEffectivePlan } from "./plans";
+import { TURNSTILE_ERROR, verifyTurnstile } from "./turnstile";
 import { clearAbuseLimit, formatWait, hitAbuseLimit, ipFromHeaders, isAbuseLimited, type AbuseRule } from "./abuse-limit";
 
 const LOGIN_WINDOW_SECONDS = 15 * 60;
@@ -44,6 +45,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        turnstileToken: { label: "Security check", type: "text" },
       },
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
@@ -54,8 +56,12 @@ export const authOptions: NextAuthOptions = {
           const value = (req?.headers as Record<string, string | string[] | undefined> | undefined)?.[name];
           return Array.isArray(value) ? value[0] : value;
         };
+        const ip = ipFromHeaders(headerValue);
+        // A failed challenge is rejected before it can count against (or reveal anything about) the account.
+        if (!(await verifyTurnstile(credentials.turnstileToken, ip))) throw new Error(TURNSTILE_ERROR);
+
         const emailRule = loginEmailRule(credentials.email);
-        const ipRule = loginIpRule(ipFromHeaders(headerValue));
+        const ipRule = loginIpRule(ip);
         const [emailState, ipState] = await Promise.all([isAbuseLimited(emailRule), isAbuseLimited(ipRule)]);
         if (emailState.limited || ipState.limited) {
           throw new Error(`Too many failed sign-in attempts. Try again in ${formatWait(Math.max(emailState.retryAfterSeconds, ipState.retryAfterSeconds))}.`);

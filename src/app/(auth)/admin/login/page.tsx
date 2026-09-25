@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ShieldAlert, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTurnstile } from "@/components/security/Turnstile";
 
 export default function AdminLoginPage() {
   return (
@@ -22,6 +23,7 @@ function AdminLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const ts = useTurnstile();
   
   const error = searchParams?.get("error");
 
@@ -33,6 +35,7 @@ function AdminLoginForm() {
       const res = await signIn("credentials", {
         email,
         password,
+        turnstileToken: ts.token,
         redirect: false,
       });
 
@@ -44,6 +47,7 @@ function AdminLoginForm() {
       }
     } finally {
       setLoading(false);
+      ts.reset(); // a token is single-use
     }
   };
 
@@ -116,10 +120,12 @@ function AdminLoginForm() {
               </div>
             </div>
 
+            {ts.widget}
+
             <div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || ts.blocked}
                 className="flex w-full justify-center items-center gap-2 rounded-xl bg-red-600 px-3 py-3 text-sm font-bold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? "Authenticating..." : "Enter Portal"}

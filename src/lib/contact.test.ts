@@ -94,3 +94,39 @@ describe("POST /api/contact", () => {
     assert.equal((await send(body({ email: "spam@example.com" }))).status, 429);
   });
 });
+
+describe("POST /api/contact with Cloudflare Turnstile enabled", () => {
+  const withTurnstile = async (verdict: boolean, run: () => Promise<void>) => {
+    process.env.TURNSTILE_SECRET_KEY = "test-secret";
+    const seen: string[] = [];
+    mock.method(globalThis, "fetch", async (_url: unknown, init: RequestInit) => {
+      seen.push((init.body as URLSearchParams).get("response") ?? "");
+      return new Response(JSON.stringify({ success: verdict }));
+    });
+    try {
+      await run();
+    } finally {
+      delete process.env.TURNSTILE_SECRET_KEY;
+      (globalThis.fetch as unknown as { mock?: { restore(): void } }).mock?.restore();
+    }
+    return seen;
+  };
+
+  it("rejects a submission with no token, or one Cloudflare refuses, and stores nothing", async () => {
+    const before = await db.contactMessage.count();
+    await withTurnstile(false, async () => {
+      assert.equal((await send(body({ email: "notoken@example.com" }))).status, 400);
+      assert.equal((await send(body({ email: "badtoken@example.com", turnstileToken: "bad" }))).status, 400);
+    });
+    assert.equal(await db.contactMessage.count(), before);
+  });
+
+  it("accepts a valid token and doesn't treat it as part of the message", async () => {
+    const seen = await withTurnstile(true, async () => {
+      const res = await send(body({ email: "human@example.com", turnstileToken: "good-token" }));
+      assert.equal(res.status, 200);
+    });
+    assert.deepEqual(seen, ["good-token"]);
+    assert.ok(await db.contactMessage.findFirst({ where: { email: "human@example.com" } }));
+  });
+});

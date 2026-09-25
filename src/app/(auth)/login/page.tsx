@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Sparkles, Mail, Lock, ArrowRight, AlertCircle, Sparkle, Code2, Terminal, ShieldCheck, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTurnstile } from "@/components/security/Turnstile";
 
 export default function LoginPage() {
   return (
@@ -22,6 +23,7 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const ts = useTurnstile();
   
   const errorParam = searchParams?.get("error");
   const error =
@@ -39,6 +41,7 @@ function LoginForm() {
       const res = await signIn("credentials", {
         email,
         password,
+        turnstileToken: ts.token,
         redirect: false,
       });
 
@@ -57,6 +60,7 @@ function LoginForm() {
       }
     } finally {
       setLoading(false);
+      ts.reset(); // a token is single-use
     }
   };
 
@@ -210,10 +214,12 @@ function LoginForm() {
               </div>
             </div>
 
+            {ts.widget}
+
             <div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || ts.blocked}
                 className="flex w-full justify-center items-center gap-2 rounded-xl bg-primary px-3 py-3.5 text-sm font-bold text-white shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] dark:shadow-[0_4px_20px_-4px_rgba(79,70,229,0.5)] hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all disabled:opacity-70 disabled:cursor-not-allowed group/btn hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)]"
               >
                 {loading ? "Signing in..." : "Sign in"}

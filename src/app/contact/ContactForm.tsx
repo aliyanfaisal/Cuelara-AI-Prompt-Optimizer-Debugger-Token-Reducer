@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { useTurnstile } from "@/components/security/Turnstile";
 
 const FIELD =
   "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50";
@@ -9,6 +10,7 @@ const FIELD =
 export function ContactForm({ plan, planName }: { plan?: string; planName?: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState<string | null>(null);
+  const ts = useTurnstile();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -21,7 +23,7 @@ export function ContactForm({ plan, planName }: { plan?: string; planName?: stri
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, plan }),
+        body: JSON.stringify({ ...data, plan, turnstileToken: ts.token }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error ?? "Something went wrong. Please try again.");
@@ -30,6 +32,8 @@ export function ContactForm({ plan, planName }: { plan?: string; planName?: stri
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setStatus("idle");
+    } finally {
+      ts.reset(); // a token is single-use
     }
   }
 
@@ -94,9 +98,11 @@ export function ContactForm({ plan, planName }: { plan?: string; planName?: stri
         </p>
       )}
 
+      {ts.widget}
+
       <button
         type="submit"
-        disabled={status === "sending"}
+        disabled={status === "sending" || ts.blocked}
         className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
       >
         {status === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

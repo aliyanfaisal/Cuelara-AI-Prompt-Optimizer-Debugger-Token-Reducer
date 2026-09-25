@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { sendActivationEmail, sendPasswordResetEmail } from "@/lib/email";
 import { formatWait, getActionIp, hitAbuseLimit } from "@/lib/abuse-limit";
+import { TURNSTILE_ERROR, verifyTurnstile } from "@/lib/turnstile";
 
 const APP_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
@@ -17,8 +18,11 @@ export async function registerUser(formData: FormData) {
     return { error: "Email and password are required" };
   }
 
+  const ip = await getActionIp();
+  if (!(await verifyTurnstile(formData.get("turnstileToken"), ip))) return { error: TURNSTILE_ERROR };
+
   // Each attempt counts (not just successes): stops scripted signups and activation-email spam.
-  const ipLimit = await hitAbuseLimit({ scope: "register-ip", subject: await getActionIp(), limit: 5, windowSeconds: 60 * 60 });
+  const ipLimit = await hitAbuseLimit({ scope: "register-ip", subject: ip, limit: 5, windowSeconds: 60 * 60 });
   if (!ipLimit.allowed) return { error: `Too many sign-up attempts. Please try again in ${formatWait(ipLimit.retryAfterSeconds)}.` };
 
   // Check if user exists
@@ -86,7 +90,10 @@ export async function requestPasswordReset(formData: FormData): Promise<{ error?
 
   const genericSuccess = { success: "If that email has an account, a password reset link is on its way." };
 
-  const ipLimit = await hitAbuseLimit({ scope: "reset-ip", subject: await getActionIp(), limit: 5, windowSeconds: 60 * 60 });
+  const ip = await getActionIp();
+  if (!(await verifyTurnstile(formData.get("turnstileToken"), ip))) return { error: TURNSTILE_ERROR };
+
+  const ipLimit = await hitAbuseLimit({ scope: "reset-ip", subject: ip, limit: 5, windowSeconds: 60 * 60 });
   if (!ipLimit.allowed) return { error: `Too many reset requests. Please try again in ${formatWait(ipLimit.retryAfterSeconds)}.` };
   // Per address: the same generic answer either way, so the limit never reveals whether an account exists.
   const emailLimit = await hitAbuseLimit({ scope: "reset-email", subject: email, limit: 3, windowSeconds: 60 * 60 });

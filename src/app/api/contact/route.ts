@@ -3,6 +3,7 @@ import { CONTACT_MAX_PER_HOUR, contactPayloadSchema } from "@/lib/contact";
 import { sendContactNotificationEmail, sendContactReceiptEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import { hitAbuseLimit, ipFromHeaders } from "@/lib/abuse-limit";
+import { TURNSTILE_ERROR, verifyTurnstile } from "@/lib/turnstile";
 import { reportError } from "@/lib/error-report";
 
 export const runtime = "nodejs";
@@ -21,7 +22,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Malformed request." }, { status: 400 });
     }
 
-    const parsed = contactPayloadSchema.safeParse(json);
+    // The token travels with the form but isn't part of the message: take it out before validating the payload.
+    const { turnstileToken, ...payload } = (json && typeof json === "object" ? json : {}) as Record<string, unknown>;
+
+    const parsed = contactPayloadSchema.safeParse(payload);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input." }, { status: 422 });
     }
@@ -30,8 +34,11 @@ export async function POST(req: Request) {
     // Bots fill the hidden field: pretend it worked and store nothing.
     if (website) return NextResponse.json({ success: true });
 
+    const ip = ipFromHeaders((name) => req.headers.get(name));
+    if (!(await verifyTurnstile(turnstileToken, ip))) return NextResponse.json({ error: TURNSTILE_ERROR }, { status: 400 });
+
     // Per IP as well as per email below — rotating addresses would otherwise sidestep the email limit.
-    const ipLimit = await hitAbuseLimit({ scope: "contact-ip", subject: ipFromHeaders((name) => req.headers.get(name)), limit: 8, windowSeconds: 60 * 60 });
+    const ipLimit = await hitAbuseLimit({ scope: "contact-ip", subject: ip, limit: 8, windowSeconds: 60 * 60 });
     if (!ipLimit.allowed) {
       return NextResponse.json({ error: "You've sent several messages already. Please wait a bit before sending another." }, { status: 429 });
     }
