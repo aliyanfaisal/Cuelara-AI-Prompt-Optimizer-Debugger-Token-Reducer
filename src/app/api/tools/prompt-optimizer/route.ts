@@ -10,6 +10,7 @@ import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-gene
 import { buildTextGenerationChain, GEMINI_MODEL } from "@/lib/model-chain";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 import { saveToolRun, titleFrom } from "@/lib/history";
+import { reportError } from "@/lib/error-report";
 
 const TOOL = "prompt-optimizer";
 
@@ -140,6 +141,7 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
           controller.close();
         } catch (error) {
           console.error("Prompt Optimizer stream error:", error);
+          void reportError(error, { source: "api", route: "/api/tools/prompt-optimizer" });
           const message = isGenAITimeout(error)
             ? "The AI is taking too long to respond. Please try again."
             : "Something went wrong while optimizing your prompt.";
@@ -154,6 +156,7 @@ Return only the finished, ready-to-paste prompt text — no meta-commentary, no 
     });
   } catch (error) {
     console.error("Prompt Optimizer error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/prompt-optimizer" });
     if (isGenAITimeout(error)) {
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },

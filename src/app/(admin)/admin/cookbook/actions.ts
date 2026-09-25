@@ -3,10 +3,13 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { notifyGoogle, promptUrl } from "@/lib/google-indexing";
+import { assertAdmin } from "@/lib/admin-auth";
+import { encryptSecret, maskSecret, tryDecryptSecret } from "@/lib/secret-box";
 
 // --- Cookbook Category Actions ---
 
 export async function createCookbookCategory(data: { name: string; slug: string; description?: string }) {
+  await assertAdmin();
   try {
     await prisma.cookbookCategory.create({ data });
     revalidatePath("/admin/cookbook");
@@ -18,6 +21,7 @@ export async function createCookbookCategory(data: { name: string; slug: string;
 }
 
 export async function updateCookbookCategory(id: string, data: { name: string; slug: string; description?: string }) {
+  await assertAdmin();
   try {
     await prisma.cookbookCategory.update({ where: { id }, data });
     revalidatePath("/admin/cookbook");
@@ -29,6 +33,7 @@ export async function updateCookbookCategory(id: string, data: { name: string; s
 }
 
 export async function bulkCreateCookbookCategories(categories: { name: string; slug: string; description?: string; children?: { name: string; slug: string; description?: string }[] }[]) {
+  await assertAdmin();
   try {
     let count = 0;
     
@@ -65,6 +70,7 @@ export async function bulkCreateCookbookCategories(categories: { name: string; s
 }
 
 export async function deleteCookbookCategory(id: string) {
+  await assertAdmin();
   try {
     await prisma.cookbookCategory.delete({ where: { id } });
     revalidatePath("/admin/cookbook");
@@ -77,6 +83,7 @@ export async function deleteCookbookCategory(id: string) {
 // --- Cookbook Prompt Actions ---
 
 export async function createCookbookPrompt(data: any) {
+  await assertAdmin();
   try {
     const created = await prisma.cookbookPrompt.create({ data, select: { slug: true, published: true } });
     revalidatePath("/admin/cookbook");
@@ -89,6 +96,7 @@ export async function createCookbookPrompt(data: any) {
 }
 
 export async function updateCookbookPrompt(id: string, data: any) {
+  await assertAdmin();
   try {
     const updated = await prisma.cookbookPrompt.update({ where: { id }, data, select: { slug: true, published: true } });
     revalidatePath("/admin/cookbook");
@@ -101,6 +109,7 @@ export async function updateCookbookPrompt(id: string, data: any) {
 }
 
 export async function deleteCookbookPrompt(id: string) {
+  await assertAdmin();
   try {
     const deleted = await prisma.cookbookPrompt.delete({ where: { id }, select: { slug: true, published: true } });
     revalidatePath("/admin/cookbook");
@@ -112,6 +121,7 @@ export async function deleteCookbookPrompt(id: string) {
 }
 
 export async function toggleCookbookPromptPublish(id: string, published: boolean) {
+  await assertAdmin();
   try {
     const prompt = await prisma.cookbookPrompt.update({ where: { id }, data: { published }, select: { slug: true } });
     revalidatePath("/admin/cookbook");
@@ -125,22 +135,27 @@ export async function toggleCookbookPromptPublish(id: string, published: boolean
 // --- Cookbook Settings Actions ---
 
 export async function getCookbookSettings() {
+  await assertAdmin();
   try {
     const setting = await prisma.setting.findUnique({
       where: { key: "GEMINI_API_KEY" }
     });
-    return { geminiApiKey: setting?.value || "" };
+    return { geminiApiKey: setting?.value ? maskSecret(tryDecryptSecret(setting.value) ?? "") : "" };
   } catch (error) {
     return { geminiApiKey: "" };
   }
 }
 
 export async function updateCookbookSettings(geminiApiKey: string) {
+  await assertAdmin();
+  // The form shows the saved key masked; submitting it unchanged must not overwrite the real key with the mask.
+  if (geminiApiKey.startsWith("••••")) return { success: true };
   try {
+    const value = geminiApiKey.trim() ? encryptSecret(geminiApiKey.trim()) : "";
     await prisma.setting.upsert({
       where: { key: "GEMINI_API_KEY" },
-      update: { value: geminiApiKey },
-      create: { key: "GEMINI_API_KEY", value: geminiApiKey }
+      update: { value },
+      create: { key: "GEMINI_API_KEY", value }
     });
     revalidatePath("/admin/cookbook");
     return { success: true };

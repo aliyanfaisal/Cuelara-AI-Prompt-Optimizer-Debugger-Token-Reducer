@@ -4,6 +4,7 @@ import { isAuthorizedBearer } from "@/lib/blog-sync/auth";
 import { publishedCookbookWhere } from "@/lib/cookbook";
 import { blogPostUrl, isIndexingConfigured, notifyGoogle, promptUrl } from "@/lib/google-indexing";
 import { prisma } from "@/lib/prisma";
+import { reportError } from "@/lib/error-report";
 
 export const runtime = "nodejs";
 // Each URL is one sequential call to Google, so keep batches small enough to finish inside a proxy timeout.
@@ -68,6 +69,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Indexing submit error:", error);
+    void reportError(error, { source: "api", route: "/api/indexing/submit" });
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }

@@ -18,6 +18,7 @@ import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-gene
 import { buildTextGenerationChain } from "@/lib/model-chain";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 import { saveToolRun, titleFrom } from "@/lib/history";
+import { reportError } from "@/lib/error-report";
 
 const TOOL = "prompt-debugger";
 
@@ -172,6 +173,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Prompt Debugger error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/prompt-debugger" });
     if (isGenAITimeout(error)) {
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },

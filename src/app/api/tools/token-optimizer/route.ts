@@ -10,6 +10,7 @@ import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-gene
 import { buildTextGenerationChain } from "@/lib/model-chain";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 import { saveToolRun, titleFrom } from "@/lib/history";
+import { reportError } from "@/lib/error-report";
 
 const TOOL = "token-optimizer";
 
@@ -160,6 +161,7 @@ export async function POST(req: Request) {
           controller.close();
         } catch (error) {
           console.error("Token Optimizer stream error:", error);
+          void reportError(error, { source: "api", route: "/api/tools/token-optimizer" });
           controller.enqueue(encoder.encode(encodeStreamError("Something went wrong while compressing your prompt.")));
           controller.close();
         }
@@ -171,6 +173,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Token Optimizer error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/token-optimizer" });
     if (isGenAITimeout(error)) {
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },

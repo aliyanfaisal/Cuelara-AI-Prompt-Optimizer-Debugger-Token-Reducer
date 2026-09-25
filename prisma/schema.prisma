@@ -430,3 +430,30 @@ model Prompt {
   workspaceId String?
   workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
 }
+
+// Fixed-window counters for abuse limits on public endpoints (login, register, password reset, contact).
+// `key` already encodes the scope, the subject (hashed IP / email) and the window start, so one row = one bucket.
+model RateLimitBucket {
+  key       String   @id
+  count     Int      @default(0)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+// Application errors, grouped by fingerprint (same failure = one row, `count` goes up) — see src/lib/error-report.ts.
+// Shown on /admin/errors; a new fingerprint also emails the team.
+model ErrorLog {
+  id          String   @id @default(cuid())
+  fingerprint String   @unique
+  source      String // "server" | "api" | "client"
+  message     String   @db.Text
+  stack       String?  @db.Text
+  route       String?
+  count       Int      @default(1)
+  resolved    Boolean  @default(false)
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  @@index([resolved, lastSeenAt])
+}

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { DOCUMENT_TOOL, PROMPT_TOOL } from "@/lib/rag/documents";
 import { getContextExtractorLimits } from "@/lib/rag/limits";
 import { getUsedToday, getRequestSubject } from "@/lib/rate-limit";
+import { reportError } from "@/lib/error-report";
 
 export async function GET(req: Request) {
   try {
@@ -23,6 +24,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Context Extractor usage error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/context-extractor/usage" });
     return NextResponse.json({ error: "Could not load usage." }, { status: 500 });
   }
 }

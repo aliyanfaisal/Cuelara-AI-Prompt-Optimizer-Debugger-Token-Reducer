@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText, Palette } from "lucide-react";
+import { WandSparkles, Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText, Palette } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 const TOOLS_MENU = [
+  { name: "Prompt Builder", icon: <WandSparkles className="w-4 h-4 text-orange-500" />, href: "/tools/prompt-builder" },
   { name: "Token Optimizer", icon: <Zap className="w-4 h-4 text-amber-500" />, href: "/tools/token-optimizer" },
   { name: "Context Extractor", icon: <FileText className="w-4 h-4 text-primary" />, href: "/tools/context-extractor" },
   { name: "Prompt Optimizer", icon: <Code2 className="w-4 h-4 text-primary" />, href: "/tools/prompt-optimizer" },

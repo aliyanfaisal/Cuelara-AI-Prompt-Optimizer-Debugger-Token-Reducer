@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 /** The tools that record history. `id` is the tool's URL slug (/tools/<id>) and what ToolRun.tool holds. */
 export const HISTORY_TOOLS = [
+  { id: "prompt-builder", label: "Prompt Builder" },
   { id: "prompt-optimizer", label: "Prompt Optimizer" },
   { id: "context-extractor", label: "Context Extractor" },
   { id: "site-to-prompt", label: "Site to Prompt" },

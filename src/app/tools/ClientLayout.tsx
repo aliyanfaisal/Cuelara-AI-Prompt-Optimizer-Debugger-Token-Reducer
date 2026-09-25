@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { TOOL_USAGE_CHANGED_EVENT } from "@/lib/tool-usage-events";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, Zap, Code2, ShieldCheck,
+  LayoutDashboard, WandSparkles, Zap, Code2, ShieldCheck,
   Terminal, Sparkles, ArrowRight, ChevronLeft, ChevronRight,
   FileText, Maximize2, Minimize2, Sun, Moon,
   PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen,
@@ -17,6 +17,7 @@ import {
 
 const NAVIGATION = [
   { name: "Overview", href: "/tools", icon: LayoutDashboard },
+  { name: "Prompt Builder", href: "/tools/prompt-builder", icon: WandSparkles },
   { name: "Prompt Optimizer", href: "/tools/prompt-optimizer", icon: Code2 },
   { name: "Context Extractor", href: "/tools/context-extractor", icon: FileText },
   { name: "Site to Prompt", href: "/tools/site-to-prompt", icon: Palette },

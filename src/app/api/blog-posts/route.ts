@@ -4,6 +4,7 @@ import { isAuthorizedBearer } from "@/lib/blog-sync/auth";
 import { blogPostPayloadSchema, formatValidationErrors } from "@/lib/blog-sync/schema";
 import { upsertBlogPost } from "@/lib/blog-sync/upsert";
 import { blogPostUrl, notifyGoogle } from "@/lib/google-indexing";
+import { reportError } from "@/lib/error-report";
 
 export const runtime = "nodejs";
 
@@ -55,6 +56,7 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error("Blog post sync error:", { idempotencyKey, error });
+    void reportError(error, { source: "api", route: "/api/blog-posts" });
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }

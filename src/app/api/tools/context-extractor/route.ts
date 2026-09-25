@@ -13,6 +13,7 @@ import { CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } from "@/lib/tool-settings-keys";
 import { isGenAITimeout } from "@/lib/genai-timeout";
 import { countPromptTokens } from "@/lib/token-count";
 import { sanitizeExtractorMeta, saveExtractorRun } from "@/lib/rag/history";
+import { reportError } from "@/lib/error-report";
 
 const DEFAULT_MAX_FILE_MB = 5;
 
@@ -88,6 +89,7 @@ export async function POST(req: Request) {
           return NextResponse.json({ error: "Unsupported file type." }, { status: 400 });
         }
         console.error("Context Extractor parse error:", err);
+        void reportError(err, { source: "api", route: "/api/tools/context-extractor" });
         return NextResponse.json({ error: "Could not read this document. It may be corrupted or password-protected." }, { status: 400 });
       }
       filename = uploadedFile.name;
@@ -161,6 +163,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Context Extractor error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/context-extractor" });
     if (isGenAITimeout(error)) {
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },

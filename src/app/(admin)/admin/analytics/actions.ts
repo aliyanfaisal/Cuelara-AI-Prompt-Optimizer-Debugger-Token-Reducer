@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import type { StatsRange } from "./constants";
+import { assertAdmin } from "@/lib/admin-auth";
 
 export interface TimeSeriesPoint {
   label: string;
@@ -107,6 +108,7 @@ function formatBucketLabel(bucketMs: number, date: Date): string {
 const FAILURE_LIST_LIMIT = 50;
 
 export async function getApiCallStats(range: StatsRange, customFrom?: string, customTo?: string): Promise<ApiCallStats> {
+  await assertAdmin();
   const { from: cutoff, to: until, bucketMs, buckets: bucketCount } = resolveWindow(range, customFrom, customTo);
 
   const [rows, recentFailureRows] = await Promise.all([
@@ -188,6 +190,7 @@ export async function getApiCallStats(range: StatsRange, customFrom?: string, cu
 
 /** Wipes every logged provider call — the dashboard starts counting from zero again. */
 export async function resetApiCallStats(): Promise<{ success: true; deleted: number } | { error: string }> {
+  await assertAdmin();
   try {
     const { count } = await prisma.apiCallLog.deleteMany({});
     revalidatePath("/admin/analytics");

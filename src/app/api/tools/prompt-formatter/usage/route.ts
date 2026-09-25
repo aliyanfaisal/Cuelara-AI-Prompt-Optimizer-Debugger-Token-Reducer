@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRequestSubject, getUsedToday } from "@/lib/rate-limit";
 import { getPromptFormatterLimit } from "@/lib/prompt-formatter/limits";
+import { reportError } from "@/lib/error-report";
 
 const TOOL = "prompt-formatter";
 
@@ -18,6 +19,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Prompt Formatter usage error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/prompt-formatter/usage" });
     return NextResponse.json({ error: "Could not load usage." }, { status: 500 });
   }
 }

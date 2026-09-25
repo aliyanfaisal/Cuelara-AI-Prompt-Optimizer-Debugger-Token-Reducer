@@ -264,7 +264,7 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                   rows={5}
                   value={form.features}
                   onChange={(e) => setForm({ ...form, features: e.target.value })}
-                  placeholder={"All 8 tools included\n15 runs per tool, per day"}
+                  placeholder={"All 9 tools included\n15 runs per tool, per day"}
                   className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>

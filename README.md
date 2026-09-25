@@ -36,6 +36,7 @@ Whether you're developing autonomous agents, fine-tuning system prompts for prod
 
 | Tool | Focus | Impact |
 | :--- | :--- | :--- |
+| **[Prompt Builder](#-prompt-builder)** | Idea to Prompt | Turns a plain-words idea into a complete, ready-to-paste prompt for your target model |
 | **[Prompt Optimizer](#-prompt-optimizer)** | Structure & Role Anchoring | Converts messy drafts into battle-tested production prompts |
 | **[Token Optimizer](#-token-optimizer)** | Token Reduction & Compression | Cuts token usage by up to 50% with zero loss of semantic intent |
 | **[Prompt Debugger](#-prompt-debugger)** | Static & Semantic Auditing | Identifies ambiguities, edge-case loopholes, and hallucination triggers |
@@ -47,6 +48,13 @@ Whether you're developing autonomous agents, fine-tuning system prompts for prod
 </div>
 
 ---
+
+### 🪄 Prompt Builder
+Turns a rough idea into a finished prompt — no prompt-engineering knowledge needed.
+- **Idea in, prompt out:** describe the goal in a sentence or two; get a structured, ready-to-paste prompt.
+- **Model-aware structure:** ChatGPT, Claude (XML-tagged), Gemini, Grok, DeepSeek, Cursor/Windsurf and GitHub Copilot each get the layout they read best.
+- **Use case and detail controls:** General, Coding, Writing, Marketing, Business or Research, at Concise, Balanced or Detailed length.
+- **Nothing invented:** missing details become `[PLACEHOLDERS]` instead of guesses.
 
 ### ⚡ Prompt Optimizer
 Transforms unstructured, ambiguous ideas into high-performing prompts engineered for deterministic execution.

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Zap, Code2, ShieldCheck, Terminal, Sparkles, ArrowRight,
+  Zap, Code2, ShieldCheck, Terminal, Sparkles, ArrowRight, WandSparkles,
   ExternalLink, BookOpen, Clock, FileText, Palette
 } from "lucide-react";
 
@@ -18,6 +18,17 @@ const TOOLS = [
     bg: "bg-primary/10",
     border: "border-primary/20",
     isLarge: true,
+  },
+  {
+    name: "Prompt Builder",
+    href: "/tools/prompt-builder",
+    docs: "/cookbook",
+    icon: WandSparkles,
+    description: "Describe an idea in plain words and get a complete, ready-to-paste prompt for ChatGPT, Claude, Gemini or Cursor.",
+    color: "text-orange-500",
+    bg: "bg-orange-500/10",
+    border: "border-orange-500/20",
+    isLarge: false,
   },
   {
     name: "Context Extractor",

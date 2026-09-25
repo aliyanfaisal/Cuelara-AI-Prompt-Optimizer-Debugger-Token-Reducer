@@ -8,6 +8,7 @@ import { isGenAITimeout } from "@/lib/genai-timeout";
 import { callWithKeyRotation, NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 import { sanitizeExtractorMeta, saveExtractorRun } from "@/lib/rag/history";
+import { reportError } from "@/lib/error-report";
 
 // Re-runs a different query against a document that was already uploaded, parsed,
 // chunked and embedded — only the new query gets embedded here, so this only ever
@@ -89,6 +90,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Context Extractor prompt error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/context-extractor/prompt" });
     if (isGenAITimeout(error)) {
       return NextResponse.json(
         { error: "The AI is taking too long to respond. Please try again." },

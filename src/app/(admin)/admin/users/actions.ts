@@ -4,8 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { sendPlanChangeEmail } from "@/lib/email";
+import { assertAdmin } from "@/lib/admin-auth";
 
 export async function updateUser(userId: string, data: { name?: string; email?: string; roles: string[]; planId?: string | null }) {
+  await assertAdmin();
   try {
     const updateData: Record<string, unknown> = {
       roles: {
@@ -46,6 +48,7 @@ export async function updateUser(userId: string, data: { name?: string; email?: 
 }
 
 export async function toggleUserStatus(userId: string, isActive: boolean) {
+  await assertAdmin();
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -69,6 +72,7 @@ export async function toggleUserStatus(userId: string, isActive: boolean) {
 }
 
 export async function deleteUser(userId: string) {
+  await assertAdmin();
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -89,6 +93,7 @@ export async function deleteUser(userId: string) {
 }
 
 export async function createUser(data: { name: string; email: string; password?: string; roles: string[]; planId?: string | null }) {
+  await assertAdmin();
   try {
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email }

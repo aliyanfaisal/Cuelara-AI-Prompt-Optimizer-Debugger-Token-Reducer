@@ -2,8 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { assertAdmin } from "@/lib/admin-auth";
 
 export async function createRole(formData: FormData) {
+  await assertAdmin();
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
 
@@ -32,6 +34,7 @@ export async function createRole(formData: FormData) {
 }
 
 export async function deleteRole(id: string) {
+  await assertAdmin();
   try {
     const role = await prisma.role.findUnique({ where: { id } });
     if (role?.name === "ADMIN" || role?.name === "USER") {

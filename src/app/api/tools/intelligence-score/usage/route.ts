@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRequestSubject, getUsedToday } from "@/lib/rate-limit";
 import { getIntelligenceScoreLimit } from "@/lib/intelligence-score/limits";
+import { reportError } from "@/lib/error-report";
 
 const TOOL = "intelligence-score";
 
@@ -18,6 +19,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Intelligence Score usage error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/intelligence-score/usage" });
     return NextResponse.json({ error: "Could not load usage." }, { status: 500 });
   }
 }

@@ -4,6 +4,7 @@ import { getSiteToPromptLimits } from "@/lib/site-to-prompt/limits";
 import { EXTRACT_TOOL, MAX_URL_LENGTH } from "@/lib/site-to-prompt/constants";
 import { rawPageSchema } from "@/lib/site-to-prompt/schema";
 import { buildDesignDna } from "@/lib/site-to-prompt/aggregate";
+import { reportError } from "@/lib/error-report";
 
 const MIN_SAMPLES = 5;
 const MAX_BODY_BYTES = 2_000_000;
@@ -49,6 +50,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Site to Prompt extract error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/site-to-prompt/extract" });
     return NextResponse.json({ error: "Something went wrong while analysing that site." }, { status: 500 });
   }
 }

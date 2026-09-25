@@ -252,7 +252,7 @@ function ProviderCard({
     // keeps the UI responsive without a round-trip refetch.
     onChange(provider, [
       ...keys,
-      { id: `temp-${Date.now()}`, provider, key: newKey.trim(), label: newLabel.trim() || null, isActive: true, createdAt: new Date().toISOString() },
+      { id: `temp-${Date.now()}`, provider, maskedKey: maskKey(newKey.trim()), label: newLabel.trim() || null, isActive: true, createdAt: new Date().toISOString() },
     ]);
     setNewKey("");
     setNewLabel("");
@@ -321,7 +321,7 @@ function ProviderCard({
               <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4" />
             </label>
 
-            <span className="font-mono text-sm text-foreground">{maskKey(k.key)}</span>
+            <span className="font-mono text-sm text-foreground">{k.maskedKey}</span>
             {k.label && <span className="text-xs text-muted-foreground truncate">{k.label}</span>}
 
             <button

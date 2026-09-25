@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   Palette, Globe, Puzzle, RefreshCcw, AlertTriangle, Copy, Check, Download,
-  Wand2, ChevronDown, Code2, Terminal, BookOpen,
+  Wand2, WandSparkles, ChevronDown, Code2, Terminal, BookOpen,
 } from "lucide-react";
 import { TARGETS, type Target } from "@/lib/site-to-prompt/constants";
 import { EXTENSION_VERSION, EXTENSION_ZIP_URL } from "@/lib/site-to-prompt/extension-version";
@@ -708,8 +708,9 @@ export default function SiteToPromptPage() {
 
         <div className="p-6 rounded-2xl border border-border bg-muted/20 space-y-4">
           <h3 className="text-sm font-bold uppercase tracking-wider">Explore Related Prompt Engineering Tools</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
             {[
+              { href: "/tools/prompt-builder", label: "Prompt Builder", Icon: WandSparkles },
               { href: "/tools/prompt-optimizer", label: "Prompt Optimizer", Icon: Code2 },
               { href: "/tools/prompt-formatter", label: "Prompt Formatter", Icon: Terminal },
               { href: "/cookbook", label: "Prompt Cookbook", Icon: BookOpen },

@@ -9,7 +9,7 @@ import { formatPlanPrice, planFeatures } from "@/lib/pricing";
 export const dynamic = "force-dynamic";
 
 const TITLE = "Pricing: Free and Paid Plans for Cuelara";
-const DESCRIPTION = "Start free with all 8 Cuelara tools, then upgrade for higher daily limits when you need them. Compare the Free, Pro and Team plans.";
+const DESCRIPTION = "Start free with all 9 Cuelara tools, then upgrade for higher daily limits when you need them. Compare the Free, Pro and Team plans.";
 
 export const metadata: Metadata = {
   title: TITLE,

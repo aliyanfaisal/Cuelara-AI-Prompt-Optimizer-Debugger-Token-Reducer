@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRequestSubject, getUsedToday } from "@/lib/rate-limit";
 import { getPromptDebuggerLimit } from "@/lib/prompt-debugger/limits";
+import { reportError } from "@/lib/error-report";
 
 const TOOL = "prompt-debugger";
 
@@ -18,6 +19,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Prompt Debugger usage error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/prompt-debugger/usage" });
     return NextResponse.json({ error: "Could not load usage." }, { status: 500 });
   }
 }

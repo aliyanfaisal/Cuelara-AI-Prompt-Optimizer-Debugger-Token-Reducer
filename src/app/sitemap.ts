@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 const STATIC_PATHS = [
   "/",
   "/tools",
+  "/tools/prompt-builder",
   "/tools/prompt-optimizer",
   "/tools/context-extractor",
   "/tools/token-optimizer",

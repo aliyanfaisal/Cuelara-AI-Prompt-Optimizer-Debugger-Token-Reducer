@@ -4,8 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { assertAdmin } from "@/lib/admin-auth";
 
 export async function togglePromptVisibility(id: string, isPublic: boolean) {
+  await assertAdmin();
   try {
     await prisma.prompt.update({
       where: { id },
@@ -19,6 +21,7 @@ export async function togglePromptVisibility(id: string, isPublic: boolean) {
 }
 
 export async function deletePrompt(id: string) {
+  await assertAdmin();
   try {
     await prisma.prompt.delete({
       where: { id },
@@ -40,6 +43,7 @@ export async function createPrompt(data: {
   isPublic: boolean;
   tags: string[];
 }) {
+  await assertAdmin();
   try {
     const session = await getServerSession(authOptions);
     if (!(session?.user as any)?.id) {

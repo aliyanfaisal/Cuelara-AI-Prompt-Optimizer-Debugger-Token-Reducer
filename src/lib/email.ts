@@ -2,7 +2,7 @@ import "server-only";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
 
-export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "contact"] as const;
+export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "contact", "error-alert"] as const;
 export type EmailType = (typeof EMAIL_TYPES)[number];
 
 let transporter: nodemailer.Transporter | null = null;

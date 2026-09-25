@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2, FileText, Palette } from "lucide-react";
+import { WandSparkles, ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2, FileText, Palette } from "lucide-react";
 
 export default function Home() {
   return (
@@ -282,6 +282,12 @@ export default function Home() {
               icon={<Code2 className="h-6 w-6 text-primary" />}
               title="Prompt Optimizer"
               description="Rewrites your messy instructions for maximum AI understanding. Tailored modes for coding, writing, and business."
+            />
+            <FeatureCard
+              href="/tools/prompt-builder"
+              icon={<WandSparkles className="h-6 w-6 text-orange-500" />}
+              title="Prompt Builder"
+              description="Turn a rough idea into a complete, ready-to-paste prompt for ChatGPT, Claude, Gemini or Cursor — clear, lean, nothing invented."
             />
             <FeatureCard
               href="/tools/context-extractor"

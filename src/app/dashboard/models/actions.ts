@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { isProvider, PROVIDERS, type Provider } from "@/lib/providers";
 import { ORDERABLE_PROVIDERS, MAX_OPENROUTER_MODELS } from "@/lib/model-order";
 import { getSessionUser } from "@/lib/session-user";
+import { encryptSecret, tryDecryptSecret } from "@/lib/secret-box";
 import { listFreeOpenRouterModels } from "@/lib/openrouter-free-models";
 import { parseStringArray, resolveOrder } from "@/lib/user-keys";
 import type { OrderableProvider } from "@/lib/model-order";
@@ -46,7 +47,7 @@ export async function getOwnModelsState(userId: string): Promise<OwnModelsState>
   const keysByProvider: Record<string, OwnKeyRow[]> = Object.fromEntries(CUSTOMER_PROVIDERS.map((p) => [p, []]));
   for (const row of rows) {
     if (!isProvider(row.provider) || !keysByProvider[row.provider]) continue;
-    keysByProvider[row.provider].push({ id: row.id, provider: row.provider, maskedKey: mask(row.key), label: row.label, isActive: row.isActive });
+    keysByProvider[row.provider].push({ id: row.id, provider: row.provider, maskedKey: mask(tryDecryptSecret(row.key) ?? ""), label: row.label, isActive: row.isActive });
   }
   return {
     keysByProvider,
@@ -85,7 +86,12 @@ export async function addOwnKey(provider: string, key: string, label: string): P
   if (!userId) return NOT_ALLOWED;
   if (!isProvider(provider) || !CUSTOMER_PROVIDERS.includes(provider)) return { error: "Invalid provider." };
   if (!key.trim()) return { error: "API key cannot be empty." };
-  await prisma.apiKey.create({ data: { provider, key: key.trim(), label: label.trim() || null, userId } });
+  try {
+    encryptSecret("check");
+  } catch {
+    return { error: "Storing keys isn't available right now. Please contact support." };
+  }
+  await prisma.apiKey.create({ data: { provider, key: encryptSecret(key.trim()), label: label.trim() || null, userId } });
   revalidatePath("/dashboard/models");
   return { success: true };
 }

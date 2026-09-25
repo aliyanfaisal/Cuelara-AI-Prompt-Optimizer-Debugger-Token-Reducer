@@ -422,7 +422,9 @@ export const ModelName = {
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
-  Prompt: 'Prompt'
+  Prompt: 'Prompt',
+  RateLimitBucket: 'RateLimitBucket',
+  ErrorLog: 'ErrorLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -438,7 +440,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "prompt"
+    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "prompt" | "rateLimitBucket" | "errorLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2366,6 +2368,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RateLimitBucket: {
+      payload: Prisma.$RateLimitBucketPayload<ExtArgs>
+      fields: Prisma.RateLimitBucketFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RateLimitBucketFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RateLimitBucketFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+        }
+        findFirst: {
+          args: Prisma.RateLimitBucketFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RateLimitBucketFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+        }
+        findMany: {
+          args: Prisma.RateLimitBucketFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>[]
+        }
+        create: {
+          args: Prisma.RateLimitBucketCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+        }
+        createMany: {
+          args: Prisma.RateLimitBucketCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RateLimitBucketCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>[]
+        }
+        delete: {
+          args: Prisma.RateLimitBucketDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+        }
+        update: {
+          args: Prisma.RateLimitBucketUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+        }
+        deleteMany: {
+          args: Prisma.RateLimitBucketDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RateLimitBucketUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RateLimitBucketUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>[]
+        }
+        upsert: {
+          args: Prisma.RateLimitBucketUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+        }
+        aggregate: {
+          args: Prisma.RateLimitBucketAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRateLimitBucket>
+        }
+        groupBy: {
+          args: Prisma.RateLimitBucketGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RateLimitBucketGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RateLimitBucketCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RateLimitBucketCountAggregateOutputType> | number
+        }
+      }
+    }
+    ErrorLog: {
+      payload: Prisma.$ErrorLogPayload<ExtArgs>
+      fields: Prisma.ErrorLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ErrorLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ErrorLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>
+        }
+        findFirst: {
+          args: Prisma.ErrorLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ErrorLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>
+        }
+        findMany: {
+          args: Prisma.ErrorLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>[]
+        }
+        create: {
+          args: Prisma.ErrorLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>
+        }
+        createMany: {
+          args: Prisma.ErrorLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ErrorLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>[]
+        }
+        delete: {
+          args: Prisma.ErrorLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>
+        }
+        update: {
+          args: Prisma.ErrorLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.ErrorLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ErrorLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ErrorLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.ErrorLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErrorLogPayload>
+        }
+        aggregate: {
+          args: Prisma.ErrorLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateErrorLog>
+        }
+        groupBy: {
+          args: Prisma.ErrorLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ErrorLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ErrorLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ErrorLogCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2755,6 +2905,31 @@ export const PromptScalarFieldEnum = {
 export type PromptScalarFieldEnum = (typeof PromptScalarFieldEnum)[keyof typeof PromptScalarFieldEnum]
 
 
+export const RateLimitBucketScalarFieldEnum = {
+  key: 'key',
+  count: 'count',
+  expiresAt: 'expiresAt'
+} as const
+
+export type RateLimitBucketScalarFieldEnum = (typeof RateLimitBucketScalarFieldEnum)[keyof typeof RateLimitBucketScalarFieldEnum]
+
+
+export const ErrorLogScalarFieldEnum = {
+  id: 'id',
+  fingerprint: 'fingerprint',
+  source: 'source',
+  message: 'message',
+  stack: 'stack',
+  route: 'route',
+  count: 'count',
+  resolved: 'resolved',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt'
+} as const
+
+export type ErrorLogScalarFieldEnum = (typeof ErrorLogScalarFieldEnum)[keyof typeof ErrorLogScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3068,6 +3243,8 @@ export type GlobalOmitConfig = {
   verificationToken?: Prisma.VerificationTokenOmit
   workspace?: Prisma.WorkspaceOmit
   prompt?: Prisma.PromptOmit
+  rateLimitBucket?: Prisma.RateLimitBucketOmit
+  errorLog?: Prisma.ErrorLogOmit
 }
 
 /* Types for Logging */

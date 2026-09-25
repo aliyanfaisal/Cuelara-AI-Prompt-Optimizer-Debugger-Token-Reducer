@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { reportError } from "@/lib/error-report";
 
 // req.url reflects the internal bind address behind a reverse proxy (e.g. 0.0.0.0:3000),
 // not the public domain — every redirect must be built off the real public URL instead.
@@ -47,6 +48,7 @@ export async function GET(req: NextRequest) {
     return redirectTo("/login?success=Account+activated.+You+can+now+log+in.");
   } catch (error) {
     console.error("Activation error:", error);
+    void reportError(error, { source: "api", route: "/api/auth/activate" });
     return redirectTo("/login?error=Something+went+wrong");
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRequestSubject, getUsedToday } from "@/lib/rate-limit";
 import { getPromptOptimizerLimit } from "@/lib/prompt-optimizer/limits";
+import { reportError } from "@/lib/error-report";
 
 const TOOL = "prompt-optimizer";
 
@@ -18,6 +19,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Prompt Optimizer usage error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/prompt-optimizer/usage" });
     return NextResponse.json({ error: "Could not load usage." }, { status: 500 });
   }
 }

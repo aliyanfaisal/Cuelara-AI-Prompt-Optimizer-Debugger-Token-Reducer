@@ -8,7 +8,7 @@ import {
   Settings2, Sparkles, RefreshCcw, Save, Zap,
   FileText, ArrowRight, BookOpen, CheckCircle2,
   Layers, Sliders, Cpu, Download, ShieldCheck,
-  Target, Terminal, AlertTriangle
+  Target, Terminal, AlertTriangle, WandSparkles
 } from "lucide-react";
 import { MODES, LEVELS, type OptimizerMode, type OptimizerLevel } from "@/lib/prompt-optimizer/constants";
 import { splitStreamTrailer } from "@/lib/stream-protocol";
@@ -585,6 +585,14 @@ export default function PromptOptimizerPage() {
         <div className="p-6 rounded-2xl border border-border bg-muted/20 space-y-4">
           <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Explore Related Prompt Engineering Tools</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            <Link 
+              href="/tools/prompt-builder" 
+              className="p-3 rounded-xl border border-border bg-card hover:border-primary/40 hover:text-primary transition-all flex items-center gap-2 group"
+            >
+              <WandSparkles className="w-4 h-4 text-orange-500 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold">Prompt Builder</span>
+            </Link>
+
             <Link 
               href="/tools/token-optimizer" 
               className="p-3 rounded-xl border border-border bg-card hover:border-primary/40 hover:text-primary transition-all flex items-center gap-2 group"

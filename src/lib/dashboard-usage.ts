@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { RequestSubject } from "@/lib/rate-limit";
 import { getContextExtractorLimits } from "@/lib/rag/limits";
 import { getIntelligenceScoreLimit } from "@/lib/intelligence-score/limits";
+import { getPromptBuilderLimit } from "@/lib/prompt-builder/limits";
 import { getPromptDebuggerLimit } from "@/lib/prompt-debugger/limits";
 import { getPromptFormatterLimit } from "@/lib/prompt-formatter/limits";
 import { getPromptOptimizerLimit } from "@/lib/prompt-optimizer/limits";
@@ -20,8 +21,9 @@ export interface ToolDailyUsage {
 export async function getSubjectDailyUsage(subject: RequestSubject): Promise<ToolDailyUsage[]> {
   const date = new Date().toISOString().slice(0, 10);
 
-  const [rows, optimizer, token, debug, format, score, site, extractor] = await Promise.all([
+  const [rows, builder, optimizer, token, debug, format, score, site, extractor] = await Promise.all([
     prisma.toolUsageDaily.findMany({ where: { subjectKey: subject.subjectKey, date }, select: { tool: true, count: true } }),
+    getPromptBuilderLimit(subject),
     getPromptOptimizerLimit(subject),
     getTokenOptimizerLimit(subject),
     getPromptDebuggerLimit(subject),
@@ -33,6 +35,7 @@ export async function getSubjectDailyUsage(subject: RequestSubject): Promise<Too
   const used = new Map(rows.map((r) => [r.tool, r.count]));
 
   const quotas: [string, string, number][] = [
+    ["prompt-builder", "Prompt Builder", builder],
     ["prompt-optimizer", "Prompt Optimizer", optimizer],
     ["token-optimizer", "Token Optimizer", token],
     ["prompt-debugger", "Prompt Debugger", debug],

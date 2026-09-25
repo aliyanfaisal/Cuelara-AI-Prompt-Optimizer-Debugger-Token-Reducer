@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { CONTACT_MAX_PER_HOUR, contactPayloadSchema } from "@/lib/contact";
 import { sendContactNotificationEmail, sendContactReceiptEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
+import { hitAbuseLimit, ipFromHeaders } from "@/lib/abuse-limit";
+import { reportError } from "@/lib/error-report";
 
 export const runtime = "nodejs";
 
@@ -28,6 +30,12 @@ export async function POST(req: Request) {
     // Bots fill the hidden field: pretend it worked and store nothing.
     if (website) return NextResponse.json({ success: true });
 
+    // Per IP as well as per email below — rotating addresses would otherwise sidestep the email limit.
+    const ipLimit = await hitAbuseLimit({ scope: "contact-ip", subject: ipFromHeaders((name) => req.headers.get(name)), limit: 8, windowSeconds: 60 * 60 });
+    if (!ipLimit.allowed) {
+      return NextResponse.json({ error: "You've sent several messages already. Please wait a bit before sending another." }, { status: 429 });
+    }
+
     const email = data.email.toLowerCase();
     const recent = await prisma.contactMessage.count({
       where: { email, createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) } },
@@ -53,6 +61,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Contact form error:", error);
+    void reportError(error, { source: "api", route: "/api/contact" });
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }

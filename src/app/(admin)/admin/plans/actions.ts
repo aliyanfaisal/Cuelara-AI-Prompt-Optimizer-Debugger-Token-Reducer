@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { isPlanToolId } from "@/lib/plan-tools";
+import { assertAdmin } from "@/lib/admin-auth";
 
 export interface PlanLimitInput {
   tool: string;
@@ -28,6 +29,7 @@ export interface PlanRow {
 }
 
 export async function getPlans(): Promise<PlanRow[]> {
+  await assertAdmin();
   const plans = await prisma.plan.findMany({
     orderBy: { priceMonthlyCents: "asc" },
     include: { limits: true, _count: { select: { users: true } } },
@@ -82,6 +84,7 @@ export async function createPlan(data: {
   historyPerTool: number;
   limits: PlanLimitInput[];
 }) {
+  await assertAdmin();
   const name = data.name.trim();
   if (!name) return { error: "Plan name is required." };
   if (!Number.isFinite(data.priceMonthlyCents) || data.priceMonthlyCents < 0) {
@@ -143,6 +146,7 @@ export async function updatePlan(
     limits: PlanLimitInput[];
   }
 ) {
+  await assertAdmin();
   const name = data.name.trim();
   if (!name) return { error: "Plan name is required." };
   if (!Number.isFinite(data.priceMonthlyCents) || data.priceMonthlyCents < 0) {
@@ -190,6 +194,7 @@ export async function updatePlan(
 // Deleting a plan clears planId on any user assigned to it (falls back to the tool's
 // normal authenticated default) — it does not fail just because users are on it.
 export async function deletePlan(id: string) {
+  await assertAdmin();
   try {
     await prisma.plan.delete({ where: { id } });
     revalidatePath("/admin/plans");

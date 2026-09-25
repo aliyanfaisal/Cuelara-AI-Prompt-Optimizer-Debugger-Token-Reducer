@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { isAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { tryDecryptSecret } from "@/lib/secret-box";
 import { withGenAIRetry } from "@/lib/genai-retry";
 import { GENAI_TIMEOUT_MS } from "@/lib/genai-timeout";
 import { GoogleGenAI, Type, Schema } from "@google/genai";
+import { reportError } from "@/lib/error-report";
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!(await isAdminSession())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       where: { key: "GEMINI_API_KEY" }
     });
 
-    const apiKey = setting?.value;
+    const apiKey = setting?.value ? tryDecryptSecret(setting.value) : null;
     if (!apiKey) {
       return NextResponse.json({ error: "Gemini API Key is not configured in settings." }, { status: 400 });
     }
@@ -88,6 +88,7 @@ For all Markdown fields, use standard Markdown syntax: "## " / "### " headings, 
     return NextResponse.json({ data });
   } catch (error: any) {
     console.error("AI Generation Error:", error);
+    void reportError(error, { source: "api", route: "/api/admin/generate-cookbook" });
     return NextResponse.json({ error: error.message || "Failed to generate prompt." }, { status: 500 });
   }
 }

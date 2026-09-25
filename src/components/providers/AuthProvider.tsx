@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { SessionProvider, signOut, useSession } from "next-auth/react";
+import { ErrorReporter } from "@/components/ErrorReporter";
 
 // A newer login on another browser replaces this one (see src/lib/auth.ts). The session endpoint then
 // reports an error, and this signs the browser out and explains why on the login page.
@@ -20,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider refetchInterval={30} refetchOnWindowFocus>
       <SessionReplacedWatcher />
+      <ErrorReporter />
       {children}
     </SessionProvider>
   );

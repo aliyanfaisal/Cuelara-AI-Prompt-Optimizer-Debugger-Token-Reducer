@@ -2,6 +2,7 @@ import "server-only";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { tryDecryptSecret } from "@/lib/secret-box";
 import { getEffectivePlan } from "@/lib/plans";
 import { isProvider, type Provider } from "@/lib/providers";
 import { ORDERABLE_PROVIDERS, MAX_OPENROUTER_MODELS, type OrderableProvider } from "@/lib/model-order";
@@ -48,7 +49,8 @@ export async function getOwnKeyContext(): Promise<OwnKeyContext | null> {
   const keys: Partial<Record<Provider, string[]>> = {};
   for (const row of rows) {
     if (!isProvider(row.provider)) continue;
-    (keys[row.provider] ??= []).push(row.key);
+    const plain = tryDecryptSecret(row.key);
+    if (plain) (keys[row.provider] ??= []).push(plain);
   }
   if (!ORDERABLE_PROVIDERS.some((p) => keys[p]?.length)) return null;
 

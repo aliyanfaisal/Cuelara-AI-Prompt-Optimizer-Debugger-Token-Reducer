@@ -35,6 +35,14 @@ const STEPS = [
     dir: '20260925100000_byok_and_single_session',
     isApplied: `select 1 from information_schema.columns where table_name = 'User' and column_name = 'activeSessionId'`,
   },
+  {
+    dir: '20260926100000_rate_limit_bucket',
+    isApplied: `select 1 from information_schema.tables where table_name = 'RateLimitBucket'`,
+  },
+  {
+    dir: '20260926110000_error_log',
+    isApplied: `select 1 from information_schema.tables where table_name = 'ErrorLog'`,
+  },
 ];
 
 async function main() {

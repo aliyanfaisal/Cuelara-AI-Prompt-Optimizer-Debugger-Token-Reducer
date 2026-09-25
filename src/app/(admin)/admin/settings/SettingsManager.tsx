@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { updateToolSettings } from "./actions";
-import { FileText, ShieldAlert, Wand2, Zap, Bug, Terminal, Activity } from "lucide-react";
+import { FileText, ShieldAlert, Wand2, Zap, Bug, Terminal, Activity, WandSparkles } from "lucide-react";
 
 export default function SettingsManager({
   initialSettings,
@@ -20,7 +20,9 @@ export default function SettingsManager({
     promptDebuggerDailyLimit: string;
     promptDebuggerDailyLimitAuth: string;
     promptFormatterDailyLimit: string;
+    promptBuilderDailyLimit: string;
     promptFormatterDailyLimitAuth: string;
+    promptBuilderDailyLimitAuth: string;
     intelligenceScoreDailyLimit: string;
     intelligenceScoreDailyLimitAuth: string;
   };
@@ -37,7 +39,9 @@ export default function SettingsManager({
   const [promptDebuggerDailyLimit, setPromptDebuggerDailyLimit] = useState(initialSettings.promptDebuggerDailyLimit);
   const [promptDebuggerDailyLimitAuth, setPromptDebuggerDailyLimitAuth] = useState(initialSettings.promptDebuggerDailyLimitAuth);
   const [promptFormatterDailyLimit, setPromptFormatterDailyLimit] = useState(initialSettings.promptFormatterDailyLimit);
+  const [promptBuilderDailyLimit, setPromptBuilderDailyLimit] = useState(initialSettings.promptBuilderDailyLimit);
   const [promptFormatterDailyLimitAuth, setPromptFormatterDailyLimitAuth] = useState(initialSettings.promptFormatterDailyLimitAuth);
+  const [promptBuilderDailyLimitAuth, setPromptBuilderDailyLimitAuth] = useState(initialSettings.promptBuilderDailyLimitAuth);
   const [intelligenceScoreDailyLimit, setIntelligenceScoreDailyLimit] = useState(initialSettings.intelligenceScoreDailyLimit);
   const [intelligenceScoreDailyLimitAuth, setIntelligenceScoreDailyLimitAuth] = useState(initialSettings.intelligenceScoreDailyLimitAuth);
   const [isSaving, setIsSaving] = useState(false);
@@ -59,7 +63,9 @@ export default function SettingsManager({
       promptDebuggerDailyLimit,
       promptDebuggerDailyLimitAuth,
       promptFormatterDailyLimit,
+      promptBuilderDailyLimit,
       promptFormatterDailyLimitAuth,
+      promptBuilderDailyLimitAuth,
       intelligenceScoreDailyLimit,
       intelligenceScoreDailyLimitAuth,
     });
@@ -413,6 +419,66 @@ export default function SettingsManager({
               />
               <p className="text-xs text-muted-foreground mt-2">
                 How many prompts a logged-in account may format per UTC day — tracked by account, not IP.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <WandSparkles className="w-5 h-5 text-orange-500" />
+            Prompt Builder
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Limits applied to the Prompt Builder tool.
+          </p>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 flex gap-3 text-amber-600 dark:text-amber-400">
+            <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-semibold">Cost control</p>
+              <p>Each build is one AI generation call. Anonymous visitors are tracked by IP; signed-in users get their own, higher limit that follows their account instead.</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Anonymous visitors</p>
+
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Prompts per day</label>
+              <input
+                type="number"
+                min={1}
+                value={promptBuilderDailyLimit}
+                onChange={(e) => setPromptBuilderDailyLimit(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="5"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                How many prompts a single IP address may build per UTC day.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-2 border-t border-border">
+            <p className="text-xs font-bold uppercase tracking-wider text-primary pt-4">Signed-in users</p>
+
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Prompts per day</label>
+              <input
+                type="number"
+                min={1}
+                value={promptBuilderDailyLimitAuth}
+                onChange={(e) => setPromptBuilderDailyLimitAuth(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="15"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                How many prompts a logged-in account may build per UTC day — tracked by account, not IP.
               </p>
             </div>
           </div>

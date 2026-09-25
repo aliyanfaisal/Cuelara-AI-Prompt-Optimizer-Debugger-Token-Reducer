@@ -6,6 +6,7 @@ import { cookbookPromptPayloadSchema } from "@/lib/cookbook-sync/schema";
 import { UnknownCategoryError, upsertCookbookPrompt } from "@/lib/cookbook-sync/upsert";
 import { notifyGoogle, promptUrl } from "@/lib/google-indexing";
 import { prisma } from "@/lib/prisma";
+import { reportError } from "@/lib/error-report";
 
 export const runtime = "nodejs";
 
@@ -54,6 +55,7 @@ export async function POST(req: Request) {
       );
     }
     console.error("Cookbook prompt sync error:", { idempotencyKey, error });
+    void reportError(error, { source: "api", route: "/api/cookbook-prompts" });
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }
@@ -83,6 +85,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Cookbook prompt list error:", error);
+    void reportError(error, { source: "api", route: "/api/cookbook-prompts" });
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }

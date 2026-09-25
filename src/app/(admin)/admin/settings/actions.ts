@@ -15,10 +15,13 @@ import {
   PROMPT_DEBUGGER_DAILY_LIMIT_KEY,
   PROMPT_DEBUGGER_DAILY_LIMIT_AUTH_KEY,
   PROMPT_FORMATTER_DAILY_LIMIT_KEY,
+  PROMPT_BUILDER_DAILY_LIMIT_KEY,
   PROMPT_FORMATTER_DAILY_LIMIT_AUTH_KEY,
+  PROMPT_BUILDER_DAILY_LIMIT_AUTH_KEY,
   INTELLIGENCE_SCORE_DAILY_LIMIT_KEY,
   INTELLIGENCE_SCORE_DAILY_LIMIT_AUTH_KEY,
 } from "@/lib/tool-settings-keys";
+import { assertAdmin } from "@/lib/admin-auth";
 
 const DEFAULTS = {
   maxFileMb: "5",
@@ -33,14 +36,17 @@ const DEFAULTS = {
   promptDebuggerDailyLimit: "5",
   promptDebuggerDailyLimitAuth: "15",
   promptFormatterDailyLimit: "5",
+  promptBuilderDailyLimit: "5",
   promptFormatterDailyLimitAuth: "15",
+  promptBuilderDailyLimitAuth: "15",
   intelligenceScoreDailyLimit: "5",
   intelligenceScoreDailyLimitAuth: "15",
 };
 
 export async function getToolSettings() {
+  await assertAdmin();
   try {
-    const [maxFileMb, documentDailyLimit, promptDailyLimit, documentDailyLimitAuth, promptDailyLimitAuth, promptOptimizerDailyLimit, promptOptimizerDailyLimitAuth, tokenOptimizerDailyLimit, tokenOptimizerDailyLimitAuth, promptDebuggerDailyLimit, promptDebuggerDailyLimitAuth, promptFormatterDailyLimit, promptFormatterDailyLimitAuth, intelligenceScoreDailyLimit, intelligenceScoreDailyLimitAuth] = await Promise.all([
+    const [maxFileMb, documentDailyLimit, promptDailyLimit, documentDailyLimitAuth, promptDailyLimitAuth, promptOptimizerDailyLimit, promptOptimizerDailyLimitAuth, tokenOptimizerDailyLimit, tokenOptimizerDailyLimitAuth, promptDebuggerDailyLimit, promptDebuggerDailyLimitAuth, promptFormatterDailyLimit, promptFormatterDailyLimitAuth, promptBuilderDailyLimit, promptBuilderDailyLimitAuth, intelligenceScoreDailyLimit, intelligenceScoreDailyLimitAuth] = await Promise.all([
       prisma.setting.findUnique({ where: { key: CONTEXT_EXTRACTOR_MAX_FILE_MB_KEY } }),
       prisma.setting.findUnique({ where: { key: CONTEXT_EXTRACTOR_DOCUMENT_DAILY_LIMIT_KEY } }),
       prisma.setting.findUnique({ where: { key: CONTEXT_EXTRACTOR_PROMPT_DAILY_LIMIT_KEY } }),
@@ -53,7 +59,9 @@ export async function getToolSettings() {
       prisma.setting.findUnique({ where: { key: PROMPT_DEBUGGER_DAILY_LIMIT_KEY } }),
       prisma.setting.findUnique({ where: { key: PROMPT_DEBUGGER_DAILY_LIMIT_AUTH_KEY } }),
       prisma.setting.findUnique({ where: { key: PROMPT_FORMATTER_DAILY_LIMIT_KEY } }),
+      prisma.setting.findUnique({ where: { key: PROMPT_BUILDER_DAILY_LIMIT_KEY } }),
       prisma.setting.findUnique({ where: { key: PROMPT_FORMATTER_DAILY_LIMIT_AUTH_KEY } }),
+      prisma.setting.findUnique({ where: { key: PROMPT_BUILDER_DAILY_LIMIT_AUTH_KEY } }),
       prisma.setting.findUnique({ where: { key: INTELLIGENCE_SCORE_DAILY_LIMIT_KEY } }),
       prisma.setting.findUnique({ where: { key: INTELLIGENCE_SCORE_DAILY_LIMIT_AUTH_KEY } }),
     ]);
@@ -70,7 +78,9 @@ export async function getToolSettings() {
       promptDebuggerDailyLimit: promptDebuggerDailyLimit?.value || DEFAULTS.promptDebuggerDailyLimit,
       promptDebuggerDailyLimitAuth: promptDebuggerDailyLimitAuth?.value || DEFAULTS.promptDebuggerDailyLimitAuth,
       promptFormatterDailyLimit: promptFormatterDailyLimit?.value || DEFAULTS.promptFormatterDailyLimit,
+      promptBuilderDailyLimit: promptBuilderDailyLimit?.value || DEFAULTS.promptBuilderDailyLimit,
       promptFormatterDailyLimitAuth: promptFormatterDailyLimitAuth?.value || DEFAULTS.promptFormatterDailyLimitAuth,
+      promptBuilderDailyLimitAuth: promptBuilderDailyLimitAuth?.value || DEFAULTS.promptBuilderDailyLimitAuth,
       intelligenceScoreDailyLimit: intelligenceScoreDailyLimit?.value || DEFAULTS.intelligenceScoreDailyLimit,
       intelligenceScoreDailyLimitAuth: intelligenceScoreDailyLimitAuth?.value || DEFAULTS.intelligenceScoreDailyLimitAuth,
     };
@@ -88,7 +98,9 @@ export async function getToolSettings() {
       promptDebuggerDailyLimit: DEFAULTS.promptDebuggerDailyLimit,
       promptDebuggerDailyLimitAuth: DEFAULTS.promptDebuggerDailyLimitAuth,
       promptFormatterDailyLimit: DEFAULTS.promptFormatterDailyLimit,
+      promptBuilderDailyLimit: DEFAULTS.promptBuilderDailyLimit,
       promptFormatterDailyLimitAuth: DEFAULTS.promptFormatterDailyLimitAuth,
+      promptBuilderDailyLimitAuth: DEFAULTS.promptBuilderDailyLimitAuth,
       intelligenceScoreDailyLimit: DEFAULTS.intelligenceScoreDailyLimit,
       intelligenceScoreDailyLimitAuth: DEFAULTS.intelligenceScoreDailyLimitAuth,
     };
@@ -110,10 +122,13 @@ export async function updateToolSettings(data: {
   promptDebuggerDailyLimit: string;
   promptDebuggerDailyLimitAuth: string;
   promptFormatterDailyLimit: string;
+  promptBuilderDailyLimit: string;
   promptFormatterDailyLimitAuth: string;
+  promptBuilderDailyLimitAuth: string;
   intelligenceScoreDailyLimit: string;
   intelligenceScoreDailyLimitAuth: string;
 }) {
+  await assertAdmin();
   const parsed = {
     maxFileMb: parseInt(data.maxFileMb, 10),
     documentDailyLimit: parseInt(data.documentDailyLimit, 10),
@@ -127,7 +142,9 @@ export async function updateToolSettings(data: {
     promptDebuggerDailyLimit: parseInt(data.promptDebuggerDailyLimit, 10),
     promptDebuggerDailyLimitAuth: parseInt(data.promptDebuggerDailyLimitAuth, 10),
     promptFormatterDailyLimit: parseInt(data.promptFormatterDailyLimit, 10),
+    promptBuilderDailyLimit: parseInt(data.promptBuilderDailyLimit, 10),
     promptFormatterDailyLimitAuth: parseInt(data.promptFormatterDailyLimitAuth, 10),
+    promptBuilderDailyLimitAuth: parseInt(data.promptBuilderDailyLimitAuth, 10),
     intelligenceScoreDailyLimit: parseInt(data.intelligenceScoreDailyLimit, 10),
     intelligenceScoreDailyLimitAuth: parseInt(data.intelligenceScoreDailyLimitAuth, 10),
   };
@@ -145,7 +162,9 @@ export async function updateToolSettings(data: {
     promptDebuggerDailyLimit: "Prompt Debugger audits per day (anonymous)",
     promptDebuggerDailyLimitAuth: "Prompt Debugger audits per day (signed in)",
     promptFormatterDailyLimit: "Prompt Formatter formats per day (anonymous)",
+    promptBuilderDailyLimit: "Prompt Builder prompts per day (anonymous)",
     promptFormatterDailyLimitAuth: "Prompt Formatter formats per day (signed in)",
+    promptBuilderDailyLimitAuth: "Prompt Builder prompts per day (signed in)",
     intelligenceScoreDailyLimit: "Intelligence Score scores per day (anonymous)",
     intelligenceScoreDailyLimitAuth: "Intelligence Score scores per day (signed in)",
   };
@@ -219,9 +238,19 @@ export async function updateToolSettings(data: {
         create: { key: PROMPT_FORMATTER_DAILY_LIMIT_KEY, value: String(parsed.promptFormatterDailyLimit) },
       }),
       prisma.setting.upsert({
+        where: { key: PROMPT_BUILDER_DAILY_LIMIT_KEY },
+        update: { value: String(parsed.promptBuilderDailyLimit) },
+        create: { key: PROMPT_BUILDER_DAILY_LIMIT_KEY, value: String(parsed.promptBuilderDailyLimit) },
+      }),
+      prisma.setting.upsert({
         where: { key: PROMPT_FORMATTER_DAILY_LIMIT_AUTH_KEY },
         update: { value: String(parsed.promptFormatterDailyLimitAuth) },
         create: { key: PROMPT_FORMATTER_DAILY_LIMIT_AUTH_KEY, value: String(parsed.promptFormatterDailyLimitAuth) },
+      }),
+      prisma.setting.upsert({
+        where: { key: PROMPT_BUILDER_DAILY_LIMIT_AUTH_KEY },
+        update: { value: String(parsed.promptBuilderDailyLimitAuth) },
+        create: { key: PROMPT_BUILDER_DAILY_LIMIT_AUTH_KEY, value: String(parsed.promptBuilderDailyLimitAuth) },
       }),
       prisma.setting.upsert({
         where: { key: INTELLIGENCE_SCORE_DAILY_LIMIT_KEY },

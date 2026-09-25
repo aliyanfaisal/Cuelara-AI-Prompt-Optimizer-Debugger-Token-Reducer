@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRequestSubject, getUsedToday } from "@/lib/rate-limit";
 import { getTokenOptimizerLimit } from "@/lib/token-optimizer/limits";
+import { reportError } from "@/lib/error-report";
 
 const TOOL = "token-optimizer";
 
@@ -18,6 +19,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Token Optimizer usage error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/token-optimizer/usage" });
     return NextResponse.json({ error: "Could not load usage." }, { status: 500 });
   }
 }

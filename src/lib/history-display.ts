@@ -7,6 +7,8 @@ export function describeRun(tool: string, input: unknown): string {
   const i = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
   const parts: string[] = (() => {
     switch (tool) {
+      case "prompt-builder":
+        return [text(i.target), text(i.useCase), text(i.detail)];
       case "prompt-optimizer":
         return [text(i.mode), text(i.level)];
       case "token-optimizer":

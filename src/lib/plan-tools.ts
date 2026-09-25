@@ -2,6 +2,7 @@
 // string each route passes to hasReachedDailyLimit/consumeDailyLimit (see the TOOL /
 // PROMPT_TOOL / DOCUMENT_TOOL constants in each tool's route.ts).
 export const PLAN_TOOLS = [
+  { id: "prompt-builder", label: "Prompt Builder" },
   { id: "prompt-optimizer", label: "Prompt Optimizer" },
   { id: "token-optimizer", label: "Token Optimizer" },
   { id: "prompt-debugger", label: "Prompt Debugger" },

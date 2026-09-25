@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
+import { tryDecryptSecret } from "@/lib/secret-box";
 import { getOwnKeyContext } from "@/lib/user-keys";
 import { logApiCall, extractProviderErrorStatus, extractProviderErrorMessage } from "@/lib/api-call-log";
 
@@ -12,7 +13,7 @@ export async function getActiveApiKeys(provider: Provider, userId: string | null
     where: { provider, isActive: true, userId },
     select: { key: true },
   });
-  return rows.map((r) => r.key);
+  return rows.map((r) => tryDecryptSecret(r.key)).filter((k): k is string => k !== null);
 }
 
 function shuffle<T>(items: T[]): T[] {

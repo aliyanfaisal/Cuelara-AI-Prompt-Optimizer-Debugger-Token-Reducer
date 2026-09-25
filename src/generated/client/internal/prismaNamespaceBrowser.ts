@@ -76,7 +76,9 @@ export const ModelName = {
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
-  Prompt: 'Prompt'
+  Prompt: 'Prompt',
+  RateLimitBucket: 'RateLimitBucket',
+  ErrorLog: 'ErrorLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -443,6 +445,31 @@ export const PromptScalarFieldEnum = {
 } as const
 
 export type PromptScalarFieldEnum = (typeof PromptScalarFieldEnum)[keyof typeof PromptScalarFieldEnum]
+
+
+export const RateLimitBucketScalarFieldEnum = {
+  key: 'key',
+  count: 'count',
+  expiresAt: 'expiresAt'
+} as const
+
+export type RateLimitBucketScalarFieldEnum = (typeof RateLimitBucketScalarFieldEnum)[keyof typeof RateLimitBucketScalarFieldEnum]
+
+
+export const ErrorLogScalarFieldEnum = {
+  id: 'id',
+  fingerprint: 'fingerprint',
+  source: 'source',
+  message: 'message',
+  stack: 'stack',
+  route: 'route',
+  count: 'count',
+  resolved: 'resolved',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt'
+} as const
+
+export type ErrorLogScalarFieldEnum = (typeof ErrorLogScalarFieldEnum)[keyof typeof ErrorLogScalarFieldEnum]
 
 
 export const SortOrder = {

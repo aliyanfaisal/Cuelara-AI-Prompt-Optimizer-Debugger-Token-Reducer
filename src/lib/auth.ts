@@ -5,6 +5,13 @@ import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { getEffectivePlan } from "./plans";
+import { clearAbuseLimit, formatWait, hitAbuseLimit, ipFromHeaders, isAbuseLimited, type AbuseRule } from "./abuse-limit";
+
+const LOGIN_WINDOW_SECONDS = 15 * 60;
+// Failures only: a correct password never counts. Per-email stops guessing at one account from many IPs,
+// per-IP stops one machine trying many accounts.
+const loginEmailRule = (email: string): AbuseRule => ({ scope: "login-email", subject: email, limit: 5, windowSeconds: LOGIN_WINDOW_SECONDS });
+const loginIpRule = (ip: string): AbuseRule => ({ scope: "login-ip", subject: ip, limit: 20, windowSeconds: LOGIN_WINDOW_SECONDS });
 
 /** Shown by the client when the server reports the session was replaced (see the jwt callback below). */
 export const SESSION_REPLACED_ERROR = "SessionReplaced";
@@ -38,24 +45,39 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing email or password");
         }
         
+        const headerValue = (name: string) => {
+          const value = (req?.headers as Record<string, string | string[] | undefined> | undefined)?.[name];
+          return Array.isArray(value) ? value[0] : value;
+        };
+        const emailRule = loginEmailRule(credentials.email);
+        const ipRule = loginIpRule(ipFromHeaders(headerValue));
+        const [emailState, ipState] = await Promise.all([isAbuseLimited(emailRule), isAbuseLimited(ipRule)]);
+        if (emailState.limited || ipState.limited) {
+          throw new Error(`Too many failed sign-in attempts. Try again in ${formatWait(Math.max(emailState.retryAfterSeconds, ipState.retryAfterSeconds))}.`);
+        }
+        const recordFailure = () => Promise.all([hitAbuseLimit(emailRule), hitAbuseLimit(ipRule)]);
+
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
           include: { roles: true }
         });
         
         if (!user || !user.password) {
+          await recordFailure();
           throw new Error("Invalid email or password");
         }
         
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) {
+          await recordFailure();
           throw new Error("Invalid email or password");
         }
+        await clearAbuseLimit(emailRule);
         
         if (!user.isActive) {
           throw new Error("Account not activated. Please check your email for the magic link.");

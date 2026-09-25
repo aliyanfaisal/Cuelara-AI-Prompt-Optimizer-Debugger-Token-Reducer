@@ -9,7 +9,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 // signed-in defaults (15 runs/day per tool, 5 documents and 100 prompts for the Context Extractor).
 const prisma = new PrismaClient({ adapter: new PrismaPg(new Pool({ connectionString: process.env.DATABASE_URL })) });
 
-const TOOLS = ["prompt-optimizer", "token-optimizer", "prompt-debugger", "prompt-formatter", "intelligence-score", "site-to-prompt"];
+const TOOLS = ["prompt-builder", "prompt-optimizer", "token-optimizer", "prompt-debugger", "prompt-formatter", "intelligence-score", "site-to-prompt"];
 
 const limitsFor = (perTool: number, documents: number, prompts: number) => [
   ...TOOLS.map((tool) => ({ tool, dailyLimit: perTool })),
@@ -26,7 +26,7 @@ const PLANS = [
     isDefault: true,
     isFeatured: false,
     historyPerTool: 20,
-    features: ["All 8 tools included", "15 runs per tool, per day", "Context Extractor: 5 documents and 100 prompts a day", "Saves your last 20 runs per tool", "Prompt Cookbook access", "Community support"].join("\n"),
+    features: ["All 9 tools included", "15 runs per tool, per day", "Context Extractor: 5 documents and 100 prompts a day", "Saves your last 20 runs per tool", "Prompt Cookbook access", "Community support"].join("\n"),
     limits: limitsFor(15, 5, 100),
   },
   {
@@ -66,6 +66,21 @@ const PLANS = [
   },
 ];
 
+// A tool added after a plan was created has no limit row for that plan, so the plan's users would silently get the
+// plain signed-in default. Give every existing plan the same limit as its Prompt Formatter one (a comparable
+// single-call tool). Only fills gaps: a limit already set in the admin Plans page is never touched.
+async function backfillNewToolLimits() {
+  const NEW_TOOL = "prompt-builder";
+  const LIKE_TOOL = "prompt-formatter";
+  for (const plan of await prisma.plan.findMany({ select: { id: true, name: true, limits: { select: { tool: true, dailyLimit: true } } } })) {
+    if (plan.limits.some((l) => l.tool === NEW_TOOL)) continue;
+    const like = plan.limits.find((l) => l.tool === LIKE_TOOL);
+    if (!like) continue;
+    await prisma.planToolLimit.create({ data: { planId: plan.id, tool: NEW_TOOL, dailyLimit: like.dailyLimit } });
+    console.log(`- ${plan.name}: added ${NEW_TOOL} limit (${like.dailyLimit}/day)`);
+  }
+}
+
 async function main() {
   for (const { limits, ...plan } of PLANS) {
     if (await prisma.plan.findUnique({ where: { slug: plan.slug }, select: { id: true } })) {
@@ -76,6 +91,7 @@ async function main() {
     await prisma.planToolLimit.createMany({ data: limits.map((l) => ({ ...l, planId: saved.id })) });
     console.log(`- ${plan.name.padEnd(5)} created: $${(plan.priceMonthlyCents / 100).toFixed(2)}/mo, ${limits.length} limits`);
   }
+  await backfillNewToolLimits();
 }
 
 main()

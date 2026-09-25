@@ -11,6 +11,7 @@ import { designDnaSchema } from "@/lib/site-to-prompt/schema";
 import { buildSitePrompt, stripFences } from "@/lib/site-to-prompt/prompt";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 import { saveToolRun, titleFrom } from "@/lib/history";
+import { reportError } from "@/lib/error-report";
 
 // A whole page's structure in, a long build prompt out — slower than the other tools' short prompts.
 const GENERATION_TIMEOUT_MS = 150_000;
@@ -102,6 +103,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ prompt: text, promptsRemaining: Math.max(0, promptLimit - used), promptsLimit: promptLimit });
   } catch (error) {
     console.error("Site to Prompt error:", error);
+    void reportError(error, { source: "api", route: "/api/tools/site-to-prompt" });
     if (isGenAITimeout(error)) return NextResponse.json({ error: "The AI is taking too long to respond. Please try again." }, { status: 504 });
     if (isRetryableProviderError(error) || isRequestTooLargeForProvider(error) || error instanceof AllProvidersExhaustedError) {
       return NextResponse.json({ error: HIGH_DEMAND_MESSAGE }, { status: 429 });

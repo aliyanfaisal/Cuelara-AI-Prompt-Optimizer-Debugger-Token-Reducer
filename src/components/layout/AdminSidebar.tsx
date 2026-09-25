@@ -18,7 +18,8 @@ import {
   Newspaper,
   CreditCard,
   Mail,
-  Inbox
+  Inbox,
+  Bug
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -29,6 +30,7 @@ const navigation = [
   { name: "Plans", href: "/admin/plans", icon: CreditCard },
   { name: "Messages", href: "/admin/messages", icon: Inbox },
   { name: "Emails", href: "/admin/emails", icon: Mail },
+  { name: "Errors", href: "/admin/errors", icon: Bug },
   { name: "Roles", href: "/admin/roles", icon: ShieldCheck },
   { name: "Prompts", href: "/admin/prompts", icon: FileText },
   { name: "Cookbook", href: "/admin/cookbook", icon: BookOpen },

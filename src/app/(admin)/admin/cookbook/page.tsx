@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { maskSecret, tryDecryptSecret } from "@/lib/secret-box";
 import CookbookDashboard from "./CookbookDashboard";
 
 export const metadata = {
@@ -31,7 +32,7 @@ export default async function CookbookPage() {
       <CookbookDashboard 
         initialCategories={categories} 
         initialPrompts={prompts} 
-        initialSettings={{ geminiApiKey: geminiApiKey?.value || "" }} 
+        initialSettings={{ geminiApiKey: geminiApiKey?.value ? maskSecret(tryDecryptSecret(geminiApiKey.value) ?? "") : "" }} 
       />
     </div>
   );

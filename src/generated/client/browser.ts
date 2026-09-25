@@ -147,3 +147,13 @@ export type Workspace = Prisma.WorkspaceModel
  * 
  */
 export type Prompt = Prisma.PromptModel
+/**
+ * Model RateLimitBucket
+ * 
+ */
+export type RateLimitBucket = Prisma.RateLimitBucketModel
+/**
+ * Model ErrorLog
+ * 
+ */
+export type ErrorLog = Prisma.ErrorLogModel
