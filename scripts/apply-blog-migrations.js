@@ -31,6 +31,10 @@ const STEPS = [
     dir: '20260925000000_plan_history_limit',
     isApplied: `select 1 from information_schema.columns where table_name = 'Plan' and column_name = 'historyPerTool'`,
   },
+  {
+    dir: '20260925100000_byok_and_single_session',
+    isApplied: `select 1 from information_schema.columns where table_name = 'User' and column_name = 'activeSessionId'`,
+  },
 ];
 
 async function main() {
