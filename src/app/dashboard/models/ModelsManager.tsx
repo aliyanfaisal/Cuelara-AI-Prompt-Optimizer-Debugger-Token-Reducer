@@ -64,7 +64,7 @@ function SortableRow({ provider, position, activeKeys }: { provider: OrderablePr
   );
 }
 
-function KeyCard({ provider, keys, onChange }: { provider: OrderableProvider; keys: OwnKeyRow[]; onChange: (keys: OwnKeyRow[]) => void }) {
+function KeyCard({ provider, keys, onChange, extra }: { provider: OrderableProvider; keys: OwnKeyRow[]; onChange: (keys: OwnKeyRow[]) => void; extra?: React.ReactNode }) {
   const router = useRouter();
   const [adding, setAdding] = useState(false);
   const [newKey, setNewKey] = useState("");
@@ -107,6 +107,7 @@ function KeyCard({ provider, keys, onChange }: { provider: OrderableProvider; ke
         <h4 className="flex items-center gap-2 font-bold"><KeyRound className="h-4 w-4 text-primary" /> {PROVIDER_LABELS[provider]}</h4>
         <p className="mt-1 text-xs text-muted-foreground">{KEY_HINTS[provider]}</p>
       </div>
+      {extra}
       <div className="space-y-2.5 p-5">
         {keys.length === 0 && !adding && <p className="text-sm italic text-muted-foreground">No keys added yet.</p>}
         {keys.map((k) => (
@@ -219,25 +220,31 @@ export function ModelsManager({ initial }: { initial: OwnModelsState }) {
         </DndContext>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <h3 className="font-bold text-foreground">OpenRouter free models</h3>
-        <p className="mb-4 mt-1 text-xs text-muted-foreground">If the first fails, the second is tried. Leave both empty to use the richest-context free models automatically.</p>
-        <div className="space-y-2">
-          {slots.map((value, i) => (
-            <label key={i} className="flex items-center gap-3 text-xs">
-              <span className="w-16 shrink-0 font-medium text-muted-foreground">{i === 0 ? "First" : "Fallback"}</span>
-              <select value={value} disabled={i > 0 && !slots[0]} onChange={(e) => handleSlot(i, e.target.value)} className="min-w-0 flex-1 rounded-lg border border-border bg-background px-3 py-2 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50">
-                <option value="">{i === 0 ? "Automatic" : "None"}</option>
-                {options.map((m) => <option key={m.id} value={m.id}>{m.id}{m.contextLength ? ` (${Math.round(m.contextLength / 1000)}k ctx)` : ""}</option>)}
-              </select>
-            </label>
-          ))}
-        </div>
-      </section>
-
       <div className="grid grid-cols-1 gap-4">
         {order.map((p) => (
-          <KeyCard key={p} provider={p} keys={keys[p] ?? []} onChange={(next) => setKeys((prev) => ({ ...prev, [p]: next }))} />
+          <KeyCard
+            key={p}
+            provider={p}
+            keys={keys[p] ?? []}
+            onChange={(next) => setKeys((prev) => ({ ...prev, [p]: next }))}
+            extra={p === "openrouter" ? (
+    <div className="mx-5 mt-5 rounded-lg border border-border bg-muted/30 p-4">
+      <p className="text-xs font-semibold text-foreground">Free models (tried in order)</p>
+      <p className="mb-3 mt-1 text-xs text-muted-foreground">If the first fails, the second is tried, then your next provider. Leave both empty to use the richest-context free models automatically.</p>
+      <div className="space-y-2">
+        {slots.map((value, i) => (
+          <label key={i} className="flex items-center gap-3 text-xs">
+            <span className="w-16 shrink-0 font-medium text-muted-foreground">{i === 0 ? "First" : "Fallback"}</span>
+            <select value={value} disabled={i > 0 && !slots[0]} onChange={(e) => handleSlot(i, e.target.value)} className="min-w-0 flex-1 rounded-lg border border-border bg-background px-3 py-2 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50">
+              <option value="">{i === 0 ? "Automatic" : "None"}</option>
+              {options.map((m) => <option key={m.id} value={m.id}>{m.id}{m.contextLength ? ` (${Math.round(m.contextLength / 1000)}k ctx)` : ""}</option>)}
+            </select>
+          </label>
+        ))}
+      </div>
+    </div>
+  ) : undefined}
+          />
         ))}
       </div>
     </div>
