@@ -24,6 +24,13 @@ const MAX_FREE_MODELS = 3;
 // Used only if OpenRouter's /models endpoint itself is unreachable and no cached list exists yet.
 const HARDCODED_FALLBACK: FreeOpenRouterModel[] = [{ id: "deepseek/deepseek-chat-v3-0324:free", maxPromptChars: undefined }];
 
+// OpenRouter's catalog metadata has no field for this: some $0/text-only models still 403 on a
+// plain chat-completions call because the provider restricts them to "agentic harnesses" (tool-use
+// clients), not raw API usage — e.g. thinkingmachines/inkling:free. Every call to one of these is a
+// guaranteed, non-transient failure, so they're excluded here rather than burning a fallback attempt
+// (and a support ticket) every time OpenRouter's free catalog happens to rank one near the top.
+const AGENTIC_ONLY_MODEL_IDS = new Set(["thinkingmachines/inkling:free"]);
+
 // Reserve headroom for the completion out of the model's total context window before
 // converting the rest to a char budget (~3.5 chars/token holds up well for JSON-heavy prompts).
 const COMPLETION_TOKEN_RESERVE = 2_000;
@@ -68,7 +75,7 @@ export async function listFreeOpenRouterModels(): Promise<FreeOpenRouterModel[]>
     const data = (await res.json()) as { data?: OpenRouterModelEntry[] };
 
     const models = (data.data ?? [])
-      .filter((m) => isFree(m) && isTextGenerationModel(m))
+      .filter((m) => isFree(m) && isTextGenerationModel(m) && !AGENTIC_ONLY_MODEL_IDS.has(m.id))
       .sort((a, b) => (b.context_length ?? 0) - (a.context_length ?? 0))
       .map((m) => ({ id: m.id, contextLength: m.context_length, maxPromptChars: toMaxPromptChars(m.context_length) }));
 
