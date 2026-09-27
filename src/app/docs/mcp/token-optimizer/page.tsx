@@ -5,6 +5,7 @@ import { ArrowLeft, Zap } from "lucide-react";
 import { siteUrl } from "@/lib/blog";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { markdownProseClass } from "@/components/markdown/prose";
+import { mcpSetupPrompt } from "@/lib/docs/mcp-setup-prompt";
 
 export const metadata: Metadata = {
   title: "Token Optimizer MCP Tool — Cuelara",
@@ -14,7 +15,15 @@ export const metadata: Metadata = {
 function content(base: string): string {
   return `**\`cuelara_compress_prompt\`** compresses a prompt to use fewer tokens while preserving every instruction and constraint, verified against a real tokenizer — not an estimate.
 
-## Fastest setup — Claude Code
+## Set it up automatically
+
+Paste this into the AI assistant you already have open — VS Code's Claude extension, Copilot Chat, Cursor, Claude Code, whatever it is — and it will ask you what it needs, then write the config file itself:
+
+\`\`\`text
+${mcpSetupPrompt(base)}
+\`\`\`
+
+## Fastest manual setup — Claude Code
 
 \`\`\`bash
 claude mcp add --transport http cuelara-token-optimizer ${base}/api/mcp

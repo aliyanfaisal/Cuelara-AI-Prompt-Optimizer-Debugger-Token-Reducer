@@ -5,6 +5,7 @@ import { ArrowLeft, Code2 } from "lucide-react";
 import { siteUrl } from "@/lib/blog";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { markdownProseClass } from "@/components/markdown/prose";
+import { mcpSetupPrompt } from "@/lib/docs/mcp-setup-prompt";
 
 export const metadata: Metadata = {
   title: "Prompt Optimizer MCP Tool — Cuelara",
@@ -14,7 +15,15 @@ export const metadata: Metadata = {
 function content(base: string): string {
   return `**\`cuelara_optimize_prompt\`** turns a rough, messy request into a complete, structured, ready-to-paste prompt — adds role anchoring, explicit steps, negative constraints, and an output format tailored to the mode you pick.
 
-## Fastest setup — Claude Code
+## Set it up automatically
+
+Paste this into the AI assistant you already have open — VS Code's Claude extension, Copilot Chat, Cursor, Claude Code, whatever it is — and it will ask you what it needs, then write the config file itself:
+
+\`\`\`text
+${mcpSetupPrompt(base)}
+\`\`\`
+
+## Fastest manual setup — Claude Code
 
 \`\`\`bash
 claude mcp add --transport http cuelara-token-optimizer ${base}/api/mcp
