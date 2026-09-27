@@ -107,6 +107,16 @@ export type CookbookCategory = Prisma.CookbookCategoryModel
  */
 export type CookbookPrompt = Prisma.CookbookPromptModel
 /**
+ * Model ContentView
+ * 
+ */
+export type ContentView = Prisma.ContentViewModel
+/**
+ * Model Reaction
+ * 
+ */
+export type Reaction = Prisma.ReactionModel
+/**
  * Model Account
  * 
  */

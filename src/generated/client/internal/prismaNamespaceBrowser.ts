@@ -64,6 +64,8 @@ export const ModelName = {
   BlogTag: 'BlogTag',
   CookbookCategory: 'CookbookCategory',
   CookbookPrompt: 'CookbookPrompt',
+  ContentView: 'ContentView',
+  Reaction: 'Reaction',
   Account: 'Account',
   Session: 'Session',
   User: 'User',
@@ -215,6 +217,7 @@ export const BlogPostScalarFieldEnum = {
   publishedAt: 'publishedAt',
   readingMinutes: 'readingMinutes',
   teaser: 'teaser',
+  views: 'views',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -269,11 +272,37 @@ export const CookbookPromptScalarFieldEnum = {
   published: 'published',
   seoTitle: 'seoTitle',
   seoDesc: 'seoDesc',
+  views: 'views',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type CookbookPromptScalarFieldEnum = (typeof CookbookPromptScalarFieldEnum)[keyof typeof CookbookPromptScalarFieldEnum]
+
+
+export const ContentViewScalarFieldEnum = {
+  id: 'id',
+  subject: 'subject',
+  subjectId: 'subjectId',
+  subjectKey: 'subjectKey',
+  date: 'date',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentViewScalarFieldEnum = (typeof ContentViewScalarFieldEnum)[keyof typeof ContentViewScalarFieldEnum]
+
+
+export const ReactionScalarFieldEnum = {
+  id: 'id',
+  subject: 'subject',
+  subjectId: 'subjectId',
+  subjectKey: 'subjectKey',
+  type: 'type',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReactionScalarFieldEnum = (typeof ReactionScalarFieldEnum)[keyof typeof ReactionScalarFieldEnum]
 
 
 export const AccountScalarFieldEnum = {

@@ -15,3 +15,23 @@ export const BlogPostStatus = {
 } as const
 
 export type BlogPostStatus = (typeof BlogPostStatus)[keyof typeof BlogPostStatus]
+
+
+export const EngagementSubject = {
+  blog: 'blog',
+  cookbook: 'cookbook'
+} as const
+
+export type EngagementSubject = (typeof EngagementSubject)[keyof typeof EngagementSubject]
+
+
+export const ReactionType = {
+  like: 'like',
+  love: 'love',
+  haha: 'haha',
+  wow: 'wow',
+  sad: 'sad',
+  angry: 'angry'
+} as const
+
+export type ReactionType = (typeof ReactionType)[keyof typeof ReactionType]

@@ -29,11 +29,13 @@ export type AggregateBlogPost = {
 export type BlogPostAvgAggregateOutputType = {
   externalId: number | null
   readingMinutes: number | null
+  views: number | null
 }
 
 export type BlogPostSumAggregateOutputType = {
   externalId: number | null
   readingMinutes: number | null
+  views: number | null
 }
 
 export type BlogPostMinAggregateOutputType = {
@@ -53,6 +55,7 @@ export type BlogPostMinAggregateOutputType = {
   publishedAt: Date | null
   readingMinutes: number | null
   teaser: string | null
+  views: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,6 +77,7 @@ export type BlogPostMaxAggregateOutputType = {
   publishedAt: Date | null
   readingMinutes: number | null
   teaser: string | null
+  views: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -95,6 +99,7 @@ export type BlogPostCountAggregateOutputType = {
   publishedAt: number
   readingMinutes: number
   teaser: number
+  views: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -104,11 +109,13 @@ export type BlogPostCountAggregateOutputType = {
 export type BlogPostAvgAggregateInputType = {
   externalId?: true
   readingMinutes?: true
+  views?: true
 }
 
 export type BlogPostSumAggregateInputType = {
   externalId?: true
   readingMinutes?: true
+  views?: true
 }
 
 export type BlogPostMinAggregateInputType = {
@@ -128,6 +135,7 @@ export type BlogPostMinAggregateInputType = {
   publishedAt?: true
   readingMinutes?: true
   teaser?: true
+  views?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -149,6 +157,7 @@ export type BlogPostMaxAggregateInputType = {
   publishedAt?: true
   readingMinutes?: true
   teaser?: true
+  views?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -170,6 +179,7 @@ export type BlogPostCountAggregateInputType = {
   publishedAt?: true
   readingMinutes?: true
   teaser?: true
+  views?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -278,6 +288,7 @@ export type BlogPostGroupByOutputType = {
   publishedAt: Date | null
   readingMinutes: number
   teaser: string | null
+  views: number
   createdAt: Date
   updatedAt: Date
   _count: BlogPostCountAggregateOutputType | null
@@ -322,6 +333,7 @@ export type BlogPostWhereInput = {
   publishedAt?: Prisma.DateTimeNullableFilter<"BlogPost"> | Date | string | null
   readingMinutes?: Prisma.IntFilter<"BlogPost"> | number
   teaser?: Prisma.StringNullableFilter<"BlogPost"> | string | null
+  views?: Prisma.IntFilter<"BlogPost"> | number
   createdAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   categories?: Prisma.BlogCategoryListRelationFilter
@@ -345,6 +357,7 @@ export type BlogPostOrderByWithRelationInput = {
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   readingMinutes?: Prisma.SortOrder
   teaser?: Prisma.SortOrderInput | Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   categories?: Prisma.BlogCategoryOrderByRelationAggregateInput
@@ -371,6 +384,7 @@ export type BlogPostWhereUniqueInput = Prisma.AtLeast<{
   publishedAt?: Prisma.DateTimeNullableFilter<"BlogPost"> | Date | string | null
   readingMinutes?: Prisma.IntFilter<"BlogPost"> | number
   teaser?: Prisma.StringNullableFilter<"BlogPost"> | string | null
+  views?: Prisma.IntFilter<"BlogPost"> | number
   createdAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   categories?: Prisma.BlogCategoryListRelationFilter
@@ -394,6 +408,7 @@ export type BlogPostOrderByWithAggregationInput = {
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   readingMinutes?: Prisma.SortOrder
   teaser?: Prisma.SortOrderInput | Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.BlogPostCountOrderByAggregateInput
@@ -423,6 +438,7 @@ export type BlogPostScalarWhereWithAggregatesInput = {
   publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"BlogPost"> | Date | string | null
   readingMinutes?: Prisma.IntWithAggregatesFilter<"BlogPost"> | number
   teaser?: Prisma.StringNullableWithAggregatesFilter<"BlogPost"> | string | null
+  views?: Prisma.IntWithAggregatesFilter<"BlogPost"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
 }
@@ -444,6 +460,7 @@ export type BlogPostCreateInput = {
   publishedAt?: Date | string | null
   readingMinutes?: number
   teaser?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.BlogCategoryCreateNestedManyWithoutPostsInput
@@ -467,6 +484,7 @@ export type BlogPostUncheckedCreateInput = {
   publishedAt?: Date | string | null
   readingMinutes?: number
   teaser?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.BlogCategoryUncheckedCreateNestedManyWithoutPostsInput
@@ -490,6 +508,7 @@ export type BlogPostUpdateInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.BlogCategoryUpdateManyWithoutPostsNestedInput
@@ -513,6 +532,7 @@ export type BlogPostUncheckedUpdateInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.BlogCategoryUncheckedUpdateManyWithoutPostsNestedInput
@@ -536,6 +556,7 @@ export type BlogPostCreateManyInput = {
   publishedAt?: Date | string | null
   readingMinutes?: number
   teaser?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -557,6 +578,7 @@ export type BlogPostUpdateManyMutationInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -578,6 +600,7 @@ export type BlogPostUncheckedUpdateManyInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -599,6 +622,7 @@ export type BlogPostCountOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   readingMinutes?: Prisma.SortOrder
   teaser?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -606,6 +630,7 @@ export type BlogPostCountOrderByAggregateInput = {
 export type BlogPostAvgOrderByAggregateInput = {
   externalId?: Prisma.SortOrder
   readingMinutes?: Prisma.SortOrder
+  views?: Prisma.SortOrder
 }
 
 export type BlogPostMaxOrderByAggregateInput = {
@@ -625,6 +650,7 @@ export type BlogPostMaxOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   readingMinutes?: Prisma.SortOrder
   teaser?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -646,6 +672,7 @@ export type BlogPostMinOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   readingMinutes?: Prisma.SortOrder
   teaser?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -653,6 +680,7 @@ export type BlogPostMinOrderByAggregateInput = {
 export type BlogPostSumOrderByAggregateInput = {
   externalId?: Prisma.SortOrder
   readingMinutes?: Prisma.SortOrder
+  views?: Prisma.SortOrder
 }
 
 export type BlogPostListRelationFilter = {
@@ -766,6 +794,7 @@ export type BlogPostCreateWithoutCategoriesInput = {
   publishedAt?: Date | string | null
   readingMinutes?: number
   teaser?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   tags?: Prisma.BlogTagCreateNestedManyWithoutPostsInput
@@ -788,6 +817,7 @@ export type BlogPostUncheckedCreateWithoutCategoriesInput = {
   publishedAt?: Date | string | null
   readingMinutes?: number
   teaser?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutPostsInput
@@ -834,6 +864,7 @@ export type BlogPostScalarWhereInput = {
   publishedAt?: Prisma.DateTimeNullableFilter<"BlogPost"> | Date | string | null
   readingMinutes?: Prisma.IntFilter<"BlogPost"> | number
   teaser?: Prisma.StringNullableFilter<"BlogPost"> | string | null
+  views?: Prisma.IntFilter<"BlogPost"> | number
   createdAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogPost"> | Date | string
 }
@@ -855,6 +886,7 @@ export type BlogPostCreateWithoutTagsInput = {
   publishedAt?: Date | string | null
   readingMinutes?: number
   teaser?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.BlogCategoryCreateNestedManyWithoutPostsInput
@@ -877,6 +909,7 @@ export type BlogPostUncheckedCreateWithoutTagsInput = {
   publishedAt?: Date | string | null
   readingMinutes?: number
   teaser?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.BlogCategoryUncheckedCreateNestedManyWithoutPostsInput
@@ -920,6 +953,7 @@ export type BlogPostUpdateWithoutCategoriesInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tags?: Prisma.BlogTagUpdateManyWithoutPostsNestedInput
@@ -942,6 +976,7 @@ export type BlogPostUncheckedUpdateWithoutCategoriesInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tags?: Prisma.BlogTagUncheckedUpdateManyWithoutPostsNestedInput
@@ -964,6 +999,7 @@ export type BlogPostUncheckedUpdateManyWithoutCategoriesInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -985,6 +1021,7 @@ export type BlogPostUpdateWithoutTagsInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.BlogCategoryUpdateManyWithoutPostsNestedInput
@@ -1007,6 +1044,7 @@ export type BlogPostUncheckedUpdateWithoutTagsInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.BlogCategoryUncheckedUpdateManyWithoutPostsNestedInput
@@ -1029,6 +1067,7 @@ export type BlogPostUncheckedUpdateManyWithoutTagsInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readingMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   teaser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1090,6 +1129,7 @@ export type BlogPostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   publishedAt?: boolean
   readingMinutes?: boolean
   teaser?: boolean
+  views?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   categories?: boolean | Prisma.BlogPost$categoriesArgs<ExtArgs>
@@ -1114,6 +1154,7 @@ export type BlogPostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   publishedAt?: boolean
   readingMinutes?: boolean
   teaser?: boolean
+  views?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["blogPost"]>
@@ -1135,6 +1176,7 @@ export type BlogPostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   publishedAt?: boolean
   readingMinutes?: boolean
   teaser?: boolean
+  views?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["blogPost"]>
@@ -1156,11 +1198,12 @@ export type BlogPostSelectScalar = {
   publishedAt?: boolean
   readingMinutes?: boolean
   teaser?: boolean
+  views?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type BlogPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "content" | "excerpt" | "published" | "seoTitle" | "seoDesc" | "externalId" | "imageUrl" | "sourceImageUrl" | "canonicalUrl" | "status" | "publishedAt" | "readingMinutes" | "teaser" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
+export type BlogPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "content" | "excerpt" | "published" | "seoTitle" | "seoDesc" | "externalId" | "imageUrl" | "sourceImageUrl" | "canonicalUrl" | "status" | "publishedAt" | "readingMinutes" | "teaser" | "views" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
 export type BlogPostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   categories?: boolean | Prisma.BlogPost$categoriesArgs<ExtArgs>
   tags?: boolean | Prisma.BlogPost$tagsArgs<ExtArgs>
@@ -1192,6 +1235,7 @@ export type $BlogPostPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     publishedAt: Date | null
     readingMinutes: number
     teaser: string | null
+    views: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["blogPost"]>
@@ -1635,6 +1679,7 @@ export interface BlogPostFieldRefs {
   readonly publishedAt: Prisma.FieldRef<"BlogPost", 'DateTime'>
   readonly readingMinutes: Prisma.FieldRef<"BlogPost", 'Int'>
   readonly teaser: Prisma.FieldRef<"BlogPost", 'String'>
+  readonly views: Prisma.FieldRef<"BlogPost", 'Int'>
   readonly createdAt: Prisma.FieldRef<"BlogPost", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"BlogPost", 'DateTime'>
 }

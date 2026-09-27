@@ -3,9 +3,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Eye } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate, postCardSelect, publishedWhere, readingTimeMinutes, siteUrl, teaser, type PostCardData } from "@/lib/blog";
+import { recordView, getReactionSummary } from "@/lib/engagement";
+import { ReactionBar } from "@/components/engagement/ReactionBar";
 import { PostCard, PostImage } from "../PostCard";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { ShareButtons } from "./ShareButtons";
@@ -85,7 +87,11 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   const post = await getPost((await params).slug);
   if (!post) notFound();
 
-  const related = await getRelatedPosts(post);
+  const [related, views, reactions] = await Promise.all([
+    getRelatedPosts(post),
+    recordView("blog", post.id),
+    getReactionSummary("blog", post.id),
+  ]);
   const url = `${siteUrl()}/blog/${post.slug}`;
   const minutes = readingTimeMinutes(post.content);
 
@@ -130,6 +136,13 @@ export default async function BlogPostPage({ params }: { params: Params }) {
 
         <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">{post.title}</h1>
         {post.excerpt && <p className="mb-6 text-lg leading-relaxed text-muted-foreground">{post.excerpt}</p>}
+
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <ReactionBar subject="blog" subjectId={post.id} initial={reactions} />
+          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Eye className="h-4 w-4" /> {views.toLocaleString()} views
+          </span>
+        </div>
 
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-4">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">

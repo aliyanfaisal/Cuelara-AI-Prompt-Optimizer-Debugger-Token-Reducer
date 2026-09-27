@@ -160,6 +160,8 @@ model BlogPost {
   categories BlogCategory[]
   tags       BlogTag[]
 
+  views Int @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -219,8 +221,58 @@ model CookbookPrompt {
   seoTitle String?
   seoDesc  String?
 
+  views Int @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// -----------------------------------------
+// Engagement (views + reactions), shared by blog posts and cookbook prompts
+// -----------------------------------------
+
+enum EngagementSubject {
+  blog
+  cookbook
+}
+
+enum ReactionType {
+  like
+  love
+  haha
+  wow
+  sad
+  angry
+}
+
+// One row per (subject, day, visitor) — lets a view be counted at most once per
+// visitor per day, so a reload spam doesn't inflate BlogPost.views / CookbookPrompt.views.
+// `subjectKey` is "user:<id>" for a signed-in visitor, else "ip:<hash>" (see src/lib/rate-limit.ts).
+model ContentView {
+  id         String            @id @default(cuid())
+  subject    EngagementSubject
+  subjectId  String
+  subjectKey String
+  date       String // YYYY-MM-DD (UTC)
+  createdAt  DateTime          @default(now())
+
+  @@unique([subject, subjectId, subjectKey, date])
+  @@index([subject, subjectId])
+}
+
+// A visitor's Facebook-style reaction to a post: at most one active reaction per
+// visitor per subject, switchable, and removable by reacting with the same type again.
+model Reaction {
+  id         String            @id @default(cuid())
+  subject    EngagementSubject
+  subjectId  String
+  subjectKey String
+  type       ReactionType
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@unique([subject, subjectId, subjectKey])
+  @@index([subject, subjectId, type])
 }
 
 // -----------------------------------------

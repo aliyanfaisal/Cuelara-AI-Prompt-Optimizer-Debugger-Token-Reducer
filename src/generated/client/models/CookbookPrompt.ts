@@ -28,10 +28,12 @@ export type AggregateCookbookPrompt = {
 
 export type CookbookPromptAvgAggregateOutputType = {
   externalId: number | null
+  views: number | null
 }
 
 export type CookbookPromptSumAggregateOutputType = {
   externalId: number | null
+  views: number | null
 }
 
 export type CookbookPromptMinAggregateOutputType = {
@@ -52,6 +54,7 @@ export type CookbookPromptMinAggregateOutputType = {
   published: boolean | null
   seoTitle: string | null
   seoDesc: string | null
+  views: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,6 +77,7 @@ export type CookbookPromptMaxAggregateOutputType = {
   published: boolean | null
   seoTitle: string | null
   seoDesc: string | null
+  views: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -96,6 +100,7 @@ export type CookbookPromptCountAggregateOutputType = {
   published: number
   seoTitle: number
   seoDesc: number
+  views: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -104,10 +109,12 @@ export type CookbookPromptCountAggregateOutputType = {
 
 export type CookbookPromptAvgAggregateInputType = {
   externalId?: true
+  views?: true
 }
 
 export type CookbookPromptSumAggregateInputType = {
   externalId?: true
+  views?: true
 }
 
 export type CookbookPromptMinAggregateInputType = {
@@ -128,6 +135,7 @@ export type CookbookPromptMinAggregateInputType = {
   published?: true
   seoTitle?: true
   seoDesc?: true
+  views?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -150,6 +158,7 @@ export type CookbookPromptMaxAggregateInputType = {
   published?: true
   seoTitle?: true
   seoDesc?: true
+  views?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -172,6 +181,7 @@ export type CookbookPromptCountAggregateInputType = {
   published?: true
   seoTitle?: true
   seoDesc?: true
+  views?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -281,6 +291,7 @@ export type CookbookPromptGroupByOutputType = {
   published: boolean
   seoTitle: string | null
   seoDesc: string | null
+  views: number
   createdAt: Date
   updatedAt: Date
   _count: CookbookPromptCountAggregateOutputType | null
@@ -326,6 +337,7 @@ export type CookbookPromptWhereInput = {
   published?: Prisma.BoolFilter<"CookbookPrompt"> | boolean
   seoTitle?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
   seoDesc?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
+  views?: Prisma.IntFilter<"CookbookPrompt"> | number
   createdAt?: Prisma.DateTimeFilter<"CookbookPrompt"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CookbookPrompt"> | Date | string
   category?: Prisma.XOR<Prisma.CookbookCategoryScalarRelationFilter, Prisma.CookbookCategoryWhereInput>
@@ -349,6 +361,7 @@ export type CookbookPromptOrderByWithRelationInput = {
   published?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   seoDesc?: Prisma.SortOrderInput | Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   category?: Prisma.CookbookCategoryOrderByWithRelationInput
@@ -375,6 +388,7 @@ export type CookbookPromptWhereUniqueInput = Prisma.AtLeast<{
   published?: Prisma.BoolFilter<"CookbookPrompt"> | boolean
   seoTitle?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
   seoDesc?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
+  views?: Prisma.IntFilter<"CookbookPrompt"> | number
   createdAt?: Prisma.DateTimeFilter<"CookbookPrompt"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CookbookPrompt"> | Date | string
   category?: Prisma.XOR<Prisma.CookbookCategoryScalarRelationFilter, Prisma.CookbookCategoryWhereInput>
@@ -398,6 +412,7 @@ export type CookbookPromptOrderByWithAggregationInput = {
   published?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   seoDesc?: Prisma.SortOrderInput | Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CookbookPromptCountOrderByAggregateInput
@@ -428,6 +443,7 @@ export type CookbookPromptScalarWhereWithAggregatesInput = {
   published?: Prisma.BoolWithAggregatesFilter<"CookbookPrompt"> | boolean
   seoTitle?: Prisma.StringNullableWithAggregatesFilter<"CookbookPrompt"> | string | null
   seoDesc?: Prisma.StringNullableWithAggregatesFilter<"CookbookPrompt"> | string | null
+  views?: Prisma.IntWithAggregatesFilter<"CookbookPrompt"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CookbookPrompt"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CookbookPrompt"> | Date | string
 }
@@ -449,6 +465,7 @@ export type CookbookPromptCreateInput = {
   published?: boolean
   seoTitle?: string | null
   seoDesc?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CookbookCategoryCreateNestedOneWithoutPromptsInput
@@ -472,6 +489,7 @@ export type CookbookPromptUncheckedCreateInput = {
   published?: boolean
   seoTitle?: string | null
   seoDesc?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -493,6 +511,7 @@ export type CookbookPromptUpdateInput = {
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seoDesc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CookbookCategoryUpdateOneRequiredWithoutPromptsNestedInput
@@ -516,6 +535,7 @@ export type CookbookPromptUncheckedUpdateInput = {
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seoDesc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -538,6 +558,7 @@ export type CookbookPromptCreateManyInput = {
   published?: boolean
   seoTitle?: string | null
   seoDesc?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -559,6 +580,7 @@ export type CookbookPromptUpdateManyMutationInput = {
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seoDesc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -581,6 +603,7 @@ export type CookbookPromptUncheckedUpdateManyInput = {
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seoDesc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -613,12 +636,14 @@ export type CookbookPromptCountOrderByAggregateInput = {
   published?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrder
   seoDesc?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CookbookPromptAvgOrderByAggregateInput = {
   externalId?: Prisma.SortOrder
+  views?: Prisma.SortOrder
 }
 
 export type CookbookPromptMaxOrderByAggregateInput = {
@@ -639,6 +664,7 @@ export type CookbookPromptMaxOrderByAggregateInput = {
   published?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrder
   seoDesc?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -661,12 +687,14 @@ export type CookbookPromptMinOrderByAggregateInput = {
   published?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrder
   seoDesc?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CookbookPromptSumOrderByAggregateInput = {
   externalId?: Prisma.SortOrder
+  views?: Prisma.SortOrder
 }
 
 export type CookbookPromptCreateNestedManyWithoutCategoryInput = {
@@ -728,6 +756,7 @@ export type CookbookPromptCreateWithoutCategoryInput = {
   published?: boolean
   seoTitle?: string | null
   seoDesc?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -749,6 +778,7 @@ export type CookbookPromptUncheckedCreateWithoutCategoryInput = {
   published?: boolean
   seoTitle?: string | null
   seoDesc?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -800,6 +830,7 @@ export type CookbookPromptScalarWhereInput = {
   published?: Prisma.BoolFilter<"CookbookPrompt"> | boolean
   seoTitle?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
   seoDesc?: Prisma.StringNullableFilter<"CookbookPrompt"> | string | null
+  views?: Prisma.IntFilter<"CookbookPrompt"> | number
   createdAt?: Prisma.DateTimeFilter<"CookbookPrompt"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CookbookPrompt"> | Date | string
 }
@@ -821,6 +852,7 @@ export type CookbookPromptCreateManyCategoryInput = {
   published?: boolean
   seoTitle?: string | null
   seoDesc?: string | null
+  views?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -842,6 +874,7 @@ export type CookbookPromptUpdateWithoutCategoryInput = {
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seoDesc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -863,6 +896,7 @@ export type CookbookPromptUncheckedUpdateWithoutCategoryInput = {
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seoDesc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -884,6 +918,7 @@ export type CookbookPromptUncheckedUpdateManyWithoutCategoryInput = {
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seoDesc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -908,6 +943,7 @@ export type CookbookPromptSelect<ExtArgs extends runtime.Types.Extensions.Intern
   published?: boolean
   seoTitle?: boolean
   seoDesc?: boolean
+  views?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CookbookCategoryDefaultArgs<ExtArgs>
@@ -931,6 +967,7 @@ export type CookbookPromptSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   published?: boolean
   seoTitle?: boolean
   seoDesc?: boolean
+  views?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CookbookCategoryDefaultArgs<ExtArgs>
@@ -954,6 +991,7 @@ export type CookbookPromptSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   published?: boolean
   seoTitle?: boolean
   seoDesc?: boolean
+  views?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CookbookCategoryDefaultArgs<ExtArgs>
@@ -977,11 +1015,12 @@ export type CookbookPromptSelectScalar = {
   published?: boolean
   seoTitle?: boolean
   seoDesc?: boolean
+  views?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CookbookPromptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "title" | "slug" | "image" | "categoryId" | "explanation" | "whenToUse" | "commonMistakes" | "bestPractices" | "promptTemplate" | "exampleInput" | "exampleOutput" | "faqs" | "published" | "seoTitle" | "seoDesc" | "createdAt" | "updatedAt", ExtArgs["result"]["cookbookPrompt"]>
+export type CookbookPromptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "title" | "slug" | "image" | "categoryId" | "explanation" | "whenToUse" | "commonMistakes" | "bestPractices" | "promptTemplate" | "exampleInput" | "exampleOutput" | "faqs" | "published" | "seoTitle" | "seoDesc" | "views" | "createdAt" | "updatedAt", ExtArgs["result"]["cookbookPrompt"]>
 export type CookbookPromptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CookbookCategoryDefaultArgs<ExtArgs>
 }
@@ -1015,6 +1054,7 @@ export type $CookbookPromptPayload<ExtArgs extends runtime.Types.Extensions.Inte
     published: boolean
     seoTitle: string | null
     seoDesc: string | null
+    views: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["cookbookPrompt"]>
@@ -1458,6 +1498,7 @@ export interface CookbookPromptFieldRefs {
   readonly published: Prisma.FieldRef<"CookbookPrompt", 'Boolean'>
   readonly seoTitle: Prisma.FieldRef<"CookbookPrompt", 'String'>
   readonly seoDesc: Prisma.FieldRef<"CookbookPrompt", 'String'>
+  readonly views: Prisma.FieldRef<"CookbookPrompt", 'Int'>
   readonly createdAt: Prisma.FieldRef<"CookbookPrompt", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CookbookPrompt", 'DateTime'>
 }

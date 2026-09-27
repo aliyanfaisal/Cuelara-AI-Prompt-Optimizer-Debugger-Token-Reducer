@@ -3,14 +3,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft, Clock, Eye } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { plainTextSummary, siteUrl, formatDate } from "@/lib/blog";
-import { publishedCookbookWhere, cookbookPromptCardSelect, parseFaqs, type CookbookPromptCardData } from "@/lib/cookbook";
+import { publishedCookbookWhere, cookbookListSelect, parseFaqs, type CookbookListData } from "@/lib/cookbook";
+import { recordView, getReactionSummary } from "@/lib/engagement";
+import { ReactionBar } from "@/components/engagement/ReactionBar";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { markdownProseClass } from "@/components/markdown/prose";
 import { PostImage } from "@/app/blog/PostCard";
 import { ShareButtons } from "@/app/blog/[slug]/ShareButtons";
+import { PromptCard } from "@/app/cookbook/PromptCard";
 import { PromptBox } from "./PromptBox";
 
 export const dynamic = "force-dynamic";
@@ -22,12 +25,12 @@ const getPrompt = cache(async (slug: string) =>
   })
 );
 
-async function getRelatedPrompts(prompt: { id: string; categoryId: string }, limit = 3): Promise<CookbookPromptCardData[]> {
+async function getRelatedPrompts(prompt: { id: string; categoryId: string }, limit = 3): Promise<CookbookListData[]> {
   return prisma.cookbookPrompt.findMany({
     where: { AND: [publishedCookbookWhere(), { categoryId: prompt.categoryId }, { id: { not: prompt.id } }] },
     orderBy: { updatedAt: "desc" },
     take: limit,
-    select: cookbookPromptCardSelect,
+    select: cookbookListSelect,
   });
 }
 
@@ -65,7 +68,11 @@ export default async function CookbookPromptPage({ params }: { params: Params })
   const prompt = await getPrompt((await params).slug);
   if (!prompt) notFound();
 
-  const related = await getRelatedPrompts(prompt);
+  const [related, views, reactions] = await Promise.all([
+    getRelatedPrompts(prompt),
+    recordView("cookbook", prompt.id),
+    getReactionSummary("cookbook", prompt.id),
+  ]);
   const url = `${siteUrl()}/prompt/${prompt.slug}`;
 
   const description = prompt.seoDesc ?? plainTextSummary(prompt.explanation, 160);
@@ -132,6 +139,13 @@ export default async function CookbookPromptPage({ params }: { params: Params })
         </div>
 
         <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">{prompt.title}</h1>
+
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <ReactionBar subject="cookbook" subjectId={prompt.id} initial={reactions} />
+          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Eye className="h-4 w-4" /> {views.toLocaleString()} views
+          </span>
+        </div>
 
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-4">
           <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -205,22 +219,7 @@ export default async function CookbookPromptPage({ params }: { params: Params })
             <h2 className="mb-8 text-2xl font-bold tracking-tight text-foreground md:text-3xl">More in {prompt.category?.name ?? "this category"}</h2>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {related.map((r) => (
-                <Link
-                  key={r.id}
-                  href={`/prompt/${r.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <div className="relative h-40 w-full overflow-hidden bg-muted">
-                    <PostImage src={r.image} alt={r.title} className="h-full w-full transition-transform duration-700 group-hover:scale-105" />
-                  </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    {r.category && (
-                      <span className="mb-2 text-[10px] font-bold uppercase tracking-wider text-primary">{r.category.name}</span>
-                    )}
-                    <h3 className="mb-2 line-clamp-2 text-base font-bold leading-tight text-foreground transition-colors group-hover:text-primary">{r.title}</h3>
-                    <p className="line-clamp-2 text-sm text-muted-foreground">{plainTextSummary(r.explanation, 100)}</p>
-                  </div>
-                </Link>
+                <PromptCard key={r.id} prompt={r} />
               ))}
             </div>
           </div>

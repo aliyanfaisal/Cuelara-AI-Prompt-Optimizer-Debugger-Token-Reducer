@@ -410,6 +410,8 @@ export const ModelName = {
   BlogTag: 'BlogTag',
   CookbookCategory: 'CookbookCategory',
   CookbookPrompt: 'CookbookPrompt',
+  ContentView: 'ContentView',
+  Reaction: 'Reaction',
   Account: 'Account',
   Session: 'Session',
   User: 'User',
@@ -443,7 +445,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "workspaceMember" | "workspaceInvite" | "savedPrompt" | "prompt" | "rateLimitBucket" | "errorLog"
+    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "contentView" | "reaction" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "workspaceMember" | "workspaceInvite" | "savedPrompt" | "prompt" | "rateLimitBucket" | "errorLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1406,6 +1408,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CookbookPromptCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CookbookPromptCountAggregateOutputType> | number
+        }
+      }
+    }
+    ContentView: {
+      payload: Prisma.$ContentViewPayload<ExtArgs>
+      fields: Prisma.ContentViewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ContentViewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ContentViewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>
+        }
+        findFirst: {
+          args: Prisma.ContentViewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ContentViewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>
+        }
+        findMany: {
+          args: Prisma.ContentViewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>[]
+        }
+        create: {
+          args: Prisma.ContentViewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>
+        }
+        createMany: {
+          args: Prisma.ContentViewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ContentViewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>[]
+        }
+        delete: {
+          args: Prisma.ContentViewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>
+        }
+        update: {
+          args: Prisma.ContentViewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>
+        }
+        deleteMany: {
+          args: Prisma.ContentViewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ContentViewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ContentViewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>[]
+        }
+        upsert: {
+          args: Prisma.ContentViewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentViewPayload>
+        }
+        aggregate: {
+          args: Prisma.ContentViewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContentView>
+        }
+        groupBy: {
+          args: Prisma.ContentViewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentViewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ContentViewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentViewCountAggregateOutputType> | number
+        }
+      }
+    }
+    Reaction: {
+      payload: Prisma.$ReactionPayload<ExtArgs>
+      fields: Prisma.ReactionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReactionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReactionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>
+        }
+        findFirst: {
+          args: Prisma.ReactionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReactionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>
+        }
+        findMany: {
+          args: Prisma.ReactionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>[]
+        }
+        create: {
+          args: Prisma.ReactionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>
+        }
+        createMany: {
+          args: Prisma.ReactionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReactionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>[]
+        }
+        delete: {
+          args: Prisma.ReactionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>
+        }
+        update: {
+          args: Prisma.ReactionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReactionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReactionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReactionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReactionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReactionPayload>
+        }
+        aggregate: {
+          args: Prisma.ReactionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReaction>
+        }
+        groupBy: {
+          args: Prisma.ReactionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReactionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReactionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReactionCountAggregateOutputType> | number
         }
       }
     }
@@ -2895,6 +3045,7 @@ export const BlogPostScalarFieldEnum = {
   publishedAt: 'publishedAt',
   readingMinutes: 'readingMinutes',
   teaser: 'teaser',
+  views: 'views',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2949,11 +3100,37 @@ export const CookbookPromptScalarFieldEnum = {
   published: 'published',
   seoTitle: 'seoTitle',
   seoDesc: 'seoDesc',
+  views: 'views',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type CookbookPromptScalarFieldEnum = (typeof CookbookPromptScalarFieldEnum)[keyof typeof CookbookPromptScalarFieldEnum]
+
+
+export const ContentViewScalarFieldEnum = {
+  id: 'id',
+  subject: 'subject',
+  subjectId: 'subjectId',
+  subjectKey: 'subjectKey',
+  date: 'date',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentViewScalarFieldEnum = (typeof ContentViewScalarFieldEnum)[keyof typeof ContentViewScalarFieldEnum]
+
+
+export const ReactionScalarFieldEnum = {
+  id: 'id',
+  subject: 'subject',
+  subjectId: 'subjectId',
+  subjectKey: 'subjectKey',
+  type: 'type',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReactionScalarFieldEnum = (typeof ReactionScalarFieldEnum)[keyof typeof ReactionScalarFieldEnum]
 
 
 export const AccountScalarFieldEnum = {
@@ -3324,6 +3501,34 @@ export type ListEnumBlogPostStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
+ * Reference to a field of type 'EngagementSubject'
+ */
+export type EnumEngagementSubjectFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EngagementSubject'>
+    
+
+
+/**
+ * Reference to a field of type 'EngagementSubject[]'
+ */
+export type ListEnumEngagementSubjectFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EngagementSubject[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReactionType'
+ */
+export type EnumReactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReactionType'>
+    
+
+
+/**
+ * Reference to a field of type 'ReactionType[]'
+ */
+export type ListEnumReactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReactionType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -3500,6 +3705,8 @@ export type GlobalOmitConfig = {
   blogTag?: Prisma.BlogTagOmit
   cookbookCategory?: Prisma.CookbookCategoryOmit
   cookbookPrompt?: Prisma.CookbookPromptOmit
+  contentView?: Prisma.ContentViewOmit
+  reaction?: Prisma.ReactionOmit
   account?: Prisma.AccountOmit
   session?: Prisma.SessionOmit
   user?: Prisma.UserOmit
