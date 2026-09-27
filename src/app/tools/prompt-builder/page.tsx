@@ -15,6 +15,7 @@ import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/com
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
+import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -26,11 +27,39 @@ const LOADING_STEPS: ProgressStep[] = [
   { label: "Trimming anything that doesn't earn its place...", seconds: 3 },
 ];
 
-const EXAMPLES = [
-  "Review my pull request for bugs and unclear naming",
-  "A cold email to a startup founder about my design services",
-  "Explain how vector databases work to a beginner",
-  "Weekly plan for a small team's product launch",
+const EXAMPLES: ToolExample[] = [
+  {
+    file: "pr-review.txt",
+    before: "Review my pull request for bugs and unclear naming",
+    after: "Built: senior code reviewer persona, PR diff context, checklist for bugs/naming/style, output as inline comments.",
+    badgeBefore: "Just an Idea",
+    badgeAfter: "+ Ready to Use",
+    useValue: "Review my pull request for bugs and unclear naming",
+  },
+  {
+    file: "cold-email.txt",
+    before: "A cold email to a startup founder about my design services",
+    after: "Built: cold outreach persona, founder context, pitch structure, subject lines, and a clear CTA.",
+    badgeBefore: "Just an Idea",
+    badgeAfter: "+ Ready to Use",
+    useValue: "A cold email to a startup founder about my design services",
+  },
+  {
+    file: "explain-vectordb.txt",
+    before: "Explain how vector databases work to a beginner",
+    after: "Built: teacher persona, beginner audience, analogy-driven explanation, short sections with examples.",
+    badgeBefore: "Just an Idea",
+    badgeAfter: "+ Ready to Use",
+    useValue: "Explain how vector databases work to a beginner",
+  },
+  {
+    file: "launch-plan.txt",
+    before: "Weekly plan for a small team's product launch",
+    after: "Built: project manager persona, 5-day plan, daily goals, structured as a table with owner and deadline.",
+    badgeBefore: "Just an Idea",
+    badgeAfter: "+ Ready to Use",
+    useValue: "Weekly plan for a small team's product launch",
+  },
 ];
 
 const FAQS = [
@@ -238,17 +267,22 @@ export default function PromptBuilderPage() {
             placeholder="What do you want the AI to do? A sentence is enough — e.g. “Help me write a launch announcement for my new app.”"
             className="w-full min-h-[160px] bg-transparent resize-y text-sm text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 border-none focus:ring-0 p-0 leading-relaxed focus-visible:outline-none"
           />
-          {!idea.trim() && (
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1 text-xs text-muted-foreground"><Lightbulb className="w-3.5 h-3.5 text-orange-500" /> Try:</span>
-              {EXAMPLES.map((ex) => (
-                <button key={ex} onClick={() => setIdea(ex)} className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground hover:border-orange-500/40 hover:text-foreground transition-colors">
-                  {ex}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
+
+        {state === "idle" && (
+          <div className="px-5 md:px-6 pb-5 md:pb-6">
+            <ToolExampleCarousel
+              examples={EXAMPLES}
+              onUse={setIdea}
+              beforeTag="Idea"
+              beforeLabel="Your Idea"
+              afterTag="Built"
+              afterLabel="Generated Prompt"
+              afterTextClassName="text-orange-600 dark:text-orange-400"
+              buttonClassName="bg-orange-500 hover:bg-orange-600 text-white"
+            />
+          </div>
+        )}
 
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-col gap-1 text-xs text-muted-foreground">

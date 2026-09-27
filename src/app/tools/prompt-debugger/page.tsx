@@ -16,8 +16,36 @@ import {
 } from "@/lib/prompt-debugger/constants";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
+import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
 
 type GenerationState = "idle" | "loading" | "success";
+
+const EXAMPLES: ToolExample[] = [
+  {
+    file: "conflicting-tasks.txt",
+    before: "Summarize this article in 3 bullet points and also translate it to French and also make it rhyme.",
+    after: "3 conflicting instructions found: summarize vs. translate vs. rhyme — split into separate prompts.",
+    badgeBefore: "3 Conflicts Found",
+    badgeAfter: "+ Fixed Logic",
+    useValue: "Summarize this article in 3 bullet points and also translate it to French and also make it rhyme.",
+  },
+  {
+    file: "vague-request.txt",
+    before: "Write code",
+    after: "Too vague: missing language, requirements, and expected output — add specifics.",
+    badgeBefore: "1 Ambiguity Found",
+    badgeAfter: "+ Added Specificity",
+    useValue: "Write code",
+  },
+  {
+    file: "contradiction.txt",
+    before: "You are a helpful assistant. You are not a helpful assistant. Answer in English. Answer in Spanish only.",
+    after: "Contradictory persona and language instructions detected — resolved to one consistent directive.",
+    badgeBefore: "2 Contradictions Found",
+    badgeAfter: "+ Consistent Logic",
+    useValue: "You are a helpful assistant. You are not a helpful assistant. Answer in English. Answer in Spanish only.",
+  },
+];
 
 // Paced to a real audit call's typical ~18s round trip (JSON report generation, one retry on a bad parse).
 const LOADING_STEPS: ProgressStep[] = [
@@ -307,6 +335,21 @@ export default function PromptDebuggerPage() {
             className="w-full min-h-[220px] bg-transparent resize-y text-sm text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 border-none focus:ring-0 p-0 leading-relaxed focus-visible:outline-none"
           />
         </div>
+
+        {state === "idle" && (
+          <div className="px-5 md:px-6 pb-5 md:pb-6">
+            <ToolExampleCarousel
+              examples={EXAMPLES}
+              onUse={setInput}
+              beforeTag="Flawed"
+              beforeLabel="Original Prompt"
+              afterTag="Diagnosis"
+              afterLabel="Debugger Output"
+              afterTextClassName="text-emerald-600 dark:text-emerald-400"
+              buttonClassName="bg-emerald-600 hover:bg-emerald-700 text-white"
+            />
+          </div>
+        )}
 
         {/* Action Footer */}
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">

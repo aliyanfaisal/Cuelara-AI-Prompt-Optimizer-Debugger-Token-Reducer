@@ -17,8 +17,42 @@ import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/com
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
+import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
 
 type GenerationState = "idle" | "loading" | "success";
+
+const EXAMPLES: ToolExample[] = [
+  {
+    file: "polite-request.txt",
+    before:
+      "I would really appreciate it if you could take a look at the following text and, if possible, remove any words or phrases that are not strictly necessary while still keeping the original meaning intact.",
+    after: "Compress this text; keep meaning.",
+    badgeBefore: "61% Fewer Tokens",
+    badgeAfter: "+ Lower Cost",
+    useValue:
+      "I would really appreciate it if you could take a look at the following text and, if possible, remove any words or phrases that are not strictly necessary while still keeping the original meaning intact.",
+  },
+  {
+    file: "system-prompt.txt",
+    before:
+      "You are an assistant. You should always be helpful, and you should always try your best to answer questions, and you should also be honest and never lie, and you should be friendly at all times.",
+    after: "You are a helpful, honest, friendly assistant.",
+    badgeBefore: "68% Fewer Tokens",
+    badgeAfter: "+ Lower Cost",
+    useValue:
+      "You are an assistant. You should always be helpful, and you should always try your best to answer questions, and you should also be honest and never lie, and you should be friendly at all times.",
+  },
+  {
+    file: "product-desc.txt",
+    before:
+      "Our product is a really great water bottle that is designed to keep your drinks cold for a very long time, and it is also very durable and can survive being dropped multiple times without breaking.",
+    after: "Insulated, drop-proof water bottle. Keeps drinks cold for hours.",
+    badgeBefore: "57% Fewer Tokens",
+    badgeAfter: "+ Lower Cost",
+    useValue:
+      "Our product is a really great water bottle that is designed to keep your drinks cold for a very long time, and it is also very durable and can survive being dropped multiple times without breaking.",
+  },
+];
 
 // The compressed result is fully generated server-side (and re-validated with a possible
 // retry pass) before anything streams to the client, so this covers the full call, not just TTFT.
@@ -289,6 +323,21 @@ export default function TokenOptimizerPage() {
             className="w-full min-h-[220px] bg-transparent resize-y text-sm text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 border-none focus:ring-0 p-0 leading-relaxed focus-visible:outline-none"
           />
         </div>
+
+        {state === "idle" && (
+          <div className="px-5 pb-5">
+            <ToolExampleCarousel
+              examples={EXAMPLES}
+              onUse={setInput}
+              beforeTag="Verbose"
+              beforeLabel="Original Text"
+              afterTag="Compressed"
+              afterLabel="Cuelara Output"
+              afterTextClassName="text-amber-600 dark:text-amber-400"
+              buttonClassName="bg-amber-500 hover:bg-amber-600 text-white"
+            />
+          </div>
+        )}
 
         {/* Action Footer */}
         <div className="px-5 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">

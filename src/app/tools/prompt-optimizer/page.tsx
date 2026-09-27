@@ -17,8 +17,42 @@ import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/com
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
+import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
 
 type GenerationState = "idle" | "loading" | "success";
+
+const EXAMPLES: ToolExample[] = [
+  {
+    file: "time-off-email.txt",
+    before:
+      "Write me a professional but not too formal email to my manager asking for time off next Friday because I have a personal appointment, and I want to make sure it sounds polite and doesn't seem like I'm asking for too much.",
+    after: "Write a polite, semi-formal email requesting Friday off for a personal appointment.",
+    badgeBefore: "58% Fewer Tokens",
+    badgeAfter: "+ Clarity",
+    useValue:
+      "Write me a professional but not too formal email to my manager asking for time off next Friday because I have a personal appointment, and I want to make sure it sounds polite and doesn't seem like I'm asking for too much.",
+  },
+  {
+    file: "marketing-ideas.txt",
+    before:
+      "Can you generate some ideas for a marketing campaign for my new fitness app that helps people track workouts, meals, and sleep, targeting young professionals who are busy and want an all in one solution?",
+    after: "Generate 5 marketing campaign ideas for a fitness-tracking app targeting busy young professionals.",
+    badgeBefore: "50% Fewer Tokens",
+    badgeAfter: "+ Focus",
+    useValue:
+      "Can you generate some ideas for a marketing campaign for my new fitness app that helps people track workouts, meals, and sleep, targeting young professionals who are busy and want an all in one solution?",
+  },
+  {
+    file: "average.py",
+    before:
+      "I need help writing a function in Python that takes a list of numbers and returns the average, but please also handle empty lists and non-numeric values gracefully without crashing.",
+    after: "Write a Python function: average(list) — handles empty lists and non-numeric values.",
+    badgeBefore: "55% Fewer Tokens",
+    badgeAfter: "+ Precision",
+    useValue:
+      "I need help writing a function in Python that takes a list of numbers and returns the average, but please also handle empty lists and non-numeric values gracefully without crashing.",
+  },
+];
 
 // Gemini streams tokens directly, so "loading" here only lasts until the first token
 // arrives (typically a few seconds) — sized shorter than a full-generation wait.
@@ -301,6 +335,21 @@ export default function PromptOptimizerPage() {
             className="w-full min-h-[220px] bg-transparent resize-y text-sm text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 border-none focus:ring-0 p-0 leading-relaxed focus-visible:outline-none"
           />
         </div>
+
+        {state === "idle" && (
+          <div className="px-5 md:px-6 pb-5 md:pb-6">
+            <ToolExampleCarousel
+              examples={EXAMPLES}
+              onUse={setInput}
+              beforeTag="Bloated"
+              beforeLabel="Original Prompt"
+              afterTag="Optimized"
+              afterLabel="Cuelara Output"
+              afterTextClassName="text-primary"
+              buttonClassName="bg-primary hover:bg-primary/90 text-primary-foreground"
+            />
+          </div>
+        )}
 
         {/* Action Footer */}
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">

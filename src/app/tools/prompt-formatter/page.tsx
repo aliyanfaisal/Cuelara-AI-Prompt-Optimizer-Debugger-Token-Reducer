@@ -15,8 +15,36 @@ import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/com
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
+import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
 
 type GenerationState = "idle" | "loading" | "success";
+
+const EXAMPLES: ToolExample[] = [
+  {
+    file: "blog-ideas.txt",
+    before: "write blog post ideas for my saas company about productivity apps make it good and seo friendly and like 10 of them",
+    after: "Role: SEO Content Strategist. Task: 10 blog post ideas. Context: SaaS productivity app. Format: Numbered list + target keyword.",
+    badgeBefore: "Now Structured",
+    badgeAfter: "+ Readability",
+    useValue: "write blog post ideas for my saas company about productivity apps make it good and seo friendly and like 10 of them",
+  },
+  {
+    file: "product-desc.txt",
+    before: "can u write a product description for my shoes they are running shoes lightweight breathable good for marathon",
+    after: "Role: Copywriter. Product: Lightweight, breathable running shoes (marathon-ready). Format: 3 short paragraphs + bullet features.",
+    badgeBefore: "Now Structured",
+    badgeAfter: "+ Readability",
+    useValue: "can u write a product description for my shoes they are running shoes lightweight breathable good for marathon",
+  },
+  {
+    file: "content-calendar.txt",
+    before: "help me plan content calendar for instagram for a month for my bakery business",
+    after: "Role: Social Media Strategist. Task: 30-day Instagram content calendar. Business: Bakery. Format: Table (Date | Post Idea | Format).",
+    badgeBefore: "Now Structured",
+    badgeAfter: "+ Readability",
+    useValue: "help me plan content calendar for instagram for a month for my bakery business",
+  },
+];
 
 // Paced to a typical ~14s format call (one retry on a bad JSON parse for the JSON output style).
 const LOADING_STEPS: ProgressStep[] = [
@@ -264,6 +292,21 @@ export default function PromptFormatterPage() {
             className="w-full min-h-[220px] bg-transparent resize-y text-sm text-foreground placeholder:text-muted-foreground/45 dark:placeholder:text-muted-foreground/35 border-none focus:ring-0 p-0 leading-relaxed focus-visible:outline-none"
           />
         </div>
+
+        {state === "idle" && (
+          <div className="px-5 md:px-6 pb-5 md:pb-6">
+            <ToolExampleCarousel
+              examples={EXAMPLES}
+              onUse={setInput}
+              beforeTag="Unstructured"
+              beforeLabel="Original Prompt"
+              afterTag="Formatted"
+              afterLabel="Cuelara Output"
+              afterTextClassName="text-pink-600 dark:text-pink-400"
+              buttonClassName="bg-pink-500 hover:bg-pink-600 text-white"
+            />
+          </div>
+        )}
 
         {/* Action Footer */}
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
