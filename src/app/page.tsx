@@ -151,6 +151,22 @@ export default function Home() {
           </Link>
         </motion.div>
 
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          className="mt-6"
+        >
+          <Link
+            href="/docs/mcp"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 backdrop-blur-md px-4 py-2 text-xs sm:text-sm font-medium text-muted-foreground transition-all hover:border-primary/30 hover:text-foreground shadow-sm"
+          >
+            <Terminal className="h-3.5 w-3.5 text-primary" />
+            New: MCP server — use our tools from Claude, Cursor, Copilot & more
+            <ArrowRight className="h-3.5 w-3.5 opacity-60" />
+          </Link>
+        </motion.div>
+
         {/* Animated Code/Preview Element */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}

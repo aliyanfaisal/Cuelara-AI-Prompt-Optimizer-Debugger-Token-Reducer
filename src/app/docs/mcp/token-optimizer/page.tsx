@@ -15,21 +15,13 @@ export const metadata: Metadata = {
 function content(base: string): string {
   return `**\`cuelara_compress_prompt\`** compresses a prompt to use fewer tokens while preserving every instruction and constraint, verified against a real tokenizer — not an estimate.
 
-## Set it up automatically
-
-Paste this into the AI assistant you already have open — VS Code's Claude extension, Copilot Chat, Cursor, Claude Code, whatever it is — and it will ask you what it needs, then write the config file itself:
-
-\`\`\`text
-${mcpSetupPrompt(base)}
-\`\`\`
-
-## Fastest manual setup — Claude Code
+## Fastest setup — Claude Code
 
 \`\`\`bash
 claude mcp add --transport http cuelara-token-optimizer ${base}/api/mcp
 \`\`\`
 
-That's the whole server, so \`cuelara_optimize_prompt\` (Prompt Optimizer) comes along too. For other clients — Claude Desktop, Cursor, Copilot, Gemini CLI, Antigravity — see the [client setup guides](/docs/mcp).
+That's the whole server, so \`cuelara_optimize_prompt\` (Prompt Optimizer) comes along too. For other clients — Claude Desktop, Cursor, Copilot, Gemini CLI, Antigravity — see the [client setup guides](/docs/mcp), which show the exact config for each one. This manual setup is the reliable path — prefer it.
 
 ## How it gets triggered
 
@@ -69,6 +61,14 @@ Add \`-H "Authorization: Bearer YOUR_TOKEN_HERE"\` (a personal token from [/dash
 ## Limits
 
 Anonymous calls share the same free daily limit as the website's Token Optimizer, keyed by IP. Signed-in calls use your own account's plan limits instead.
+
+## Or set it up automatically
+
+This only works if you paste it into an AI assistant running **inside an editor or CLI with real file/shell tools and a workspace** — Claude Code, Cursor, VS Code's Claude extension or Copilot Chat agent mode, Gemini CLI. It will not work in a plain chat window (claude.ai, the Claude desktop chat app) — those have no file access, so it can't write anything for you. If you're not sure which one you're in, use the manual steps above instead.
+
+\`\`\`text
+${mcpSetupPrompt(base)}
+\`\`\`
 `;
 }
 

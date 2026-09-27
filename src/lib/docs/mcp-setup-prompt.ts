@@ -4,7 +4,8 @@
 export function mcpSetupPrompt(base: string): string {
   return `Connect the Cuelara MCP server to whichever AI coding tool you're running in right now (VS Code with the Claude extension, VS Code with GitHub Copilot, Cursor, Claude Desktop, Claude Code CLI, Gemini CLI, or Antigravity). Do this:
 
-1. Detect which tool/editor you're running inside. If you can't tell, ask me.
+0. First check: do you actually have file-editing or shell-command tools available in this session right now (i.e. are you running as an agent inside an editor/CLI with a real workspace, not a plain chat window with no file access)? If you don't, say so plainly, ask me which tool I want to connect, and just give me the exact config JSON or command to paste in myself — don't guess or pretend to write a file you can't reach.
+1. If you do have those tools, detect which tool/editor you're running inside. If you can't tell, ask me.
 2. Ask me: "Do you want to authenticate with a personal Cuelara access token (higher daily limit, no attribution line on paid plans), or connect anonymously?" If I say yes, ask me to paste the token — I'll generate one at ${base}/dashboard/mcp.
 3. Based on the detected tool, create or update the correct MCP config with:
    - Server name: cuelara

@@ -132,6 +132,10 @@ export function Navbar() {
                   <Layers className="h-4 w-4 opacity-70" />
                   Blog
                 </Link>
+                <Link href="/docs" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                  <Terminal className="h-4 w-4 opacity-70" />
+                  Docs
+                </Link>
               </motion.nav>
 
               {/* Desktop CTA */}
@@ -229,6 +233,9 @@ export function Navbar() {
               </Link>
               <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 text-base font-bold text-foreground py-2 px-2 hover:bg-muted rounded-xl transition-colors">
                 <Layers className="h-4 w-4 text-muted-foreground" /> Blog
+              </Link>
+              <Link href="/docs" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 text-base font-bold text-foreground py-2 px-2 hover:bg-muted rounded-xl transition-colors">
+                <Terminal className="h-4 w-4 text-muted-foreground" /> Docs
               </Link>
             </div>
 
