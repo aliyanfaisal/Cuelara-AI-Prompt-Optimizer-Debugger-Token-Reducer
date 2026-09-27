@@ -2,6 +2,36 @@
 
 import { Children, isValidElement, useState, type ComponentPropsWithoutRef, type ReactNode } from "react";
 import { Check, Copy, X } from "lucide-react";
+import { Highlight, Prism, themes, type Language } from "prism-react-renderer";
+import "@/lib/markdown/prism-languages";
+
+const LANGUAGE_ALIASES: Record<string, string> = {
+  js: "javascript",
+  mjs: "javascript",
+  cjs: "javascript",
+  ts: "typescript",
+  py: "python",
+  sh: "bash",
+  shell: "bash",
+  zsh: "bash",
+  console: "bash",
+  yml: "yaml",
+  "c++": "cpp",
+  "c#": "csharp",
+  cs: "csharp",
+  html: "markup",
+  htm: "markup",
+  xml: "markup",
+  md: "markdown",
+};
+
+/** Resolves a fenced code block's language to one Prism can actually tokenize, or null if it
+ * can't (falls back to plain, uncolored text — still fully readable, just not syntax-highlighted). */
+function resolvePrismLanguage(language: string | null): Language | null {
+  if (!language) return null;
+  const normalized = LANGUAGE_ALIASES[language.toLowerCase()] ?? language.toLowerCase();
+  return normalized in Prism.languages ? (normalized as Language) : null;
+}
 
 export function extractText(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -51,9 +81,11 @@ export async function writeToClipboard(text: string): Promise<boolean> {
 export function CodeBlock({ children, node: _node, ...props }: ComponentPropsWithoutRef<"pre"> & { node?: unknown }) {
   const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
   const language = languageOf(children);
+  const code = extractText(children).replace(/\n$/, "");
+  const prismLanguage = resolvePrismLanguage(language);
 
   async function copy() {
-    const ok = await writeToClipboard(extractText(children).replace(/\n$/, ""));
+    const ok = await writeToClipboard(code);
     setStatus(ok ? "copied" : "failed");
     setTimeout(() => setStatus("idle"), 2000);
   }
@@ -78,9 +110,25 @@ export function CodeBlock({ children, node: _node, ...props }: ComponentPropsWit
           <Copy className="h-4 w-4" />
         )}
       </button>
-      <pre {...props} className={`overflow-x-auto p-4 pr-14 text-sm leading-relaxed text-[#e6edf3] ${language ? "pt-8" : ""}`}>
-        {children}
-      </pre>
+      {prismLanguage ? (
+        <Highlight code={code} language={prismLanguage} theme={themes.vsDark}>
+          {({ tokens, getLineProps, getTokenProps }) => (
+            <pre className={`overflow-x-auto bg-transparent p-4 pr-14 text-sm leading-relaxed ${language ? "pt-8" : ""}`}>
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line })}>
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </div>
+              ))}
+            </pre>
+          )}
+        </Highlight>
+      ) : (
+        <pre {...props} className={`overflow-x-auto p-4 pr-14 text-sm leading-relaxed text-[#e6edf3] ${language ? "pt-8" : ""}`}>
+          {children}
+        </pre>
+      )}
     </div>
   );
 }
