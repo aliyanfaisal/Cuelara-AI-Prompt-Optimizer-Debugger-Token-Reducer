@@ -14,7 +14,12 @@ const UNAUTHORIZED: Result = { error: "Please sign in again." };
 const APP_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
 const done = (r: team.Result, message?: string): Result => (r.ok ? { success: true, message } : { error: r.error });
-const refresh = () => revalidatePath("/dashboard", "layout");
+const refresh = () => {
+  revalidatePath("/dashboard", "layout");
+  // The team dashboard (src/app/team/[teamId]) is a separate top-level route tree, not nested
+  // under /dashboard, so it needs its own revalidation after any team-mutating action.
+  revalidatePath("/team", "layout");
+};
 
 export async function createTeam(name: string): Promise<Result> {
   const me = await getSessionUser();

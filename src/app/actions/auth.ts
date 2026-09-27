@@ -38,6 +38,14 @@ export async function registerUser(formData: FormData) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const defaultPlan = await prisma.plan.findFirst({ where: { isDefault: true, isActive: true }, select: { id: true } });
+  // "USER" is the protected system-default role (see admin/roles) — every self-registered
+  // account needs it, same as an admin-created one gets whatever roles are picked for it.
+  const userRole = await prisma.role.upsert({
+    where: { name: "USER" },
+    create: { name: "USER", description: "Default role for registered users" },
+    update: {},
+    select: { id: true },
+  });
 
   // Create user (inactive by default)
   const user = await prisma.user.create({
@@ -47,6 +55,7 @@ export async function registerUser(formData: FormData) {
       name,
       isActive: false, // Must be activated via magic link
       planId: defaultPlan?.id ?? null,
+      roles: { connect: { id: userRole.id } },
     },
   });
 

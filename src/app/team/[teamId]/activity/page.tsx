@@ -1,57 +1,45 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Users } from "lucide-react";
 import { HISTORY_TOOLS, isHistoryTool, historyToolLabel } from "@/lib/history";
 import { describeRun } from "@/lib/history-display";
 import { getSessionUser } from "@/lib/session-user";
 import { listTeamRuns } from "@/lib/team-history";
-import { listWorkspaces } from "@/lib/workspace";
 
-export const metadata = { title: "Team activity" };
+export const metadata = { title: "Team Activity" };
 
 const PER_PAGE = 15;
-type SearchParams = Promise<{ w?: string; tool?: string; member?: string; page?: string }>;
+type Params = Promise<{ teamId: string }>;
+type SearchParams = Promise<{ tool?: string; member?: string; page?: string }>;
 
 const when = (d: Date) => d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
-export default async function TeamActivityPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function TeamActivityPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const session = (await getSessionUser())!;
+  const { teamId } = await params;
   const sp = await searchParams;
-  const teams = (await listWorkspaces(session.id)).filter((w) => w.type === "team");
-  if (teams.length === 0) redirect("/dashboard/team");
-  const team = teams.find((t) => t.id === sp.w) ?? teams[0];
 
   const tool = isHistoryTool(sp.tool) ? sp.tool : undefined;
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
-  const data = (await listTeamRuns(session.id, team.id, { tool, memberId: sp.member || undefined, skip: (page - 1) * PER_PAGE, take: PER_PAGE }))!;
+  // Membership is already verified by the layout above this page.
+  const data = (await listTeamRuns(session.id, teamId, { tool, memberId: sp.member || undefined, skip: (page - 1) * PER_PAGE, take: PER_PAGE }))!;
   const totalPages = Math.max(1, Math.ceil(data.total / PER_PAGE));
 
   const qs = (over: Record<string, string | undefined>) => {
-    const p = new URLSearchParams({ w: team.id });
+    const p = new URLSearchParams();
     const merged = { tool, member: sp.member, ...over };
     for (const [k, v] of Object.entries(merged)) if (v) p.set(k, v);
-    return `/dashboard/team/activity?${p.toString()}`;
+    const s = p.toString();
+    return `/team/${teamId}/activity${s ? `?${s}` : ""}`;
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/dashboard/team" className="text-xs font-semibold text-primary hover:underline">← Team</Link>
-        <h2 className="mt-1 text-xl font-bold text-foreground">Team activity{teams.length > 1 ? ` · ${team.name}` : ""}</h2>
+        <h2 className="text-xl font-bold text-foreground">Team Activity</h2>
         <p className="text-sm text-muted-foreground">
           Recent tool runs from teammates who share their history. <strong className="font-semibold">Open</strong> loads the run in its tool so you can reuse or change it; your own runs aren&rsquo;t affected.
         </p>
       </div>
-
-      {teams.length > 1 && (
-        <div className="flex flex-wrap gap-2">
-          {teams.map((t) => (
-            <Link key={t.id} href={`/dashboard/team/activity?w=${t.id}`} className={`rounded-full border px-4 py-1.5 text-sm font-semibold ${t.id === team.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:text-foreground"}`}>
-              {t.name}
-            </Link>
-          ))}
-        </div>
-      )}
 
       {!data.enabled ? (
         <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">The team owner has switched shared history off.</div>

@@ -2,23 +2,26 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/session-user";
 import { getTeamAnalytics } from "@/lib/team-analytics";
-import { listWorkspaces } from "@/lib/workspace";
+import { getRole } from "@/lib/workspace";
 import { UsageChart } from "./UsageChart";
 
-export const metadata = { title: "Team analytics" };
+export const metadata = { title: "Usage Analytics" };
 export const dynamic = "force-dynamic";
 
-type SearchParams = Promise<{ w?: string; days?: string }>;
+type Params = Promise<{ teamId: string }>;
+type SearchParams = Promise<{ days?: string }>;
 
-export default async function TeamAnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function TeamAnalyticsPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const session = (await getSessionUser())!;
+  const { teamId } = await params;
   const sp = await searchParams;
-  const managed = (await listWorkspaces(session.id)).filter((w) => w.type === "team" && (w.role === "OWNER" || w.role === "ADMIN"));
-  if (managed.length === 0) redirect("/dashboard/team");
-  const team = managed.find((t) => t.id === sp.w) ?? managed[0];
-  const days = sp.days === "30" ? 30 : 7;
 
-  const a = (await getTeamAnalytics(session.id, team.id, days))!;
+  // Membership is already verified by the layout above this page — analytics is owner/admin only.
+  const role = await getRole(session.id, teamId);
+  if (role !== "OWNER" && role !== "ADMIN") redirect(`/team/${teamId}`);
+
+  const days = sp.days === "30" ? 30 : 7;
+  const a = (await getTeamAnalytics(session.id, teamId, days))!;
   const active = a.byMember.filter((m) => m.runs > 0).length;
   const tiles = [
     { label: "Total runs", value: a.totalRuns.toLocaleString() },
@@ -32,13 +35,12 @@ export default async function TeamAnalyticsPage({ searchParams }: { searchParams
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href="/dashboard/team" className="text-xs font-semibold text-primary hover:underline">← Team</Link>
-          <h2 className="mt-1 text-xl font-bold text-foreground">Usage analytics · {team.name}</h2>
+          <h2 className="text-xl font-bold text-foreground">Usage Analytics</h2>
           <p className="text-sm text-muted-foreground">How your team uses the tools. Counts only — prompts and results are never shown here, and each person is counted from the day they joined.</p>
         </div>
         <div className="inline-flex rounded-xl border border-border bg-muted p-1" role="tablist" aria-label="Range">
           {[7, 30].map((d) => (
-            <Link key={d} href={`/dashboard/team/analytics?w=${team.id}&days=${d}`} role="tab" aria-selected={days === d} className={`rounded-lg px-4 py-1.5 text-sm font-semibold ${days === d ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+            <Link key={d} href={`/team/${teamId}/analytics?days=${d}`} role="tab" aria-selected={days === d} className={`rounded-lg px-4 py-1.5 text-sm font-semibold ${days === d ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
               {d} days
             </Link>
           ))}

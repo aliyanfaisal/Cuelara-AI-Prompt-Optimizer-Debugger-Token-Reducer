@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { redirect } from "next/navigation";
+import { ArrowRight, Users } from "lucide-react";
 import { getOwnPlan } from "@/lib/plans";
-import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/session-user";
-import { getPoolToday } from "@/lib/team-analytics";
-import { listWorkspaces, seatUsage } from "@/lib/workspace";
-import { CreateTeamForm, TeamManager, type TeamData } from "./TeamManager";
+import { listWorkspaces } from "@/lib/workspace";
+import { CreateTeamForm } from "./TeamManager";
 
 export const metadata = { title: "Team" };
+
+const ROLE_LABEL: Record<string, string> = { OWNER: "Owner", ADMIN: "Admin", MEMBER: "Member" };
 
 export default async function TeamPage() {
   const session = (await getSessionUser())!;
@@ -15,34 +16,8 @@ export default async function TeamPage() {
   const teams = workspaces.filter((w) => w.type === "team");
   const canCreate = (plan?.maxSeats ?? 0) > 0 && !teams.some((t) => t.role === "OWNER");
 
-  const data: TeamData[] = await Promise.all(
-    teams.map(async (t) => {
-      const canSee = t.role === "OWNER" || t.role === "ADMIN";
-      const [members, invites, seats, pool, ws] = await Promise.all([
-        prisma.workspaceMember.findMany({
-          where: { workspaceId: t.id },
-          select: { role: true, createdAt: true, shareHistory: true, user: { select: { id: true, name: true, email: true } } },
-          orderBy: { createdAt: "asc" },
-        }),
-        canSee ? prisma.workspaceInvite.findMany({ where: { workspaceId: t.id }, orderBy: { createdAt: "desc" } }) : Promise.resolve([]),
-        seatUsage(t.id),
-        getPoolToday(t.id),
-        prisma.workspace.findUnique({ where: { id: t.id }, select: { sharedHistory: true } }),
-      ]);
-      return {
-        id: t.id,
-        name: t.name,
-        myRole: t.role,
-        myId: session.id,
-        seats,
-        pool,
-        sharedHistory: ws?.sharedHistory ?? true,
-        myShare: members.find((m) => m.user.id === session.id)?.shareHistory ?? true,
-        members: members.map((m) => ({ userId: m.user.id, name: m.user.name, email: m.user.email ?? "", role: m.role, joinedAt: m.createdAt.toISOString() })),
-        invites: invites.map((i) => ({ id: i.id, email: i.email, role: i.role, expiresAt: i.expiresAt.toISOString(), expired: i.expiresAt < new Date() })),
-      };
-    })
-  );
+  // Only one team? Skip the picker and go straight into its dedicated dashboard.
+  if (teams.length === 1) redirect(`/team/${teams[0].id}`);
 
   return (
     <div className="space-y-8">
@@ -51,13 +26,30 @@ export default async function TeamPage() {
         <p className="text-sm text-muted-foreground">Invite people to a shared prompt library. Everyone on the team gets the Team plan&rsquo;s daily limits.</p>
       </div>
 
-      {data.map((t) => (
-        <TeamManager key={t.id} team={t} />
-      ))}
+      {teams.length > 0 && (
+        <div className="space-y-3">
+          {teams.map((t) => (
+            <Link
+              key={t.id}
+              href={`/team/${t.id}`}
+              className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-5 transition-all hover:border-primary/40 hover:shadow-sm"
+            >
+              <div className="rounded-xl border border-border bg-muted/40 p-2.5 text-muted-foreground shrink-0 group-hover:text-primary">
+                <Users className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-base font-bold text-foreground">{t.name}</div>
+                <div className="text-sm text-muted-foreground">You are {ROLE_LABEL[t.role]?.toLowerCase() ?? t.role.toLowerCase()}</div>
+              </div>
+              <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+            </Link>
+          ))}
+        </div>
+      )}
 
       {canCreate && <CreateTeamForm seats={plan?.maxSeats ?? 0} planName={plan?.name ?? "your plan"} />}
 
-      {data.length === 0 && !canCreate && (
+      {teams.length === 0 && !canCreate && (
         <div className="flex flex-col items-center rounded-2xl border border-border bg-card px-6 py-14 text-center">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
             <Users className="h-7 w-7" />
