@@ -51,6 +51,10 @@ const STEPS = [
     dir: '20260928100000_team_history_and_pool',
     isApplied: `select 1 from information_schema.columns where table_name = 'PlanToolLimit' and column_name = 'teamDailyLimit'`,
   },
+  {
+    dir: '20260928110000_engagement_views_and_reactions',
+    isApplied: `select 1 from information_schema.tables where table_name = 'Reaction'`,
+  },
 ];
 
 async function main() {

@@ -134,18 +134,17 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           </div>
         )}
 
-        <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">{post.title}</h1>
-        {post.excerpt && <p className="mb-6 text-lg leading-relaxed text-muted-foreground">{post.excerpt}</p>}
-
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">{post.title}</h1>
           <ReactionBar subject="blog" subjectId={post.id} initial={reactions} />
-          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Eye className="h-4 w-4" /> {views.toLocaleString()} views
-          </span>
         </div>
+        {post.excerpt && <p className="mb-6 text-lg leading-relaxed text-muted-foreground">{post.excerpt}</p>}
 
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-4">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <Eye className="h-4 w-4" /> {views.toLocaleString()} views
+            </span>
             {post.publishedAt && (
               <time dateTime={post.publishedAt.toISOString()} className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" /> {formatDate(post.publishedAt)}

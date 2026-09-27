@@ -68,19 +68,17 @@ export function ReactionBar({ subject, subjectId, initial }: { subject: Subject;
   return (
     <div className="flex flex-wrap items-center gap-4">
       {topReactions.length > 0 && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <div className="flex -space-x-1">
-            {topReactions.slice(0, 3).map((r) => (
-              <span
-                key={r.type}
-                className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-sm shadow-sm"
-                title={REACTION_META[r.type].label}
-              >
-                {REACTION_META[r.type].emoji}
-              </span>
-            ))}
-          </div>
-          <span className="font-medium text-foreground">{summary.total.toLocaleString()}</span>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {topReactions.map((r) => (
+            <span
+              key={r.type}
+              title={REACTION_META[r.type].label}
+              className="flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-sm text-muted-foreground shadow-sm"
+            >
+              <span>{REACTION_META[r.type].emoji}</span>
+              <span className="font-medium text-foreground">{r.count.toLocaleString()}</span>
+            </span>
+          ))}
         </div>
       )}
 

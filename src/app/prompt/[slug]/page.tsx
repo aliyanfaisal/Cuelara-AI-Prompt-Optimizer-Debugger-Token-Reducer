@@ -138,19 +138,20 @@ export default async function CookbookPromptPage({ params }: { params: Params })
           </Link>
         </div>
 
-        <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">{prompt.title}</h1>
-
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">{prompt.title}</h1>
           <ReactionBar subject="cookbook" subjectId={prompt.id} initial={reactions} />
-          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Eye className="h-4 w-4" /> {views.toLocaleString()} views
-          </span>
         </div>
 
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-4">
-          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Clock className="h-4 w-4" /> Updated <time dateTime={prompt.updatedAt.toISOString()}>{formatDate(prompt.updatedAt)}</time>
-          </span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <Eye className="h-4 w-4" /> {views.toLocaleString()} views
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Clock className="h-4 w-4" /> Updated <time dateTime={prompt.updatedAt.toISOString()}>{formatDate(prompt.updatedAt)}</time>
+            </span>
+          </div>
           <ShareButtons url={url} title={prompt.title} />
         </div>
 
