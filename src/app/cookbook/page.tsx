@@ -175,7 +175,7 @@ export default async function CookbookPage({ searchParams }: { searchParams: Sea
         </div>
       </section>
 
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 py-12 md:grid-cols-[220px_1fr]">
+      <div className="container mx-auto grid grid-cols-1 gap-10 px-4 py-12 md:px-8 md:grid-cols-[220px_1fr]">
         <aside className="md:sticky md:top-28 md:self-start">
           <div className="md:hidden">
             <CategorySelect categories={categories} active={category} q={q} />

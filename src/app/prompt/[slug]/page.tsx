@@ -166,7 +166,7 @@ export default async function CookbookPromptPage({ params }: { params: Params })
           <PromptBox text={prompt.promptTemplate} />
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="mt-10 grid grid-cols-1 gap-6">
           <div>
             <h2 className="mb-4 text-xl font-bold text-foreground">Example input</h2>
             <PromptBox text={prompt.exampleInput} />
