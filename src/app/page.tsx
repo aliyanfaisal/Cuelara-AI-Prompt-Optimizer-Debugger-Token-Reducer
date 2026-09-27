@@ -658,6 +658,7 @@ const DEMO_EXAMPLES = [
 function PromptDemo() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const tabStripRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -667,7 +668,13 @@ function PromptDemo() {
   }, []);
 
   useEffect(() => {
-    tabRefs.current[currentIndex]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    // Scrolls only the tab strip's own horizontal scroller — never scrollIntoView, which can also
+    // scroll the whole page vertically back up to this section while the user is reading elsewhere.
+    const strip = tabStripRef.current;
+    const tab = tabRefs.current[currentIndex];
+    if (!strip || !tab) return;
+    const target = tab.offsetLeft - strip.clientWidth / 2 + tab.clientWidth / 2;
+    strip.scrollTo({ left: target, behavior: "smooth" });
   }, [currentIndex]);
 
   const current = DEMO_EXAMPLES[currentIndex];
@@ -681,7 +688,7 @@ function PromptDemo() {
           <div className="w-3 h-3 rounded-full bg-green-400 border border-green-500/20" />
         </div>
 
-        <div className="flex-1 flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div ref={tabStripRef} className="flex-1 flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {DEMO_EXAMPLES.map((example, idx) => (
             <button
               key={idx}
