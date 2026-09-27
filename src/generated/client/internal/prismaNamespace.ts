@@ -420,6 +420,7 @@ export const ModelName = {
   PasswordResetToken: 'PasswordResetToken',
   Plan: 'Plan',
   ToolRun: 'ToolRun',
+  PersonalAccessToken: 'PersonalAccessToken',
   ContactMessage: 'ContactMessage',
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
@@ -445,7 +446,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "contentView" | "reaction" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "workspaceMember" | "workspaceInvite" | "savedPrompt" | "prompt" | "rateLimitBucket" | "errorLog"
+    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "contentView" | "reaction" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "personalAccessToken" | "contactMessage" | "planToolLimit" | "verificationToken" | "workspace" | "workspaceMember" | "workspaceInvite" | "savedPrompt" | "prompt" | "rateLimitBucket" | "errorLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2151,6 +2152,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PersonalAccessToken: {
+      payload: Prisma.$PersonalAccessTokenPayload<ExtArgs>
+      fields: Prisma.PersonalAccessTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PersonalAccessTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PersonalAccessTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.PersonalAccessTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PersonalAccessTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>
+        }
+        findMany: {
+          args: Prisma.PersonalAccessTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>[]
+        }
+        create: {
+          args: Prisma.PersonalAccessTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>
+        }
+        createMany: {
+          args: Prisma.PersonalAccessTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PersonalAccessTokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>[]
+        }
+        delete: {
+          args: Prisma.PersonalAccessTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>
+        }
+        update: {
+          args: Prisma.PersonalAccessTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.PersonalAccessTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PersonalAccessTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PersonalAccessTokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.PersonalAccessTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PersonalAccessTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.PersonalAccessTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePersonalAccessToken>
+        }
+        groupBy: {
+          args: Prisma.PersonalAccessTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PersonalAccessTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PersonalAccessTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PersonalAccessTokenCountAggregateOutputType> | number
+        }
+      }
+    }
     ContactMessage: {
       payload: Prisma.$ContactMessagePayload<ExtArgs>
       fields: Prisma.ContactMessageFieldRefs
@@ -3245,6 +3320,18 @@ export const ToolRunScalarFieldEnum = {
 export type ToolRunScalarFieldEnum = (typeof ToolRunScalarFieldEnum)[keyof typeof ToolRunScalarFieldEnum]
 
 
+export const PersonalAccessTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  label: 'label',
+  tokenHash: 'tokenHash',
+  lastUsedAt: 'lastUsedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PersonalAccessTokenScalarFieldEnum = (typeof PersonalAccessTokenScalarFieldEnum)[keyof typeof PersonalAccessTokenScalarFieldEnum]
+
+
 export const ContactMessageScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -3715,6 +3802,7 @@ export type GlobalOmitConfig = {
   passwordResetToken?: Prisma.PasswordResetTokenOmit
   plan?: Prisma.PlanOmit
   toolRun?: Prisma.ToolRunOmit
+  personalAccessToken?: Prisma.PersonalAccessTokenOmit
   contactMessage?: Prisma.ContactMessageOmit
   planToolLimit?: Prisma.PlanToolLimitOmit
   verificationToken?: Prisma.VerificationTokenOmit

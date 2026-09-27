@@ -337,6 +337,7 @@ model User {
   activationTokens    ActivationToken[]
   passwordResetTokens PasswordResetToken[]
   toolRuns            ToolRun[]
+  personalAccessTokens PersonalAccessToken[]
 
   @@index([planId])
 }
@@ -415,6 +416,21 @@ model ToolRun {
 
   @@index([userId, tool, updatedAt])
   @@index([userId, createdAt])
+}
+
+// A bearer token a user generates in /dashboard/mcp to authenticate as themselves when calling
+// the remote MCP server (src/app/api/mcp/route.ts) from Claude Desktop/Code, Cursor, etc. — outside
+// the browser session that normal signed-in web usage relies on. Only the hash is ever stored.
+model PersonalAccessToken {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label      String    @default("MCP")
+  tokenHash  String    @unique
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
 }
 
 // A message submitted through the public /contact form.

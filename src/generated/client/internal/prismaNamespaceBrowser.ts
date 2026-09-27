@@ -74,6 +74,7 @@ export const ModelName = {
   PasswordResetToken: 'PasswordResetToken',
   Plan: 'Plan',
   ToolRun: 'ToolRun',
+  PersonalAccessToken: 'PersonalAccessToken',
   ContactMessage: 'ContactMessage',
   PlanToolLimit: 'PlanToolLimit',
   VerificationToken: 'VerificationToken',
@@ -415,6 +416,18 @@ export const ToolRunScalarFieldEnum = {
 } as const
 
 export type ToolRunScalarFieldEnum = (typeof ToolRunScalarFieldEnum)[keyof typeof ToolRunScalarFieldEnum]
+
+
+export const PersonalAccessTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  label: 'label',
+  tokenHash: 'tokenHash',
+  lastUsedAt: 'lastUsedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PersonalAccessTokenScalarFieldEnum = (typeof PersonalAccessTokenScalarFieldEnum)[keyof typeof PersonalAccessTokenScalarFieldEnum]
 
 
 export const ContactMessageScalarFieldEnum = {

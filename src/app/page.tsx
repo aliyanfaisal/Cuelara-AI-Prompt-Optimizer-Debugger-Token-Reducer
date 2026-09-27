@@ -284,10 +284,10 @@ export default function Home() {
               description="Rewrites your messy instructions for maximum AI understanding. Tailored modes for coding, writing, and business."
             />
             <FeatureCard
-              href="/tools/prompt-builder"
-              icon={<WandSparkles className="h-6 w-6 text-orange-500" />}
-              title="Prompt Builder"
-              description="Turn a rough idea into a complete, ready-to-paste prompt for ChatGPT, Claude, Gemini or Cursor — clear, lean, nothing invented."
+              href="/tools/token-optimizer"
+              icon={<Zap className="h-6 w-6 text-amber-500" />}
+              title="Token Optimizer"
+              description="Compress verbose prompts by up to 50%, verified against real token counts — not estimates."
             />
             <FeatureCard
               href="/tools/context-extractor"
@@ -302,10 +302,10 @@ export default function Home() {
               description="Measures a website's real colors, fonts, layout and tech stack, then writes a prompt that lets v0, Bolt, Claude or Midjourney rebuild its design."
             />
             <FeatureCard
-              href="/tools/token-optimizer"
-              icon={<Zap className="h-6 w-6 text-amber-500" />}
-              title="Token Optimizer"
-              description="Compress verbose prompts by up to 50%, verified against real token counts — not estimates."
+              href="/tools/prompt-builder"
+              icon={<WandSparkles className="h-6 w-6 text-orange-500" />}
+              title="Prompt Builder"
+              description="Turn a rough idea into a complete, ready-to-paste prompt for ChatGPT, Claude, Gemini or Cursor — clear, lean, nothing invented."
             />
             <FeatureCard
               href="/tools/compare-estimate"

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, CreditCard, KeyRound, Users, History, LayoutDashboard, User, Wallet } from "lucide-react";
+import { BookMarked, CreditCard, KeyRound, Users, History, LayoutDashboard, Terminal, User, Wallet } from "lucide-react";
 
 const ITEMS = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -10,6 +10,7 @@ const ITEMS = [
   { name: "Workspace", href: "/dashboard/workspace", icon: BookMarked },
   { name: "Team", href: "/dashboard/team", icon: Users },
   { name: "AI Models", href: "/dashboard/models", icon: KeyRound },
+  { name: "MCP Tokens", href: "/dashboard/mcp", icon: Terminal },
   { name: "Profile", href: "/dashboard/profile", icon: User },
   { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Payment Methods", href: "/dashboard/payment-methods", icon: Wallet },

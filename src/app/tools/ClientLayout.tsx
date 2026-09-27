@@ -18,10 +18,10 @@ import {
 const NAVIGATION = [
   { name: "Overview", href: "/tools", icon: LayoutDashboard },
   { name: "Prompt Optimizer", href: "/tools/prompt-optimizer", icon: Code2 },
-  { name: "Prompt Builder", href: "/tools/prompt-builder", icon: WandSparkles },
+  { name: "Token Optimizer", href: "/tools/token-optimizer", icon: Zap },
   { name: "Context Extractor", href: "/tools/context-extractor", icon: FileText },
   { name: "Site to Prompt", href: "/tools/site-to-prompt", icon: Palette },
-  { name: "Token Optimizer", href: "/tools/token-optimizer", icon: Zap },
+  { name: "Prompt Builder", href: "/tools/prompt-builder", icon: WandSparkles },
   { name: "Diff & Cost Estimate", href: "/tools/compare-estimate", icon: ArrowRight },
   { name: "Prompt Debugger", href: "/tools/prompt-debugger", icon: ShieldCheck },
   { name: "Intelligence Score", href: "/tools/intelligence-score", icon: Sparkles },

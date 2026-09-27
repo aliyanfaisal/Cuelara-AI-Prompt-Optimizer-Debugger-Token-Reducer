@@ -394,6 +394,17 @@ export default function TokenOptimizerPage() {
             afterTextClassName="text-amber-600 dark:text-amber-400"
             buttonClassName="bg-amber-500 hover:bg-amber-600 text-white"
           />
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
+            <Terminal className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+            <span>
+              Want to use this outside the website? Call it from Claude Desktop, Claude Code, Cursor, or any MCP client —{" "}
+              <code className="rounded bg-muted px-1.5 py-0.5 text-foreground">POST /api/mcp</code>
+            </span>
+            <Link href="/docs" className="font-semibold text-primary hover:underline">
+              Setup guide →
+            </Link>
+          </div>
         </div>
       )}
 

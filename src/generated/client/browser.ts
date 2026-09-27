@@ -133,6 +133,11 @@ export type Plan = Prisma.PlanModel
  */
 export type ToolRun = Prisma.ToolRunModel
 /**
+ * Model PersonalAccessToken
+ * 
+ */
+export type PersonalAccessToken = Prisma.PersonalAccessTokenModel
+/**
  * Model ContactMessage
  * 
  */

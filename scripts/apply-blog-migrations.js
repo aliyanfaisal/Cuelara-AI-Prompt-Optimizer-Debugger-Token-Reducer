@@ -55,6 +55,10 @@ const STEPS = [
     dir: '20260928110000_engagement_views_and_reactions',
     isApplied: `select 1 from information_schema.tables where table_name = 'Reaction'`,
   },
+  {
+    dir: '20260929100000_personal_access_tokens',
+    isApplied: `select 1 from information_schema.tables where table_name = 'PersonalAccessToken'`,
+  },
 ];
 
 async function main() {
