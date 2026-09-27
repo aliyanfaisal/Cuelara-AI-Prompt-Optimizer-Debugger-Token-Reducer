@@ -593,28 +593,28 @@ const DEMO_EXAMPLES = [
   {
     file: "react-auth.tsx",
     before: '"build me a login thing with jwt"',
-    after: '"Role: Senior React/TypeScript engineer. Task: JWT auth component. Constraints: HttpOnly cookie storage, handle expired tokens, redirect to /login. Output: code + assumptions."',
+    after: '"### Role\\nSenior React/TypeScript engineer\\n\\n### Task\\nJWT auth component\\n\\n### Constraints\\nHttpOnly cookie storage, handle expired tokens, redirect to /login\\n\\n### Output\\nCode + assumptions"',
     tokenSaved: "Now Structured",
     gain: "+ Clarity",
   },
   {
     file: "debug-db.sql",
     before: '"my db keeps crashing help"',
-    after: '"Role: Postgres specialist. Problem: connection pool crashes under load, timeout errors. Task: diagnose root cause, propose a fixed pool config. Output: corrected code only."',
+    after: '"### Role\\nPostgres specialist\\n\\n### Problem\\nConnection pool crashes under load, timeout errors\\n\\n### Task\\nDiagnose root cause, propose a fixed pool config\\n\\n### Output\\nCorrected code only"',
     tokenSaved: "Now Structured",
     gain: "+ Structure",
   },
   {
     file: "generate-blog.md",
     before: '"write a blog post about ai prompts"',
-    after: '"Role: Technical content writer. Task: blog post on AI prompt optimization. Audience: senior engineers. Tone: professional, no fluff. Length: ~900 words with subheadings."',
+    after: '"### Role\\nTechnical content writer\\n\\n### Task\\nBlog post on AI prompt optimization\\n\\n### Audience\\nSenior engineers\\n\\n### Tone\\nProfessional, no fluff\\n\\n### Length\\n~900 words with subheadings"',
     tokenSaved: "Now Structured",
     gain: "+ Precision",
   },
   {
     file: "prompt-formatter.txt",
     before: '"write blog post ideas for my saas company about productivity apps make it good and seo friendly and like 10 of them"',
-    after: '"Role: SEO Content Strategist. Task: 10 blog post ideas. Context: SaaS productivity app. Format: Numbered list + target keyword."',
+    after: '"## Role\\nSEO Content Strategist\\n\\n## Task\\n10 blog post ideas\\n\\n## Context\\nSaaS productivity app\\n\\n## Format\\nNumbered list + target keyword"',
     tokenSaved: "Now Structured",
     gain: "+ Readability",
   },
@@ -730,8 +730,8 @@ function PromptDemo() {
                 Cuelara Output
               </div>
               <div className="text-foreground relative pl-4 border-l-2 border-green-500/50">
-                <span className="text-primary font-medium">{current.after}</span>
-                <span className="inline-flex items-center ml-3 px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-bold whitespace-nowrap">
+                <span className="text-primary font-medium whitespace-pre-wrap">{current.after}</span>
+                <span className="inline-flex items-center ml-3 px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-bold whitespace-nowrap align-top">
                   {current.gain}
                 </span>
               </div>
