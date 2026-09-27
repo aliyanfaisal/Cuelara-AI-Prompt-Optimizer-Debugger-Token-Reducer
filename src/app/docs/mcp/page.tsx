@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft, ArrowRight, Terminal, MessageSquare, MousePointer2, Code2, Bot, Sparkles, Rocket, Zap, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Terminal, MessageSquare, MousePointer2, Code2, Bot, Sparkles, Rocket, Zap, WandSparkles, type LucideIcon } from "lucide-react";
 import { siteUrl } from "@/lib/blog";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { markdownProseClass } from "@/components/markdown/prose";
@@ -25,6 +25,7 @@ const ICONS: Record<McpClientDoc["icon"], LucideIcon> = {
 const TOOLS = [
   { slug: "token-optimizer", name: "Token Optimizer", tool: "cuelara_compress_prompt", description: "Compress verbose prompts, verified against a real tokenizer.", icon: Zap, iconClassName: "text-amber-500" },
   { slug: "prompt-optimizer", name: "Prompt Optimizer", tool: "cuelara_optimize_prompt", description: "Turn a rough idea into a complete, structured prompt.", icon: Code2, iconClassName: "text-primary" },
+  { slug: "prompt-builder", name: "Prompt Builder", tool: "cuelara_build_prompt", description: "Build a ready-to-paste prompt for a specific target model.", icon: WandSparkles, iconClassName: "text-orange-500" },
 ];
 
 function content(base: string): string {

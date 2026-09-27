@@ -31,6 +31,17 @@ claude mcp add --transport http cuelara-token-optimizer ${base}/api/mcp
 
 That's the whole server, so \`cuelara_compress_prompt\` (Token Optimizer) comes along too. For other clients — Claude Desktop, Cursor, Copilot, Gemini CLI, Antigravity — see the [client setup guides](/docs/mcp).
 
+## How it gets triggered
+
+You don't need to name the tool. Your assistant reads \`cuelara_optimize_prompt\`'s description against what you just asked and decides on its own whether to call it — so anything that reads as "turn this rough idea into a real, structured prompt" tends to trigger it, for example:
+
+- "Turn this into a proper prompt I can paste into ChatGPT: build me a login page."
+- "Write me a detailed prompt for a research assistant that summarizes papers."
+- "Structure this rough idea into a full prompt with constraints and an output format."
+- "Help me write a better prompt for this coding task."
+
+If it doesn't fire on its own (some assistants are more conservative about picking tools), just name it directly: "Use \`cuelara_optimize_prompt\` on this."
+
 ## Arguments
 
 - \`text\` (string, required) — the rough idea or request to turn into a full prompt.

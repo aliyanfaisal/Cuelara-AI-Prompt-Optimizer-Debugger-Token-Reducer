@@ -31,6 +31,17 @@ claude mcp add --transport http cuelara-token-optimizer ${base}/api/mcp
 
 That's the whole server, so \`cuelara_optimize_prompt\` (Prompt Optimizer) comes along too. For other clients — Claude Desktop, Cursor, Copilot, Gemini CLI, Antigravity — see the [client setup guides](/docs/mcp).
 
+## How it gets triggered
+
+You don't need to name the tool. Your assistant reads \`cuelara_compress_prompt\`'s description against what you just asked and decides on its own whether to call it — so anything that reads as "make this prompt shorter/cheaper without losing meaning" tends to trigger it, for example:
+
+- "Compress this prompt so it uses fewer tokens."
+- "This system prompt is too long — trim it down but keep every instruction."
+- "Make this more token-efficient before I put it in production."
+- "Shorten this without losing any of the constraints."
+
+If it doesn't fire on its own (some assistants are more conservative about picking tools), just name it directly: "Use \`cuelara_compress_prompt\` on this."
+
 ## Arguments
 
 - \`text\` (string, required) — the prompt to compress.

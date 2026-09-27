@@ -6,6 +6,9 @@ import { compressPrompt } from "@/lib/token-optimizer/compress";
 import { getPromptOptimizerLimit } from "@/lib/prompt-optimizer/limits";
 import { MODES, LEVELS, isOptimizerMode, isOptimizerLevel } from "@/lib/prompt-optimizer/constants";
 import { optimizePrompt } from "@/lib/prompt-optimizer/optimize";
+import { getPromptBuilderLimit } from "@/lib/prompt-builder/limits";
+import { BUILDER_TARGETS, BUILDER_USE_CASES, BUILDER_DETAIL_LEVELS, MAX_IDEA_CHARS, isBuilderTarget, isBuilderUseCase, isBuilderDetail } from "@/lib/prompt-builder/constants";
+import { buildPrompt } from "@/lib/prompt-builder/build";
 import { resolveUserIdFromToken } from "@/lib/personal-access-tokens";
 import { getPlanContext } from "@/lib/plans";
 import { isGenAITimeout } from "@/lib/genai-timeout";
@@ -211,11 +214,86 @@ async function callOptimizeTool(req: Request, rawArgs: unknown): Promise<ToolRes
   }
 }
 
+// --- cuelara_build_prompt (Prompt Builder) -----------------------------------------------------
+
+const BUILD_TOOL_NAME = "cuelara_build_prompt";
+
+const buildArgsSchema = z.object({
+  idea: z.string().min(1, "idea must not be empty").max(MAX_IDEA_CHARS, `idea must be at most ${MAX_IDEA_CHARS} characters`),
+  target: z.enum(BUILDER_TARGETS).optional(),
+  useCase: z.enum(BUILDER_USE_CASES).optional(),
+  detail: z.enum(BUILDER_DETAIL_LEVELS).optional(),
+});
+
+const BUILD_TOOL_DEFINITION = {
+  name: BUILD_TOOL_NAME,
+  description:
+    "Turns a rough idea into a complete, ready-to-paste prompt for a specific target AI model — clear, lean, and grounded only in what the idea actually says, with bracketed placeholders for anything genuinely missing.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      idea: { type: "string", description: `The rough idea to turn into a prompt (max ${MAX_IDEA_CHARS} characters).` },
+      target: {
+        type: "string",
+        enum: BUILDER_TARGETS,
+        description: `Which AI model or tool the prompt is written for. Defaults to "${BUILDER_TARGETS[0]}".`,
+      },
+      useCase: {
+        type: "string",
+        enum: BUILDER_USE_CASES,
+        description: `The domain to tailor the prompt's sections for. Defaults to "${BUILDER_USE_CASES[0]}".`,
+      },
+      detail: {
+        type: "string",
+        enum: BUILDER_DETAIL_LEVELS,
+        description: `How thorough the resulting prompt should be. Defaults to "${BUILDER_DETAIL_LEVELS[1]}".`,
+      },
+    },
+    required: ["idea"],
+  },
+};
+
+async function callBuildTool(req: Request, rawArgs: unknown): Promise<ToolResult> {
+  const parsed = buildArgsSchema.safeParse(rawArgs);
+  if (!parsed.success) {
+    return { content: [{ type: "text", text: `Invalid arguments: ${parsed.error.issues[0]?.message ?? "invalid input"}` }], isError: true };
+  }
+  const { idea, target, useCase, detail } = parsed.data;
+  const resolvedTarget = isBuilderTarget(target) ? target : BUILDER_TARGETS[0];
+  const resolvedUseCase = isBuilderUseCase(useCase) ? useCase : BUILDER_USE_CASES[0];
+  const resolvedDetail = isBuilderDetail(detail) ? detail : BUILDER_DETAIL_LEVELS[1];
+
+  const caller = await resolveCaller(req);
+  if ("error" in caller) return { content: [{ type: "text", text: caller.error }], isError: true };
+  const { subject, isFreeCaller } = caller;
+
+  const limit = await getPromptBuilderLimit(subject);
+  if (await hasReachedDailyLimit(subject.subjectKey, "prompt-builder", limit)) {
+    return {
+      content: [{ type: "text", text: `Daily build limit reached (${limit}/day for this caller). Try again tomorrow, or sign in at cuelara.com for a higher limit.` }],
+      isError: true,
+    };
+  }
+
+  try {
+    const built = await buildPrompt(idea, resolvedTarget, resolvedUseCase, resolvedDetail);
+    if (!built) {
+      return { content: [{ type: "text", text: "The AI did not return a usable result. Please try again." }], isError: true };
+    }
+    await consumeDailyLimit(subject.subjectKey, "prompt-builder");
+    const attribution = isFreeCaller ? "\n\n— Built by Cuelara.com" : "";
+    return { content: [{ type: "text", text: `${built}${attribution}` }], isError: false };
+  } catch (error) {
+    return providerErrorResult(error, "Something went wrong while building the prompt.");
+  }
+}
+
 // --- Server -------------------------------------------------------------------------------
 
 const TOOLS: Record<string, { definition: ToolDefinition; call: (req: Request, args: unknown) => Promise<ToolResult> }> = {
   [COMPRESS_TOOL_NAME]: { definition: COMPRESS_TOOL_DEFINITION, call: callCompressTool },
   [OPTIMIZE_TOOL_NAME]: { definition: OPTIMIZE_TOOL_DEFINITION, call: callOptimizeTool },
+  [BUILD_TOOL_NAME]: { definition: BUILD_TOOL_DEFINITION, call: callBuildTool },
 };
 
 export async function POST(req: Request) {

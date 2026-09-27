@@ -51,7 +51,7 @@ claude mcp add --transport http cuelara-token-optimizer ${base}/api/mcp --header
 
 ## Verify
 
-Run \`/mcp\` inside Claude Code to confirm it connected, then just ask it to compress or restructure a prompt — Claude will call \`cuelara_compress_prompt\` or \`cuelara_optimize_prompt\` on its own when it decides the task calls for it.`,
+Run \`/mcp\` inside Claude Code to confirm it connected, then just ask it to compress, restructure, or build a prompt — Claude will call \`cuelara_compress_prompt\`, \`cuelara_optimize_prompt\`, or \`cuelara_build_prompt\` on its own when it decides the task calls for it.`,
   },
   {
     slug: "claude-desktop",
@@ -68,7 +68,7 @@ Open Settings → Developer → Edit Config (or edit \`claude_desktop_config.jso
 ${REMOTE_CONFIG(base, "cuelara-token-optimizer", false)}
 \`\`\`
 
-Restart Claude Desktop. \`cuelara_compress_prompt\` and \`cuelara_optimize_prompt\` will show up under the hammer icon as available tools.
+Restart Claude Desktop. \`cuelara_compress_prompt\`, \`cuelara_optimize_prompt\`, and \`cuelara_build_prompt\` will show up under the hammer icon as available tools.
 
 ## Authenticate as yourself (optional)
 
@@ -116,7 +116,7 @@ Generate a personal token from [/dashboard/mcp](/dashboard/mcp) and add it as a 
 }
 \`\`\`
 
-Reopen the MCP settings panel — Cuelara should show a green "connected" dot, and Cursor's agent can now call \`cuelara_compress_prompt\` or \`cuelara_optimize_prompt\` when it's useful.`,
+Reopen the MCP settings panel — Cuelara should show a green "connected" dot, and Cursor's agent can now call \`cuelara_compress_prompt\`, \`cuelara_optimize_prompt\`, or \`cuelara_build_prompt\` when it's useful.`,
   },
   {
     slug: "vscode-claude",
@@ -196,7 +196,7 @@ Generate a personal token from [/dashboard/mcp](/dashboard/mcp):
 }
 \`\`\`
 
-Switch Copilot Chat to **Agent** mode, click the tools icon to confirm \`cuelara_compress_prompt\` and \`cuelara_optimize_prompt\` are listed, then ask it to compress or restructure a prompt.`,
+Switch Copilot Chat to **Agent** mode, click the tools icon to confirm \`cuelara_compress_prompt\`, \`cuelara_optimize_prompt\`, and \`cuelara_build_prompt\` are listed, then ask it to compress, restructure, or build a prompt.`,
   },
   {
     slug: "gemini",
