@@ -594,7 +594,49 @@ const DEMO_EXAMPLES = [
     after: '"Write a technical blog post on AI prompt optimization. Tone: Professional. Audience: Senior Engineers."',
     tokenSaved: "48% Fewer Tokens",
     gain: "+ Precision",
-  }
+  },
+  {
+    file: "prompt-formatter.txt",
+    before: '"write blog post ideas for my saas company about productivity apps make it good and seo friendly and like 10 of them"',
+    after: '"Role: SEO Content Strategist. Task: 10 blog post ideas. Context: SaaS productivity app. Format: Numbered list + target keyword."',
+    tokenSaved: "Now Structured",
+    gain: "+ Readability",
+  },
+  {
+    file: "token-optimizer.txt",
+    before: '"I would really appreciate it if you could take a look at the following text and, if possible, remove any words or phrases that are not strictly necessary while still keeping the original meaning intact."',
+    after: '"Compress this text; keep meaning."',
+    tokenSaved: "61% Fewer Tokens",
+    gain: "+ Lower Cost",
+  },
+  {
+    file: "context-extractor.pdf",
+    before: '"[Pastes entire 40-page contract PDF] What does clause 12.3 say about termination?"',
+    after: '"Extracted only clause 12.3 — termination terms, notice period, and penalties."',
+    tokenSaved: "98% Fewer Tokens",
+    gain: "+ Focused Context",
+  },
+  {
+    file: "site-to-prompt.json",
+    before: '"Here\'s my website — can you describe the layout, colors, and copy so the AI understands my brand?"',
+    after: '"Captured live: layout, color palette, typography, and copy — packaged into one ready-to-use prompt."',
+    tokenSaved: "Auto-Captured",
+    gain: "+ Brand Accuracy",
+  },
+  {
+    file: "intelligence-score.txt",
+    before: '"write me something good about my product"',
+    after: '"Scored 34/100 → rewritten with audience, tone, and format constraints. Now scores 92/100."',
+    tokenSaved: "92/100 Score",
+    gain: "+ Clarity Boost",
+  },
+  {
+    file: "prompt-builder.txt",
+    before: '"idea: an email that gets churned users to come back"',
+    after: '"Built a complete win-back email prompt: persona, tone, structure, subject lines, and CTA included."',
+    tokenSaved: "Built From Idea",
+    gain: "+ Ready to Use",
+  },
 ];
 
 function PromptDemo() {
