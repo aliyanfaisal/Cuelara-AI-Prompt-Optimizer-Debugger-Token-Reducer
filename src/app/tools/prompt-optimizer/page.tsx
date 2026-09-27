@@ -336,21 +336,6 @@ export default function PromptOptimizerPage() {
           />
         </div>
 
-        {state === "idle" && (
-          <div className="px-5 md:px-6 pb-5 md:pb-6">
-            <ToolExampleCarousel
-              examples={EXAMPLES}
-              onUse={setInput}
-              beforeTag="Bloated"
-              beforeLabel="Original Prompt"
-              afterTag="Optimized"
-              afterLabel="Cuelara Output"
-              afterTextClassName="text-primary"
-              buttonClassName="bg-primary hover:bg-primary/90 text-primary-foreground"
-            />
-          </div>
-        )}
-
         {/* Action Footer */}
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-col gap-1 text-xs text-muted-foreground">
@@ -387,6 +372,21 @@ export default function PromptOptimizerPage() {
           </button>
         </div>
       </motion.div>
+
+      {state === "idle" && (
+        <div className="mb-8">
+          <ToolExampleCarousel
+            examples={EXAMPLES}
+            onUse={setInput}
+            beforeTag="Bloated"
+            beforeLabel="Original Prompt"
+            afterTag="Optimized"
+            afterLabel="Cuelara Output"
+            afterTextClassName="text-primary"
+            buttonClassName="bg-primary hover:bg-primary/90 text-primary-foreground"
+          />
+        </div>
+      )}
 
       {/* 3. Output Section */}
       <div ref={outputRef} className="scroll-mt-24 mb-16">

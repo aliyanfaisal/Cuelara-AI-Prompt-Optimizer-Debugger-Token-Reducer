@@ -324,21 +324,6 @@ export default function TokenOptimizerPage() {
           />
         </div>
 
-        {state === "idle" && (
-          <div className="px-5 pb-5">
-            <ToolExampleCarousel
-              examples={EXAMPLES}
-              onUse={setInput}
-              beforeTag="Verbose"
-              beforeLabel="Original Text"
-              afterTag="Compressed"
-              afterLabel="Cuelara Output"
-              afterTextClassName="text-amber-600 dark:text-amber-400"
-              buttonClassName="bg-amber-500 hover:bg-amber-600 text-white"
-            />
-          </div>
-        )}
-
         {/* Action Footer */}
         <div className="px-5 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-col gap-1 text-xs text-muted-foreground">
@@ -375,6 +360,21 @@ export default function TokenOptimizerPage() {
           </button>
         </div>
       </motion.div>
+
+      {state === "idle" && (
+        <div className="mb-8">
+          <ToolExampleCarousel
+            examples={EXAMPLES}
+            onUse={setInput}
+            beforeTag="Verbose"
+            beforeLabel="Original Text"
+            afterTag="Compressed"
+            afterLabel="Cuelara Output"
+            afterTextClassName="text-amber-600 dark:text-amber-400"
+            buttonClassName="bg-amber-500 hover:bg-amber-600 text-white"
+          />
+        </div>
+      )}
 
       {/* 3. Output Container (Dynamic) */}
       <div ref={outputRef} className="scroll-mt-24 mb-16">

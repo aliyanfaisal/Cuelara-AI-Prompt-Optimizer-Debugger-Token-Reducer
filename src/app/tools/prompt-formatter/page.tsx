@@ -293,21 +293,6 @@ export default function PromptFormatterPage() {
           />
         </div>
 
-        {state === "idle" && (
-          <div className="px-5 md:px-6 pb-5 md:pb-6">
-            <ToolExampleCarousel
-              examples={EXAMPLES}
-              onUse={setInput}
-              beforeTag="Unstructured"
-              beforeLabel="Original Prompt"
-              afterTag="Formatted"
-              afterLabel="Cuelara Output"
-              afterTextClassName="text-pink-600 dark:text-pink-400"
-              buttonClassName="bg-pink-500 hover:bg-pink-600 text-white"
-            />
-          </div>
-        )}
-
         {/* Action Footer */}
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-col gap-1 text-xs text-muted-foreground">
@@ -344,6 +329,21 @@ export default function PromptFormatterPage() {
           </button>
         </div>
       </motion.div>
+
+      {state === "idle" && (
+        <div className="mb-8">
+          <ToolExampleCarousel
+            examples={EXAMPLES}
+            onUse={setInput}
+            beforeTag="Unstructured"
+            beforeLabel="Original Prompt"
+            afterTag="Formatted"
+            afterLabel="Cuelara Output"
+            afterTextClassName="text-pink-600 dark:text-pink-400"
+            buttonClassName="bg-pink-500 hover:bg-pink-600 text-white"
+          />
+        </div>
+      )}
 
       {/* 3. Output Section */}
       <div ref={outputRef} className="scroll-mt-24 mb-16">

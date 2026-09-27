@@ -269,21 +269,6 @@ export default function PromptBuilderPage() {
           />
         </div>
 
-        {state === "idle" && (
-          <div className="px-5 md:px-6 pb-5 md:pb-6">
-            <ToolExampleCarousel
-              examples={EXAMPLES}
-              onUse={setIdea}
-              beforeTag="Idea"
-              beforeLabel="Your Idea"
-              afterTag="Built"
-              afterLabel="Generated Prompt"
-              afterTextClassName="text-orange-600 dark:text-orange-400"
-              buttonClassName="bg-orange-500 hover:bg-orange-600 text-white"
-            />
-          </div>
-        )}
-
         <div className="px-5 md:px-6 py-4 border-t border-border bg-muted/10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-col gap-1 text-xs text-muted-foreground">
             <span>{idea.length.toLocaleString()} / {MAX_IDEA_CHARS.toLocaleString()} characters</span>
@@ -316,6 +301,21 @@ export default function PromptBuilderPage() {
           </button>
         </div>
       </motion.div>
+
+      {state === "idle" && (
+        <div className="mb-8">
+          <ToolExampleCarousel
+            examples={EXAMPLES}
+            onUse={setIdea}
+            beforeTag="Idea"
+            beforeLabel="Your Idea"
+            afterTag="Built"
+            afterLabel="Generated Prompt"
+            afterTextClassName="text-orange-600 dark:text-orange-400"
+            buttonClassName="bg-orange-500 hover:bg-orange-600 text-white"
+          />
+        </div>
+      )}
 
       {/* 3. Output Section */}
       <div ref={outputRef} className="scroll-mt-24 mb-16">
