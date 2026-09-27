@@ -17,15 +17,15 @@ import {
 
 const NAVIGATION = [
   { name: "Overview", href: "/tools", icon: LayoutDashboard },
-  { name: "Prompt Builder", href: "/tools/prompt-builder", icon: WandSparkles },
   { name: "Prompt Optimizer", href: "/tools/prompt-optimizer", icon: Code2 },
+  { name: "Prompt Builder", href: "/tools/prompt-builder", icon: WandSparkles },
   { name: "Context Extractor", href: "/tools/context-extractor", icon: FileText },
   { name: "Site to Prompt", href: "/tools/site-to-prompt", icon: Palette },
   { name: "Token Optimizer", href: "/tools/token-optimizer", icon: Zap },
-  { name: "Prompt Debugger", href: "/tools/prompt-debugger", icon: ShieldCheck },
-  { name: "Prompt Formatter", href: "/tools/prompt-formatter", icon: Terminal },
-  { name: "Intelligence Score", href: "/tools/intelligence-score", icon: Sparkles },
   { name: "Diff & Cost Estimate", href: "/tools/compare-estimate", icon: ArrowRight },
+  { name: "Prompt Debugger", href: "/tools/prompt-debugger", icon: ShieldCheck },
+  { name: "Intelligence Score", href: "/tools/intelligence-score", icon: Sparkles },
+  { name: "Prompt Formatter", href: "/tools/prompt-formatter", icon: Terminal },
 ];
 
 const QUICK_LINKS = [

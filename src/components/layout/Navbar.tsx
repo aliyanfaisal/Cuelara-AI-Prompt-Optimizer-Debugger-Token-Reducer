@@ -8,15 +8,15 @@ import { WandSparkles, Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, Chev
 import { useSession, signOut } from "next-auth/react";
 
 const TOOLS_MENU = [
-  { name: "Prompt Builder", icon: <WandSparkles className="w-4 h-4 text-orange-500" />, href: "/tools/prompt-builder" },
-  { name: "Token Optimizer", icon: <Zap className="w-4 h-4 text-amber-500" />, href: "/tools/token-optimizer" },
-  { name: "Context Extractor", icon: <FileText className="w-4 h-4 text-primary" />, href: "/tools/context-extractor" },
   { name: "Prompt Optimizer", icon: <Code2 className="w-4 h-4 text-primary" />, href: "/tools/prompt-optimizer" },
+  { name: "Prompt Builder", icon: <WandSparkles className="w-4 h-4 text-orange-500" />, href: "/tools/prompt-builder" },
+  { name: "Context Extractor", icon: <FileText className="w-4 h-4 text-primary" />, href: "/tools/context-extractor" },
   { name: "Site to Prompt", icon: <Palette className="w-4 h-4 text-fuchsia-500" />, href: "/tools/site-to-prompt" },
-  { name: "Prompt Debugger", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, href: "/tools/prompt-debugger" },
-  { name: "Prompt Formatter", icon: <Terminal className="w-4 h-4 text-pink-500" />, href: "/tools/prompt-formatter" },
-  { name: "Intelligence Score", icon: <Sparkles className="w-4 h-4 text-violet-500" />, href: "/tools/intelligence-score" },
+  { name: "Token Optimizer", icon: <Zap className="w-4 h-4 text-amber-500" />, href: "/tools/token-optimizer" },
   { name: "Diff & Cost Estimate", icon: <ArrowRight className="w-4 h-4 text-blue-500" />, href: "/tools/compare-estimate" },
+  { name: "Prompt Debugger", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, href: "/tools/prompt-debugger" },
+  { name: "Intelligence Score", icon: <Sparkles className="w-4 h-4 text-violet-500" />, href: "/tools/intelligence-score" },
+  { name: "Prompt Formatter", icon: <Terminal className="w-4 h-4 text-pink-500" />, href: "/tools/prompt-formatter" },
 ];
 
 export function Navbar() {

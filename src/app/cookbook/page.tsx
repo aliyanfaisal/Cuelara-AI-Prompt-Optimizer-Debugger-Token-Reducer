@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/blog";
 import { COOKBOOK_PER_PAGE, cookbookListSelect, publishedCookbookWhere } from "@/lib/cookbook";
 import { PromptCard } from "./PromptCard";
+import { CategorySelect } from "./CategorySelect";
 
 export const dynamic = "force-dynamic";
 
@@ -174,9 +175,13 @@ export default async function CookbookPage({ searchParams }: { searchParams: Sea
         </div>
       </section>
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col px-6 py-12">
-        <nav aria-label="Prompt categories" className="mb-12 flex flex-col items-center">
-          <div className="inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-border/50 bg-muted/40 p-1">
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 py-12 md:grid-cols-[220px_1fr]">
+        <aside className="md:sticky md:top-28 md:self-start">
+          <div className="md:hidden">
+            <CategorySelect categories={categories} active={category} q={q} />
+          </div>
+          <nav aria-label="Prompt categories" className="hidden flex-col gap-1 md:flex">
+            <p className="mb-2 px-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Categories</p>
             {[{ name: "All Prompts", slug: undefined }, ...categories].map((c) => {
               const isActive = c.slug === category;
               return (
@@ -184,68 +189,71 @@ export default async function CookbookPage({ searchParams }: { searchParams: Sea
                   key={c.slug ?? "all"}
                   href={cookbookHref({ category: c.slug, q })}
                   aria-current={isActive ? "page" : undefined}
-                  className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
+                  className={`rounded-lg border-l-2 px-3 py-2 text-sm font-semibold transition-colors ${
                     isActive
-                      ? "border border-border/60 bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   }`}
                 >
                   {c.name}
                 </Link>
               );
             })}
-          </div>
+          </nav>
+        </aside>
+
+        <div>
           {q && (
-            <p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
+            <p className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
               {total} result{total === 1 ? "" : "s"} for &ldquo;{q}&rdquo;
               <Link href={cookbookHref({ category })} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
                 <X className="h-3.5 w-3.5" /> Clear
               </Link>
             </p>
           )}
-        </nav>
 
-        {prompts.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {prompts.map((p) => (
-              <PromptCard key={p.id} prompt={p} />
-            ))}
-          </div>
-        ) : (
-          <div className="py-20 text-center">
-            <p className="mb-2 text-muted-foreground">No prompts found{q ? " matching your search" : ""}.</p>
-            <Link href="/cookbook" className="text-sm font-bold text-primary hover:underline">
-              Clear filters
-            </Link>
-          </div>
-        )}
+          {prompts.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {prompts.map((p) => (
+                <PromptCard key={p.id} prompt={p} />
+              ))}
+            </div>
+          ) : (
+            <div className="py-20 text-center">
+              <p className="mb-2 text-muted-foreground">No prompts found{q ? " matching your search" : ""}.</p>
+              <Link href="/cookbook" className="text-sm font-bold text-primary hover:underline">
+                Clear filters
+              </Link>
+            </div>
+          )}
 
-        {totalPages > 1 && (
-          <nav aria-label="Pagination" className="mt-16 flex items-center justify-center gap-2">
-            {page > 1 && (
-              <Link href={cookbookHref({ category, q, page: page - 1 })} rel="prev" aria-label="Previous page" className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
-                <ChevronRight className="h-5 w-5 rotate-180" />
-              </Link>
-            )}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-              <Link
-                key={n}
-                href={cookbookHref({ category, q, page: n })}
-                aria-current={n === page ? "page" : undefined}
-                className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold transition-colors ${
-                  n === page ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                {n}
-              </Link>
-            ))}
-            {page < totalPages && (
-              <Link href={cookbookHref({ category, q, page: page + 1 })} rel="next" aria-label="Next page" className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
-                <ChevronRight className="h-5 w-5" />
-              </Link>
-            )}
-          </nav>
-        )}
+          {totalPages > 1 && (
+            <nav aria-label="Pagination" className="mt-16 flex items-center justify-center gap-2">
+              {page > 1 && (
+                <Link href={cookbookHref({ category, q, page: page - 1 })} rel="prev" aria-label="Previous page" className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
+                  <ChevronRight className="h-5 w-5 rotate-180" />
+                </Link>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <Link
+                  key={n}
+                  href={cookbookHref({ category, q, page: n })}
+                  aria-current={n === page ? "page" : undefined}
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold transition-colors ${
+                    n === page ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {n}
+                </Link>
+              ))}
+              {page < totalPages && (
+                <Link href={cookbookHref({ category, q, page: page + 1 })} rel="next" aria-label="Next page" className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
+                  <ChevronRight className="h-5 w-5" />
+                </Link>
+              )}
+            </nav>
+          )}
+        </div>
       </div>
     </div>
   );
