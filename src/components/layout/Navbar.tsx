@@ -42,7 +42,7 @@ export function Navbar() {
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center mt-4 sm:mt-6 px-4 pointer-events-none">
         <motion.header 
           initial={{ width: "80px", opacity: 0, borderRadius: "100px" }}
-          animate={{ width: "100%", maxWidth: "896px", opacity: 1 }}
+          animate={{ width: "100%", maxWidth: "960px", opacity: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           onAnimationComplete={() => setIsLoaded(true)}
           className={`pointer-events-auto border border-border bg-background/80 backdrop-blur-xl shadow-xl py-2 px-3 sm:py-3 sm:px-6 flex items-center justify-between relative ${isLoaded ? 'overflow-visible' : 'overflow-hidden'}`}
@@ -74,7 +74,7 @@ export function Navbar() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.4 }}
-                className="hidden md:flex items-center space-x-8 text-sm font-medium absolute left-1/2 -translate-x-1/2 h-full"
+                className="hidden md:flex items-center space-x-5 lg:space-x-7 text-sm font-medium absolute left-1/2 -translate-x-1/2 h-full"
               >
                 
                 {/* Tools Mega Menu Trigger */}
@@ -154,7 +154,7 @@ export function Navbar() {
                       className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-2"
                     >
                       <LayoutDashboard className="h-4 w-4 opacity-70" />
-                      {(session.user as any)?.roles?.includes("ADMIN") ? "Admin Dashboard" : "Dashboard"}
+                      {(session.user as any)?.roles?.includes("ADMIN") ? "Admin" : "Dashboard"}
                     </Link>
                     <button
                       onClick={() => signOut()}

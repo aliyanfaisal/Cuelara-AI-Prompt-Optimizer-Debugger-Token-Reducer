@@ -4,9 +4,9 @@ import { useState, useSyncExternalStore } from "react";
 import { Check, Link2, Mail, Share2 } from "lucide-react";
 
 const btn =
-  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary";
+  "inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary";
 
-const icon = "h-[18px] w-[18px]";
+const icon = "h-[14px] w-[14px] sm:h-[18px] sm:w-[18px]";
 
 export function ShareButtons({ url, title }: { url: string; title: string }) {
   const [copied, setCopied] = useState(false);
@@ -53,7 +53,7 @@ export function ShareButtons({ url, title }: { url: string; title: string }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Share this post">
+    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2" role="group" aria-label="Share this post">
       <span className="mr-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">Share</span>
       {links.map((l) => (
         <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" aria-label={l.label} title={l.label} className={btn}>
