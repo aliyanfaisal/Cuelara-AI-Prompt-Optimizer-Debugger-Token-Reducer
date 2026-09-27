@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { WandSparkles, ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2, FileText, Palette } from "lucide-react";
@@ -641,6 +641,7 @@ const DEMO_EXAMPLES = [
 
 function PromptDemo() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -649,32 +650,39 @@ function PromptDemo() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    tabRefs.current[currentIndex]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [currentIndex]);
+
   const current = DEMO_EXAMPLES[currentIndex];
 
   return (
     <div className="glass-card w-full rounded-2xl overflow-hidden text-left relative z-10 shadow-2xl">
       <div className="flex items-center px-4 py-3 border-b border-border/50 bg-muted/80 backdrop-blur-md">
-        <div className="flex gap-2 w-20">
+        <div className="flex gap-2 w-20 shrink-0">
           <div className="w-3 h-3 rounded-full bg-red-400 border border-red-500/20" />
           <div className="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-500/20" />
           <div className="w-3 h-3 rounded-full bg-green-400 border border-green-500/20" />
         </div>
 
-        <div className="flex-1 flex justify-center gap-2 overflow-hidden">
+        <div className="flex-1 flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {DEMO_EXAMPLES.map((example, idx) => (
-            <div
+            <button
               key={idx}
-              className={`text-xs font-mono px-3 py-1 rounded-md transition-all duration-300 ${idx === currentIndex
+              ref={(el) => { tabRefs.current[idx] = el; }}
+              type="button"
+              onClick={() => setCurrentIndex(idx)}
+              className={`shrink-0 text-xs font-mono px-3 py-1 rounded-md transition-all duration-300 ${idx === currentIndex
                   ? "bg-background shadow-sm text-foreground"
-                  : "text-muted-foreground hidden sm:block"
+                  : "text-muted-foreground hover:text-foreground"
                 }`}
             >
               {example.file}
-            </div>
+            </button>
           ))}
         </div>
 
-        <div className="w-20" />
+        <div className="w-20 shrink-0" />
       </div>
 
       <div className="p-6 md:p-8 font-mono text-sm sm:text-base leading-loose min-h-[220px] flex flex-col justify-center bg-background/30">
