@@ -7,6 +7,9 @@ export interface UpsertResult {
   id: string;
   slug: string;
   created: boolean;
+  /** False when an "update" for an already-existing external_id carried no actual field changes —
+   * a resync or retry of the same payload. Callers use this to skip re-notifying Google. */
+  changed: boolean;
 }
 
 export class UnknownCategoryError extends Error {
@@ -19,7 +22,14 @@ async function save(tx: Prisma.TransactionClient, data: CookbookPromptPayload): 
   const category = await tx.cookbookCategory.findUnique({ where: { slug: data.category }, select: { id: true } });
   if (!category) throw new UnknownCategoryError(data.category);
 
-  const existing = await tx.cookbookPrompt.findUnique({ where: { externalId: data.external_id }, select: { id: true } });
+  const existing = await tx.cookbookPrompt.findUnique({
+    where: { externalId: data.external_id },
+    select: {
+      id: true, slug: true, title: true, categoryId: true, explanation: true, whenToUse: true, bestPractices: true,
+      commonMistakes: true, promptTemplate: true, exampleInput: true, exampleOutput: true, faqs: true,
+      seoTitle: true, seoDesc: true, image: true, published: true,
+    },
+  });
 
   const fields = {
     title: data.title,
@@ -39,9 +49,16 @@ async function save(tx: Prisma.TransactionClient, data: CookbookPromptPayload): 
   };
 
   if (existing) {
+    const unchanged = (Object.keys(fields) as (keyof typeof fields)[]).every((key) => existing[key] === fields[key]);
+
+    // A resync/retry that repeats an already-applied payload skips the write entirely — otherwise
+    // it would bump updatedAt (which the sitemap reports to Google as a "changed" lastmod) for
+    // nothing, on top of re-firing the indexing notification below for content that never changed.
+    if (unchanged) return { id: existing.id, slug: existing.slug, created: false, changed: false };
+
     // The slug is deliberately left out: a published URL must never change on update.
     const prompt = await tx.cookbookPrompt.update({ where: { id: existing.id }, data: fields, select: { id: true, slug: true } });
-    return { ...prompt, created: false };
+    return { ...prompt, created: false, changed: true };
   }
 
   const slug = await resolveUniqueSlug(
@@ -49,7 +66,7 @@ async function save(tx: Prisma.TransactionClient, data: CookbookPromptPayload): 
     async (candidate) => (await tx.cookbookPrompt.findUnique({ where: { slug: candidate }, select: { id: true } })) !== null
   );
   const prompt = await tx.cookbookPrompt.create({ data: { ...fields, externalId: data.external_id, slug }, select: { id: true, slug: true } });
-  return { ...prompt, created: true };
+  return { ...prompt, created: true, changed: true };
 }
 
 function isUniqueViolation(error: unknown): boolean {

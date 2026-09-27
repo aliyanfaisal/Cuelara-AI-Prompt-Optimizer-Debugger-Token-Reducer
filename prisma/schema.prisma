@@ -162,6 +162,10 @@ model BlogPost {
 
   views Int @default(0)
 
+  // Set once POST /api/indexing/submit successfully notifies Google for this URL, so its
+  // ?only_new=true mode (used by a recurring catch-up cron) never resubmits the same URL forever.
+  indexingSubmittedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -222,6 +226,10 @@ model CookbookPrompt {
   seoDesc  String?
 
   views Int @default(0)
+
+  // Set once POST /api/indexing/submit successfully notifies Google for this URL, so its
+  // ?only_new=true mode (used by a recurring catch-up cron) never resubmits the same URL forever.
+  indexingSubmittedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

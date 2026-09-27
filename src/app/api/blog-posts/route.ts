@@ -39,11 +39,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const { id, slug, created } = await upsertBlogPost(parsed.data);
+    const { id, slug, created, changed } = await upsertBlogPost(parsed.data);
 
     // Only posts that are live right now are worth telling Google about; drafts and scheduled posts 404.
+    // Skipped when a resync/retry re-sent an already-applied payload — nothing actually changed.
     const { status, published_at } = parsed.data;
-    if (status === "published" && (!published_at || new Date(published_at) <= new Date())) void notifyGoogle(blogPostUrl(slug));
+    if (status === "published" && changed && (!published_at || new Date(published_at) <= new Date())) void notifyGoogle(blogPostUrl(slug));
 
     return NextResponse.json(
       {

@@ -95,6 +95,15 @@ describe("POST /api/blog-posts", () => {
     assert.deepEqual(post.tags.map((t) => t.slug).sort(), ["laravel", "next"]);
   });
 
+  it("skips the write entirely when a resync resends an already-applied payload unchanged", async () => {
+    const before = await db.blogPost.findUniqueOrThrow({ where: { externalId: 100 }, select: { updatedAt: true } });
+    const res = await send(payload());
+    assert.equal(res.status, 200);
+    assert.equal((await res.json()).status, "updated");
+    const after = await db.blogPost.findUniqueOrThrow({ where: { externalId: 100 }, select: { updatedAt: true } });
+    assert.equal(after.updatedAt.getTime(), before.updatedAt.getTime());
+  });
+
   it("updates the same external_id without duplicating, keeping the slug and replacing associations (200)", async () => {
     const res = await send(
       payload({ title: "Renamed", slug: "a-different-slug", tags: ["next", "prisma"], categories: [], status: "draft" })

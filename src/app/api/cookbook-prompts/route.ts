@@ -38,11 +38,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "The given data was invalid.", errors: formatValidationErrors(parsed.error) }, { status: 422 });
     }
 
-    const { id, slug, created } = await upsertCookbookPrompt(parsed.data);
+    const { id, slug, created, changed } = await upsertCookbookPrompt(parsed.data);
 
     // /cookbook, /prompt/[slug] and the sitemap are all dynamic, so the page and its sitemap entry are live already.
-    // Fire and forget: a Google hiccup must not fail the delivery.
-    if (parsed.data.published) void notifyGoogle(promptUrl(slug));
+    // Fire and forget: a Google hiccup must not fail the delivery. Skipped when a resync/retry
+    // re-sent an already-applied payload — nothing actually changed, so there is nothing to tell Google.
+    if (parsed.data.published && changed) void notifyGoogle(promptUrl(slug));
     return NextResponse.json(
       { id, external_id: parsed.data.external_id, status: created ? "created" : "updated", url: `${siteUrl()}/prompt/${slug}` },
       { status: created ? 201 : 200 }

@@ -48,4 +48,17 @@ describe("POST /api/indexing/submit", () => {
   it("returns 503 when Google credentials are not configured", async () => {
     assert.equal((await call({})).status, 503);
   });
+
+  it("only_new excludes static paths and anything already stamped as submitted", async () => {
+    const onlyNew = await (await call({ dry_run: true, only_new: true })).json();
+    assert.ok(onlyNew.urls.includes("https://cuelara.example/prompt/live"));
+    assert.ok(!onlyNew.urls.some((u: string) => u === "https://cuelara.example/pricing"));
+
+    // A recurring cron calling this with only_new repeatedly must eventually see an empty batch,
+    // not resubmit the same URL forever — this is what the indexingSubmittedAt stamp guarantees.
+    await db.cookbookPrompt.update({ where: { slug: "live" }, data: { indexingSubmittedAt: new Date() } });
+    const afterStamp = await (await call({ dry_run: true, only_new: true })).json();
+    assert.equal(afterStamp.total, 0);
+    assert.deepEqual(afterStamp.urls, []);
+  });
 });

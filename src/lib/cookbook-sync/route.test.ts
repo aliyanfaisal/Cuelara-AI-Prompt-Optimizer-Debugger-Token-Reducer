@@ -106,6 +106,15 @@ describe("/api/cookbook-prompts", () => {
     assert.equal(p.seoTitle, "Senior React Developer Prompt for Claude & ChatGPT");
   });
 
+  it("skips the write entirely when a resync resends an already-applied payload unchanged", async () => {
+    const before = await db.cookbookPrompt.findUniqueOrThrow({ where: { externalId: 1 }, select: { updatedAt: true } });
+    const res = await send(payload());
+    assert.equal(res.status, 200);
+    assert.equal((await res.json()).status, "updated");
+    const after = await db.cookbookPrompt.findUniqueOrThrow({ where: { externalId: 1 }, select: { updatedAt: true } });
+    assert.equal(after.updatedAt.getTime(), before.updatedAt.getTime());
+  });
+
   it("updates the same external_id without duplicating and keeps the slug (200)", async () => {
     const res = await send(payload({ title: "Renamed", slug: "other-slug", category: "marketing", published: false, image_url: null }));
     assert.equal(res.status, 200);

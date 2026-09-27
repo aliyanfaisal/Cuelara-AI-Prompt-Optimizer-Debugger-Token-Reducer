@@ -8,7 +8,16 @@ export interface UpsertResult {
   id: string;
   slug: string;
   created: boolean;
+  /** False when an "update" for an already-existing external_id carried no actual field changes —
+   * a resync or retry of the same payload. Callers use this to skip re-notifying Google. */
+  changed: boolean;
 }
+
+const sameIdSet = (a: { id: string }[], b: { id: string }[]): boolean => {
+  if (a.length !== b.length) return false;
+  const ids = new Set(a.map((x) => x.id));
+  return b.every((x) => ids.has(x.id));
+};
 
 interface LabelDelegate {
   createMany(args: { data: { name: string; slug: string }[]; skipDuplicates: boolean }): PromiseLike<unknown>;
@@ -25,7 +34,11 @@ async function labelIds(delegate: LabelDelegate, names: string[]): Promise<{ id:
 async function save(tx: Prisma.TransactionClient, data: BlogPostPayload): Promise<UpsertResult> {
   const existing = await tx.blogPost.findUnique({
     where: { externalId: data.external_id },
-    select: { id: true, slug: true, publishedAt: true },
+    select: {
+      id: true, slug: true, title: true, content: true, excerpt: true, status: true, published: true, publishedAt: true,
+      imageUrl: true, sourceImageUrl: true, canonicalUrl: true,
+      categories: { select: { id: true } }, tags: { select: { id: true } },
+    },
   });
 
   const publishedAt = data.published_at
@@ -50,13 +63,31 @@ async function save(tx: Prisma.TransactionClient, data: BlogPostPayload): Promis
   const tags = await labelIds(tx.blogTag, data.tags);
 
   if (existing) {
+    const unchanged =
+      existing.title === fields.title &&
+      existing.content === fields.content &&
+      existing.excerpt === fields.excerpt &&
+      existing.status === fields.status &&
+      existing.published === fields.published &&
+      (existing.publishedAt?.getTime() ?? null) === (fields.publishedAt?.getTime() ?? null) &&
+      existing.imageUrl === fields.imageUrl &&
+      existing.sourceImageUrl === fields.sourceImageUrl &&
+      existing.canonicalUrl === fields.canonicalUrl &&
+      sameIdSet(existing.categories, categories) &&
+      sameIdSet(existing.tags, tags);
+
+    // A resync/retry that repeats an already-applied payload skips the write entirely — otherwise
+    // it would bump updatedAt (which the sitemap reports to Google as a "changed" lastmod) for
+    // nothing, on top of re-firing the indexing notification below for content that never changed.
+    if (unchanged) return { id: existing.id, slug: existing.slug, created: false, changed: false };
+
     // The slug is deliberately left out: a published URL must never change on update.
     const post = await tx.blogPost.update({
       where: { id: existing.id },
       data: { ...fields, categories: { set: categories }, tags: { set: tags } },
       select: { id: true, slug: true },
     });
-    return { ...post, created: false };
+    return { ...post, created: false, changed: true };
   }
 
   const slug = await resolveUniqueSlug(
@@ -67,7 +98,7 @@ async function save(tx: Prisma.TransactionClient, data: BlogPostPayload): Promis
     data: { ...fields, externalId: data.external_id, slug, categories: { connect: categories }, tags: { connect: tags } },
     select: { id: true, slug: true },
   });
-  return { ...post, created: true };
+  return { ...post, created: true, changed: true };
 }
 
 function isUniqueViolation(error: unknown): boolean {

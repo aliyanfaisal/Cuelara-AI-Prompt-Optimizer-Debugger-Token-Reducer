@@ -219,6 +219,7 @@ export const BlogPostScalarFieldEnum = {
   readingMinutes: 'readingMinutes',
   teaser: 'teaser',
   views: 'views',
+  indexingSubmittedAt: 'indexingSubmittedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -274,6 +275,7 @@ export const CookbookPromptScalarFieldEnum = {
   seoTitle: 'seoTitle',
   seoDesc: 'seoDesc',
   views: 'views',
+  indexingSubmittedAt: 'indexingSubmittedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
