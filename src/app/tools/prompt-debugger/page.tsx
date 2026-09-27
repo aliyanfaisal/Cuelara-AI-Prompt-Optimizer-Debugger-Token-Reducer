@@ -7,7 +7,7 @@ import {
   ShieldCheck, Check, ChevronDown,
   Settings2, Bug, AlertTriangle, CheckCircle2, ShieldAlert,
   RefreshCcw, Zap, Code2, FileText,
-  BookOpen, Wand2
+  BookOpen, Wand2, Sparkles, Terminal
 } from "lucide-react";
 import {
   STRICTNESS_LEVELS, FOCUS_AREAS,
@@ -17,6 +17,9 @@ import {
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
+import { NextSteps, type NextStep } from "@/components/tools/NextSteps";
+import { InsertFromHistoryButton } from "@/components/tools/InsertFromHistoryButton";
+import { consumeToolHandoff } from "@/lib/tool-handoff";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -50,6 +53,12 @@ const EXAMPLES: ToolExample[] = [
     badgeAfter: "+ Bounded Output",
     useValue: "List all the possible reasons why a website might be slow and explain everything about each one in as much detail as possible.",
   },
+];
+
+const NEXT_STEPS: NextStep[] = [
+  { label: "Optimize it", href: "/tools/prompt-optimizer", icon: Code2, iconClassName: "text-primary" },
+  { label: "Score it", href: "/tools/intelligence-score", icon: Sparkles, iconClassName: "text-violet-500" },
+  { label: "Convert to XML or JSON", href: "/tools/prompt-formatter", icon: Terminal, iconClassName: "text-pink-500" },
 ];
 
 // Paced to a real audit call's typical ~18s round trip (JSON report generation, one retry on a bad parse).
@@ -148,6 +157,14 @@ export default function PromptDebuggerPage() {
     setFixesApplied(false);
     setState("success");
   }, [saved.run]);
+
+  // A result handed off from another tool's "Next steps" row (see src/lib/tool-handoff.ts) wins
+  // only when this page wasn't opened from history — ?run= hydration above takes priority.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("run")) return;
+    const handoff = consumeToolHandoff();
+    if (handoff) setInput(handoff);
+  }, []);
 
   const handleDebug = async () => {
     if (!input.trim() || state === "loading") return;
@@ -328,6 +345,10 @@ export default function PromptDebuggerPage() {
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="ml-auto">
+            <InsertFromHistoryButton onInsert={setInput} />
           </div>
         </div>
 
@@ -562,6 +583,10 @@ export default function PromptDebuggerPage() {
                   </div>
                 ))}
 
+              </div>
+
+              <div className="px-5 pb-5 md:px-6 md:pb-6">
+                <NextSteps content={input} steps={NEXT_STEPS} />
               </div>
             </motion.div>
           )}

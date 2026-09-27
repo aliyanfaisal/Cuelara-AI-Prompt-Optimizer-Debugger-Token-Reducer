@@ -21,6 +21,8 @@ import {
 } from "@/lib/intelligence-score/constants";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
+import { InsertFromHistoryButton } from "@/components/tools/InsertFromHistoryButton";
+import { consumeToolHandoff } from "@/lib/tool-handoff";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -129,6 +131,14 @@ export default function IntelligenceScorePage() {
     setResult(run.result);
     setState("success");
   }, [saved.run]);
+
+  // A result handed off from another tool's "Next steps" row (see src/lib/tool-handoff.ts) wins
+  // only when this page wasn't opened from history — ?run= hydration above takes priority.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("run")) return;
+    const handoff = consumeToolHandoff();
+    if (handoff) setInput(handoff);
+  }, []);
 
   const handleAnalyze = async () => {
     if (!input.trim() || state === "loading") return;
@@ -267,6 +277,10 @@ export default function IntelligenceScorePage() {
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="ml-auto">
+            <InsertFromHistoryButton onInsert={setInput} />
           </div>
         </div>
 

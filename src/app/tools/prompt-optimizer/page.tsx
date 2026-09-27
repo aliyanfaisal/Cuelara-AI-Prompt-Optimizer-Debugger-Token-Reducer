@@ -18,6 +18,9 @@ import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgre
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
+import { NextSteps, type NextStep } from "@/components/tools/NextSteps";
+import { InsertFromHistoryButton } from "@/components/tools/InsertFromHistoryButton";
+import { consumeToolHandoff } from "@/lib/tool-handoff";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -49,6 +52,13 @@ const EXAMPLES: ToolExample[] = [
     badgeAfter: "+ Full Structure",
     useValue: "fix the login bug",
   },
+];
+
+const NEXT_STEPS: NextStep[] = [
+  { label: "Check it for ambiguity", href: "/tools/prompt-debugger", icon: ShieldCheck, iconClassName: "text-emerald-500" },
+  { label: "Score it", href: "/tools/intelligence-score", icon: Sparkles, iconClassName: "text-violet-500" },
+  { label: "Shorten it", href: "/tools/token-optimizer", icon: Zap, iconClassName: "text-amber-500" },
+  { label: "Convert to XML or JSON", href: "/tools/prompt-formatter", icon: Terminal, iconClassName: "text-pink-500" },
 ];
 
 // Gemini streams tokens directly, so "loading" here only lasts until the first token
@@ -142,6 +152,14 @@ export default function PromptOptimizerPage() {
     setOptimizedPrompt(run.result.optimizedPrompt);
     setState("success");
   }, [saved.run]);
+
+  // A result handed off from another tool's "Next steps" row (see src/lib/tool-handoff.ts) wins
+  // only when this page wasn't opened from history — ?run= hydration above takes priority.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("run")) return;
+    const handoff = consumeToolHandoff();
+    if (handoff) setInput(handoff);
+  }, []);
 
   const handleOptimize = async () => {
     if (!input.trim() || state === "loading" || isStreaming) return;
@@ -251,6 +269,18 @@ export default function PromptOptimizerPage() {
 
       <SavedRunBanner saved={saved} tool="prompt-optimizer" />
 
+      {/* Tool routing: send people with no prompt yet to Prompt Builder instead. */}
+      <div className="mb-6 flex items-start gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+        <WandSparkles className="w-4 h-4 shrink-0 mt-0.5 text-orange-500" />
+        <span>
+          Don&rsquo;t have a prompt yet — just an idea? Use{" "}
+          <Link href="/tools/prompt-builder" className="font-semibold text-primary hover:underline">
+            Prompt Builder
+          </Link>{" "}
+          to write one from scratch. Prompt Optimizer is for restructuring a prompt you&rsquo;ve already written.
+        </span>
+      </div>
+
       {/* 2. Studio Editor Card */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -320,6 +350,10 @@ export default function PromptOptimizerPage() {
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="ml-auto">
+            <InsertFromHistoryButton onInsert={setInput} />
           </div>
         </div>
 
@@ -461,6 +495,12 @@ export default function PromptOptimizerPage() {
                 accentColor="primary"
               />
             </motion.div>
+          )}
+
+          {state === "success" && !isStreaming && (
+            <div className="mt-4">
+              <NextSteps content={optimizedPrompt} steps={NEXT_STEPS} />
+            </div>
           )}
 
           {/* Error State */}

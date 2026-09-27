@@ -8,7 +8,7 @@ import {
   Settings2, FileCode2, AlignLeft, Paintbrush,
   RefreshCcw, Download, Zap, Code2,
   ShieldCheck, BookOpen, Layers, AlertTriangle,
-  FileCode, Cpu
+  FileCode, Cpu, Sparkles
 } from "lucide-react";
 import { FORMAT_STYLES, INDENT_SIZES, type FormatStyle, type IndentSize } from "@/lib/prompt-formatter/constants";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
@@ -16,34 +16,44 @@ import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgre
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
+import { NextSteps, type NextStep } from "@/components/tools/NextSteps";
+import { InsertFromHistoryButton } from "@/components/tools/InsertFromHistoryButton";
+import { consumeToolHandoff } from "@/lib/tool-handoff";
 
 type GenerationState = "idle" | "loading" | "success";
 
+// One example per format style this tool actually supports, so the carousel doubles as a preview of each output.
 const EXAMPLES: ToolExample[] = [
   {
-    file: "blog-ideas.txt",
+    file: "blog-ideas.md",
     before: "write blog post ideas for my saas company about productivity apps make it good and seo friendly and like 10 of them",
     after: "### Role\nSEO Content Strategist\n\n### Task\nGenerate 10 blog post ideas\n\n### Context\nSaaS productivity app\n\n### Format\nNumbered list, each with a target keyword",
-    badgeBefore: "1 Run-on Sentence",
-    badgeAfter: "+ Structured",
+    badgeBefore: "Plain Text",
+    badgeAfter: "+ Markdown",
     useValue: "write blog post ideas for my saas company about productivity apps make it good and seo friendly and like 10 of them",
   },
   {
-    file: "product-desc.txt",
+    file: "product-desc.xml",
     before: "can u write a product description for my shoes they are running shoes lightweight breathable good for marathon",
-    after: "### Role\nCopywriter\n\n### Product\nLightweight, breathable running shoes (marathon-ready)\n\n### Format\n3 short paragraphs + bullet feature list",
-    badgeBefore: "1 Run-on Sentence",
-    badgeAfter: "+ Structured",
+    after: "<role>Copywriter</role>\n<product>Lightweight, breathable running shoes (marathon-ready)</product>\n<format>3 short paragraphs + bullet feature list</format>",
+    badgeBefore: "Plain Text",
+    badgeAfter: "+ XML",
     useValue: "can u write a product description for my shoes they are running shoes lightweight breathable good for marathon",
   },
   {
-    file: "content-calendar.txt",
+    file: "content-calendar.json",
     before: "help me plan content calendar for instagram for a month for my bakery business",
-    after: "### Role\nSocial Media Strategist\n\n### Task\n30-day Instagram content calendar\n\n### Business\nBakery\n\n### Format\nTable — Date | Post Idea | Format",
-    badgeBefore: "1 Run-on Sentence",
-    badgeAfter: "+ Structured",
+    after: '{\n  "role": "Social Media Strategist",\n  "task": "30-day Instagram content calendar",\n  "business": "Bakery",\n  "format": "Table: Date | Post Idea | Format"\n}',
+    badgeBefore: "Plain Text",
+    badgeAfter: "+ JSON",
     useValue: "help me plan content calendar for instagram for a month for my bakery business",
   },
+];
+
+const NEXT_STEPS: NextStep[] = [
+  { label: "Check it for ambiguity", href: "/tools/prompt-debugger", icon: ShieldCheck, iconClassName: "text-emerald-500" },
+  { label: "Score it", href: "/tools/intelligence-score", icon: Sparkles, iconClassName: "text-violet-500" },
+  { label: "Shorten it", href: "/tools/token-optimizer", icon: Zap, iconClassName: "text-amber-500" },
 ];
 
 // Paced to a typical ~14s format call (one retry on a bad JSON parse for the JSON output style).
@@ -132,6 +142,14 @@ export default function PromptFormatterPage() {
     setFormatted(run.result.formatted);
     setState("success");
   }, [saved.run]);
+
+  // A result handed off from another tool's "Next steps" row (see src/lib/tool-handoff.ts) wins
+  // only when this page wasn't opened from history — ?run= hydration above takes priority.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("run")) return;
+    const handoff = consumeToolHandoff();
+    if (handoff) setInput(handoff);
+  }, []);
 
   const handleFormat = async () => {
     if (!input.trim() || state === "loading") return;
@@ -280,6 +298,10 @@ export default function PromptFormatterPage() {
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="ml-auto">
+            <InsertFromHistoryButton onInsert={setInput} />
           </div>
         </div>
 
@@ -441,6 +463,12 @@ export default function PromptFormatterPage() {
                 language={format.startsWith("JSON") ? "json" : format.startsWith("XML") ? "xml" : "markdown"}
               />
             </motion.div>
+          )}
+
+          {state === "success" && (
+            <div className="mt-4">
+              <NextSteps content={formatted} steps={NEXT_STEPS} />
+            </div>
           )}
 
         </AnimatePresence>

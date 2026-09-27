@@ -8,7 +8,7 @@ import {
   Settings2, RefreshCcw, Scissors,
   ArrowRight, BookOpen, Code2, FileText,
   TrendingDown, CheckCircle2,
-  AlertTriangle
+  AlertTriangle, ShieldCheck, Sparkles, Terminal
 } from "lucide-react";
 import { COMPRESSION_LEVELS, PRESERVE_OPTIONS, type CompressionLevel, type PreserveOption } from "@/lib/token-optimizer/constants";
 import { splitStreamTrailer } from "@/lib/stream-protocol";
@@ -18,6 +18,9 @@ import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgre
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
+import { NextSteps, type NextStep } from "@/components/tools/NextSteps";
+import { InsertFromHistoryButton } from "@/components/tools/InsertFromHistoryButton";
+import { consumeToolHandoff } from "@/lib/tool-handoff";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -52,6 +55,12 @@ const EXAMPLES: ToolExample[] = [
     useValue:
       "Our company has developed a brand new water bottle product that we believe is going to be extremely popular, and one of the main reasons for this is that it is specifically designed and engineered to keep beverages cold for a very long period of time, and on top of that it is also built to be extremely durable so that it can survive being accidentally dropped multiple times without cracking or breaking.",
   },
+];
+
+const NEXT_STEPS: NextStep[] = [
+  { label: "Check it for ambiguity", href: "/tools/prompt-debugger", icon: ShieldCheck, iconClassName: "text-emerald-500" },
+  { label: "Score it", href: "/tools/intelligence-score", icon: Sparkles, iconClassName: "text-violet-500" },
+  { label: "Convert to XML or JSON", href: "/tools/prompt-formatter", icon: Terminal, iconClassName: "text-pink-500" },
 ];
 
 // The compressed result is fully generated server-side (and re-validated with a possible
@@ -144,6 +153,14 @@ export default function TokenOptimizerPage() {
     setCompressedText(run.result.compressedText);
     setState("success");
   }, [saved.run]);
+
+  // A result handed off from another tool's "Next steps" row (see src/lib/tool-handoff.ts) wins
+  // only when this page wasn't opened from history — ?run= hydration above takes priority.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("run")) return;
+    const handoff = consumeToolHandoff();
+    if (handoff) setInput(handoff);
+  }, []);
 
   const handleCompress = async () => {
     if (!input.trim() || state === "loading" || isStreaming) return;
@@ -312,6 +329,10 @@ export default function TokenOptimizerPage() {
               </div>
             )}
           </div>
+
+          <div className="ml-auto">
+            <InsertFromHistoryButton onInsert={setInput} />
+          </div>
         </div>
 
         {/* Text Area */}
@@ -458,6 +479,12 @@ export default function TokenOptimizerPage() {
                 accentColor="amber"
               />
             </motion.div>
+          )}
+
+          {state === "success" && !isStreaming && (
+            <div className="mt-4">
+              <NextSteps content={compressedText} steps={NEXT_STEPS} />
+            </div>
           )}
 
           {state === "idle" && errorMessage && (

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   WandSparkles, Copy, Check, ChevronDown, Settings2, RefreshCcw, Download, AlertTriangle,
-  Lightbulb, FileText, Code2, ShieldCheck, Sparkles, Terminal, BookOpen, ListChecks, Target, Scissors,
+  Lightbulb, FileText, Code2, ShieldCheck, Sparkles, Terminal, BookOpen, ListChecks, Target, Scissors, Zap,
 } from "lucide-react";
 import {
   BUILDER_TARGETS, BUILDER_USE_CASES, BUILDER_DETAIL_LEVELS, MAX_IDEA_CHARS,
@@ -16,8 +16,18 @@ import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgre
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolExampleCarousel";
+import { NextSteps, type NextStep } from "@/components/tools/NextSteps";
+import { InsertFromHistoryButton } from "@/components/tools/InsertFromHistoryButton";
+import { consumeToolHandoff } from "@/lib/tool-handoff";
 
 type GenerationState = "idle" | "loading" | "success";
+
+const NEXT_STEPS: NextStep[] = [
+  { label: "Check it for ambiguity", href: "/tools/prompt-debugger", icon: ShieldCheck, iconClassName: "text-emerald-500" },
+  { label: "Score it", href: "/tools/intelligence-score", icon: Sparkles, iconClassName: "text-violet-500" },
+  { label: "Shorten it", href: "/tools/token-optimizer", icon: Zap, iconClassName: "text-amber-500" },
+  { label: "Convert to XML or JSON", href: "/tools/prompt-formatter", icon: Terminal, iconClassName: "text-pink-500" },
+];
 
 // Paced to a typical ~10s generation call.
 const LOADING_STEPS: ProgressStep[] = [
@@ -178,6 +188,14 @@ export default function PromptBuilderPage() {
     setState("success");
   }, [saved.run]);
 
+  // A result handed off from another tool's "Next steps" row (see src/lib/tool-handoff.ts) wins
+  // only when this page wasn't opened from history — ?run= hydration above takes priority.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("run")) return;
+    const handoff = consumeToolHandoff();
+    if (handoff) setIdea(handoff);
+  }, []);
+
   const handleBuild = async () => {
     if (!idea.trim() || state === "loading") return;
 
@@ -244,6 +262,18 @@ export default function PromptBuilderPage() {
 
       <SavedRunBanner saved={saved} tool="prompt-builder" />
 
+      {/* Tool routing: send people who already have a prompt to Prompt Optimizer instead. */}
+      <div className="mb-6 flex items-start gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+        <Code2 className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
+        <span>
+          Already have a prompt, just messy or rough? Use{" "}
+          <Link href="/tools/prompt-optimizer" className="font-semibold text-primary hover:underline">
+            Prompt Optimizer
+          </Link>{" "}
+          to restructure it. Prompt Builder is for writing a prompt from scratch, starting from just an idea.
+        </span>
+      </div>
+
       {/* 2. Studio Editor Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -260,6 +290,9 @@ export default function PromptBuilderPage() {
           <Dropdown label="For" value={target} options={BUILDER_TARGETS} onChange={setTarget} />
           <Dropdown label="Use case" value={useCase} options={BUILDER_USE_CASES} onChange={setUseCase} />
           <Dropdown label="Detail" value={detail} options={BUILDER_DETAIL_LEVELS} onChange={setDetail} />
+          <div className="ml-auto">
+            <InsertFromHistoryButton onInsert={setIdea} />
+          </div>
         </div>
 
         <div className="relative p-5 md:p-6">
@@ -401,13 +434,7 @@ export default function PromptBuilderPage() {
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground">Next:</span>
-                <Link href="/tools/prompt-debugger" className="hover:text-primary hover:underline">Check it for ambiguity</Link>
-                <Link href="/tools/intelligence-score" className="hover:text-primary hover:underline">Score it</Link>
-                <Link href="/tools/token-optimizer" className="hover:text-primary hover:underline">Shorten it</Link>
-                <Link href="/tools/prompt-formatter" className="hover:text-primary hover:underline">Convert to XML or JSON</Link>
-              </div>
+              <NextSteps content={built} steps={NEXT_STEPS} />
             </motion.div>
           )}
         </AnimatePresence>
