@@ -15,7 +15,7 @@ export default async function McpTokensPage() {
         <h2 className="text-xl font-bold text-foreground">MCP Tokens</h2>
         <p className="text-sm text-muted-foreground">
           Authenticate Claude Desktop, Claude Code, Cursor, or any MCP client as yourself, so tool calls use your own plan&rsquo;s limits.{" "}
-          <Link href="/docs" className="font-semibold text-primary hover:underline">
+          <Link href="/docs/mcp" className="font-semibold text-primary hover:underline">
             See connection instructions
           </Link>
           .
