@@ -69,7 +69,7 @@ Add \`-H "Authorization: Bearer YOUR_TOKEN_HERE"\` to any call to authenticate a
 
 Anonymous calls share the same free daily limit as the matching web tool, keyed by IP. Signed-in calls (via a personal token from [/dashboard/mcp](/dashboard/mcp)) use your own account's plan limits instead.
 
-More tools and a full REST API for the rest of Cuelara's tools are on the way.
+Integrating from your own code rather than an AI assistant? The same tools are also available as a plain [REST API](/docs/api) using the same bearer token.
 `;
 }
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BookOpen, Terminal } from "lucide-react";
+import { ArrowRight, BookOpen, Terminal, Code2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Docs — Cuelara",
@@ -13,6 +13,12 @@ const SECTIONS = [
     icon: Terminal,
     title: "MCP Server",
     description: "Call the Token Optimizer directly from Claude Desktop, Claude Code, Cursor, Copilot, Gemini CLI, Antigravity, and any other MCP client.",
+  },
+  {
+    href: "/docs/api",
+    icon: Code2,
+    title: "REST API",
+    description: "Call Cuelara's tools as plain JSON HTTP endpoints from your own server or app — same bearer token as MCP, no client library needed.",
   },
 ];
 

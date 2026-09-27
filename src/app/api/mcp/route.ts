@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { getRequestSubject, subjectForUser, hasReachedDailyLimit, consumeDailyLimit, type RequestSubject } from "@/lib/rate-limit";
+import { hasReachedDailyLimit, consumeDailyLimit } from "@/lib/rate-limit";
+import { resolveCaller } from "@/lib/api-caller";
 import { getTokenOptimizerLimit } from "@/lib/token-optimizer/limits";
 import { COMPRESSION_LEVELS, PRESERVE_OPTIONS, isCompressionLevel, isPreserveOption } from "@/lib/token-optimizer/constants";
 import { compressPrompt } from "@/lib/token-optimizer/compress";
@@ -9,8 +10,6 @@ import { optimizePrompt } from "@/lib/prompt-optimizer/optimize";
 import { getPromptBuilderLimit } from "@/lib/prompt-builder/limits";
 import { BUILDER_TARGETS, BUILDER_USE_CASES, BUILDER_DETAIL_LEVELS, MAX_IDEA_CHARS, isBuilderTarget, isBuilderUseCase, isBuilderDetail } from "@/lib/prompt-builder/constants";
 import { buildPrompt } from "@/lib/prompt-builder/build";
-import { resolveUserIdFromToken } from "@/lib/personal-access-tokens";
-import { getPlanContext } from "@/lib/plans";
 import { isGenAITimeout } from "@/lib/genai-timeout";
 import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
 import { AllProvidersExhaustedError } from "@/lib/llm-generate";
@@ -42,29 +41,6 @@ function rpcResult(id: JsonRpcRequest["id"], result: unknown) {
 
 function rpcError(id: JsonRpcRequest["id"], code: number, message: string) {
   return Response.json({ jsonrpc: "2.0", id: id ?? null, error: { code, message } }, { headers: { "Cache-Control": "no-store" } });
-}
-
-function bearerToken(req: Request): string | null {
-  const header = req.headers.get("authorization");
-  if (!header?.toLowerCase().startsWith("bearer ")) return null;
-  return header.slice(7).trim() || null;
-}
-
-/** Resolves the caller behind a request: a Cuelara personal access token (see /dashboard/mcp)
- * identifies a specific user, so their own plan's limits apply instead of the anonymous IP-based
- * default — and paid users skip the "by Cuelara.com" attribution appended to free/anonymous output. */
-async function resolveCaller(req: Request): Promise<{ subject: RequestSubject; isFreeCaller: boolean } | { error: string }> {
-  const token = bearerToken(req);
-  if (!token) {
-    return { subject: await getRequestSubject(req), isFreeCaller: true };
-  }
-  const userId = await resolveUserIdFromToken(token);
-  if (!userId) {
-    return { error: "That Cuelara API token is invalid or has been revoked. Generate a new one at cuelara.com/dashboard/mcp." };
-  }
-  const subject = await subjectForUser(userId);
-  const { plan } = await getPlanContext(userId);
-  return { subject, isFreeCaller: !plan || plan.priceMonthlyCents === 0 };
 }
 
 function providerErrorResult(error: unknown, fallbackMessage: string): ToolResult {
