@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { WandSparkles, Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText, Palette } from "lucide-react";
+import { WandSparkles, Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText, Palette, LayoutDashboard } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 const TOOLS_MENU = [
@@ -151,8 +151,9 @@ export function Navbar() {
                   <>
                     <Link
                       href={(session.user as any)?.roles?.includes("ADMIN") ? "/admin/dashboard" : "/dashboard"}
-                      className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-2"
+                      className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-2"
                     >
+                      <LayoutDashboard className="h-4 w-4 opacity-70" />
                       {(session.user as any)?.roles?.includes("ADMIN") ? "Admin Dashboard" : "Dashboard"}
                     </Link>
                     <button
@@ -247,8 +248,9 @@ export function Navbar() {
                   <Link
                     href={(session.user as any)?.roles?.includes("ADMIN") ? "/admin/dashboard" : "/dashboard"}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex w-full h-12 items-center justify-center rounded-full bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg transition-all active:scale-95"
+                    className="flex w-full h-12 items-center justify-center gap-2 rounded-full bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg transition-all active:scale-95"
                   >
+                    <LayoutDashboard className="h-4 w-4" />
                     {(session.user as any)?.roles?.includes("ADMIN") ? "Admin Dashboard" : "Dashboard"}
                   </Link>
                   <button

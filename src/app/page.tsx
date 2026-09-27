@@ -116,8 +116,8 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="max-w-5xl text-4xl sm:text-6xl md:text-8xl font-extrabold tracking-tight mb-8 text-foreground leading-tight"
         >
-          Better prompts. <br className="hidden sm:block" />
-          <span className="text-gradient-primary">Fewer tokens.</span>
+          Structure prompts. <br className="hidden sm:block" />
+          <span className="text-gradient-primary">Compress tokens.</span>
         </motion.h1>
 
         <motion.p
@@ -368,7 +368,7 @@ export default function Home() {
               <div className="space-y-6 pt-2 md:pt-4">
                 <Step number="1" title="Start from what you have" desc="A rough idea, a 200-page PDF, or a website you want to recreate. No formatting or trimming needed." />
                 <Step number="2" title="Pick the tool for the job" desc="Prompt Optimizer structures the task, Context Extractor pulls only the relevant passages, and Site to Prompt measures the real colors, fonts and layout." />
-                <Step number="3" title="Copy, deploy and save" desc="Paste the finished prompt into ChatGPT, Claude, v0 or your codebase and watch your API bills drop." />
+                <Step number="3" title="Copy, deploy and save" desc="Paste the finished prompt into ChatGPT, Claude, v0 or your codebase — clearer answers, and fewer tokens on every call that doesn't need them." />
               </div>
             </motion.div>
             <motion.div
@@ -592,23 +592,23 @@ function FaqItem({ question, answer }: { question: string, answer: string }) {
 const DEMO_EXAMPLES = [
   {
     file: "react-auth.tsx",
-    before: '"Hi AI, I was wondering if you could please help me write a new React authentication component from scratch? I am very new to this and I really need it to use TypeScript and also JSON Web Tokens for security. Please make it good and explain it to me. Thanks so much!"',
-    after: '"Create a React auth component (TypeScript + JWT)."',
-    tokenSaved: "52% Fewer Tokens",
+    before: '"build me a login thing with jwt"',
+    after: '"Role: Senior React/TypeScript engineer. Task: JWT auth component. Constraints: HttpOnly cookie storage, handle expired tokens, redirect to /login. Output: code + assumptions."',
+    tokenSaved: "Now Structured",
     gain: "+ Clarity",
   },
   {
     file: "debug-db.sql",
-    before: '"Can you look at this code below and tell me what is wrong with the database connection pool? It keeps crashing my server in production and throwing timeout errors when there are too many users online. I do not know how to fix it, please rewrite the pool logic."',
-    after: '"Debug this Postgres connection pool (Fixes production timeout errors). Return only code."',
-    tokenSaved: "45% Fewer Tokens",
+    before: '"my db keeps crashing help"',
+    after: '"Role: Postgres specialist. Problem: connection pool crashes under load, timeout errors. Task: diagnose root cause, propose a fixed pool config. Output: corrected code only."',
+    tokenSaved: "Now Structured",
     gain: "+ Structure",
   },
   {
     file: "generate-blog.md",
-    before: '"Please write a really long and detailed blog post about how artificial intelligence can be used to optimize prompts. I want it to sound very professional but also engaging so that software developers will want to read it and share it with their friends on Twitter and LinkedIn."',
-    after: '"Write a technical blog post on AI prompt optimization. Tone: Professional. Audience: Senior Engineers."',
-    tokenSaved: "48% Fewer Tokens",
+    before: '"write a blog post about ai prompts"',
+    after: '"Role: Technical content writer. Task: blog post on AI prompt optimization. Audience: senior engineers. Tone: professional, no fluff. Length: ~900 words with subheadings."',
+    tokenSaved: "Now Structured",
     gain: "+ Precision",
   },
   {
@@ -634,8 +634,8 @@ const DEMO_EXAMPLES = [
   },
   {
     file: "site-to-prompt.json",
-    before: '"Here\'s my website — can you describe the layout, colors, and copy so the AI understands my brand?"',
-    after: '"Captured live: layout, color palette, typography, and copy — packaged into one ready-to-use prompt."',
+    before: '"https://stripe.com"',
+    after: '"Rebuild this landing page: Inter font, indigo (#635BFF) primary on white, 12px rounded cards, sticky nav with mega-menu dropdowns, gradient hero, generous whitespace..."',
     tokenSaved: "Auto-Captured",
     gain: "+ Brand Accuracy",
   },
