@@ -23,34 +23,34 @@ type GenerationState = "idle" | "loading" | "success";
 
 const EXAMPLES: ToolExample[] = [
   {
-    file: "polite-request.txt",
+    file: "verbose-request.txt",
     before:
-      "I would really appreciate it if you could take a look at the following text and, if possible, remove any words or phrases that are not strictly necessary while still keeping the original meaning intact.",
-    after: "Compress this text; keep meaning.",
-    badgeBefore: "61% Fewer Tokens",
-    badgeAfter: "+ Lower Cost",
+      "I would really appreciate it if you could please take a look at the following prompt and remove any unnecessary filler words, redundant phrases, or overly polite language, while still making sure that the core instructions and constraints remain completely intact and nothing important is lost in the process.",
+    after: "Compress this prompt. Keep all instructions and constraints intact.",
+    badgeBefore: "48 words",
+    badgeAfter: "61% Fewer Tokens",
     useValue:
-      "I would really appreciate it if you could take a look at the following text and, if possible, remove any words or phrases that are not strictly necessary while still keeping the original meaning intact.",
+      "I would really appreciate it if you could please take a look at the following prompt and remove any unnecessary filler words, redundant phrases, or overly polite language, while still making sure that the core instructions and constraints remain completely intact and nothing important is lost in the process.",
   },
   {
     file: "system-prompt.txt",
     before:
-      "You are an assistant. You should always be helpful, and you should always try your best to answer questions, and you should also be honest and never lie, and you should be friendly at all times.",
+      "You are an AI assistant and you should always try to be as helpful as possible to the user, and you should also always be honest and never make things up or lie to the user, and additionally you should always maintain a friendly and warm tone throughout the entire conversation no matter what.",
     after: "You are a helpful, honest, friendly assistant.",
-    badgeBefore: "68% Fewer Tokens",
-    badgeAfter: "+ Lower Cost",
+    badgeBefore: "54 words",
+    badgeAfter: "68% Fewer Tokens",
     useValue:
-      "You are an assistant. You should always be helpful, and you should always try your best to answer questions, and you should also be honest and never lie, and you should be friendly at all times.",
+      "You are an AI assistant and you should always try to be as helpful as possible to the user, and you should also always be honest and never make things up or lie to the user, and additionally you should always maintain a friendly and warm tone throughout the entire conversation no matter what.",
   },
   {
-    file: "product-desc.txt",
+    file: "product-brief.txt",
     before:
-      "Our product is a really great water bottle that is designed to keep your drinks cold for a very long time, and it is also very durable and can survive being dropped multiple times without breaking.",
+      "Our company has developed a brand new water bottle product that we believe is going to be extremely popular, and one of the main reasons for this is that it is specifically designed and engineered to keep beverages cold for a very long period of time, and on top of that it is also built to be extremely durable so that it can survive being accidentally dropped multiple times without cracking or breaking.",
     after: "Insulated, drop-proof water bottle. Keeps drinks cold for hours.",
-    badgeBefore: "57% Fewer Tokens",
-    badgeAfter: "+ Lower Cost",
+    badgeBefore: "62 words",
+    badgeAfter: "57% Fewer Tokens",
     useValue:
-      "Our product is a really great water bottle that is designed to keep your drinks cold for a very long time, and it is also very durable and can survive being dropped multiple times without breaking.",
+      "Our company has developed a brand new water bottle product that we believe is going to be extremely popular, and one of the main reasons for this is that it is specifically designed and engineered to keep beverages cold for a very long period of time, and on top of that it is also built to be extremely durable so that it can survive being accidentally dropped multiple times without cracking or breaking.",
   },
 ];
 

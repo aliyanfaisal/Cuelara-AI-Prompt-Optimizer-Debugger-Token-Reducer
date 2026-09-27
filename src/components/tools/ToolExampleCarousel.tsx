@@ -79,7 +79,7 @@ export function ToolExampleCarousel({
         <div className="w-16" />
       </div>
 
-      <div className="p-5 md:p-6 font-mono text-sm leading-relaxed min-h-[200px] flex flex-col justify-center bg-background/40">
+      <div className="p-5 md:p-6 font-mono text-sm leading-relaxed min-h-[280px] flex flex-col justify-center bg-background/40">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -90,29 +90,27 @@ export function ToolExampleCarousel({
             className="flex flex-col gap-5"
           >
             <div>
-              <div className="flex items-center text-xs font-bold text-red-500/80 uppercase tracking-wider mb-2">
-                <span className="bg-red-500/10 px-2 py-0.5 rounded text-[10px] mr-2">{beforeTag}</span>
+              <div className="flex items-center gap-2 text-xs font-bold text-red-500/80 uppercase tracking-wider mb-2">
+                <span className="bg-red-500/10 px-2 py-0.5 rounded text-[10px]">{beforeTag}</span>
                 {beforeLabel}
-              </div>
-              <div className="text-muted-foreground relative pl-4 border-l-2 border-red-500/30">
-                <span className="text-foreground/80">&ldquo;{current.before}&rdquo;</span>
-                <span className="inline-flex items-center ml-3 px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-xs font-bold whitespace-nowrap">
+                <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-xs font-bold whitespace-nowrap normal-case tracking-normal">
                   {current.badgeBefore}
                 </span>
               </div>
+              <div className="text-foreground/80 pl-4 border-l-2 border-red-500/30">&ldquo;{current.before}&rdquo;</div>
             </div>
 
             <div>
-              <div className="flex items-center text-xs font-bold text-green-500 uppercase tracking-wider mb-2">
-                <span className="bg-green-500/10 px-2 py-0.5 rounded text-[10px] mr-2">{afterTag}</span>
+              <div className="flex items-center gap-2 text-xs font-bold text-green-500 uppercase tracking-wider mb-2">
+                <span className="bg-green-500/10 px-2 py-0.5 rounded text-[10px]">{afterTag}</span>
                 {afterLabel}
-              </div>
-              <div className="text-foreground relative pl-4 border-l-2 border-green-500/50">
-                <span className={`font-medium ${afterTextClassName}`}>{current.after}</span>
-                <span className="inline-flex items-center ml-3 px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-bold whitespace-nowrap">
+                <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-bold whitespace-nowrap normal-case tracking-normal">
                   {current.badgeAfter}
                 </span>
               </div>
+              <pre className={`whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed pl-4 border-l-2 border-green-500/50 ${afterTextClassName}`}>
+                {current.after}
+              </pre>
             </div>
 
             <button

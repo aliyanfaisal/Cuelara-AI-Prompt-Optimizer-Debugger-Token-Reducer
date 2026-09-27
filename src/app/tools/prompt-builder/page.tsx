@@ -31,7 +31,8 @@ const EXAMPLES: ToolExample[] = [
   {
     file: "pr-review.txt",
     before: "Review my pull request for bugs and unclear naming",
-    after: "Built: senior code reviewer persona, PR diff context, checklist for bugs/naming/style, output as inline comments.",
+    after:
+      "Role: Senior code reviewer.\n\nTask: Review the attached PR diff for bugs, unclear variable/function names, and style issues.\n\nOutput format: Inline comments grouped by file, each tagged [Critical] or [Minor].\n\nConstraints: Do not suggest unrelated refactors outside the diff.",
     badgeBefore: "Just an Idea",
     badgeAfter: "+ Ready to Use",
     useValue: "Review my pull request for bugs and unclear naming",
@@ -39,7 +40,8 @@ const EXAMPLES: ToolExample[] = [
   {
     file: "cold-email.txt",
     before: "A cold email to a startup founder about my design services",
-    after: "Built: cold outreach persona, founder context, pitch structure, subject lines, and a clear CTA.",
+    after:
+      "Role: B2B sales copywriter.\n\nTask: Write a cold email pitching UI/UX design services to an early-stage startup founder.\n\nStructure: Subject line, 3-sentence body, one clear CTA.\n\nConstraints: No generic flattery, reference a specific pain point, under 100 words.",
     badgeBefore: "Just an Idea",
     badgeAfter: "+ Ready to Use",
     useValue: "A cold email to a startup founder about my design services",
@@ -47,7 +49,8 @@ const EXAMPLES: ToolExample[] = [
   {
     file: "explain-vectordb.txt",
     before: "Explain how vector databases work to a beginner",
-    after: "Built: teacher persona, beginner audience, analogy-driven explanation, short sections with examples.",
+    after:
+      "Role: Patient technical teacher.\n\nAudience: Beginner with no ML background.\n\nTask: Explain what a vector database is and why it's used.\n\nFormat: 3 short sections, each with one real-world analogy. No jargon without a plain-English definition.",
     badgeBefore: "Just an Idea",
     badgeAfter: "+ Ready to Use",
     useValue: "Explain how vector databases work to a beginner",
@@ -55,7 +58,8 @@ const EXAMPLES: ToolExample[] = [
   {
     file: "launch-plan.txt",
     before: "Weekly plan for a small team's product launch",
-    after: "Built: project manager persona, 5-day plan, daily goals, structured as a table with owner and deadline.",
+    after:
+      "Role: Project manager.\n\nTask: Create a 5-day launch plan for a small team.\n\nFormat: Table — Day | Goal | Owner | Deadline.\n\nConstraints: Assume a team of 4, no more than 3 tasks per day.",
     badgeBefore: "Just an Idea",
     badgeAfter: "+ Ready to Use",
     useValue: "Weekly plan for a small team's product launch",

@@ -22,28 +22,33 @@ type GenerationState = "idle" | "loading" | "success";
 
 const EXAMPLES: ToolExample[] = [
   {
-    file: "conflicting-tasks.txt",
+    file: "product-copy.txt",
+    before:
+      "Write a product description for our app. Make it detailed but keep it short. Don't use any adjectives, but make sure it sounds exciting and vivid. Also, translate the final result into French.",
+    after:
+      "⚠ Contradiction — \"detailed\" vs. \"keep it short\": no length target given to resolve this.\n⚠ Contradiction — \"no adjectives\" vs. \"sounds exciting and vivid\": vivid language needs descriptive words.\n⚠ Scope creep — translation task bundled with content task: split into two prompts.",
+    badgeBefore: "3 Issues Found",
+    badgeAfter: "+ Fixed Logic",
+    useValue:
+      "Write a product description for our app. Make it detailed but keep it short. Don't use any adjectives, but make sure it sounds exciting and vivid. Also, translate the final result into French.",
+  },
+  {
+    file: "summary-task.txt",
     before: "Summarize this article in 3 bullet points and also translate it to French and also make it rhyme.",
-    after: "3 conflicting instructions found: summarize vs. translate vs. rhyme — split into separate prompts.",
-    badgeBefore: "3 Conflicts Found",
+    after:
+      "⚠ Conflicting goals — summarizing (concise) and rhyming (poetic structure) pull in opposite directions.\n⚠ Scope creep — translation folded into a summarization task.\n✓ Fix: run as 3 separate prompts, one per goal.",
+    badgeBefore: "2 Conflicts Found",
     badgeAfter: "+ Fixed Logic",
     useValue: "Summarize this article in 3 bullet points and also translate it to French and also make it rhyme.",
   },
   {
-    file: "vague-request.txt",
-    before: "Write code",
-    after: "Too vague: missing language, requirements, and expected output — add specifics.",
-    badgeBefore: "1 Ambiguity Found",
-    badgeAfter: "+ Added Specificity",
-    useValue: "Write code",
-  },
-  {
-    file: "contradiction.txt",
-    before: "You are a helpful assistant. You are not a helpful assistant. Answer in English. Answer in Spanish only.",
-    after: "Contradictory persona and language instructions detected — resolved to one consistent directive.",
-    badgeBefore: "2 Contradictions Found",
-    badgeAfter: "+ Consistent Logic",
-    useValue: "You are a helpful assistant. You are not a helpful assistant. Answer in English. Answer in Spanish only.",
+    file: "vague-scope.txt",
+    before: "List all the possible reasons why a website might be slow and explain everything about each one in as much detail as possible.",
+    after:
+      "⚠ Unbounded scope — \"all possible reasons\" and \"explain everything\" have no stopping point.\n⚠ Risk — model may ramble or hit output limits.\n✓ Fix: cap it, e.g. \"List the top 5 reasons, 2 sentences each.\"",
+    badgeBefore: "1 Scope Risk Found",
+    badgeAfter: "+ Bounded Output",
+    useValue: "List all the possible reasons why a website might be slow and explain everything about each one in as much detail as possible.",
   },
 ];
 

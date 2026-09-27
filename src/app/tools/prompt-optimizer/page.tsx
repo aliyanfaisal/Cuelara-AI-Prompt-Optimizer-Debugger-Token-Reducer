@@ -23,34 +23,31 @@ type GenerationState = "idle" | "loading" | "success";
 
 const EXAMPLES: ToolExample[] = [
   {
-    file: "time-off-email.txt",
-    before:
-      "Write me a professional but not too formal email to my manager asking for time off next Friday because I have a personal appointment, and I want to make sure it sounds polite and doesn't seem like I'm asking for too much.",
-    after: "Write a polite, semi-formal email requesting Friday off for a personal appointment.",
-    badgeBefore: "58% Fewer Tokens",
-    badgeAfter: "+ Clarity",
-    useValue:
-      "Write me a professional but not too formal email to my manager asking for time off next Friday because I have a personal appointment, and I want to make sure it sounds polite and doesn't seem like I'm asking for too much.",
+    file: "blog-post.txt",
+    before: "write a blog post about remote work productivity tips",
+    after:
+      "Role: Senior productivity coach and content strategist.\n\nTask: Write a 1,200-word blog post on remote work productivity for software teams.\n\nStructure:\n- Hook addressing common WFH struggles\n- 5 actionable tips with real examples\n- Closing call-to-action\n\nConstraints:\n- No generic advice (e.g. \"take breaks\")\n- Include specific tools or techniques\n- Tone: professional but conversational",
+    badgeBefore: "9 words",
+    badgeAfter: "+ Full Structure",
+    useValue: "write a blog post about remote work productivity tips",
   },
   {
-    file: "marketing-ideas.txt",
-    before:
-      "Can you generate some ideas for a marketing campaign for my new fitness app that helps people track workouts, meals, and sleep, targeting young professionals who are busy and want an all in one solution?",
-    after: "Generate 5 marketing campaign ideas for a fitness-tracking app targeting busy young professionals.",
-    badgeBefore: "50% Fewer Tokens",
-    badgeAfter: "+ Focus",
-    useValue:
-      "Can you generate some ideas for a marketing campaign for my new fitness app that helps people track workouts, meals, and sleep, targeting young professionals who are busy and want an all in one solution?",
+    file: "landing-copy.txt",
+    before: "need copy for my saas landing page",
+    after:
+      "Role: Conversion copywriter for B2B SaaS.\n\nTask: Write hero section copy for a project management tool's landing page.\n\nSections:\n- Headline (benefit-driven, under 10 words)\n- Subheadline (clarify who it's for)\n- 3 supporting bullet points\n- CTA button text\n\nConstraints:\n- No buzzwords (\"revolutionary\", \"synergy\")\n- Speak to team leads, not developers",
+    badgeBefore: "7 words",
+    badgeAfter: "+ Full Structure",
+    useValue: "need copy for my saas landing page",
   },
   {
-    file: "average.py",
-    before:
-      "I need help writing a function in Python that takes a list of numbers and returns the average, but please also handle empty lists and non-numeric values gracefully without crashing.",
-    after: "Write a Python function: average(list) — handles empty lists and non-numeric values.",
-    badgeBefore: "55% Fewer Tokens",
-    badgeAfter: "+ Precision",
-    useValue:
-      "I need help writing a function in Python that takes a list of numbers and returns the average, but please also handle empty lists and non-numeric values gracefully without crashing.",
+    file: "bug-fix.txt",
+    before: "fix the login bug",
+    after:
+      "Role: Senior full-stack engineer.\n\nTask: Diagnose and fix a login failure.\n\nRequired context to request:\n- Error message / stack trace\n- Auth provider (JWT, OAuth, session)\n- Steps to reproduce\n\nOutput format:\n- Root cause explanation\n- Code fix (diff format)\n- Regression test to prevent recurrence",
+    badgeBefore: "4 words",
+    badgeAfter: "+ Full Structure",
+    useValue: "fix the login bug",
   },
 ];
 
