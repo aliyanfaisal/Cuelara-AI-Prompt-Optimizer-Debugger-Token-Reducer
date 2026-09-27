@@ -27,30 +27,36 @@ type GenerationState = "idle" | "loading" | "success";
 const EXAMPLES: ToolExample[] = [
   {
     file: "blog-post.txt",
-    before: "write a blog post about remote work productivity tips",
+    before:
+      "Can you write me a blog post about remote work productivity? I want it to have some tips in it and be pretty long, with an intro and conclusion, and make sure it's good for people on software teams who work from home. Please don't make it too generic though.",
     after:
       "Role: Senior productivity coach and content strategist.\n\nTask: Write a 1,200-word blog post on remote work productivity for software teams.\n\nStructure:\n- Hook addressing common WFH struggles\n- 5 actionable tips with real examples\n- Closing call-to-action\n\nConstraints:\n- No generic advice (e.g. \"take breaks\")\n- Include specific tools or techniques\n- Tone: professional but conversational",
-    badgeBefore: "9 words",
+    badgeBefore: "48 words",
     badgeAfter: "+ Full Structure",
-    useValue: "write a blog post about remote work productivity tips",
+    useValue:
+      "Can you write me a blog post about remote work productivity? I want it to have some tips in it and be pretty long, with an intro and conclusion, and make sure it's good for people on software teams who work from home. Please don't make it too generic though.",
   },
   {
     file: "landing-copy.txt",
-    before: "need copy for my saas landing page",
+    before:
+      "I need you to write copy for my SaaS landing page hero section. It's a project management tool for software teams. Make the headline catchy and benefit-focused, include some bullet points about features, and a call to action button. Keep it professional, no cheesy buzzwords, and aim it at team leads, not developers.",
     after:
       "Role: Conversion copywriter for B2B SaaS.\n\nTask: Write hero section copy for a project management tool's landing page.\n\nSections:\n- Headline (benefit-driven, under 10 words)\n- Subheadline (clarify who it's for)\n- 3 supporting bullet points\n- CTA button text\n\nConstraints:\n- No buzzwords (\"revolutionary\", \"synergy\")\n- Speak to team leads, not developers",
-    badgeBefore: "7 words",
+    badgeBefore: "52 words",
     badgeAfter: "+ Full Structure",
-    useValue: "need copy for my saas landing page",
+    useValue:
+      "I need you to write copy for my SaaS landing page hero section. It's a project management tool for software teams. Make the headline catchy and benefit-focused, include some bullet points about features, and a call to action button. Keep it professional, no cheesy buzzwords, and aim it at team leads, not developers.",
   },
   {
     file: "bug-fix.txt",
-    before: "fix the login bug",
+    before:
+      "There's a bug in our login flow — some users can't log in and just get a generic error. Can you help me figure out what's wrong and fix it? I don't have a stack trace yet. Please explain the fix clearly and maybe suggest a test so this doesn't happen again.",
     after:
       "Role: Senior full-stack engineer.\n\nTask: Diagnose and fix a login failure.\n\nRequired context to request:\n- Error message / stack trace\n- Auth provider (JWT, OAuth, session)\n- Steps to reproduce\n\nOutput format:\n- Root cause explanation\n- Code fix (diff format)\n- Regression test to prevent recurrence",
-    badgeBefore: "4 words",
+    badgeBefore: "44 words",
     badgeAfter: "+ Full Structure",
-    useValue: "fix the login bug",
+    useValue:
+      "There's a bug in our login flow — some users can't log in and just get a generic error. Can you help me figure out what's wrong and fix it? I don't have a stack trace yet. Please explain the fix clearly and maybe suggest a test so this doesn't happen again.",
   },
 ];
 
