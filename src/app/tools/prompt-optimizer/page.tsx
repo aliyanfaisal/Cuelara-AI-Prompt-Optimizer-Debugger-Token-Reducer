@@ -416,6 +416,27 @@ export default function PromptOptimizerPage() {
             afterTextClassName="text-primary"
             buttonClassName="bg-primary hover:bg-primary/90 text-primary-foreground"
           />
+
+          <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="rounded-xl border border-primary/30 bg-primary/15 p-2.5 text-primary shrink-0">
+                <Terminal className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-foreground">Use this outside the website</div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Call it as an MCP tool from Claude Desktop, Claude Code, Cursor, Copilot, Gemini CLI, Antigravity, and more —{" "}
+                  <code className="rounded bg-muted px-1.5 py-0.5 text-foreground">POST /api/mcp</code>
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/docs/mcp/prompt-optimizer"
+              className="flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Setup guide <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </div>
       )}
 

@@ -1,8 +1,11 @@
 import { z } from "zod";
-import { getRequestSubject, subjectForUser, hasReachedDailyLimit, consumeDailyLimit } from "@/lib/rate-limit";
+import { getRequestSubject, subjectForUser, hasReachedDailyLimit, consumeDailyLimit, type RequestSubject } from "@/lib/rate-limit";
 import { getTokenOptimizerLimit } from "@/lib/token-optimizer/limits";
 import { COMPRESSION_LEVELS, PRESERVE_OPTIONS, isCompressionLevel, isPreserveOption } from "@/lib/token-optimizer/constants";
 import { compressPrompt } from "@/lib/token-optimizer/compress";
+import { getPromptOptimizerLimit } from "@/lib/prompt-optimizer/limits";
+import { MODES, LEVELS, isOptimizerMode, isOptimizerLevel } from "@/lib/prompt-optimizer/constants";
+import { optimizePrompt } from "@/lib/prompt-optimizer/optimize";
 import { resolveUserIdFromToken } from "@/lib/personal-access-tokens";
 import { getPlanContext } from "@/lib/plans";
 import { isGenAITimeout } from "@/lib/genai-timeout";
@@ -13,43 +16,15 @@ import { reportError } from "@/lib/error-report";
 
 export const runtime = "nodejs";
 
-// A remote MCP server (https://modelcontextprotocol.io) exposing Token Optimizer as a tool any
-// MCP-compatible AI client (Claude Desktop/Code, Cursor, etc.) can call directly — no browser
+// A remote MCP server (https://modelcontextprotocol.io) exposing Cuelara's tools so any
+// MCP-compatible AI client (Claude Desktop/Code, Cursor, etc.) can call them directly — no browser
 // needed. Stateless: every request is self-contained, no session id or SSE stream required.
 
 const PROTOCOL_VERSION = "2025-06-18";
-const SERVER_INFO = { name: "cuelara-token-optimizer", version: "1.0.0" };
+const SERVER_INFO = { name: "cuelara", version: "1.1.0" };
 
-const TOOL_NAME = "cuelara_compress_prompt";
-
-const callArgsSchema = z.object({
-  text: z.string().min(1, "text must not be empty"),
-  level: z.enum(COMPRESSION_LEVELS).optional(),
-  preserveFormatting: z.enum(PRESERVE_OPTIONS).optional(),
-});
-
-const TOOL_DEFINITION = {
-  name: TOOL_NAME,
-  description:
-    "Compresses a verbose AI prompt to use fewer tokens while preserving all instructions, constraints, and meaning. Verified against a real tokenizer, not an estimate.",
-  inputSchema: {
-    type: "object",
-    properties: {
-      text: { type: "string", description: "The prompt to compress." },
-      level: {
-        type: "string",
-        enum: COMPRESSION_LEVELS,
-        description: `How aggressively to compress. Defaults to "${COMPRESSION_LEVELS[1]}".`,
-      },
-      preserveFormatting: {
-        type: "string",
-        enum: PRESERVE_OPTIONS,
-        description: 'Keep the original structure (headers, lists, code blocks) intact. Defaults to "Yes".',
-      },
-    },
-    required: ["text"],
-  },
-};
+type ToolResult = { content: { type: "text"; text: string }[]; isError: boolean };
+type ToolDefinition = { name: string; description: string; inputSchema: Record<string, unknown> };
 
 interface JsonRpcRequest {
   jsonrpc: "2.0";
@@ -72,10 +47,72 @@ function bearerToken(req: Request): string | null {
   return header.slice(7).trim() || null;
 }
 
-/** Runs the compression tool and maps every failure mode to a { isError: true } tool result — MCP
- * clients surface tool errors to the model as text, not as a transport-level failure. */
-async function callCompressTool(req: Request, rawArgs: unknown) {
-  const parsed = callArgsSchema.safeParse(rawArgs);
+/** Resolves the caller behind a request: a Cuelara personal access token (see /dashboard/mcp)
+ * identifies a specific user, so their own plan's limits apply instead of the anonymous IP-based
+ * default — and paid users skip the "by Cuelara.com" attribution appended to free/anonymous output. */
+async function resolveCaller(req: Request): Promise<{ subject: RequestSubject; isFreeCaller: boolean } | { error: string }> {
+  const token = bearerToken(req);
+  if (!token) {
+    return { subject: await getRequestSubject(req), isFreeCaller: true };
+  }
+  const userId = await resolveUserIdFromToken(token);
+  if (!userId) {
+    return { error: "That Cuelara API token is invalid or has been revoked. Generate a new one at cuelara.com/dashboard/mcp." };
+  }
+  const subject = await subjectForUser(userId);
+  const { plan } = await getPlanContext(userId);
+  return { subject, isFreeCaller: !plan || plan.priceMonthlyCents === 0 };
+}
+
+function providerErrorResult(error: unknown, fallbackMessage: string): ToolResult {
+  void reportError(error, { source: "api", route: "/api/mcp" });
+  if (error instanceof NoApiKeysConfiguredError) {
+    return { content: [{ type: "text", text: "AI service is not configured. Please contact support." }], isError: true };
+  }
+  if (isGenAITimeout(error)) {
+    return { content: [{ type: "text", text: "The AI is taking too long to respond. Please try again." }], isError: true };
+  }
+  if (isRetryableProviderError(error) || isRequestTooLargeForProvider(error) || error instanceof AllProvidersExhaustedError) {
+    return { content: [{ type: "text", text: HIGH_DEMAND_MESSAGE }], isError: true };
+  }
+  return { content: [{ type: "text", text: fallbackMessage }], isError: true };
+}
+
+// --- cuelara_compress_prompt (Token Optimizer) -----------------------------------------------
+
+const COMPRESS_TOOL_NAME = "cuelara_compress_prompt";
+
+const compressArgsSchema = z.object({
+  text: z.string().min(1, "text must not be empty"),
+  level: z.enum(COMPRESSION_LEVELS).optional(),
+  preserveFormatting: z.enum(PRESERVE_OPTIONS).optional(),
+});
+
+const COMPRESS_TOOL_DEFINITION = {
+  name: COMPRESS_TOOL_NAME,
+  description:
+    "Compresses a verbose AI prompt to use fewer tokens while preserving all instructions, constraints, and meaning. Verified against a real tokenizer, not an estimate.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      text: { type: "string", description: "The prompt to compress." },
+      level: {
+        type: "string",
+        enum: COMPRESSION_LEVELS,
+        description: `How aggressively to compress. Defaults to "${COMPRESSION_LEVELS[1]}".`,
+      },
+      preserveFormatting: {
+        type: "string",
+        enum: PRESERVE_OPTIONS,
+        description: 'Keep the original structure (headers, lists, code blocks) intact. Defaults to "Yes".',
+      },
+    },
+    required: ["text"],
+  },
+};
+
+async function callCompressTool(req: Request, rawArgs: unknown): Promise<ToolResult> {
+  const parsed = compressArgsSchema.safeParse(rawArgs);
   if (!parsed.success) {
     return { content: [{ type: "text", text: `Invalid arguments: ${parsed.error.issues[0]?.message ?? "invalid input"}` }], isError: true };
   }
@@ -83,27 +120,9 @@ async function callCompressTool(req: Request, rawArgs: unknown) {
   const resolvedLevel = isCompressionLevel(level) ? level : COMPRESSION_LEVELS[1];
   const resolvedPreserve = isPreserveOption(preserveFormatting) ? preserveFormatting : "Yes";
 
-  // A Cuelara personal access token (see /dashboard/mcp) identifies the caller as a specific user,
-  // so their own plan's limits apply instead of the anonymous IP-based default — and paid users
-  // skip the "Compressed by Cuelara.com" attribution added to free/anonymous output below.
-  const token = bearerToken(req);
-  let subject;
-  let isFreeCaller: boolean;
-  if (token) {
-    const userId = await resolveUserIdFromToken(token);
-    if (!userId) {
-      return {
-        content: [{ type: "text", text: "That Cuelara API token is invalid or has been revoked. Generate a new one at cuelara.com/dashboard/mcp." }],
-        isError: true,
-      };
-    }
-    subject = await subjectForUser(userId);
-    const { plan } = await getPlanContext(userId);
-    isFreeCaller = !plan || plan.priceMonthlyCents === 0;
-  } else {
-    subject = await getRequestSubject(req);
-    isFreeCaller = true;
-  }
+  const caller = await resolveCaller(req);
+  if ("error" in caller) return { content: [{ type: "text", text: caller.error }], isError: true };
+  const { subject, isFreeCaller } = caller;
 
   const limit = await getTokenOptimizerLimit(subject);
   if (await hasReachedDailyLimit(subject.subjectKey, "token-optimizer", limit)) {
@@ -119,24 +138,85 @@ async function callCompressTool(req: Request, rawArgs: unknown) {
     const savedPct = originalTokens > 0 ? Math.max(0, Math.round((1 - compressedTokens / originalTokens) * 100)) : 0;
     const stats = `(${originalTokens} → ${compressedTokens} tokens, ${savedPct}% fewer)`;
     const attribution = isFreeCaller ? "\n\n— Compressed by Cuelara.com" : "";
-    return {
-      content: [{ type: "text", text: `${compressed}\n\n${stats}${attribution}` }],
-      isError: false,
-    };
+    return { content: [{ type: "text", text: `${compressed}\n\n${stats}${attribution}` }], isError: false };
   } catch (error) {
-    void reportError(error, { source: "api", route: "/api/mcp" });
-    if (error instanceof NoApiKeysConfiguredError) {
-      return { content: [{ type: "text", text: "AI service is not configured. Please contact support." }], isError: true };
-    }
-    if (isGenAITimeout(error)) {
-      return { content: [{ type: "text", text: "The AI is taking too long to respond. Please try again." }], isError: true };
-    }
-    if (isRetryableProviderError(error) || isRequestTooLargeForProvider(error) || error instanceof AllProvidersExhaustedError) {
-      return { content: [{ type: "text", text: HIGH_DEMAND_MESSAGE }], isError: true };
-    }
-    return { content: [{ type: "text", text: "Something went wrong while compressing the prompt." }], isError: true };
+    return providerErrorResult(error, "Something went wrong while compressing the prompt.");
   }
 }
+
+// --- cuelara_optimize_prompt (Prompt Optimizer) ----------------------------------------------
+
+const OPTIMIZE_TOOL_NAME = "cuelara_optimize_prompt";
+
+const optimizeArgsSchema = z.object({
+  text: z.string().min(1, "text must not be empty"),
+  mode: z.enum(MODES).optional(),
+  level: z.enum(LEVELS).optional(),
+});
+
+const OPTIMIZE_TOOL_DEFINITION = {
+  name: OPTIMIZE_TOOL_NAME,
+  description:
+    "Turns a rough, messy request into a complete, structured, ready-to-paste prompt for any frontier AI model — adds role anchoring, explicit steps, negative constraints, and an output format.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      text: { type: "string", description: "The rough idea or request to turn into a full prompt." },
+      mode: {
+        type: "string",
+        enum: MODES,
+        description: `The domain to tailor the structure for. Defaults to "${MODES[0]}".`,
+      },
+      level: {
+        type: "string",
+        enum: LEVELS,
+        description: `How thorough the resulting prompt should be. Defaults to "${LEVELS[1]}".`,
+      },
+    },
+    required: ["text"],
+  },
+};
+
+async function callOptimizeTool(req: Request, rawArgs: unknown): Promise<ToolResult> {
+  const parsed = optimizeArgsSchema.safeParse(rawArgs);
+  if (!parsed.success) {
+    return { content: [{ type: "text", text: `Invalid arguments: ${parsed.error.issues[0]?.message ?? "invalid input"}` }], isError: true };
+  }
+  const { text, mode, level } = parsed.data;
+  const resolvedMode = isOptimizerMode(mode) ? mode : MODES[0];
+  const resolvedLevel = isOptimizerLevel(level) ? level : LEVELS[1];
+
+  const caller = await resolveCaller(req);
+  if ("error" in caller) return { content: [{ type: "text", text: caller.error }], isError: true };
+  const { subject, isFreeCaller } = caller;
+
+  const limit = await getPromptOptimizerLimit(subject);
+  if (await hasReachedDailyLimit(subject.subjectKey, "prompt-optimizer", limit)) {
+    return {
+      content: [{ type: "text", text: `Daily optimization limit reached (${limit}/day for this caller). Try again tomorrow, or sign in at cuelara.com for a higher limit.` }],
+      isError: true,
+    };
+  }
+
+  try {
+    const optimized = await optimizePrompt(text, resolvedMode, resolvedLevel);
+    if (!optimized) {
+      return { content: [{ type: "text", text: "The AI did not return a result. Please try again." }], isError: true };
+    }
+    await consumeDailyLimit(subject.subjectKey, "prompt-optimizer");
+    const attribution = isFreeCaller ? "\n\n— Optimized by Cuelara.com" : "";
+    return { content: [{ type: "text", text: `${optimized}${attribution}` }], isError: false };
+  } catch (error) {
+    return providerErrorResult(error, "Something went wrong while optimizing the prompt.");
+  }
+}
+
+// --- Server -------------------------------------------------------------------------------
+
+const TOOLS: Record<string, { definition: ToolDefinition; call: (req: Request, args: unknown) => Promise<ToolResult> }> = {
+  [COMPRESS_TOOL_NAME]: { definition: COMPRESS_TOOL_DEFINITION, call: callCompressTool },
+  [OPTIMIZE_TOOL_NAME]: { definition: OPTIMIZE_TOOL_DEFINITION, call: callOptimizeTool },
+};
 
 export async function POST(req: Request) {
   let body: JsonRpcRequest;
@@ -163,14 +243,15 @@ export async function POST(req: Request) {
       return new Response(null, { status: 202 });
 
     case "tools/list":
-      return rpcResult(id, { tools: [TOOL_DEFINITION] });
+      return rpcResult(id, { tools: Object.values(TOOLS).map((t) => t.definition) });
 
     case "tools/call": {
       const { name, arguments: args } = (params as { name?: string; arguments?: unknown }) ?? {};
-      if (name !== TOOL_NAME) {
-        return rpcError(id, -32602, `Unknown tool "${name}". Available tools: ${TOOL_NAME}.`);
+      const tool = name ? TOOLS[name] : undefined;
+      if (!tool) {
+        return rpcError(id, -32602, `Unknown tool "${name}". Available tools: ${Object.keys(TOOLS).join(", ")}.`);
       }
-      const result = await callCompressTool(req, args);
+      const result = await tool.call(req, args);
       return rpcResult(id, result);
     }
 
@@ -189,7 +270,7 @@ export async function GET(req: Request) {
   return Response.json({
     name: SERVER_INFO.name,
     protocolVersion: PROTOCOL_VERSION,
-    description: "MCP server for Cuelara's Token Optimizer. POST JSON-RPC 2.0 requests here (initialize, tools/list, tools/call).",
-    docs: "https://cuelara.com/docs#mcp",
+    description: "MCP server for Cuelara's tools. POST JSON-RPC 2.0 requests here (initialize, tools/list, tools/call).",
+    docs: "https://cuelara.com/docs/mcp",
   });
 }

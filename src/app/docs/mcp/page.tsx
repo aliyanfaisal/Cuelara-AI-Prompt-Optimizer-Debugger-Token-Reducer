@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft, ArrowRight, Terminal, MessageSquare, MousePointer2, Code2, Bot, Sparkles, Rocket, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Terminal, MessageSquare, MousePointer2, Code2, Bot, Sparkles, Rocket, Zap, type LucideIcon } from "lucide-react";
 import { siteUrl } from "@/lib/blog";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { markdownProseClass } from "@/components/markdown/prose";
@@ -9,7 +9,7 @@ import { MCP_CLIENTS, type McpClientDoc } from "@/lib/docs/mcp-clients";
 
 export const metadata: Metadata = {
   title: "MCP Server — Cuelara",
-  description: "Connect Cuelara's Token Optimizer to Claude Desktop, Claude Code, Cursor, or any MCP client, and compress prompts without opening the website.",
+  description: "Connect Cuelara's tools to Claude Desktop, Claude Code, Cursor, or any MCP client, and use them without opening the website.",
 };
 
 const ICONS: Record<McpClientDoc["icon"], LucideIcon> = {
@@ -22,10 +22,15 @@ const ICONS: Record<McpClientDoc["icon"], LucideIcon> = {
   rocket: Rocket,
 };
 
-function content(base: string): string {
-  return `Cuelara's Token Optimizer is available as a remote **MCP server** (Model Context Protocol), so any MCP-compatible AI client — Claude Desktop, Claude Code, Cursor, Copilot, Gemini CLI, and more — can call it directly as a tool, without opening the website.
+const TOOLS = [
+  { slug: "token-optimizer", name: "Token Optimizer", tool: "cuelara_compress_prompt", description: "Compress verbose prompts, verified against a real tokenizer.", icon: Zap, iconClassName: "text-amber-500" },
+  { slug: "prompt-optimizer", name: "Prompt Optimizer", tool: "cuelara_optimize_prompt", description: "Turn a rough idea into a complete, structured prompt.", icon: Code2, iconClassName: "text-primary" },
+];
 
-The server is stateless: every request is self-contained, over plain JSON-RPC 2.0 at a single URL.
+function content(base: string): string {
+  return `Cuelara's tools are available as a remote **MCP server** (Model Context Protocol), so any MCP-compatible AI client — Claude Desktop, Claude Code, Cursor, Copilot, Gemini CLI, and more — can call them directly, without opening the website.
+
+The server is stateless: every request is self-contained, over plain JSON-RPC 2.0 at a single URL, and every tool below is available the moment you connect it.
 
 ## Endpoint
 
@@ -33,19 +38,17 @@ The server is stateless: every request is self-contained, over plain JSON-RPC 2.
 ${base}/api/mcp
 \`\`\`
 
-Pick your client below for exact setup steps, or use the reference below to call it directly.
+## Fastest setup — Claude Code
 
-## The tool
+\`\`\`bash
+claude mcp add --transport http cuelara-token-optimizer ${base}/api/mcp
+\`\`\`
 
-**\`cuelara_compress_prompt\`** — compresses a prompt while preserving every instruction and constraint, verified against a real tokenizer.
-
-- \`text\` (string, required) — the prompt to compress.
-- \`level\` (string, optional) — \`"Low (Safest)"\`, \`"Medium (Balanced)"\` (default), or \`"Aggressive (Max Savings)"\`.
-- \`preserveFormatting\` (string, optional) — \`"Yes"\` (default) or \`"No"\`.
+For every other client, pick it from the list below for exact config.
 
 ## Authenticating as yourself
 
-Without a token, calls are anonymous — rate-limited by IP, same as a visitor to the website, and the compressed output gets a "Compressed by Cuelara.com" line appended.
+Without a token, calls are anonymous — rate-limited by IP, same as a visitor to the website, and the output gets a "by Cuelara.com" line appended.
 
 Generate a personal token from [/dashboard/mcp](/dashboard/mcp) and pass it as a bearer token — each client page below shows exactly where it goes. Signed-in calls use your own account's daily limit, and paid-plan output skips the attribution line. Free-plan accounts still get the attribution, same as anonymous calls.
 
@@ -59,27 +62,11 @@ curl -X POST ${base}/api/mcp \\
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 \`\`\`
 
-And to compress a prompt:
-
-\`\`\`bash
-curl -X POST ${base}/api/mcp \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 2,
-    "method": "tools/call",
-    "params": {
-      "name": "cuelara_compress_prompt",
-      "arguments": { "text": "Could you please help me write a Python script that..." }
-    }
-  }'
-\`\`\`
-
-Add \`-H "Authorization: Bearer YOUR_TOKEN_HERE"\` to authenticate as yourself instead of anonymously.
+Add \`-H "Authorization: Bearer YOUR_TOKEN_HERE"\` to any call to authenticate as yourself instead of anonymously. See each tool's page above for its exact arguments and a ready-to-run \`tools/call\` example.
 
 ## Limits
 
-Anonymous calls share the same free daily limit as the website's Token Optimizer, keyed by IP. Signed-in calls (via a personal token from [/dashboard/mcp](/dashboard/mcp)) use your own account's plan limits instead.
+Anonymous calls share the same free daily limit as the matching web tool, keyed by IP. Signed-in calls (via a personal token from [/dashboard/mcp](/dashboard/mcp)) use your own account's plan limits instead.
 
 More tools and a full REST API for the rest of Cuelara's tools are on the way.
 `;
@@ -100,6 +87,27 @@ export default function Page() {
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">MCP Server</h1>
       </div>
 
+      <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">Tools</h2>
+      <div className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {TOOLS.map((tool) => (
+          <Link
+            key={tool.slug}
+            href={`/docs/mcp/${tool.slug}`}
+            className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-sm"
+          >
+            <div className="rounded-lg border border-border bg-muted/40 p-2 shrink-0">
+              <tool.icon className={`h-4 w-4 ${tool.iconClassName}`} />
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-semibold text-foreground">{tool.name}</div>
+              <div className="truncate text-xs text-muted-foreground">{tool.description}</div>
+            </div>
+            <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+          </Link>
+        ))}
+      </div>
+
+      <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">Clients</h2>
       <div className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {MCP_CLIENTS.map((client) => {
           const Icon = ICONS[client.icon];
