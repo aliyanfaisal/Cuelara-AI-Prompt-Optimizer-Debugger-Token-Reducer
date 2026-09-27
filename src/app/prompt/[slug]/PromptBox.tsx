@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { Check, Copy, X } from "lucide-react";
-import { writeToClipboard } from "@/components/markdown/CodeBlock";
+import ReactMarkdown from "react-markdown";
+import { CodeBlock, writeToClipboard } from "@/components/markdown/CodeBlock";
+import { darkProseClass } from "@/components/markdown/dark-prose";
 
 /**
- * A copyable, always-dark text block for raw (non-Markdown) content — the prompt template
- * and example input/output. Same look as CodeBlock so the page reads as one system.
+ * A copyable, always-dark text block for cookbook prompt content (template, example input/output).
+ * Rendered as Markdown — this content is AI-generated and often includes bold text and fenced code
+ * blocks, which get real formatting and syntax highlighting instead of showing up as literal
+ * "**text**" and "```jsx" markers. Same look as CodeBlock so the page reads as one system.
  */
 export function PromptBox({ text, label }: { text: string; label?: string }) {
   const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
@@ -37,7 +41,9 @@ export function PromptBox({ text, label }: { text: string; label?: string }) {
           <Copy className="h-4 w-4" />
         )}
       </button>
-      <pre className={`overflow-x-auto whitespace-pre-wrap break-words p-4 pr-14 text-sm leading-relaxed text-[#e6edf3] ${label ? "pt-8" : ""}`}>{text}</pre>
+      <div className={`overflow-x-auto break-words p-4 pr-14 text-sm leading-relaxed text-[#e6edf3] ${label ? "pt-8" : ""} ${darkProseClass}`}>
+        <ReactMarkdown components={{ pre: (props) => <CodeBlock {...props} bare /> }}>{text}</ReactMarkdown>
+      </div>
     </div>
   );
 }

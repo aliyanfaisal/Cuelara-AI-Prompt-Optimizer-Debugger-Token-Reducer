@@ -75,10 +75,35 @@ export async function writeToClipboard(text: string): Promise<boolean> {
   }
 }
 
+function TokenizedLines({ code, prismLanguage, className }: { code: string; prismLanguage: Language; className: string }) {
+  return (
+    <Highlight code={code} language={prismLanguage} theme={themes.vsDark}>
+      {({ tokens, getLineProps, getTokenProps }) => (
+        <pre className={className}>
+          {tokens.map((line, i) => (
+            <div key={i} {...getLineProps({ line })}>
+              {line.map((token, key) => (
+                <span key={key} {...getTokenProps({ token })} />
+              ))}
+            </div>
+          ))}
+        </pre>
+      )}
+    </Highlight>
+  );
+}
+
+type CodeBlockProps = ComponentPropsWithoutRef<"pre"> & {
+  node?: unknown;
+  /** Renders just the highlighted code, no outer box/border/copy button/language label — for
+   * embedding inside a parent that already provides its own chrome (see PromptBox.tsx). */
+  bare?: boolean;
+};
+
 // Always dark, regardless of the site theme, so code reads the same in light and dark mode.
 // `node` is react-markdown's AST handle; it must not reach the DOM element.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function CodeBlock({ children, node: _node, ...props }: ComponentPropsWithoutRef<"pre"> & { node?: unknown }) {
+export function CodeBlock({ children, node: _node, bare, ...props }: CodeBlockProps) {
   const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
   const language = languageOf(children);
   const code = extractText(children).replace(/\n$/, "");
@@ -88,6 +113,16 @@ export function CodeBlock({ children, node: _node, ...props }: ComponentPropsWit
     const ok = await writeToClipboard(code);
     setStatus(ok ? "copied" : "failed");
     setTimeout(() => setStatus("idle"), 2000);
+  }
+
+  if (bare) {
+    return prismLanguage ? (
+      <TokenizedLines code={code} prismLanguage={prismLanguage} className="overflow-x-auto bg-transparent py-2 text-sm leading-relaxed" />
+    ) : (
+      <pre {...props} className="overflow-x-auto py-2 text-sm leading-relaxed text-[#e6edf3]">
+        {children}
+      </pre>
+    );
   }
 
   return (
@@ -111,19 +146,7 @@ export function CodeBlock({ children, node: _node, ...props }: ComponentPropsWit
         )}
       </button>
       {prismLanguage ? (
-        <Highlight code={code} language={prismLanguage} theme={themes.vsDark}>
-          {({ tokens, getLineProps, getTokenProps }) => (
-            <pre className={`overflow-x-auto bg-transparent p-4 pr-14 text-sm leading-relaxed ${language ? "pt-8" : ""}`}>
-              {tokens.map((line, i) => (
-                <div key={i} {...getLineProps({ line })}>
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token })} />
-                  ))}
-                </div>
-              ))}
-            </pre>
-          )}
-        </Highlight>
+        <TokenizedLines code={code} prismLanguage={prismLanguage} className={`overflow-x-auto bg-transparent p-4 pr-14 text-sm leading-relaxed ${language ? "pt-8" : ""}`} />
       ) : (
         <pre {...props} className={`overflow-x-auto p-4 pr-14 text-sm leading-relaxed text-[#e6edf3] ${language ? "pt-8" : ""}`}>
           {children}

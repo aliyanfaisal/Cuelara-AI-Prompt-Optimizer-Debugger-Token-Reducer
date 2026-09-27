@@ -1,0 +1,4 @@
+// Styling for Markdown rendered onto the always-dark code-box background (PromptBox) — the dark
+// counterpart to markdownProseClass, which targets the site's light/dark theme text colors instead.
+export const darkProseClass =
+  "space-y-3 [&_strong]:font-bold [&_strong]:text-white [&_em]:italic [&_a]:text-[#79c0ff] [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-[#8b949e] [&_code]:rounded [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[13px] [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-white [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-white [&_h3]:text-sm [&_h3]:font-bold [&_h3]:text-white [&_hr]:border-white/10 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:m-0 [&_pre]:m-0 [&_ul]:list-disc [&_ul]:pl-5";
