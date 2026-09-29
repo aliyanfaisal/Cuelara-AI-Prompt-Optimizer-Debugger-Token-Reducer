@@ -109,6 +109,7 @@ export function Footer() {
             <Link href="/contact" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Contact</Link>
             <Link href="/privacy" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Privacy Policy</Link>
             <Link href="/terms" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Terms of Service</Link>
+            <Link href="/refund-policy" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Refund Policy</Link>
             <a href="mailto:support@cuelara.com" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">support@cuelara.com</a>
           </div>
         </div>
