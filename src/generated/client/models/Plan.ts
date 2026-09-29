@@ -52,6 +52,8 @@ export type PlanMinAggregateOutputType = {
   allowsOwnKeys: boolean | null
   allowsMultipleSessions: boolean | null
   maxSeats: number | null
+  paddleProductIdSandbox: string | null
+  paddleProductIdProduction: string | null
   paddlePriceIdSandbox: string | null
   paddlePriceIdProduction: string | null
   createdAt: Date | null
@@ -72,6 +74,8 @@ export type PlanMaxAggregateOutputType = {
   allowsOwnKeys: boolean | null
   allowsMultipleSessions: boolean | null
   maxSeats: number | null
+  paddleProductIdSandbox: string | null
+  paddleProductIdProduction: string | null
   paddlePriceIdSandbox: string | null
   paddlePriceIdProduction: string | null
   createdAt: Date | null
@@ -92,6 +96,8 @@ export type PlanCountAggregateOutputType = {
   allowsOwnKeys: number
   allowsMultipleSessions: number
   maxSeats: number
+  paddleProductIdSandbox: number
+  paddleProductIdProduction: number
   paddlePriceIdSandbox: number
   paddlePriceIdProduction: number
   createdAt: number
@@ -126,6 +132,8 @@ export type PlanMinAggregateInputType = {
   allowsOwnKeys?: true
   allowsMultipleSessions?: true
   maxSeats?: true
+  paddleProductIdSandbox?: true
+  paddleProductIdProduction?: true
   paddlePriceIdSandbox?: true
   paddlePriceIdProduction?: true
   createdAt?: true
@@ -146,6 +154,8 @@ export type PlanMaxAggregateInputType = {
   allowsOwnKeys?: true
   allowsMultipleSessions?: true
   maxSeats?: true
+  paddleProductIdSandbox?: true
+  paddleProductIdProduction?: true
   paddlePriceIdSandbox?: true
   paddlePriceIdProduction?: true
   createdAt?: true
@@ -166,6 +176,8 @@ export type PlanCountAggregateInputType = {
   allowsOwnKeys?: true
   allowsMultipleSessions?: true
   maxSeats?: true
+  paddleProductIdSandbox?: true
+  paddleProductIdProduction?: true
   paddlePriceIdSandbox?: true
   paddlePriceIdProduction?: true
   createdAt?: true
@@ -273,6 +285,8 @@ export type PlanGroupByOutputType = {
   allowsOwnKeys: boolean
   allowsMultipleSessions: boolean
   maxSeats: number
+  paddleProductIdSandbox: string | null
+  paddleProductIdProduction: string | null
   paddlePriceIdSandbox: string | null
   paddlePriceIdProduction: string | null
   createdAt: Date
@@ -316,6 +330,8 @@ export type PlanWhereInput = {
   allowsOwnKeys?: Prisma.BoolFilter<"Plan"> | boolean
   allowsMultipleSessions?: Prisma.BoolFilter<"Plan"> | boolean
   maxSeats?: Prisma.IntFilter<"Plan"> | number
+  paddleProductIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleProductIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
   paddlePriceIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
   paddlePriceIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
@@ -338,6 +354,8 @@ export type PlanOrderByWithRelationInput = {
   allowsOwnKeys?: Prisma.SortOrder
   allowsMultipleSessions?: Prisma.SortOrder
   maxSeats?: Prisma.SortOrder
+  paddleProductIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleProductIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
   paddlePriceIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
   paddlePriceIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -363,6 +381,8 @@ export type PlanWhereUniqueInput = Prisma.AtLeast<{
   allowsOwnKeys?: Prisma.BoolFilter<"Plan"> | boolean
   allowsMultipleSessions?: Prisma.BoolFilter<"Plan"> | boolean
   maxSeats?: Prisma.IntFilter<"Plan"> | number
+  paddleProductIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleProductIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
   paddlePriceIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
   paddlePriceIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
@@ -385,6 +405,8 @@ export type PlanOrderByWithAggregationInput = {
   allowsOwnKeys?: Prisma.SortOrder
   allowsMultipleSessions?: Prisma.SortOrder
   maxSeats?: Prisma.SortOrder
+  paddleProductIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleProductIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
   paddlePriceIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
   paddlePriceIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -413,6 +435,8 @@ export type PlanScalarWhereWithAggregatesInput = {
   allowsOwnKeys?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   allowsMultipleSessions?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   maxSeats?: Prisma.IntWithAggregatesFilter<"Plan"> | number
+  paddleProductIdSandbox?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
+  paddleProductIdProduction?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
   paddlePriceIdSandbox?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
   paddlePriceIdProduction?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
@@ -433,6 +457,8 @@ export type PlanCreateInput = {
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: number
+  paddleProductIdSandbox?: string | null
+  paddleProductIdProduction?: string | null
   paddlePriceIdSandbox?: string | null
   paddlePriceIdProduction?: string | null
   createdAt?: Date | string
@@ -455,6 +481,8 @@ export type PlanUncheckedCreateInput = {
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: number
+  paddleProductIdSandbox?: string | null
+  paddleProductIdProduction?: string | null
   paddlePriceIdSandbox?: string | null
   paddlePriceIdProduction?: string | null
   createdAt?: Date | string
@@ -477,6 +505,8 @@ export type PlanUpdateInput = {
   allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -499,6 +529,8 @@ export type PlanUncheckedUpdateInput = {
   allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -521,6 +553,8 @@ export type PlanCreateManyInput = {
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: number
+  paddleProductIdSandbox?: string | null
+  paddleProductIdProduction?: string | null
   paddlePriceIdSandbox?: string | null
   paddlePriceIdProduction?: string | null
   createdAt?: Date | string
@@ -541,6 +575,8 @@ export type PlanUpdateManyMutationInput = {
   allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -561,6 +597,8 @@ export type PlanUncheckedUpdateManyInput = {
   allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -586,6 +624,8 @@ export type PlanCountOrderByAggregateInput = {
   allowsOwnKeys?: Prisma.SortOrder
   allowsMultipleSessions?: Prisma.SortOrder
   maxSeats?: Prisma.SortOrder
+  paddleProductIdSandbox?: Prisma.SortOrder
+  paddleProductIdProduction?: Prisma.SortOrder
   paddlePriceIdSandbox?: Prisma.SortOrder
   paddlePriceIdProduction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -612,6 +652,8 @@ export type PlanMaxOrderByAggregateInput = {
   allowsOwnKeys?: Prisma.SortOrder
   allowsMultipleSessions?: Prisma.SortOrder
   maxSeats?: Prisma.SortOrder
+  paddleProductIdSandbox?: Prisma.SortOrder
+  paddleProductIdProduction?: Prisma.SortOrder
   paddlePriceIdSandbox?: Prisma.SortOrder
   paddlePriceIdProduction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -632,6 +674,8 @@ export type PlanMinOrderByAggregateInput = {
   allowsOwnKeys?: Prisma.SortOrder
   allowsMultipleSessions?: Prisma.SortOrder
   maxSeats?: Prisma.SortOrder
+  paddleProductIdSandbox?: Prisma.SortOrder
+  paddleProductIdProduction?: Prisma.SortOrder
   paddlePriceIdSandbox?: Prisma.SortOrder
   paddlePriceIdProduction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -693,6 +737,8 @@ export type PlanCreateWithoutUsersInput = {
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: number
+  paddleProductIdSandbox?: string | null
+  paddleProductIdProduction?: string | null
   paddlePriceIdSandbox?: string | null
   paddlePriceIdProduction?: string | null
   createdAt?: Date | string
@@ -714,6 +760,8 @@ export type PlanUncheckedCreateWithoutUsersInput = {
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: number
+  paddleProductIdSandbox?: string | null
+  paddleProductIdProduction?: string | null
   paddlePriceIdSandbox?: string | null
   paddlePriceIdProduction?: string | null
   createdAt?: Date | string
@@ -751,6 +799,8 @@ export type PlanUpdateWithoutUsersInput = {
   allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -772,6 +822,8 @@ export type PlanUncheckedUpdateWithoutUsersInput = {
   allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -793,6 +845,8 @@ export type PlanCreateWithoutLimitsInput = {
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: number
+  paddleProductIdSandbox?: string | null
+  paddleProductIdProduction?: string | null
   paddlePriceIdSandbox?: string | null
   paddlePriceIdProduction?: string | null
   createdAt?: Date | string
@@ -814,6 +868,8 @@ export type PlanUncheckedCreateWithoutLimitsInput = {
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: number
+  paddleProductIdSandbox?: string | null
+  paddleProductIdProduction?: string | null
   paddlePriceIdSandbox?: string | null
   paddlePriceIdProduction?: string | null
   createdAt?: Date | string
@@ -851,6 +907,8 @@ export type PlanUpdateWithoutLimitsInput = {
   allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -872,6 +930,8 @@ export type PlanUncheckedUpdateWithoutLimitsInput = {
   allowsOwnKeys?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowsMultipleSessions?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -933,6 +993,8 @@ export type PlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: boolean
+  paddleProductIdSandbox?: boolean
+  paddleProductIdProduction?: boolean
   paddlePriceIdSandbox?: boolean
   paddlePriceIdProduction?: boolean
   createdAt?: boolean
@@ -956,6 +1018,8 @@ export type PlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: boolean
+  paddleProductIdSandbox?: boolean
+  paddleProductIdProduction?: boolean
   paddlePriceIdSandbox?: boolean
   paddlePriceIdProduction?: boolean
   createdAt?: boolean
@@ -976,6 +1040,8 @@ export type PlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: boolean
+  paddleProductIdSandbox?: boolean
+  paddleProductIdProduction?: boolean
   paddlePriceIdSandbox?: boolean
   paddlePriceIdProduction?: boolean
   createdAt?: boolean
@@ -996,13 +1062,15 @@ export type PlanSelectScalar = {
   allowsOwnKeys?: boolean
   allowsMultipleSessions?: boolean
   maxSeats?: boolean
+  paddleProductIdSandbox?: boolean
+  paddleProductIdProduction?: boolean
   paddlePriceIdSandbox?: boolean
   paddlePriceIdProduction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "historyPerTool" | "allowsOwnKeys" | "allowsMultipleSessions" | "maxSeats" | "paddlePriceIdSandbox" | "paddlePriceIdProduction" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
+export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "historyPerTool" | "allowsOwnKeys" | "allowsMultipleSessions" | "maxSeats" | "paddleProductIdSandbox" | "paddleProductIdProduction" | "paddlePriceIdSandbox" | "paddlePriceIdProduction" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
 export type PlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
   limits?: boolean | Prisma.Plan$limitsArgs<ExtArgs>
@@ -1031,6 +1099,8 @@ export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     allowsOwnKeys: boolean
     allowsMultipleSessions: boolean
     maxSeats: number
+    paddleProductIdSandbox: string | null
+    paddleProductIdProduction: string | null
     paddlePriceIdSandbox: string | null
     paddlePriceIdProduction: string | null
     createdAt: Date
@@ -1473,6 +1543,8 @@ export interface PlanFieldRefs {
   readonly allowsOwnKeys: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly allowsMultipleSessions: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly maxSeats: Prisma.FieldRef<"Plan", 'Int'>
+  readonly paddleProductIdSandbox: Prisma.FieldRef<"Plan", 'String'>
+  readonly paddleProductIdProduction: Prisma.FieldRef<"Plan", 'String'>
   readonly paddlePriceIdSandbox: Prisma.FieldRef<"Plan", 'String'>
   readonly paddlePriceIdProduction: Prisma.FieldRef<"Plan", 'String'>
   readonly createdAt: Prisma.FieldRef<"Plan", 'DateTime'>

@@ -409,6 +409,8 @@ export const PlanScalarFieldEnum = {
   allowsOwnKeys: 'allowsOwnKeys',
   allowsMultipleSessions: 'allowsMultipleSessions',
   maxSeats: 'maxSeats',
+  paddleProductIdSandbox: 'paddleProductIdSandbox',
+  paddleProductIdProduction: 'paddleProductIdProduction',
   paddlePriceIdSandbox: 'paddlePriceIdSandbox',
   paddlePriceIdProduction: 'paddlePriceIdProduction',
   createdAt: 'createdAt',

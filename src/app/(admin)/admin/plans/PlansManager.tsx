@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, Edit2, CreditCard, Star, Users, Loader2, X, Check } from "lucide-react";
+import { Plus, Trash2, Edit2, CreditCard, Star, Users, Loader2, X, Check, RefreshCw } from "lucide-react";
 import { PLAN_TOOLS } from "@/lib/plan-tools";
 import { createPlan, updatePlan, deletePlan, type PlanRow, type PlanLimitInput } from "./actions";
+import { syncPlanToPaddle } from "./paddle-sync-actions";
 
 function formatUsd(cents: number): string {
   if (cents === 0) return "Free";
@@ -86,6 +87,21 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
   const [isSaving, setIsSaving] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [syncMessage, setSyncMessage] = useState<{ id: string; type: "success" | "error"; text: string } | null>(null);
+
+  async function handleSync(planId: string) {
+    setSyncingId(planId);
+    setSyncMessage(null);
+    const result = await syncPlanToPaddle(planId);
+    setSyncingId(null);
+    if ("error" in result) {
+      setSyncMessage({ id: planId, type: "error", text: result.error });
+      return;
+    }
+    // Full reload picks up the plan's new Paddle ids, same as create/edit above.
+    window.location.reload();
+  }
 
   function openCreate() {
     setModalMode("create");
@@ -221,6 +237,30 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
               <div className="px-5 py-3 border-t border-border bg-muted/10 flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Users className="w-3.5 h-3.5" /> {plan.userCount} user{plan.userCount === 1 ? "" : "s"} on this plan
               </div>
+
+              {plan.priceMonthlyCents > 0 && (
+                <div className="px-5 py-3 border-t border-border flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <span className={plan.paddlePriceIdSandbox ? "text-emerald-600 dark:text-emerald-500" : ""}>Sandbox {plan.paddlePriceIdSandbox ? "✓" : "—"}</span>
+                      <span>·</span>
+                      <span className={plan.paddlePriceIdProduction ? "text-emerald-600 dark:text-emerald-500" : ""}>Production {plan.paddlePriceIdProduction ? "✓" : "—"}</span>
+                    </div>
+                    <button
+                      onClick={() => handleSync(plan.id)}
+                      disabled={syncingId === plan.id}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border text-[11px] font-semibold text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                      title="Create/update this plan as a Product + Price in Paddle (for whichever environment is live in Settings)"
+                    >
+                      {syncingId === plan.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                      Sync to Paddle
+                    </button>
+                  </div>
+                  {syncMessage?.id === plan.id && syncMessage.type === "error" && (
+                    <p className="text-[11px] text-rose-600 dark:text-rose-400">{syncMessage.text}</p>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
