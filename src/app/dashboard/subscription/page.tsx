@@ -26,7 +26,7 @@ export default async function SubscriptionPage() {
     prisma.plan.findMany({
       where: { isActive: true },
       orderBy: { priceMonthlyCents: "asc" },
-      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, historyPerTool: true, allowsOwnKeys: true, paddlePriceId: true },
+      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, historyPerTool: true, allowsOwnKeys: true, paddlePriceIdSandbox: true, paddlePriceIdProduction: true },
     }),
     subjectForUser(session.id).then(getSubjectDailyUsage),
     // Upgrade requests from the last week, so a plan already asked for shows as requested.
@@ -95,6 +95,7 @@ export default async function SubscriptionPage() {
             {others.map((plan) => {
               const kind = plan.priceMonthlyCents > currentPrice ? "upgrade" : "downgrade";
               const p = formatPlanPrice(plan.priceMonthlyCents);
+              const priceId = paddleSettings.environment === "production" ? plan.paddlePriceIdProduction : plan.paddlePriceIdSandbox;
               return (
                 <div key={plan.id} className="flex flex-col rounded-2xl border border-border bg-card p-6">
                   <div className="mb-4 flex items-start justify-between gap-3">
@@ -118,9 +119,9 @@ export default async function SubscriptionPage() {
                     <Link href="/dashboard/models" className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90">
                       Set up your model keys
                     </Link>
-                  ) : kind === "upgrade" && plan.paddlePriceId && !hasActivePaddleSubscription ? (
+                  ) : kind === "upgrade" && priceId && !hasActivePaddleSubscription ? (
                     <PaddleCheckoutButton
-                      priceId={plan.paddlePriceId}
+                      priceId={priceId}
                       clientToken={paddleSettings.clientToken}
                       environment={paddleSettings.environment}
                       userId={user.id}
@@ -129,7 +130,7 @@ export default async function SubscriptionPage() {
                     >
                       Subscribe to {plan.name}
                     </PaddleCheckoutButton>
-                  ) : kind === "upgrade" && plan.paddlePriceId && hasActivePaddleSubscription ? (
+                  ) : kind === "upgrade" && priceId && hasActivePaddleSubscription ? (
                     <p className="text-xs text-muted-foreground">
                       To switch plans, cancel your current subscription below first, then subscribe to this one.
                     </p>

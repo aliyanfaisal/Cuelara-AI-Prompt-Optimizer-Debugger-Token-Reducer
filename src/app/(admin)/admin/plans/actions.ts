@@ -26,7 +26,8 @@ export interface PlanRow {
   allowsMultipleSessions: boolean;
   maxSeats: number;
   historyPerTool: number;
-  paddlePriceId: string | null;
+  paddlePriceIdSandbox: string | null;
+  paddlePriceIdProduction: string | null;
   createdAt: string;
   userCount: number;
   limits: { tool: string; dailyLimit: number; teamDailyLimit: number | null }[];
@@ -52,7 +53,8 @@ export async function getPlans(): Promise<PlanRow[]> {
     allowsMultipleSessions: p.allowsMultipleSessions,
     maxSeats: p.maxSeats,
     historyPerTool: p.historyPerTool,
-    paddlePriceId: p.paddlePriceId,
+    paddlePriceIdSandbox: p.paddlePriceIdSandbox,
+    paddlePriceIdProduction: p.paddlePriceIdProduction,
     createdAt: p.createdAt.toISOString(),
     userCount: p._count.users,
     limits: p.limits.map((l) => ({ tool: l.tool, dailyLimit: l.dailyLimit, teamDailyLimit: l.teamDailyLimit })),
@@ -94,7 +96,8 @@ export async function createPlan(data: {
   allowsMultipleSessions: boolean;
   maxSeats: number;
   historyPerTool: number;
-  paddlePriceId: string;
+  paddlePriceIdSandbox: string;
+  paddlePriceIdProduction: string;
   limits: PlanLimitInput[];
 }) {
   await assertAdmin();
@@ -129,7 +132,8 @@ export async function createPlan(data: {
           allowsMultipleSessions: data.allowsMultipleSessions,
           maxSeats: Math.max(0, Math.min(1000, Math.floor(data.maxSeats) || 0)),
           historyPerTool: Math.floor(data.historyPerTool),
-          paddlePriceId: data.paddlePriceId.trim() || null,
+          paddlePriceIdSandbox: data.paddlePriceIdSandbox.trim() || null,
+          paddlePriceIdProduction: data.paddlePriceIdProduction.trim() || null,
           limits: { create: clean },
         },
       });
@@ -159,7 +163,8 @@ export async function updatePlan(
     allowsMultipleSessions: boolean;
     maxSeats: number;
     historyPerTool: number;
-    paddlePriceId: string;
+    paddlePriceIdSandbox: string;
+    paddlePriceIdProduction: string;
     limits: PlanLimitInput[];
   }
 ) {
@@ -193,7 +198,8 @@ export async function updatePlan(
           allowsMultipleSessions: data.allowsMultipleSessions,
           maxSeats: Math.max(0, Math.min(1000, Math.floor(data.maxSeats) || 0)),
           historyPerTool: Math.floor(data.historyPerTool),
-          paddlePriceId: data.paddlePriceId.trim() || null,
+          paddlePriceIdSandbox: data.paddlePriceIdSandbox.trim() || null,
+          paddlePriceIdProduction: data.paddlePriceIdProduction.trim() || null,
         },
       });
       // Simplest consistent way to sync the limit set: replace it wholesale.

@@ -1,29 +1,55 @@
 import "server-only";
 import { Paddle, Environment } from "@paddle/paddle-node-sdk";
 import { prisma } from "@/lib/prisma";
-import { PADDLE_API_KEY_KEY, PADDLE_CLIENT_TOKEN_KEY, PADDLE_ENVIRONMENT_KEY, PADDLE_WEBHOOK_SECRET_KEY } from "@/lib/tool-settings-keys";
+import {
+  PADDLE_ENVIRONMENT_KEY,
+  PADDLE_SANDBOX_API_KEY_KEY,
+  PADDLE_SANDBOX_CLIENT_TOKEN_KEY,
+  PADDLE_SANDBOX_WEBHOOK_SECRET_KEY,
+  PADDLE_PRODUCTION_API_KEY_KEY,
+  PADDLE_PRODUCTION_CLIENT_TOKEN_KEY,
+  PADDLE_PRODUCTION_WEBHOOK_SECRET_KEY,
+} from "@/lib/tool-settings-keys";
 
 export type PaddleEnvironment = "sandbox" | "production";
 
-export interface PaddleSettings {
-  environment: PaddleEnvironment;
+export interface PaddleEnvironmentCredentials {
   apiKey: string;
   clientToken: string;
   webhookSecret: string;
 }
 
+export interface PaddleSettings extends PaddleEnvironmentCredentials {
+  environment: PaddleEnvironment;
+}
+
+const KEYS_BY_ENV = {
+  sandbox: { apiKey: PADDLE_SANDBOX_API_KEY_KEY, clientToken: PADDLE_SANDBOX_CLIENT_TOKEN_KEY, webhookSecret: PADDLE_SANDBOX_WEBHOOK_SECRET_KEY },
+  production: { apiKey: PADDLE_PRODUCTION_API_KEY_KEY, clientToken: PADDLE_PRODUCTION_CLIENT_TOKEN_KEY, webhookSecret: PADDLE_PRODUCTION_WEBHOOK_SECRET_KEY },
+} as const;
+
 // All Paddle config lives in the Setting table (admin-controlled, see /admin/settings Payments tab) rather
-// than env vars, so it can be changed without a redeploy.
+// than env vars, so it can be changed without a redeploy. Sandbox and production are separate Paddle
+// accounts with separate keys, both stored at once — the environment toggle just picks which is active.
 export async function getPaddleSettings(): Promise<PaddleSettings> {
-  const rows = await prisma.setting.findMany({
-    where: { key: { in: [PADDLE_ENVIRONMENT_KEY, PADDLE_API_KEY_KEY, PADDLE_CLIENT_TOKEN_KEY, PADDLE_WEBHOOK_SECRET_KEY] } },
-  });
+  const environment = await getActivePaddleEnvironment();
+  const credentials = await getPaddleCredentialsFor(environment);
+  return { environment, ...credentials };
+}
+
+export async function getActivePaddleEnvironment(): Promise<PaddleEnvironment> {
+  const row = await prisma.setting.findUnique({ where: { key: PADDLE_ENVIRONMENT_KEY } });
+  return row?.value === "production" ? "production" : "sandbox";
+}
+
+export async function getPaddleCredentialsFor(environment: PaddleEnvironment): Promise<PaddleEnvironmentCredentials> {
+  const keys = KEYS_BY_ENV[environment];
+  const rows = await prisma.setting.findMany({ where: { key: { in: [keys.apiKey, keys.clientToken, keys.webhookSecret] } } });
   const byKey = Object.fromEntries(rows.map((r) => [r.key, r.value]));
   return {
-    environment: byKey[PADDLE_ENVIRONMENT_KEY] === "production" ? "production" : "sandbox",
-    apiKey: byKey[PADDLE_API_KEY_KEY] ?? "",
-    clientToken: byKey[PADDLE_CLIENT_TOKEN_KEY] ?? "",
-    webhookSecret: byKey[PADDLE_WEBHOOK_SECRET_KEY] ?? "",
+    apiKey: byKey[keys.apiKey] ?? "",
+    clientToken: byKey[keys.clientToken] ?? "",
+    webhookSecret: byKey[keys.webhookSecret] ?? "",
   };
 }
 

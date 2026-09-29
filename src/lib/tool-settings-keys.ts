@@ -24,7 +24,12 @@ export const PROMPT_BUILDER_DAILY_LIMIT_KEY = "PROMPT_BUILDER_DAILY_LIMIT";
 export const PROMPT_BUILDER_DAILY_LIMIT_AUTH_KEY = "PROMPT_BUILDER_DAILY_LIMIT_AUTH";
 
 // Paddle (payments) — all controlled from /admin/settings, Payments tab. See src/lib/paddle.ts.
+// Sandbox and production are separate Paddle accounts with their own keys, so each gets its own
+// stored fields; PADDLE_ENVIRONMENT just picks which set is currently live.
 export const PADDLE_ENVIRONMENT_KEY = "PADDLE_ENVIRONMENT"; // "sandbox" | "production"
-export const PADDLE_API_KEY_KEY = "PADDLE_API_KEY"; // server-side secret key, used for the Paddle Node SDK
-export const PADDLE_CLIENT_TOKEN_KEY = "PADDLE_CLIENT_TOKEN"; // public token, safe to send to the browser for Paddle.js checkout
-export const PADDLE_WEBHOOK_SECRET_KEY = "PADDLE_WEBHOOK_SECRET"; // verifies incoming /api/webhooks/paddle requests
+export const PADDLE_SANDBOX_API_KEY_KEY = "PADDLE_SANDBOX_API_KEY";
+export const PADDLE_SANDBOX_CLIENT_TOKEN_KEY = "PADDLE_SANDBOX_CLIENT_TOKEN";
+export const PADDLE_SANDBOX_WEBHOOK_SECRET_KEY = "PADDLE_SANDBOX_WEBHOOK_SECRET";
+export const PADDLE_PRODUCTION_API_KEY_KEY = "PADDLE_PRODUCTION_API_KEY";
+export const PADDLE_PRODUCTION_CLIENT_TOKEN_KEY = "PADDLE_PRODUCTION_CLIENT_TOKEN";
+export const PADDLE_PRODUCTION_WEBHOOK_SECRET_KEY = "PADDLE_PRODUCTION_WEBHOOK_SECRET";

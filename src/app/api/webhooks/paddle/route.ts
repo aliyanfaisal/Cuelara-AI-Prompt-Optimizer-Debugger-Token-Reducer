@@ -24,13 +24,15 @@ async function findUser(subscription: Subscription) {
   return byRelatedIds;
 }
 
-async function syncSubscription(subscription: Subscription) {
+async function syncSubscription(subscription: Subscription, environment: "sandbox" | "production") {
   const user = await findUser(subscription);
   if (!user) return;
 
   const isCanceled = subscription.status === "canceled";
   const priceId = subscription.items[0]?.price?.id ?? null;
-  const plan = priceId ? await prisma.plan.findFirst({ where: { paddlePriceId: priceId } }) : null;
+  const plan = priceId
+    ? await prisma.plan.findFirst({ where: environment === "production" ? { paddlePriceIdProduction: priceId } : { paddlePriceIdSandbox: priceId } })
+    : null;
 
   let planId = user.planId;
   if (isCanceled) {
@@ -53,7 +55,7 @@ async function syncSubscription(subscription: Subscription) {
 }
 
 export async function POST(request: Request) {
-  const { webhookSecret } = await getPaddleSettings();
+  const { webhookSecret, environment } = await getPaddleSettings();
   const paddle = await getPaddleClient();
   if (!webhookSecret || !paddle) {
     return NextResponse.json({ error: "Paddle is not configured." }, { status: 503 });
@@ -78,7 +80,7 @@ export async function POST(request: Request) {
       case EventName.SubscriptionPaused:
       case EventName.SubscriptionResumed:
       case EventName.SubscriptionCanceled:
-        await syncSubscription(event.data as Subscription);
+        await syncSubscription(event.data as Subscription, environment);
         break;
       default:
         break;

@@ -27,7 +27,7 @@ export default async function PricingPage() {
     prisma.plan.findMany({
       where: { isActive: true },
       orderBy: { priceMonthlyCents: "asc" },
-      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, isFeatured: true, allowsOwnKeys: true, paddlePriceId: true },
+      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, isFeatured: true, allowsOwnKeys: true, paddlePriceIdSandbox: true, paddlePriceIdProduction: true },
     }),
     getPaddleSettings(),
     getSessionUser(),
@@ -99,7 +99,8 @@ export default async function PricingPage() {
                         plan.isFeatured ? "bg-primary text-primary-foreground hover:bg-primary/90" : "border border-border bg-background text-foreground hover:bg-muted"
                       }`;
 
-                      if (plan.paddlePriceId && !isFree) {
+                      const priceId = paddleSettings.environment === "production" ? plan.paddlePriceIdProduction : plan.paddlePriceIdSandbox;
+                      if (priceId && !isFree) {
                         if (!user) {
                           return (
                             <Link href={`/register?callbackUrl=${encodeURIComponent("/pricing")}`} className={ctaClass}>
@@ -109,7 +110,7 @@ export default async function PricingPage() {
                         }
                         return (
                           <PaddleCheckoutButton
-                            priceId={plan.paddlePriceId}
+                            priceId={priceId}
                             clientToken={paddleSettings.clientToken}
                             environment={paddleSettings.environment}
                             userId={user.id}

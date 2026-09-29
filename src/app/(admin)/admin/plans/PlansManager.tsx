@@ -22,7 +22,9 @@ interface FormState {
   maxSeats: string;
   features: string;
   historyPerTool: string;
-  paddlePriceId: string;
+  // Separate ids because sandbox and production are separate Paddle accounts.
+  paddlePriceIdSandbox: string;
+  paddlePriceIdProduction: string;
   limits: Record<string, string>; // tool -> string input, blank = no override
   pools: Record<string, string>; // tool -> shared team pool per day, blank = no pool
 }
@@ -39,7 +41,8 @@ const EMPTY_FORM: FormState = {
   maxSeats: "0",
   features: "",
   historyPerTool: "20",
-  paddlePriceId: "",
+  paddlePriceIdSandbox: "",
+  paddlePriceIdProduction: "",
   limits: {},
   pools: {},
 };
@@ -63,7 +66,8 @@ function planToForm(plan: PlanRow): FormState {
     maxSeats: String(plan.maxSeats),
     features: plan.features,
     historyPerTool: String(plan.historyPerTool),
-    paddlePriceId: plan.paddlePriceId ?? "",
+    paddlePriceIdSandbox: plan.paddlePriceIdSandbox ?? "",
+    paddlePriceIdProduction: plan.paddlePriceIdProduction ?? "",
     limits,
     pools,
   };
@@ -115,7 +119,8 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
       allowsMultipleSessions: form.allowsMultipleSessions,
       maxSeats: Number(form.maxSeats || 0),
       historyPerTool: Number(form.historyPerTool),
-      paddlePriceId: form.paddlePriceId,
+      paddlePriceIdSandbox: form.paddlePriceIdSandbox,
+      paddlePriceIdProduction: form.paddlePriceIdProduction,
       limits: formToLimits(form),
     };
 
@@ -273,16 +278,30 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Paddle Price ID — leave blank for a free/no-checkout plan</label>
-                <input
-                  type="text"
-                  value={form.paddlePriceId}
-                  onChange={(e) => setForm({ ...form, paddlePriceId: e.target.value })}
-                  placeholder="pri_..."
-                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-                <p className="mt-1 text-[11px] text-muted-foreground">Create the matching product + monthly price in Paddle first, then paste its price id here.</p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Paddle Price ID (sandbox)</label>
+                  <input
+                    type="text"
+                    value={form.paddlePriceIdSandbox}
+                    onChange={(e) => setForm({ ...form, paddlePriceIdSandbox: e.target.value })}
+                    placeholder="pri_..."
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Paddle Price ID (production)</label>
+                  <input
+                    type="text"
+                    value={form.paddlePriceIdProduction}
+                    onChange={(e) => setForm({ ...form, paddlePriceIdProduction: e.target.value })}
+                    placeholder="pri_..."
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <p className="sm:col-span-2 -mt-1 text-[11px] text-muted-foreground">
+                  Leave both blank for a free/no-checkout plan. Sandbox and production are separate Paddle accounts, so create the matching product + price in each before pasting its id here.
+                </p>
               </div>
 
               <div>
