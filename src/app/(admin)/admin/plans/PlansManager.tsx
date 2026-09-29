@@ -197,7 +197,7 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {plans.map((plan) => (
-            <div key={plan.id} className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <div key={plan.id} className="bg-card border border-border rounded-2xl shadow-sm flex flex-col overflow-visible">
               <div className="p-5 border-b border-border flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
