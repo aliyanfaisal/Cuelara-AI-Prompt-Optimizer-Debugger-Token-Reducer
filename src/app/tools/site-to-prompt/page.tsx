@@ -13,6 +13,7 @@ import { pingExtension, analyseWithExtension, takePendingAnalysis } from "@/lib/
 import type { DesignDna } from "@/lib/site-to-prompt/types";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { notifyToolUsageChanged } from "@/lib/tool-usage-events";
+import { redirectIfDailyLimit } from "@/lib/quota-redirect";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
@@ -170,6 +171,7 @@ export default function SiteToPromptPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        if (redirectIfDailyLimit(data)) return;
         setError(data.error || "Something went wrong. Please try again.");
         setStage(dna ? "analysed" : "idle");
         return;
@@ -253,6 +255,7 @@ export default function SiteToPromptPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        if (redirectIfDailyLimit(data)) return;
         setError(data.error || "Something went wrong. Please try again.");
         setStage("analysed");
         return;
@@ -392,7 +395,11 @@ export default function SiteToPromptPage() {
                 {usage && usage.analysesLimit > 0 && (
                   <span>
                     <strong className="text-foreground">{usage.analysesRemaining}</strong> / {usage.analysesLimit} site analyses left today
-                    {!usage.isAuthenticated && <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>}
+                    {!usage.isAuthenticated ? (
+                      <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>
+                    ) : (
+                      usage.analysesRemaining === 0 && <> — <Link href="/pricing" className="text-primary hover:underline">upgrade for more</Link></>
+                    )}
                   </span>
                 )}
               </div>
@@ -636,7 +643,12 @@ export default function SiteToPromptPage() {
                   className="w-full px-3 py-2 rounded-lg border border-border bg-background text-xs text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:border-fuchsia-500/50" />
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span className="text-xs text-muted-foreground">
-                    {usage && usage.promptsLimit > 0 && <><strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} prompts left today</>}
+                    {usage && usage.promptsLimit > 0 && (
+                      <>
+                        <strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} prompts left today
+                        {usage.promptsRemaining === 0 && <> — <Link href="/pricing" className="text-primary hover:underline">upgrade for more</Link></>}
+                      </>
+                    )}
                   </span>
                   <button onClick={handleGenerate} disabled={busy || usage?.promptsRemaining === 0}
                     className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">

@@ -23,6 +23,7 @@ import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgre
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 import { InsertFromHistoryButton } from "@/components/tools/InsertFromHistoryButton";
 import { consumeToolHandoff } from "@/lib/tool-handoff";
+import { redirectIfDailyLimit } from "@/lib/quota-redirect";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -157,6 +158,7 @@ export default function IntelligenceScorePage() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        if (redirectIfDailyLimit(data)) return;
         setErrorMessage(data.error || "Something went wrong. Please try again.");
         setState("idle");
         return;
@@ -303,8 +305,10 @@ export default function IntelligenceScorePage() {
           {usage && (
             <span className="text-xs text-muted-foreground">
               <strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} scores left today
-              {!usage.isAuthenticated && (
+              {!usage.isAuthenticated ? (
                 <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>
+              ) : (
+                usage.promptsRemaining === 0 && <> — <Link href="/pricing" className="text-primary hover:underline">upgrade for more</Link></>
               )}
             </span>
           )}

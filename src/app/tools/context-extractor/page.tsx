@@ -12,6 +12,7 @@ import {
   BookOpen, Lock, Scale, DollarSign
 } from "lucide-react";
 import { countPromptTokens } from "@/lib/token-count";
+import { redirectIfDailyLimit } from "@/lib/quota-redirect";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
@@ -366,6 +367,7 @@ export default function ContextExtractorPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (redirectIfDailyLimit(data)) return;
         // A reused document that expired or no longer belongs to this session — drop
         // it so the next attempt falls through to a fresh upload instead of looping.
         if (data.expired) setDocumentId(null);
@@ -811,6 +813,9 @@ export default function ContextExtractorPage() {
                 wantsPrompt ? "prompts today" : "extractions today"
               )}
             </span>
+            {(documentsRemaining === 0 || promptsRemaining === 0) && (
+              <Link href="/pricing" className="text-primary hover:underline font-semibold">upgrade for more</Link>
+            )}
           </div>
 
           <button

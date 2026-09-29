@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     const limit = await getPromptBuilderLimit(subject);
 
     if (await hasReachedDailyLimit(subjectKey, TOOL, limit)) {
-      return NextResponse.json({ error: `You've used your ${limit} free prompts for today. Please try again tomorrow.` }, { status: 429 });
+      return NextResponse.json({ error: `You've used your ${limit} free prompts for today. Please try again tomorrow.`, code: "DAILY_LIMIT" }, { status: 429 });
     }
 
     const body = await req.json().catch(() => null);

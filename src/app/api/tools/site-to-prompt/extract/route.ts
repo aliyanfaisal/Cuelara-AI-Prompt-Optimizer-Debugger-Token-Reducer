@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     if (await hasReachedDailyLimit(subjectKey, EXTRACT_TOOL, extractLimit)) {
       return NextResponse.json(
-        { error: `You've used your ${extractLimit} free site analyses for today. Please try again tomorrow.` },
+        { error: `You've used your ${extractLimit} free site analyses for today. Please try again tomorrow.`, code: "DAILY_LIMIT" },
         { status: 429 }
       );
     }

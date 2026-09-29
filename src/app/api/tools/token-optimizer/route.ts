@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     if (await hasReachedDailyLimit(subjectKey, TOOL, limit)) {
       return NextResponse.json(
-        { error: `You've used your ${limit} free compressions for today. Please try again tomorrow.` },
+        { error: `You've used your ${limit} free compressions for today. Please try again tomorrow.`, code: "DAILY_LIMIT" },
         { status: 429 }
       );
     }

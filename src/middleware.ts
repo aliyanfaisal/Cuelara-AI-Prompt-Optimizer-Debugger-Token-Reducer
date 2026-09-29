@@ -13,6 +13,12 @@ export default withAuth(
       }
     }
 
+    // Already signed in: /login and /register are for signing in, not for a second session.
+    if ((pathname === "/login" || pathname === "/register") && token) {
+      const dest = (token.roles as string[])?.includes("ADMIN") ? "/admin/dashboard" : "/dashboard";
+      return NextResponse.redirect(new URL(dest, req.url));
+    }
+
     return NextResponse.next();
   },
   {
@@ -23,6 +29,7 @@ export default withAuth(
         // Admin routes and the user dashboard always require auth (signed-out visitors go to /login and come back).
         if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) return !!token;
 
+        // /login and /register stay public here — the redirect for an already-signed-in visitor happens above, in middleware().
         return true; // Allow public access by default
       },
     },
@@ -36,6 +43,8 @@ export const config = {
   matcher: [
     "/admin/:path*",
     "/dashboard/:path*",
+    "/login",
+    "/register",
     // Add other protected routes here later
   ],
 };

@@ -32,13 +32,13 @@ export async function POST(req: Request) {
 
     if (await hasReachedDailyLimit(subjectKey, DOCUMENT_TOOL, documentLimit)) {
       return NextResponse.json(
-        { error: `You've used your ${documentLimit} free document${documentLimit === 1 ? "" : "s"} for today. Please try again tomorrow.` },
+        { error: `You've used your ${documentLimit} free document${documentLimit === 1 ? "" : "s"} for today. Please try again tomorrow.`, code: "DAILY_LIMIT" },
         { status: 429 }
       );
     }
     if (await hasReachedDailyLimit(subjectKey, PROMPT_TOOL, promptLimit)) {
       return NextResponse.json(
-        { error: `You've used your ${promptLimit} free prompts for today. Please try again tomorrow.` },
+        { error: `You've used your ${promptLimit} free prompts for today. Please try again tomorrow.`, code: "DAILY_LIMIT" },
         { status: 429 }
       );
     }

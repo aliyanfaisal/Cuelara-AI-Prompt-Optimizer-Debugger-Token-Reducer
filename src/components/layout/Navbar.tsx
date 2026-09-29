@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { WandSparkles, Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText, Palette, LayoutDashboard } from "lucide-react";
+import { WandSparkles, Sparkles, TerminalSquare, BookOpen, Layers, Menu, X, ChevronDown, Zap, Code2, ShieldCheck, Terminal, ArrowRight, FileText, Palette, LayoutDashboard, CreditCard } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 const TOOLS_MENU = [
@@ -136,6 +136,10 @@ export function Navbar() {
                   <Terminal className="h-4 w-4 opacity-70" />
                   Docs
                 </Link>
+                <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 opacity-70" />
+                  Pricing
+                </Link>
               </motion.nav>
 
               {/* Desktop CTA */}
@@ -237,6 +241,9 @@ export function Navbar() {
               </Link>
               <Link href="/docs" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 text-base font-bold text-foreground py-2 px-2 hover:bg-muted rounded-xl transition-colors">
                 <Terminal className="h-4 w-4 text-muted-foreground" /> Docs
+              </Link>
+              <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 text-base font-bold text-foreground py-2 px-2 hover:bg-muted rounded-xl transition-colors">
+                <CreditCard className="h-4 w-4 text-muted-foreground" /> Pricing
               </Link>
             </div>
 

@@ -20,6 +20,7 @@ import { ToolExampleCarousel, type ToolExample } from "@/components/tools/ToolEx
 import { NextSteps, type NextStep } from "@/components/tools/NextSteps";
 import { InsertFromHistoryButton } from "@/components/tools/InsertFromHistoryButton";
 import { consumeToolHandoff } from "@/lib/tool-handoff";
+import { redirectIfDailyLimit } from "@/lib/quota-redirect";
 
 type GenerationState = "idle" | "loading" | "success";
 
@@ -185,6 +186,7 @@ export default function PromptDebuggerPage() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        if (redirectIfDailyLimit(data)) return;
         setErrorMessage(data.error || "Something went wrong. Please try again.");
         setState("idle");
         return;
@@ -231,6 +233,7 @@ export default function PromptDebuggerPage() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        if (redirectIfDailyLimit(data)) return;
         setApplyFixesError(data.error || "Something went wrong. Please try again.");
         return;
       }
@@ -372,8 +375,10 @@ export default function PromptDebuggerPage() {
             {usage && (
               <span>
                 <strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} audits left today
-                {!usage.isAuthenticated && (
+                {!usage.isAuthenticated ? (
                   <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>
+                ) : (
+                  usage.promptsRemaining === 0 && <> — <Link href="/pricing" className="text-primary hover:underline">upgrade for more</Link></>
                 )}
               </span>
             )}

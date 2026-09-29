@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AlertCircle } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/blog";
 import { getPaddleSettings } from "@/lib/paddle";
@@ -20,7 +21,10 @@ export const metadata: Metadata = {
   twitter: { card: "summary", title: TITLE, description: DESCRIPTION },
 };
 
-export default async function PricingPage() {
+export default async function PricingPage({ searchParams }: { searchParams: Promise<{ reason?: string; message?: string }> }) {
+  const { reason, message } = await searchParams;
+  const quotaMessage = reason === "quota" ? message || "You've reached your daily limit for this tool." : null;
+
   const [plans, paddleSettings, sessionUser] = await Promise.all([
     prisma.plan.findMany({
       where: { isActive: true },
@@ -73,6 +77,13 @@ export default async function PricingPage() {
         <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-primary/15 blur-[120px]" />
 
         <div className="relative z-10 mx-auto max-w-6xl">
+          {quotaMessage && (
+            <div className="mx-auto mb-8 flex max-w-2xl items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-sm text-amber-900 dark:text-amber-200">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span>{quotaMessage} Upgrade below for higher daily limits.</span>
+            </div>
+          )}
+
           <div className="mx-auto mb-14 max-w-2xl text-center">
             <h1 className="mb-4 text-4xl font-black tracking-tight text-foreground md:text-5xl">Simple, honest pricing</h1>
             <p className="text-lg text-muted-foreground">Start free with every tool. Upgrade when you need higher daily limits.</p>

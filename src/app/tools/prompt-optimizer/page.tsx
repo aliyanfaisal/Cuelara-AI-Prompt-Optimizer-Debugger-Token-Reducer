@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { MODES, LEVELS, type OptimizerMode, type OptimizerLevel } from "@/lib/prompt-optimizer/constants";
 import { splitStreamTrailer } from "@/lib/stream-protocol";
+import { redirectIfDailyLimit } from "@/lib/quota-redirect";
 import { countPromptTokens } from "@/lib/token-count";
 import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/components/tools/PromptOutputViewer";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
@@ -183,6 +184,7 @@ export default function PromptOptimizerPage() {
 
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
+        if (redirectIfDailyLimit(data)) return;
         setErrorMessage(data.error || "Something went wrong. Please try again.");
         setState("idle");
         return;
@@ -383,8 +385,10 @@ export default function PromptOptimizerPage() {
             {usage && (
               <span>
                 <strong className="text-foreground">{usage.promptsRemaining}</strong> / {usage.promptsLimit} optimizations left today
-                {!usage.isAuthenticated && (
+                {!usage.isAuthenticated ? (
                   <> — <Link href="/login" className="text-primary hover:underline">sign in for more</Link></>
+                ) : (
+                  usage.promptsRemaining === 0 && <> — <Link href="/pricing" className="text-primary hover:underline">upgrade for more</Link></>
                 )}
               </span>
             )}
