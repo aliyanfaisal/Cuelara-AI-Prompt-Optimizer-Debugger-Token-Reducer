@@ -2,7 +2,7 @@ import "server-only";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
 
-export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "contact", "error-alert", "team-invite", "newsletter"] as const;
+export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "payment-failed", "contact", "error-alert", "team-invite", "newsletter"] as const;
 export type EmailType = (typeof EMAIL_TYPES)[number];
 
 let transporter: nodemailer.Transporter | null = null;
@@ -162,6 +162,16 @@ export async function sendPlanChangeEmail(to: string, planName: string): Promise
   );
   const text = `Your Cuelara plan was updated to: ${planName}.\n\nGo to your tools: ${process.env.NEXTAUTH_URL || ""}/tools${textFooter()}`;
   await sendEmail({ type: "plan-change", to, subject: `Your Cuelara plan is now ${planName}`, html, text });
+}
+
+export async function sendPaymentFailedEmail(to: string, planName: string): Promise<void> {
+  const html = emailShell(
+    "We couldn't process your payment",
+    `<p>Your payment for the <strong>${planName}</strong> plan didn't go through. Your subscription is still active for now, but please update your card to avoid interruption.</p>
+     ${button(`${process.env.NEXTAUTH_URL || ""}/dashboard/payment-methods`, "Update payment method")}`
+  );
+  const text = `We couldn't process your payment for the ${planName} plan. Please update your card: ${process.env.NEXTAUTH_URL || ""}/dashboard/payment-methods${textFooter()}`;
+  await sendEmail({ type: "payment-failed", to, subject: "Payment failed for your Cuelara subscription", html, text });
 }
 
 /** Invites someone to a team workspace. The link is single-use and the recipient must sign in with this address. */

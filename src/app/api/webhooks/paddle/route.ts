@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { EventName, type Subscription, type Transaction } from "@paddle/paddle-node-sdk";
 import { prisma } from "@/lib/prisma";
-import { getPaddleClient, getPaddleSettings } from "@/lib/paddle";
+import { getPaddleClient, getPaddleSettings, type PaddleEnvironment } from "@/lib/paddle";
+import { sendPlanChangeEmail, sendPaymentFailedEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
-
-const ACTIVE_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 // Attribute a subscription event to one of our users: the checkout button sends our userId as
 // Paddle customData, which Paddle echoes back on every event for that subscription. Fall back to
@@ -23,27 +22,18 @@ async function findUserForSubscription(subscription: Subscription) {
   });
 }
 
-async function syncSubscription(subscription: Subscription, environment: "sandbox" | "production") {
+// Tracks subscription lifecycle (id/customer/status/renewal date) and handles cancellation, but never
+// grants a plan itself — a subscription can exist before its first payment actually succeeds, so
+// granting access happens only in syncTransaction, once a charge is confirmed paid.
+async function syncSubscription(subscription: Subscription) {
   const user = await findUserForSubscription(subscription);
   if (!user) return;
 
   const isCanceled = subscription.status === "canceled";
-  const priceId = subscription.items[0]?.price?.id ?? null;
-  const plan = priceId
-    ? await prisma.plan.findFirst({
-        where:
-          environment === "production"
-            ? { OR: [{ paddleMonthlyPriceIdProduction: priceId }, { paddleYearlyPriceIdProduction: priceId }] }
-            : { OR: [{ paddleMonthlyPriceIdSandbox: priceId }, { paddleYearlyPriceIdSandbox: priceId }] },
-      })
-    : null;
-
   let planId = user.planId;
   if (isCanceled) {
     const fallback = await prisma.plan.findFirst({ where: { isDefault: true } });
     planId = fallback?.id ?? null;
-  } else if (ACTIVE_STATUSES.has(subscription.status) && plan) {
-    planId = plan.id;
   }
 
   await prisma.user.update({
@@ -76,12 +66,21 @@ async function findUserForTransaction(transaction: Transaction) {
   return prisma.user.findFirst({ where: { OR: or } });
 }
 
+type TransactionOutcome = "confirmed" | "failed" | "other";
+
 // One row per charge (initial subscription payment or a renewal), for the payment-history table on
-// /dashboard/payment-methods. Also the only place the card-on-file summary (brand/last4/expiry) is
-// updated — Paddle attaches the payment method actually used to each transaction's payment attempts.
-async function syncTransaction(transaction: Transaction) {
+// /dashboard/payment-methods. Also where the card-on-file summary is updated, the plan is actually
+// granted (only once a charge is confirmed paid — never on subscription creation alone), and the
+// success/failure email goes out. "outcome" comes from which webhook event fired (not transaction.status,
+// which never actually holds a "payment_failed" value — that only exists as an event name). Both the
+// grant and the email fire at most once per transaction id, guarded by whether we'd already recorded it —
+// webhooks can and do redeliver the same event.
+async function syncTransaction(transaction: Transaction, environment: PaddleEnvironment, outcome: TransactionOutcome) {
   const user = await findUserForTransaction(transaction);
   if (!user) return;
+
+  const previous = await prisma.paymentTransaction.findUnique({ where: { paddleTransactionId: transaction.id }, select: { id: true } });
+  const isFirstTimeSeen = !previous;
 
   const totals = transaction.details?.totals;
   const amountCents = totals ? Math.round(Number(totals.grandTotal)) : 0;
@@ -106,6 +105,26 @@ async function syncTransaction(transaction: Transaction) {
       where: { id: user.id },
       data: { cardBrand: card.type, cardLast4: card.last4, cardExpiryMonth: card.expiryMonth, cardExpiryYear: card.expiryYear },
     });
+  }
+
+  if (outcome === "confirmed" && isFirstTimeSeen) {
+    const priceId = transaction.items[0]?.price?.id ?? null;
+    const plan = priceId
+      ? await prisma.plan.findFirst({
+          where:
+            environment === "production"
+              ? { OR: [{ paddleMonthlyPriceIdProduction: priceId }, { paddleYearlyPriceIdProduction: priceId }] }
+              : { OR: [{ paddleMonthlyPriceIdSandbox: priceId }, { paddleYearlyPriceIdSandbox: priceId }] },
+        })
+      : null;
+
+    if (plan) {
+      await prisma.user.update({ where: { id: user.id }, data: { planId: plan.id } });
+      if (user.email) await sendPlanChangeEmail(user.email, plan.name).catch((e) => console.error("Plan change email failed:", e));
+    }
+  } else if (outcome === "failed" && isFirstTimeSeen) {
+    const plan = user.planId ? await prisma.plan.findUnique({ where: { id: user.planId }, select: { name: true } }) : null;
+    if (user.email) await sendPaymentFailedEmail(user.email, plan?.name ?? "your plan").catch((e) => console.error("Payment failed email failed:", e));
   }
 }
 
@@ -135,15 +154,19 @@ export async function POST(request: Request) {
       case EventName.SubscriptionPaused:
       case EventName.SubscriptionResumed:
       case EventName.SubscriptionCanceled:
-        await syncSubscription(event.data as Subscription, environment);
+        await syncSubscription(event.data as Subscription);
         break;
-      case EventName.TransactionBilled:
       case EventName.TransactionPaid:
       case EventName.TransactionCompleted:
-      case EventName.TransactionPastDue:
+        await syncTransaction(event.data as Transaction, environment, "confirmed");
+        break;
       case EventName.TransactionPaymentFailed:
+        await syncTransaction(event.data as Transaction, environment, "failed");
+        break;
+      case EventName.TransactionBilled:
+      case EventName.TransactionPastDue:
       case EventName.TransactionCanceled:
-        await syncTransaction(event.data as Transaction);
+        await syncTransaction(event.data as Transaction, environment, "other");
         break;
       default:
         break;

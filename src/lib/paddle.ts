@@ -71,14 +71,15 @@ export async function getPaddleClientFor(environment: PaddleEnvironment): Promis
 // with this id (Checkout.open({ transactionId })) shows Paddle's card form inline on our own page,
 // instead of sending the customer to a Paddle-hosted URL. Null if Paddle isn't configured or the
 // subscription can't be found (e.g. already canceled).
-export async function getPaymentMethodChangeTransactionId(subscriptionId: string): Promise<string | null> {
+export async function getPaymentMethodChangeTransactionId(subscriptionId: string): Promise<{ transactionId: string } | { error: string }> {
   const paddle = await getPaddleClient();
-  if (!paddle) return null;
+  if (!paddle) return { error: "Paddle is not configured." };
   try {
     const transaction = await paddle.subscriptions.getPaymentMethodChangeTransaction(subscriptionId);
-    return transaction.id;
-  } catch {
-    return null;
+    return { transactionId: transaction.id };
+  } catch (err) {
+    console.error("getPaymentMethodChangeTransaction failed:", err);
+    return { error: err instanceof Error ? err.message : "Failed to start the card update." };
   }
 }
 

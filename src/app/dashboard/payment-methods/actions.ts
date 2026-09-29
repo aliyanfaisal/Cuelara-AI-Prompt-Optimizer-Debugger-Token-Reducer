@@ -17,9 +17,9 @@ export async function requestCardUpdateTransaction(): Promise<Result<{ transacti
   const user = await prisma.user.findUnique({ where: { id: session.id }, select: { paddleSubscriptionId: true } });
   if (!user?.paddleSubscriptionId) return { error: "No active subscription to update." };
 
-  const transactionId = await getPaymentMethodChangeTransactionId(user.paddleSubscriptionId);
-  if (!transactionId) return { error: "Couldn't start the card update. Try again shortly." };
-  return { success: true, transactionId };
+  const result = await getPaymentMethodChangeTransactionId(user.paddleSubscriptionId);
+  if ("error" in result) return { error: result.error };
+  return { success: true, transactionId: result.transactionId };
 }
 
 export async function cancelMySubscription(): Promise<Result> {
