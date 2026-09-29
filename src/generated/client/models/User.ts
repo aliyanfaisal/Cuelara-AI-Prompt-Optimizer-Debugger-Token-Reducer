@@ -34,6 +34,10 @@ export type UserMinAggregateOutputType = {
   isActive: boolean | null
   createdAt: Date | null
   planId: string | null
+  paddleCustomerId: string | null
+  paddleSubscriptionId: string | null
+  subscriptionStatus: string | null
+  currentPeriodEnd: Date | null
   activeSessionId: string | null
 }
 
@@ -47,6 +51,10 @@ export type UserMaxAggregateOutputType = {
   isActive: boolean | null
   createdAt: Date | null
   planId: string | null
+  paddleCustomerId: string | null
+  paddleSubscriptionId: string | null
+  subscriptionStatus: string | null
+  currentPeriodEnd: Date | null
   activeSessionId: string | null
 }
 
@@ -60,6 +68,10 @@ export type UserCountAggregateOutputType = {
   isActive: number
   createdAt: number
   planId: number
+  paddleCustomerId: number
+  paddleSubscriptionId: number
+  subscriptionStatus: number
+  currentPeriodEnd: number
   activeSessionId: number
   _all: number
 }
@@ -75,6 +87,10 @@ export type UserMinAggregateInputType = {
   isActive?: true
   createdAt?: true
   planId?: true
+  paddleCustomerId?: true
+  paddleSubscriptionId?: true
+  subscriptionStatus?: true
+  currentPeriodEnd?: true
   activeSessionId?: true
 }
 
@@ -88,6 +104,10 @@ export type UserMaxAggregateInputType = {
   isActive?: true
   createdAt?: true
   planId?: true
+  paddleCustomerId?: true
+  paddleSubscriptionId?: true
+  subscriptionStatus?: true
+  currentPeriodEnd?: true
   activeSessionId?: true
 }
 
@@ -101,6 +121,10 @@ export type UserCountAggregateInputType = {
   isActive?: true
   createdAt?: true
   planId?: true
+  paddleCustomerId?: true
+  paddleSubscriptionId?: true
+  subscriptionStatus?: true
+  currentPeriodEnd?: true
   activeSessionId?: true
   _all?: true
 }
@@ -187,6 +211,10 @@ export type UserGroupByOutputType = {
   isActive: boolean
   createdAt: Date
   planId: string | null
+  paddleCustomerId: string | null
+  paddleSubscriptionId: string | null
+  subscriptionStatus: string | null
+  currentPeriodEnd: Date | null
   activeSessionId: string | null
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
@@ -221,6 +249,10 @@ export type UserWhereInput = {
   isActive?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   planId?: Prisma.StringNullableFilter<"User"> | string | null
+  paddleCustomerId?: Prisma.StringNullableFilter<"User"> | string | null
+  paddleSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
+  subscriptionStatus?: Prisma.StringNullableFilter<"User"> | string | null
+  currentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   activeSessionId?: Prisma.StringNullableFilter<"User"> | string | null
   roles?: Prisma.RoleListRelationFilter
   plan?: Prisma.XOR<Prisma.PlanNullableScalarRelationFilter, Prisma.PlanWhereInput> | null
@@ -249,6 +281,10 @@ export type UserOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   planId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   activeSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   roles?: Prisma.RoleOrderByRelationAggregateInput
   plan?: Prisma.PlanOrderByWithRelationInput
@@ -280,6 +316,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   planId?: Prisma.StringNullableFilter<"User"> | string | null
+  paddleCustomerId?: Prisma.StringNullableFilter<"User"> | string | null
+  paddleSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
+  subscriptionStatus?: Prisma.StringNullableFilter<"User"> | string | null
+  currentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   activeSessionId?: Prisma.StringNullableFilter<"User"> | string | null
   roles?: Prisma.RoleListRelationFilter
   plan?: Prisma.XOR<Prisma.PlanNullableScalarRelationFilter, Prisma.PlanWhereInput> | null
@@ -308,6 +348,10 @@ export type UserOrderByWithAggregationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   planId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   activeSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -327,6 +371,10 @@ export type UserScalarWhereWithAggregatesInput = {
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   planId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  paddleCustomerId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  paddleSubscriptionId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  subscriptionStatus?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  currentPeriodEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   activeSessionId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
@@ -339,6 +387,10 @@ export type UserCreateInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -367,6 +419,10 @@ export type UserUncheckedCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -393,6 +449,10 @@ export type UserUpdateInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -421,6 +481,10 @@ export type UserUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -448,6 +512,10 @@ export type UserCreateManyInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
 }
 
@@ -460,6 +528,10 @@ export type UserUpdateManyMutationInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -473,6 +545,10 @@ export type UserUncheckedUpdateManyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -496,6 +572,10 @@ export type UserCountOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  paddleCustomerId?: Prisma.SortOrder
+  paddleSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrder
   activeSessionId?: Prisma.SortOrder
 }
 
@@ -509,6 +589,10 @@ export type UserMaxOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  paddleCustomerId?: Prisma.SortOrder
+  paddleSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrder
   activeSessionId?: Prisma.SortOrder
 }
 
@@ -522,6 +606,10 @@ export type UserMinOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  paddleCustomerId?: Prisma.SortOrder
+  paddleSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrder
   activeSessionId?: Prisma.SortOrder
 }
 
@@ -808,6 +896,10 @@ export type UserCreateWithoutApiKeysInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -835,6 +927,10 @@ export type UserUncheckedCreateWithoutApiKeysInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
@@ -876,6 +972,10 @@ export type UserUpdateWithoutApiKeysInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -903,6 +1003,10 @@ export type UserUncheckedUpdateWithoutApiKeysInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
@@ -928,6 +1032,10 @@ export type UserCreateWithoutModelConfigInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -955,6 +1063,10 @@ export type UserUncheckedCreateWithoutModelConfigInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -996,6 +1108,10 @@ export type UserUpdateWithoutModelConfigInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -1023,6 +1139,10 @@ export type UserUncheckedUpdateWithoutModelConfigInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -1048,6 +1168,10 @@ export type UserCreateWithoutAccountsInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -1075,6 +1199,10 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -1116,6 +1244,10 @@ export type UserUpdateWithoutAccountsInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -1143,6 +1275,10 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -1168,6 +1304,10 @@ export type UserCreateWithoutSessionsInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -1195,6 +1335,10 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -1236,6 +1380,10 @@ export type UserUpdateWithoutSessionsInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -1263,6 +1411,10 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -1288,6 +1440,10 @@ export type UserCreateWithoutRolesInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
@@ -1315,6 +1471,10 @@ export type UserUncheckedCreateWithoutRolesInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
@@ -1365,6 +1525,10 @@ export type UserScalarWhereInput = {
   isActive?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   planId?: Prisma.StringNullableFilter<"User"> | string | null
+  paddleCustomerId?: Prisma.StringNullableFilter<"User"> | string | null
+  paddleSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
+  subscriptionStatus?: Prisma.StringNullableFilter<"User"> | string | null
+  currentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   activeSessionId?: Prisma.StringNullableFilter<"User"> | string | null
 }
 
@@ -1377,6 +1541,10 @@ export type UserCreateWithoutActivationTokensInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -1404,6 +1572,10 @@ export type UserUncheckedCreateWithoutActivationTokensInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -1445,6 +1617,10 @@ export type UserUpdateWithoutActivationTokensInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -1472,6 +1648,10 @@ export type UserUncheckedUpdateWithoutActivationTokensInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -1497,6 +1677,10 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -1524,6 +1708,10 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -1565,6 +1753,10 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -1592,6 +1784,10 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -1617,6 +1813,10 @@ export type UserCreateWithoutPlanInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
@@ -1643,6 +1843,10 @@ export type UserUncheckedCreateWithoutPlanInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -1695,6 +1899,10 @@ export type UserCreateWithoutToolRunsInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -1722,6 +1930,10 @@ export type UserUncheckedCreateWithoutToolRunsInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -1763,6 +1975,10 @@ export type UserUpdateWithoutToolRunsInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -1790,6 +2006,10 @@ export type UserUncheckedUpdateWithoutToolRunsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -1815,6 +2035,10 @@ export type UserCreateWithoutPersonalAccessTokensInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -1842,6 +2066,10 @@ export type UserUncheckedCreateWithoutPersonalAccessTokensInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -1883,6 +2111,10 @@ export type UserUpdateWithoutPersonalAccessTokensInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -1910,6 +2142,10 @@ export type UserUncheckedUpdateWithoutPersonalAccessTokensInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -1935,6 +2171,10 @@ export type UserCreateWithoutWorkspacesInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -1962,6 +2202,10 @@ export type UserUncheckedCreateWithoutWorkspacesInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -2003,6 +2247,10 @@ export type UserUpdateWithoutWorkspacesInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -2030,6 +2278,10 @@ export type UserUncheckedUpdateWithoutWorkspacesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -2055,6 +2307,10 @@ export type UserCreateWithoutWorkspaceMembershipsInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -2082,6 +2338,10 @@ export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -2123,6 +2383,10 @@ export type UserUpdateWithoutWorkspaceMembershipsInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -2150,6 +2414,10 @@ export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -2175,6 +2443,10 @@ export type UserCreateWithoutSentInvitesInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -2202,6 +2474,10 @@ export type UserUncheckedCreateWithoutSentInvitesInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -2243,6 +2519,10 @@ export type UserUpdateWithoutSentInvitesInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -2270,6 +2550,10 @@ export type UserUncheckedUpdateWithoutSentInvitesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -2295,6 +2579,10 @@ export type UserCreateWithoutSavedPromptsInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -2322,6 +2610,10 @@ export type UserUncheckedCreateWithoutSavedPromptsInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -2363,6 +2655,10 @@ export type UserUpdateWithoutSavedPromptsInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -2390,6 +2686,10 @@ export type UserUncheckedUpdateWithoutSavedPromptsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -2415,6 +2715,10 @@ export type UserCreateWithoutPromptsInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
@@ -2442,6 +2746,10 @@ export type UserUncheckedCreateWithoutPromptsInput = {
   isActive?: boolean
   createdAt?: Date | string
   planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
@@ -2483,6 +2791,10 @@ export type UserUpdateWithoutPromptsInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
@@ -2510,6 +2822,10 @@ export type UserUncheckedUpdateWithoutPromptsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -2535,6 +2851,10 @@ export type UserUpdateWithoutRolesInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
@@ -2562,6 +2882,10 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
@@ -2588,6 +2912,10 @@ export type UserUncheckedUpdateManyWithoutRolesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -2600,6 +2928,10 @@ export type UserCreateManyPlanInput = {
   password?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
   activeSessionId?: string | null
 }
 
@@ -2612,6 +2944,10 @@ export type UserUpdateWithoutPlanInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
@@ -2638,6 +2974,10 @@ export type UserUncheckedUpdateWithoutPlanInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -2664,6 +3004,10 @@ export type UserUncheckedUpdateManyWithoutPlanInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -2816,6 +3160,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   isActive?: boolean
   createdAt?: boolean
   planId?: boolean
+  paddleCustomerId?: boolean
+  paddleSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  currentPeriodEnd?: boolean
   activeSessionId?: boolean
   roles?: boolean | Prisma.User$rolesArgs<ExtArgs>
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
@@ -2845,6 +3193,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isActive?: boolean
   createdAt?: boolean
   planId?: boolean
+  paddleCustomerId?: boolean
+  paddleSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  currentPeriodEnd?: boolean
   activeSessionId?: boolean
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -2859,6 +3211,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isActive?: boolean
   createdAt?: boolean
   planId?: boolean
+  paddleCustomerId?: boolean
+  paddleSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  currentPeriodEnd?: boolean
   activeSessionId?: boolean
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -2873,10 +3229,14 @@ export type UserSelectScalar = {
   isActive?: boolean
   createdAt?: boolean
   planId?: boolean
+  paddleCustomerId?: boolean
+  paddleSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  currentPeriodEnd?: boolean
   activeSessionId?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "password" | "isActive" | "createdAt" | "planId" | "activeSessionId", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "password" | "isActive" | "createdAt" | "planId" | "paddleCustomerId" | "paddleSubscriptionId" | "subscriptionStatus" | "currentPeriodEnd" | "activeSessionId", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | Prisma.User$rolesArgs<ExtArgs>
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
@@ -2931,6 +3291,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     isActive: boolean
     createdAt: Date
     planId: string | null
+    paddleCustomerId: string | null
+    paddleSubscriptionId: string | null
+    subscriptionStatus: string | null
+    currentPeriodEnd: Date | null
     activeSessionId: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -3379,6 +3743,10 @@ export interface UserFieldRefs {
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly planId: Prisma.FieldRef<"User", 'String'>
+  readonly paddleCustomerId: Prisma.FieldRef<"User", 'String'>
+  readonly paddleSubscriptionId: Prisma.FieldRef<"User", 'String'>
+  readonly subscriptionStatus: Prisma.FieldRef<"User", 'String'>
+  readonly currentPeriodEnd: Prisma.FieldRef<"User", 'DateTime'>
   readonly activeSessionId: Prisma.FieldRef<"User", 'String'>
 }
     

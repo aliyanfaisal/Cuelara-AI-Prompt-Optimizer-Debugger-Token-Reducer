@@ -4,6 +4,9 @@ import { Check, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/blog";
 import { formatPlanPrice, planFeatures } from "@/lib/pricing";
+import { getPaddleSettings } from "@/lib/paddle";
+import { getSessionUser } from "@/lib/session-user";
+import PaddleCheckoutButton from "@/components/PaddleCheckoutButton";
 
 // Plans are edited in the admin, so the page reads them live.
 export const dynamic = "force-dynamic";
@@ -20,11 +23,17 @@ export const metadata: Metadata = {
 };
 
 export default async function PricingPage() {
-  const plans = await prisma.plan.findMany({
-    where: { isActive: true },
-    orderBy: { priceMonthlyCents: "asc" },
-    select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, isFeatured: true, allowsOwnKeys: true },
-  });
+  const [plans, paddleSettings, sessionUser] = await Promise.all([
+    prisma.plan.findMany({
+      where: { isActive: true },
+      orderBy: { priceMonthlyCents: "asc" },
+      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, isFeatured: true, allowsOwnKeys: true, paddlePriceId: true },
+    }),
+    getPaddleSettings(),
+    getSessionUser(),
+  ]);
+
+  const user = sessionUser ? await prisma.user.findUnique({ where: { id: sessionUser.id }, select: { id: true, email: true } }) : null;
 
   const base = siteUrl();
   const jsonLd = {
@@ -85,14 +94,42 @@ export default async function PricingPage() {
                       {price.period && <span className="text-sm font-medium text-muted-foreground">{price.period}</span>}
                     </p>
 
-                    <Link
-                      href={plan.allowsOwnKeys ? "/dashboard/models" : isFree ? "/register" : `/contact?plan=${plan.slug}`}
-                      className={`mt-8 inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-bold transition-colors ${
+                    {(() => {
+                      const ctaClass = `mt-8 inline-flex h-12 w-full items-center justify-center rounded-xl px-6 text-sm font-bold transition-colors ${
                         plan.isFeatured ? "bg-primary text-primary-foreground hover:bg-primary/90" : "border border-border bg-background text-foreground hover:bg-muted"
-                      }`}
-                    >
-                      {plan.allowsOwnKeys ? "Add your own keys" : isFree ? "Get started free" : "Contact us"}
-                    </Link>
+                      }`;
+
+                      if (plan.paddlePriceId && !isFree) {
+                        if (!user) {
+                          return (
+                            <Link href={`/register?callbackUrl=${encodeURIComponent("/pricing")}`} className={ctaClass}>
+                              Sign up to subscribe
+                            </Link>
+                          );
+                        }
+                        return (
+                          <PaddleCheckoutButton
+                            priceId={plan.paddlePriceId}
+                            clientToken={paddleSettings.clientToken}
+                            environment={paddleSettings.environment}
+                            userId={user.id}
+                            userEmail={user.email ?? ""}
+                            className={ctaClass}
+                          >
+                            Subscribe
+                          </PaddleCheckoutButton>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          href={plan.allowsOwnKeys ? "/dashboard/models" : isFree ? "/register" : `/contact?plan=${plan.slug}`}
+                          className={ctaClass}
+                        >
+                          {plan.allowsOwnKeys ? "Add your own keys" : isFree ? "Get started free" : "Contact us"}
+                        </Link>
+                      );
+                    })()}
 
                     <ul className="mt-8 space-y-3 border-t border-border pt-8 text-sm text-foreground/90">
                       {planFeatures(plan.features).map((feature) => (

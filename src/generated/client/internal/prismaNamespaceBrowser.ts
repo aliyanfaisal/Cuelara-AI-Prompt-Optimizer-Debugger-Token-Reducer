@@ -347,6 +347,10 @@ export const UserScalarFieldEnum = {
   isActive: 'isActive',
   createdAt: 'createdAt',
   planId: 'planId',
+  paddleCustomerId: 'paddleCustomerId',
+  paddleSubscriptionId: 'paddleSubscriptionId',
+  subscriptionStatus: 'subscriptionStatus',
+  currentPeriodEnd: 'currentPeriodEnd',
   activeSessionId: 'activeSessionId'
 } as const
 
@@ -400,6 +404,7 @@ export const PlanScalarFieldEnum = {
   allowsOwnKeys: 'allowsOwnKeys',
   allowsMultipleSessions: 'allowsMultipleSessions',
   maxSeats: 'maxSeats',
+  paddlePriceId: 'paddlePriceId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

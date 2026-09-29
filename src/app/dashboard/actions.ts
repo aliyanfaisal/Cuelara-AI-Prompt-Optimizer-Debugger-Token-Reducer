@@ -7,6 +7,7 @@ import { sendContactNotificationEmail, sendContactReceiptEmail, sendPlanChangeEm
 import { getEffectivePlan } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/session-user";
+import { cancelPaddleSubscription } from "@/lib/paddle";
 
 type Result = { success: true; message?: string } | { error: string };
 
@@ -95,7 +96,7 @@ export async function downgradePlan(planId: string): Promise<Result> {
   if (!session) return UNAUTHORIZED;
 
   const [user, current, target] = await Promise.all([
-    prisma.user.findUnique({ where: { id: session.id }, select: { email: true } }),
+    prisma.user.findUnique({ where: { id: session.id }, select: { email: true, paddleSubscriptionId: true } }),
     getEffectivePlan(session.id),
     prisma.plan.findFirst({ where: { id: planId, isActive: true }, select: { id: true, name: true, priceMonthlyCents: true, historyPerTool: true } }),
   ]);
@@ -104,7 +105,17 @@ export async function downgradePlan(planId: string): Promise<Result> {
     return { error: "You can only move to a cheaper plan here. Upgrades are arranged with our team." };
   }
 
-  await prisma.user.update({ where: { id: session.id }, data: { planId: target.id } });
+  // Leaving a plan that's billed through Paddle: stop the billing right away so they aren't
+  // charged again for a plan they just left. The webhook that fires from this also syncs the row,
+  // but we update it here too so the new plan takes effect immediately rather than waiting on it.
+  if (user.paddleSubscriptionId) {
+    await cancelPaddleSubscription(user.paddleSubscriptionId).catch((e) => console.error("Paddle cancel failed:", e));
+  }
+
+  await prisma.user.update({
+    where: { id: session.id },
+    data: { planId: target.id, paddleSubscriptionId: null, subscriptionStatus: user.paddleSubscriptionId ? "canceled" : undefined },
+  });
   // The smaller plan keeps fewer runs per tool, so trim now rather than leaving history the plan doesn't include.
   await pruneToolRuns(session.id, target.historyPerTool);
   if (user.email) await sendPlanChangeEmail(user.email, target.name).catch((e) => console.error("Plan change email failed:", e));

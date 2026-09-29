@@ -22,3 +22,9 @@ export const MODEL_ORDER_KEY = "AI_MODEL_ORDER";
 export const OPENROUTER_SELECTED_MODELS_KEY = "OPENROUTER_SELECTED_MODELS";
 export const PROMPT_BUILDER_DAILY_LIMIT_KEY = "PROMPT_BUILDER_DAILY_LIMIT";
 export const PROMPT_BUILDER_DAILY_LIMIT_AUTH_KEY = "PROMPT_BUILDER_DAILY_LIMIT_AUTH";
+
+// Paddle (payments) — all controlled from /admin/settings, Payments tab. See src/lib/paddle.ts.
+export const PADDLE_ENVIRONMENT_KEY = "PADDLE_ENVIRONMENT"; // "sandbox" | "production"
+export const PADDLE_API_KEY_KEY = "PADDLE_API_KEY"; // server-side secret key, used for the Paddle Node SDK
+export const PADDLE_CLIENT_TOKEN_KEY = "PADDLE_CLIENT_TOKEN"; // public token, safe to send to the browser for Paddle.js checkout
+export const PADDLE_WEBHOOK_SECRET_KEY = "PADDLE_WEBHOOK_SECRET"; // verifies incoming /api/webhooks/paddle requests

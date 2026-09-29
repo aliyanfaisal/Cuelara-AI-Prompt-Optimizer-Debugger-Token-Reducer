@@ -26,6 +26,7 @@ export interface PlanRow {
   allowsMultipleSessions: boolean;
   maxSeats: number;
   historyPerTool: number;
+  paddlePriceId: string | null;
   createdAt: string;
   userCount: number;
   limits: { tool: string; dailyLimit: number; teamDailyLimit: number | null }[];
@@ -51,6 +52,7 @@ export async function getPlans(): Promise<PlanRow[]> {
     allowsMultipleSessions: p.allowsMultipleSessions,
     maxSeats: p.maxSeats,
     historyPerTool: p.historyPerTool,
+    paddlePriceId: p.paddlePriceId,
     createdAt: p.createdAt.toISOString(),
     userCount: p._count.users,
     limits: p.limits.map((l) => ({ tool: l.tool, dailyLimit: l.dailyLimit, teamDailyLimit: l.teamDailyLimit })),
@@ -92,6 +94,7 @@ export async function createPlan(data: {
   allowsMultipleSessions: boolean;
   maxSeats: number;
   historyPerTool: number;
+  paddlePriceId: string;
   limits: PlanLimitInput[];
 }) {
   await assertAdmin();
@@ -126,6 +129,7 @@ export async function createPlan(data: {
           allowsMultipleSessions: data.allowsMultipleSessions,
           maxSeats: Math.max(0, Math.min(1000, Math.floor(data.maxSeats) || 0)),
           historyPerTool: Math.floor(data.historyPerTool),
+          paddlePriceId: data.paddlePriceId.trim() || null,
           limits: { create: clean },
         },
       });
@@ -155,6 +159,7 @@ export async function updatePlan(
     allowsMultipleSessions: boolean;
     maxSeats: number;
     historyPerTool: number;
+    paddlePriceId: string;
     limits: PlanLimitInput[];
   }
 ) {
@@ -188,6 +193,7 @@ export async function updatePlan(
           allowsMultipleSessions: data.allowsMultipleSessions,
           maxSeats: Math.max(0, Math.min(1000, Math.floor(data.maxSeats) || 0)),
           historyPerTool: Math.floor(data.historyPerTool),
+          paddlePriceId: data.paddlePriceId.trim() || null,
         },
       });
       // Simplest consistent way to sync the limit set: replace it wholesale.
