@@ -55,7 +55,7 @@ export default function PricingPlans({
         </div>
       )}
 
-      <div className={`mx-auto grid grid-cols-1 gap-6 ${plans.length >= 3 ? "lg:grid-cols-3" : "max-w-3xl md:grid-cols-2"}`}>
+      <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2">
         {plans.map((plan) => {
           const usingYearly = interval === "year" && plan.priceYearlyCents > 0;
           const cents = usingYearly ? plan.priceYearlyCents : plan.priceMonthlyCents;

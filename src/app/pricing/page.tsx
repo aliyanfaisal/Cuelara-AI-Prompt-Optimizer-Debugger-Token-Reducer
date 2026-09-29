@@ -95,9 +95,7 @@ export default async function PricingPage({ searchParams }: { searchParams: Prom
             <PricingPlans plans={plans} paddleSettings={paddleSettings} user={user} />
           )}
 
-          <p className="mt-12 text-center text-sm text-muted-foreground">
-            Paid plans are set up by our team for now: <Link href="/contact" className="font-semibold text-primary hover:underline">contact us</Link> and we&apos;ll get you started.
-          </p>
+
         </div>
       </section>
     </div>

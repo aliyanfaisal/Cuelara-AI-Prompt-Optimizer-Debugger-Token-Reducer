@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { EventName, type Subscription, type Transaction } from "@paddle/paddle-node-sdk";
 import { prisma } from "@/lib/prisma";
 import { getPaddleClient, getPaddleSettings, type PaddleEnvironment } from "@/lib/paddle";
-import { sendPlanChangeEmail, sendPaymentFailedEmail } from "@/lib/email";
+import { sendPlanChangeEmail, sendPaymentReceiptEmail, sendPaymentFailedEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -119,8 +119,16 @@ async function syncTransaction(transaction: Transaction, environment: PaddleEnvi
       : null;
 
     if (plan) {
+      const isNewPlan = user.planId !== plan.id;
       await prisma.user.update({ where: { id: user.id }, data: { planId: plan.id } });
-      if (user.email) await sendPlanChangeEmail(user.email, plan.name).catch((e) => console.error("Plan change email failed:", e));
+      if (user.email) {
+        // "Your plan is now X" only makes sense the first time (or after switching plans) — a renewal
+        // keeps the same plan, so it just gets the receipt below, not a redundant "plan changed" email.
+        if (isNewPlan) await sendPlanChangeEmail(user.email, plan.name).catch((e) => console.error("Plan change email failed:", e));
+        await sendPaymentReceiptEmail(user.email, { planName: plan.name, amountCents, currencyCode, billedAt: transaction.billedAt ? new Date(transaction.billedAt) : new Date() }).catch((e) =>
+          console.error("Payment receipt email failed:", e)
+        );
+      }
     }
   } else if (outcome === "failed" && isFirstTimeSeen) {
     const plan = user.planId ? await prisma.plan.findUnique({ where: { id: user.planId }, select: { name: true } }) : null;

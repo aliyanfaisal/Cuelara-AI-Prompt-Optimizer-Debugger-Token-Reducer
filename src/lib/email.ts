@@ -2,7 +2,7 @@ import "server-only";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
 
-export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "payment-failed", "contact", "error-alert", "team-invite", "newsletter"] as const;
+export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "payment-receipt", "payment-failed", "contact", "error-alert", "team-invite", "newsletter"] as const;
 export type EmailType = (typeof EMAIL_TYPES)[number];
 
 let transporter: nodemailer.Transporter | null = null;
@@ -162,6 +162,32 @@ export async function sendPlanChangeEmail(to: string, planName: string): Promise
   );
   const text = `Your Cuelara plan was updated to: ${planName}.\n\nGo to your tools: ${process.env.NEXTAUTH_URL || ""}/tools${textFooter()}`;
   await sendEmail({ type: "plan-change", to, subject: `Your Cuelara plan is now ${planName}`, html, text });
+}
+
+function formatMoney(cents: number, currencyCode: string): string {
+  try {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: currencyCode }).format(cents / 100);
+  } catch {
+    return `${(cents / 100).toFixed(2)} ${currencyCode}`;
+  }
+}
+
+/**
+ * Sent alongside sendPlanChangeEmail for every confirmed charge (not just the first one — renewals
+ * get this too). Paddle, as merchant of record, also emails the customer its own tax receipt/invoice
+ * separately; this is Cuelara's own confirmation with the same amount, for a second, faster paper trail.
+ */
+export async function sendPaymentReceiptEmail(to: string, params: { planName: string; amountCents: number; currencyCode: string; billedAt: Date }): Promise<void> {
+  const amount = formatMoney(params.amountCents, params.currencyCode);
+  const date = params.billedAt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const html = emailShell(
+    "Payment received",
+    `<p>We received your payment of <strong>${amount}</strong> for the <strong>${params.planName}</strong> plan on ${date}.</p>
+     <p style="color:#71717a;font-size:13px;">This is Cuelara's confirmation. Paddle, our payment processor, sends a separate tax receipt to this same email.</p>
+     ${button(`${process.env.NEXTAUTH_URL || ""}/dashboard/payment-methods`, "View billing history")}`
+  );
+  const text = `We received your payment of ${amount} for the ${params.planName} plan on ${date}.\n\nThis is Cuelara's confirmation. Paddle, our payment processor, sends a separate tax receipt to this same email.\n\nView billing history: ${process.env.NEXTAUTH_URL || ""}/dashboard/payment-methods${textFooter()}`;
+  await sendEmail({ type: "payment-receipt", to, subject: `Payment receipt: ${amount} for ${params.planName}`, html, text });
 }
 
 export async function sendPaymentFailedEmail(to: string, planName: string): Promise<void> {
