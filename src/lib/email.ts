@@ -187,6 +187,7 @@ function escapeHtml(value: string): string {
 export interface ContactEmailData {
   name: string;
   email: string;
+  whatsapp?: string | null;
   subject: string | null;
   message: string;
   plan: string | null;
@@ -206,6 +207,7 @@ export async function sendContactNotificationEmail(data: ContactEmailData): Prom
   const rows = [
     ["Name", data.name],
     ["Email", data.email],
+    ...(data.whatsapp ? [["WhatsApp", data.whatsapp]] : []),
     ...(data.plan ? [["Plan of interest", data.plan]] : []),
     ...(data.subject ? [["Subject", data.subject]] : []),
   ];

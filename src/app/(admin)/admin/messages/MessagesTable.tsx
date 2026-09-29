@@ -1,16 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Inbox, MailCheck, MailOpen, Search, Trash2, TriangleAlert } from "lucide-react";
+import { Inbox, MailCheck, MailOpen, MessageCircle, Search, Trash2, TriangleAlert } from "lucide-react";
 import { deleteMessage, setMessageRead } from "./actions";
 
 export interface MessageRow {
   id: string;
   name: string;
   email: string;
+  whatsapp: string | null;
   subject: string | null;
   message: string;
   plan: string | null;
+  source: string;
   isRead: boolean;
   emailSent: boolean;
   createdAt: string;
@@ -27,7 +29,7 @@ export default function MessagesTable({ initialMessages }: { initialMessages: Me
     return messages.filter((m) => {
       if (filter === "unread" && m.isRead) return false;
       if (!q) return true;
-      return [m.name, m.email, m.subject ?? "", m.message].some((v) => v.toLowerCase().includes(q));
+      return [m.name, m.email, m.whatsapp ?? "", m.subject ?? "", m.message].some((v) => v.toLowerCase().includes(q));
     });
   }, [messages, filter, search]);
 
@@ -98,6 +100,14 @@ export default function MessagesTable({ initialMessages }: { initialMessages: Me
                     {!m.isRead && <span className="h-2 w-2 rounded-full bg-primary shrink-0" aria-label="Unread" />}
                     <span className="text-sm font-semibold text-foreground">{m.name}</span>
                     <span className="text-xs font-mono text-muted-foreground">{m.email}</span>
+                    {m.whatsapp && (
+                      <span className="inline-flex items-center gap-1 text-xs font-mono text-muted-foreground" title="WhatsApp">
+                        <MessageCircle className="w-3 h-3" /> {m.whatsapp}
+                      </span>
+                    )}
+                    {m.source === "widget" && (
+                      <span className="px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px] font-bold uppercase">Widget</span>
+                    )}
                     {m.plan && <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase">{m.plan}</span>}
                     {!m.emailSent && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400" title="The notification email did not go out. Check the Emails page.">

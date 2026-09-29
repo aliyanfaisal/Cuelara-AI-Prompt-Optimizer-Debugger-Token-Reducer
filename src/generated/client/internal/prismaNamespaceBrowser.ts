@@ -436,9 +436,11 @@ export const ContactMessageScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
+  whatsapp: 'whatsapp',
   subject: 'subject',
   message: 'message',
   plan: 'plan',
+  source: 'source',
   isRead: 'isRead',
   emailSent: 'emailSent',
   createdAt: 'createdAt'

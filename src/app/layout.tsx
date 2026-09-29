@@ -6,6 +6,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import { PublicLayoutWrapper } from "@/components/layout/PublicLayoutWrapper";
+import { SupportWidget } from "@/components/support/SupportWidget";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -74,6 +75,7 @@ export default function RootLayout({
               {children}
             </PublicLayoutWrapper>
             <ThemeSwitcher />
+            <SupportWidget />
           </AuthProvider>
         </ThemeProvider>
       </body>

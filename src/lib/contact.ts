@@ -3,9 +3,11 @@ import { z } from "zod";
 export const contactPayloadSchema = z.object({
   name: z.string().trim().min(1, "Please enter your name.").max(100),
   email: z.email("Please enter a valid email address.").max(200),
+  whatsapp: z.string().trim().max(30).optional(),
   subject: z.string().trim().max(150).optional(),
   message: z.string().trim().min(10, "Please write at least 10 characters.").max(5000),
   plan: z.string().trim().max(50).optional(),
+  source: z.enum(["contact", "widget"]).optional(),
   // Honeypot: real visitors never see or fill this field, bots usually do.
   website: z.string().max(200).optional(),
 });

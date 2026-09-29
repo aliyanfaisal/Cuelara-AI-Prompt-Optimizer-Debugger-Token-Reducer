@@ -18,9 +18,11 @@ export default async function MessagesPage() {
     id: m.id,
     name: m.name,
     email: m.email,
+    whatsapp: m.whatsapp,
     subject: m.subject,
     message: m.message,
     plan: m.plan,
+    source: m.source,
     isRead: m.isRead,
     emailSent: m.emailSent,
     createdAt: m.createdAt.toISOString(),
@@ -31,8 +33,8 @@ export default async function MessagesPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Messages</h1>
         <p className="text-muted-foreground">
-          Everything submitted through the public contact form. Each message is also emailed to the team; reply from your
-          inbox and it goes straight to the sender.
+          Everything submitted through the public contact form and the floating support widget. Each message is also
+          emailed to the team; reply from your inbox and it goes straight to the sender.
         </p>
       </div>
 

@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input." }, { status: 422 });
     }
-    const { website, plan, subject, ...data } = parsed.data;
+    const { website, plan, subject, source, whatsapp, ...data } = parsed.data;
 
     // Bots fill the hidden field: pretend it worked and store nothing.
     if (website) return NextResponse.json({ success: true });
@@ -53,10 +53,10 @@ export async function POST(req: Request) {
 
     // Stored first: the message is safe in the database even if SMTP is down.
     const saved = await prisma.contactMessage.create({
-      data: { ...data, email, subject: subject || null, plan: plan || null },
+      data: { ...data, email, subject: subject || null, plan: plan || null, whatsapp: whatsapp || null, source: source || "contact" },
     });
 
-    const mail = { ...data, email, subject: subject || null, plan: plan || null };
+    const mail = { ...data, email, subject: subject || null, plan: plan || null, whatsapp: whatsapp || null };
     const [notified] = await Promise.allSettled([sendContactNotificationEmail(mail), sendContactReceiptEmail(mail)]);
     if (notified.status === "fulfilled") {
       await prisma.contactMessage.update({ where: { id: saved.id }, data: { emailSent: true } });

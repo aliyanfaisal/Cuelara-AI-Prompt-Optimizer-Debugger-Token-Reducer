@@ -441,14 +441,16 @@ model PersonalAccessToken {
   @@index([userId])
 }
 
-// A message submitted through the public /contact form.
+// A message submitted through the public /contact form or the floating support widget.
 model ContactMessage {
   id        String   @id @default(cuid())
   name      String
   email     String
+  whatsapp  String? // optional WhatsApp number, only collected from the support widget
   subject   String?
   message   String   @db.Text
   plan      String? // slug of the plan the sender was asking about, if they came from /pricing
+  source    String   @default("contact") // "contact" (the /contact page) or "widget" (the floating support widget)
   isRead    Boolean  @default(false)
   emailSent Boolean  @default(false) // whether the notification email to the team went out
   createdAt DateTime @default(now())
