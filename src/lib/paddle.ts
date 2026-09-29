@@ -53,9 +53,16 @@ export async function getPaddleCredentialsFor(environment: PaddleEnvironment): P
   };
 }
 
-/** A ready-to-use Paddle Node SDK client, or null if the admin hasn't set an API key yet. */
+/** A ready-to-use Paddle Node SDK client for whichever environment is currently live, or null if no API key is set. */
 export async function getPaddleClient(): Promise<Paddle | null> {
   const { apiKey, environment } = await getPaddleSettings();
+  if (!apiKey) return null;
+  return new Paddle(apiKey, { environment: environment === "production" ? Environment.production : Environment.sandbox });
+}
+
+/** Same as getPaddleClient, but for a specific environment regardless of which one is live — used by admin actions (e.g. syncing a plan) that target sandbox/production explicitly. */
+export async function getPaddleClientFor(environment: PaddleEnvironment): Promise<Paddle | null> {
+  const { apiKey } = await getPaddleCredentialsFor(environment);
   if (!apiKey) return null;
   return new Paddle(apiKey, { environment: environment === "production" ? Environment.production : Environment.sandbox });
 }

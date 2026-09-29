@@ -88,12 +88,14 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [syncMenuId, setSyncMenuId] = useState<string | null>(null);
   const [syncMessage, setSyncMessage] = useState<{ id: string; type: "success" | "error"; text: string } | null>(null);
 
-  async function handleSync(planId: string) {
+  async function handleSync(planId: string, targets: ("sandbox" | "production")[]) {
+    setSyncMenuId(null);
     setSyncingId(planId);
     setSyncMessage(null);
-    const result = await syncPlanToPaddle(planId);
+    const result = await syncPlanToPaddle(planId, targets);
     setSyncingId(null);
     if ("error" in result) {
       setSyncMessage({ id: planId, type: "error", text: result.error });
@@ -246,15 +248,30 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                       <span>·</span>
                       <span className={plan.paddlePriceIdProduction ? "text-emerald-600 dark:text-emerald-500" : ""}>Production {plan.paddlePriceIdProduction ? "✓" : "—"}</span>
                     </div>
-                    <button
-                      onClick={() => handleSync(plan.id)}
-                      disabled={syncingId === plan.id}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border text-[11px] font-semibold text-foreground hover:bg-muted transition-colors disabled:opacity-50"
-                      title="Create/update this plan as a Product + Price in Paddle (for whichever environment is live in Settings)"
-                    >
-                      {syncingId === plan.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
-                      Sync to Paddle
-                    </button>
+                    <div className="relative">
+                      <button
+                        onClick={() => setSyncMenuId(syncMenuId === plan.id ? null : plan.id)}
+                        disabled={syncingId === plan.id}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border text-[11px] font-semibold text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                        title="Create/update this plan as a Product + Price in Paddle"
+                      >
+                        {syncingId === plan.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                        Sync to Paddle
+                      </button>
+                      {syncMenuId === plan.id && (
+                        <div className="absolute right-0 top-full z-10 mt-1 w-40 rounded-lg border border-border bg-card shadow-lg overflow-hidden">
+                          <button onClick={() => handleSync(plan.id, ["sandbox"])} className="block w-full px-3 py-2 text-left text-[11px] font-semibold text-foreground hover:bg-muted">
+                            Sandbox only
+                          </button>
+                          <button onClick={() => handleSync(plan.id, ["production"])} className="block w-full px-3 py-2 text-left text-[11px] font-semibold text-foreground hover:bg-muted">
+                            Production only
+                          </button>
+                          <button onClick={() => handleSync(plan.id, ["sandbox", "production"])} className="block w-full px-3 py-2 text-left text-[11px] font-semibold text-foreground hover:bg-muted border-t border-border">
+                            Both
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {syncMessage?.id === plan.id && syncMessage.type === "error" && (
                     <p className="text-[11px] text-rose-600 dark:text-rose-400">{syncMessage.text}</p>
