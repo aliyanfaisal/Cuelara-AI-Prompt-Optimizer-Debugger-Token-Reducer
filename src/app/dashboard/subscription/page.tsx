@@ -1,14 +1,11 @@
-import Link from "next/link";
-import { Check } from "lucide-react";
 import { getSubjectDailyUsage } from "@/lib/dashboard-usage";
 import { getEffectivePlan } from "@/lib/plans";
-import { formatPlanPrice, planFeatures } from "@/lib/pricing";
+import { formatPlanPrice } from "@/lib/pricing";
 import { subjectForUser } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/session-user";
 import { getPaddleSettings } from "@/lib/paddle";
-import PaddleCheckoutButton from "@/components/PaddleCheckoutButton";
-import { PlanActions } from "./PlanActions";
+import SubscriptionOtherPlans from "./SubscriptionOtherPlans";
 
 export const metadata = { title: "Subscription" };
 
@@ -26,7 +23,21 @@ export default async function SubscriptionPage() {
     prisma.plan.findMany({
       where: { isActive: true },
       orderBy: { priceMonthlyCents: "asc" },
-      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, historyPerTool: true, allowsOwnKeys: true, paddlePriceIdSandbox: true, paddlePriceIdProduction: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        priceMonthlyCents: true,
+        priceYearlyCents: true,
+        features: true,
+        historyPerTool: true,
+        allowsOwnKeys: true,
+        paddleMonthlyPriceIdSandbox: true,
+        paddleMonthlyPriceIdProduction: true,
+        paddleYearlyPriceIdSandbox: true,
+        paddleYearlyPriceIdProduction: true,
+      },
     }),
     subjectForUser(session.id).then(getSubjectDailyUsage),
     // Upgrade requests from the last week, so a plan already asked for shows as requested.
@@ -42,7 +53,7 @@ export default async function SubscriptionPage() {
   const hasActivePaddleSubscription = !!user.paddleSubscriptionId;
 
   const currentPrice = current?.priceMonthlyCents ?? 0;
-  const requestedSlugs = new Set(requests.map((r) => r.plan));
+  const requestedSlugs = requests.map((r) => r.plan).filter((slug): slug is string => slug !== null);
   const others = plans.filter((p) => p.id !== current?.id);
   const price = formatPlanPrice(currentPrice);
 
@@ -89,63 +100,14 @@ export default async function SubscriptionPage() {
       </section>
 
       {others.length > 0 && (
-        <section>
-          <h3 className="mb-4 text-lg font-bold text-foreground">Other plans</h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {others.map((plan) => {
-              const kind = plan.priceMonthlyCents > currentPrice ? "upgrade" : "downgrade";
-              const p = formatPlanPrice(plan.priceMonthlyCents);
-              const priceId = paddleSettings.environment === "production" ? plan.paddlePriceIdProduction : plan.paddlePriceIdSandbox;
-              return (
-                <div key={plan.id} className="flex flex-col rounded-2xl border border-border bg-card p-6">
-                  <div className="mb-4 flex items-start justify-between gap-3">
-                    <div>
-                      <h4 className="text-lg font-bold text-foreground">{plan.name}</h4>
-                      {plan.description && <p className="text-sm text-muted-foreground">{plan.description}</p>}
-                    </div>
-                    <p className="shrink-0 text-right">
-                      <span className="text-2xl font-black text-foreground">{p.amount}</span>
-                      {p.period && <span className="text-xs text-muted-foreground">{p.period}</span>}
-                    </p>
-                  </div>
-                  <ul className="mb-6 flex-1 space-y-2 text-sm text-foreground/90">
-                    {planFeatures(plan.features).map((f) => (
-                      <li key={f} className="flex items-start gap-2.5">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {plan.allowsOwnKeys ? (
-                    <Link href="/dashboard/models" className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90">
-                      Set up your model keys
-                    </Link>
-                  ) : kind === "upgrade" && priceId && !hasActivePaddleSubscription ? (
-                    <PaddleCheckoutButton
-                      priceId={priceId}
-                      clientToken={paddleSettings.clientToken}
-                      environment={paddleSettings.environment}
-                      userId={user.id}
-                      userEmail={user.email ?? ""}
-                      className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90"
-                    >
-                      Subscribe to {plan.name}
-                    </PaddleCheckoutButton>
-                  ) : kind === "upgrade" && priceId && hasActivePaddleSubscription ? (
-                    <p className="text-xs text-muted-foreground">
-                      To switch plans, cancel your current subscription below first, then subscribe to this one.
-                    </p>
-                  ) : (
-                    <PlanActions planId={plan.id} planName={plan.name} kind={kind} requested={requestedSlugs.has(plan.slug)} historyPerTool={plan.historyPerTool} />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            Paid plans are set up by our team while payments are being built, so upgrades are requests. Downgrades take effect straight away. Questions?{" "}
-            <Link href="/contact" className="font-semibold text-primary hover:underline">Contact us</Link>.
-          </p>
-        </section>
+        <SubscriptionOtherPlans
+          plans={others}
+          currentPrice={currentPrice}
+          requestedSlugs={requestedSlugs}
+          hasActivePaddleSubscription={hasActivePaddleSubscription}
+          paddleSettings={paddleSettings}
+          user={{ id: user.id, email: user.email }}
+        />
       )}
     </div>
   );

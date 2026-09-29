@@ -15,6 +15,7 @@ interface FormState {
   name: string;
   description: string;
   priceDollars: string;
+  priceYearlyDollars: string;
   isDefault: boolean;
   isActive: boolean;
   isFeatured: boolean;
@@ -24,8 +25,10 @@ interface FormState {
   features: string;
   historyPerTool: string;
   // Separate ids because sandbox and production are separate Paddle accounts.
-  paddlePriceIdSandbox: string;
-  paddlePriceIdProduction: string;
+  paddleMonthlyPriceIdSandbox: string;
+  paddleMonthlyPriceIdProduction: string;
+  paddleYearlyPriceIdSandbox: string;
+  paddleYearlyPriceIdProduction: string;
   limits: Record<string, string>; // tool -> string input, blank = no override
   pools: Record<string, string>; // tool -> shared team pool per day, blank = no pool
 }
@@ -34,6 +37,7 @@ const EMPTY_FORM: FormState = {
   name: "",
   description: "",
   priceDollars: "0",
+  priceYearlyDollars: "0",
   isDefault: false,
   isActive: true,
   isFeatured: false,
@@ -42,8 +46,10 @@ const EMPTY_FORM: FormState = {
   maxSeats: "0",
   features: "",
   historyPerTool: "20",
-  paddlePriceIdSandbox: "",
-  paddlePriceIdProduction: "",
+  paddleMonthlyPriceIdSandbox: "",
+  paddleMonthlyPriceIdProduction: "",
+  paddleYearlyPriceIdSandbox: "",
+  paddleYearlyPriceIdProduction: "",
   limits: {},
   pools: {},
 };
@@ -59,6 +65,7 @@ function planToForm(plan: PlanRow): FormState {
     name: plan.name,
     description: plan.description ?? "",
     priceDollars: (plan.priceMonthlyCents / 100).toString(),
+    priceYearlyDollars: (plan.priceYearlyCents / 100).toString(),
     isDefault: plan.isDefault,
     isActive: plan.isActive,
     isFeatured: plan.isFeatured,
@@ -67,8 +74,10 @@ function planToForm(plan: PlanRow): FormState {
     maxSeats: String(plan.maxSeats),
     features: plan.features,
     historyPerTool: String(plan.historyPerTool),
-    paddlePriceIdSandbox: plan.paddlePriceIdSandbox ?? "",
-    paddlePriceIdProduction: plan.paddlePriceIdProduction ?? "",
+    paddleMonthlyPriceIdSandbox: plan.paddleMonthlyPriceIdSandbox ?? "",
+    paddleMonthlyPriceIdProduction: plan.paddleMonthlyPriceIdProduction ?? "",
+    paddleYearlyPriceIdSandbox: plan.paddleYearlyPriceIdSandbox ?? "",
+    paddleYearlyPriceIdProduction: plan.paddleYearlyPriceIdProduction ?? "",
     limits,
     pools,
   };
@@ -129,6 +138,7 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
       name: form.name,
       description: form.description,
       priceMonthlyCents: Math.round(Number(form.priceDollars || 0) * 100),
+      priceYearlyCents: Math.round(Number(form.priceYearlyDollars || 0) * 100),
       isDefault: form.isDefault,
       isActive: form.isActive,
       features: form.features,
@@ -137,8 +147,10 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
       allowsMultipleSessions: form.allowsMultipleSessions,
       maxSeats: Number(form.maxSeats || 0),
       historyPerTool: Number(form.historyPerTool),
-      paddlePriceIdSandbox: form.paddlePriceIdSandbox,
-      paddlePriceIdProduction: form.paddlePriceIdProduction,
+      paddleMonthlyPriceIdSandbox: form.paddleMonthlyPriceIdSandbox,
+      paddleMonthlyPriceIdProduction: form.paddleMonthlyPriceIdProduction,
+      paddleYearlyPriceIdSandbox: form.paddleYearlyPriceIdSandbox,
+      paddleYearlyPriceIdProduction: form.paddleYearlyPriceIdProduction,
       limits: formToLimits(form),
     };
 
@@ -201,7 +213,10 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">{formatUsd(plan.priceMonthlyCents)}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {formatUsd(plan.priceMonthlyCents)}
+                    {plan.priceYearlyCents > 0 && <> · ${(plan.priceYearlyCents / 100).toFixed(2)}/yr</>}
+                  </p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button onClick={() => openEdit(plan)} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors" title="Edit plan">
@@ -244,9 +259,9 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                 <div className="px-5 py-3 border-t border-border flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                      <span className={plan.paddlePriceIdSandbox ? "text-emerald-600 dark:text-emerald-500" : ""}>Sandbox {plan.paddlePriceIdSandbox ? "✓" : "—"}</span>
+                      <span className={plan.paddleMonthlyPriceIdSandbox ? "text-emerald-600 dark:text-emerald-500" : ""}>Sandbox {plan.paddleMonthlyPriceIdSandbox ? "✓" : "—"}</span>
                       <span>·</span>
-                      <span className={plan.paddlePriceIdProduction ? "text-emerald-600 dark:text-emerald-500" : ""}>Production {plan.paddlePriceIdProduction ? "✓" : "—"}</span>
+                      <span className={plan.paddleMonthlyPriceIdProduction ? "text-emerald-600 dark:text-emerald-500" : ""}>Production {plan.paddleMonthlyPriceIdProduction ? "✓" : "—"}</span>
                     </div>
                     <div className="relative">
                       <button
@@ -323,41 +338,75 @@ export default function PlansManager({ initialPlans }: { initialPlans: PlanRow[]
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Monthly price (USD) — shown on /pricing; the actual charge comes from the Paddle price below</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.priceDollars}
-                  onChange={(e) => setForm({ ...form, priceDollars: e.target.value })}
-                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Monthly price (USD)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.priceDollars}
+                    onChange={(e) => setForm({ ...form, priceDollars: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Yearly price (USD) — 0 = yearly billing not offered</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.priceYearlyDollars}
+                    onChange={(e) => setForm({ ...form, priceYearlyDollars: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <p className="sm:col-span-2 -mt-1 text-[11px] text-muted-foreground">Shown on /pricing; the actual charge comes from the Paddle prices below.</p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Paddle Price ID (sandbox)</label>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Monthly Paddle Price ID (sandbox)</label>
                   <input
                     type="text"
-                    value={form.paddlePriceIdSandbox}
-                    onChange={(e) => setForm({ ...form, paddlePriceIdSandbox: e.target.value })}
+                    value={form.paddleMonthlyPriceIdSandbox}
+                    onChange={(e) => setForm({ ...form, paddleMonthlyPriceIdSandbox: e.target.value })}
                     placeholder="pri_..."
                     className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Paddle Price ID (production)</label>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Monthly Paddle Price ID (production)</label>
                   <input
                     type="text"
-                    value={form.paddlePriceIdProduction}
-                    onChange={(e) => setForm({ ...form, paddlePriceIdProduction: e.target.value })}
+                    value={form.paddleMonthlyPriceIdProduction}
+                    onChange={(e) => setForm({ ...form, paddleMonthlyPriceIdProduction: e.target.value })}
+                    placeholder="pri_..."
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Yearly Paddle Price ID (sandbox)</label>
+                  <input
+                    type="text"
+                    value={form.paddleYearlyPriceIdSandbox}
+                    onChange={(e) => setForm({ ...form, paddleYearlyPriceIdSandbox: e.target.value })}
+                    placeholder="pri_..."
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Yearly Paddle Price ID (production)</label>
+                  <input
+                    type="text"
+                    value={form.paddleYearlyPriceIdProduction}
+                    onChange={(e) => setForm({ ...form, paddleYearlyPriceIdProduction: e.target.value })}
                     placeholder="pri_..."
                     className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <p className="sm:col-span-2 -mt-1 text-[11px] text-muted-foreground">
-                  Leave both blank for a free/no-checkout plan. Sandbox and production are separate Paddle accounts, so create the matching product + price in each before pasting its id here.
+                  Leave blank for a free/no-checkout plan or interval. Sandbox and production are separate Paddle accounts, so create the matching product + price in each before pasting its id here — or use &ldquo;Sync to Paddle&rdquo; below instead of filling these in by hand.
                 </p>
               </div>
 

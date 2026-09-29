@@ -30,7 +30,12 @@ async function syncSubscription(subscription: Subscription, environment: "sandbo
   const isCanceled = subscription.status === "canceled";
   const priceId = subscription.items[0]?.price?.id ?? null;
   const plan = priceId
-    ? await prisma.plan.findFirst({ where: environment === "production" ? { paddlePriceIdProduction: priceId } : { paddlePriceIdSandbox: priceId } })
+    ? await prisma.plan.findFirst({
+        where:
+          environment === "production"
+            ? { OR: [{ paddleMonthlyPriceIdProduction: priceId }, { paddleYearlyPriceIdProduction: priceId }] }
+            : { OR: [{ paddleMonthlyPriceIdSandbox: priceId }, { paddleYearlyPriceIdSandbox: priceId }] },
+      })
     : null;
 
   let planId = user.planId;

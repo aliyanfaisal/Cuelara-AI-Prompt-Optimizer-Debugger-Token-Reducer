@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/blog";
-import { formatPlanPrice, planFeatures } from "@/lib/pricing";
 import { getPaddleSettings } from "@/lib/paddle";
 import { getSessionUser } from "@/lib/session-user";
-import PaddleCheckoutButton from "@/components/PaddleCheckoutButton";
+import PricingPlans from "@/components/PricingPlans";
 
 // Plans are edited in the admin, so the page reads them live.
 export const dynamic = "force-dynamic";
@@ -27,7 +25,21 @@ export default async function PricingPage() {
     prisma.plan.findMany({
       where: { isActive: true },
       orderBy: { priceMonthlyCents: "asc" },
-      select: { id: true, name: true, slug: true, description: true, priceMonthlyCents: true, features: true, isFeatured: true, allowsOwnKeys: true, paddlePriceIdSandbox: true, paddlePriceIdProduction: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        priceMonthlyCents: true,
+        priceYearlyCents: true,
+        features: true,
+        isFeatured: true,
+        allowsOwnKeys: true,
+        paddleMonthlyPriceIdSandbox: true,
+        paddleMonthlyPriceIdProduction: true,
+        paddleYearlyPriceIdSandbox: true,
+        paddleYearlyPriceIdProduction: true,
+      },
     }),
     getPaddleSettings(),
     getSessionUser(),
@@ -69,81 +81,7 @@ export default async function PricingPage() {
           {plans.length === 0 ? (
             <p className="text-center text-muted-foreground">Plans are being set up. Check back soon, or <Link href="/contact" className="font-semibold text-primary hover:underline">contact us</Link>.</p>
           ) : (
-            <div className={`mx-auto grid grid-cols-1 gap-6 ${plans.length >= 3 ? "lg:grid-cols-3" : "max-w-3xl md:grid-cols-2"}`}>
-              {plans.map((plan) => {
-                const price = formatPlanPrice(plan.priceMonthlyCents);
-                const isFree = plan.priceMonthlyCents === 0;
-                return (
-                  <div
-                    key={plan.id}
-                    className={`relative flex flex-col rounded-3xl border bg-card p-8 shadow-sm ${
-                      plan.isFeatured ? "border-primary shadow-xl shadow-primary/10 lg:-translate-y-2" : "border-border/60"
-                    }`}
-                  >
-                    {plan.isFeatured && (
-                      <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">
-                        <Sparkles className="h-3 w-3" /> Most popular
-                      </span>
-                    )}
-
-                    <h2 className="text-xl font-bold text-foreground">{plan.name}</h2>
-                    {plan.description && <p className="mt-1 min-h-10 text-sm text-muted-foreground">{plan.description}</p>}
-
-                    <p className="mt-6 flex items-baseline gap-1">
-                      <span className="text-5xl font-black tracking-tight text-foreground">{price.amount}</span>
-                      {price.period && <span className="text-sm font-medium text-muted-foreground">{price.period}</span>}
-                    </p>
-
-                    {(() => {
-                      const ctaClass = `mt-8 inline-flex h-12 w-full items-center justify-center rounded-xl px-6 text-sm font-bold transition-colors ${
-                        plan.isFeatured ? "bg-primary text-primary-foreground hover:bg-primary/90" : "border border-border bg-background text-foreground hover:bg-muted"
-                      }`;
-
-                      const priceId = paddleSettings.environment === "production" ? plan.paddlePriceIdProduction : plan.paddlePriceIdSandbox;
-                      if (priceId && !isFree) {
-                        if (!user) {
-                          return (
-                            <Link href={`/register?callbackUrl=${encodeURIComponent("/pricing")}`} className={ctaClass}>
-                              Sign up to subscribe
-                            </Link>
-                          );
-                        }
-                        return (
-                          <PaddleCheckoutButton
-                            priceId={priceId}
-                            clientToken={paddleSettings.clientToken}
-                            environment={paddleSettings.environment}
-                            userId={user.id}
-                            userEmail={user.email ?? ""}
-                            className={ctaClass}
-                          >
-                            Subscribe
-                          </PaddleCheckoutButton>
-                        );
-                      }
-
-                      return (
-                        <Link
-                          href={plan.allowsOwnKeys ? "/dashboard/models" : isFree ? "/register" : `/contact?plan=${plan.slug}`}
-                          className={ctaClass}
-                        >
-                          {plan.allowsOwnKeys ? "Add your own keys" : isFree ? "Get started free" : "Contact us"}
-                        </Link>
-                      );
-                    })()}
-
-                    <ul className="mt-8 space-y-3 border-t border-border pt-8 text-sm text-foreground/90">
-                      {planFeatures(plan.features).map((feature) => (
-                        <li key={feature} className="flex items-start gap-3">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
-            </div>
+            <PricingPlans plans={plans} paddleSettings={paddleSettings} user={user} />
           )}
 
           <p className="mt-12 text-center text-sm text-muted-foreground">

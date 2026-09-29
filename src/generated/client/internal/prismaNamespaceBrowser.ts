@@ -401,6 +401,7 @@ export const PlanScalarFieldEnum = {
   slug: 'slug',
   description: 'description',
   priceMonthlyCents: 'priceMonthlyCents',
+  priceYearlyCents: 'priceYearlyCents',
   isDefault: 'isDefault',
   isActive: 'isActive',
   features: 'features',
@@ -411,8 +412,10 @@ export const PlanScalarFieldEnum = {
   maxSeats: 'maxSeats',
   paddleProductIdSandbox: 'paddleProductIdSandbox',
   paddleProductIdProduction: 'paddleProductIdProduction',
-  paddlePriceIdSandbox: 'paddlePriceIdSandbox',
-  paddlePriceIdProduction: 'paddlePriceIdProduction',
+  paddleMonthlyPriceIdSandbox: 'paddleMonthlyPriceIdSandbox',
+  paddleMonthlyPriceIdProduction: 'paddleMonthlyPriceIdProduction',
+  paddleYearlyPriceIdSandbox: 'paddleYearlyPriceIdSandbox',
+  paddleYearlyPriceIdProduction: 'paddleYearlyPriceIdProduction',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

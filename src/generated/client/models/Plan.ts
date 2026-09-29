@@ -28,12 +28,14 @@ export type AggregatePlan = {
 
 export type PlanAvgAggregateOutputType = {
   priceMonthlyCents: number | null
+  priceYearlyCents: number | null
   historyPerTool: number | null
   maxSeats: number | null
 }
 
 export type PlanSumAggregateOutputType = {
   priceMonthlyCents: number | null
+  priceYearlyCents: number | null
   historyPerTool: number | null
   maxSeats: number | null
 }
@@ -44,6 +46,7 @@ export type PlanMinAggregateOutputType = {
   slug: string | null
   description: string | null
   priceMonthlyCents: number | null
+  priceYearlyCents: number | null
   isDefault: boolean | null
   isActive: boolean | null
   features: string | null
@@ -54,8 +57,10 @@ export type PlanMinAggregateOutputType = {
   maxSeats: number | null
   paddleProductIdSandbox: string | null
   paddleProductIdProduction: string | null
-  paddlePriceIdSandbox: string | null
-  paddlePriceIdProduction: string | null
+  paddleMonthlyPriceIdSandbox: string | null
+  paddleMonthlyPriceIdProduction: string | null
+  paddleYearlyPriceIdSandbox: string | null
+  paddleYearlyPriceIdProduction: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +71,7 @@ export type PlanMaxAggregateOutputType = {
   slug: string | null
   description: string | null
   priceMonthlyCents: number | null
+  priceYearlyCents: number | null
   isDefault: boolean | null
   isActive: boolean | null
   features: string | null
@@ -76,8 +82,10 @@ export type PlanMaxAggregateOutputType = {
   maxSeats: number | null
   paddleProductIdSandbox: string | null
   paddleProductIdProduction: string | null
-  paddlePriceIdSandbox: string | null
-  paddlePriceIdProduction: string | null
+  paddleMonthlyPriceIdSandbox: string | null
+  paddleMonthlyPriceIdProduction: string | null
+  paddleYearlyPriceIdSandbox: string | null
+  paddleYearlyPriceIdProduction: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -88,6 +96,7 @@ export type PlanCountAggregateOutputType = {
   slug: number
   description: number
   priceMonthlyCents: number
+  priceYearlyCents: number
   isDefault: number
   isActive: number
   features: number
@@ -98,8 +107,10 @@ export type PlanCountAggregateOutputType = {
   maxSeats: number
   paddleProductIdSandbox: number
   paddleProductIdProduction: number
-  paddlePriceIdSandbox: number
-  paddlePriceIdProduction: number
+  paddleMonthlyPriceIdSandbox: number
+  paddleMonthlyPriceIdProduction: number
+  paddleYearlyPriceIdSandbox: number
+  paddleYearlyPriceIdProduction: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -108,12 +119,14 @@ export type PlanCountAggregateOutputType = {
 
 export type PlanAvgAggregateInputType = {
   priceMonthlyCents?: true
+  priceYearlyCents?: true
   historyPerTool?: true
   maxSeats?: true
 }
 
 export type PlanSumAggregateInputType = {
   priceMonthlyCents?: true
+  priceYearlyCents?: true
   historyPerTool?: true
   maxSeats?: true
 }
@@ -124,6 +137,7 @@ export type PlanMinAggregateInputType = {
   slug?: true
   description?: true
   priceMonthlyCents?: true
+  priceYearlyCents?: true
   isDefault?: true
   isActive?: true
   features?: true
@@ -134,8 +148,10 @@ export type PlanMinAggregateInputType = {
   maxSeats?: true
   paddleProductIdSandbox?: true
   paddleProductIdProduction?: true
-  paddlePriceIdSandbox?: true
-  paddlePriceIdProduction?: true
+  paddleMonthlyPriceIdSandbox?: true
+  paddleMonthlyPriceIdProduction?: true
+  paddleYearlyPriceIdSandbox?: true
+  paddleYearlyPriceIdProduction?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -146,6 +162,7 @@ export type PlanMaxAggregateInputType = {
   slug?: true
   description?: true
   priceMonthlyCents?: true
+  priceYearlyCents?: true
   isDefault?: true
   isActive?: true
   features?: true
@@ -156,8 +173,10 @@ export type PlanMaxAggregateInputType = {
   maxSeats?: true
   paddleProductIdSandbox?: true
   paddleProductIdProduction?: true
-  paddlePriceIdSandbox?: true
-  paddlePriceIdProduction?: true
+  paddleMonthlyPriceIdSandbox?: true
+  paddleMonthlyPriceIdProduction?: true
+  paddleYearlyPriceIdSandbox?: true
+  paddleYearlyPriceIdProduction?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -168,6 +187,7 @@ export type PlanCountAggregateInputType = {
   slug?: true
   description?: true
   priceMonthlyCents?: true
+  priceYearlyCents?: true
   isDefault?: true
   isActive?: true
   features?: true
@@ -178,8 +198,10 @@ export type PlanCountAggregateInputType = {
   maxSeats?: true
   paddleProductIdSandbox?: true
   paddleProductIdProduction?: true
-  paddlePriceIdSandbox?: true
-  paddlePriceIdProduction?: true
+  paddleMonthlyPriceIdSandbox?: true
+  paddleMonthlyPriceIdProduction?: true
+  paddleYearlyPriceIdSandbox?: true
+  paddleYearlyPriceIdProduction?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -277,6 +299,7 @@ export type PlanGroupByOutputType = {
   slug: string
   description: string | null
   priceMonthlyCents: number
+  priceYearlyCents: number
   isDefault: boolean
   isActive: boolean
   features: string | null
@@ -287,8 +310,10 @@ export type PlanGroupByOutputType = {
   maxSeats: number
   paddleProductIdSandbox: string | null
   paddleProductIdProduction: string | null
-  paddlePriceIdSandbox: string | null
-  paddlePriceIdProduction: string | null
+  paddleMonthlyPriceIdSandbox: string | null
+  paddleMonthlyPriceIdProduction: string | null
+  paddleYearlyPriceIdSandbox: string | null
+  paddleYearlyPriceIdProduction: string | null
   createdAt: Date
   updatedAt: Date
   _count: PlanCountAggregateOutputType | null
@@ -322,6 +347,7 @@ export type PlanWhereInput = {
   slug?: Prisma.StringFilter<"Plan"> | string
   description?: Prisma.StringNullableFilter<"Plan"> | string | null
   priceMonthlyCents?: Prisma.IntFilter<"Plan"> | number
+  priceYearlyCents?: Prisma.IntFilter<"Plan"> | number
   isDefault?: Prisma.BoolFilter<"Plan"> | boolean
   isActive?: Prisma.BoolFilter<"Plan"> | boolean
   features?: Prisma.StringNullableFilter<"Plan"> | string | null
@@ -332,8 +358,10 @@ export type PlanWhereInput = {
   maxSeats?: Prisma.IntFilter<"Plan"> | number
   paddleProductIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
   paddleProductIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
-  paddlePriceIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
-  paddlePriceIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleYearlyPriceIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   users?: Prisma.UserListRelationFilter
@@ -346,6 +374,7 @@ export type PlanOrderByWithRelationInput = {
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   priceMonthlyCents?: Prisma.SortOrder
+  priceYearlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -356,8 +385,10 @@ export type PlanOrderByWithRelationInput = {
   maxSeats?: Prisma.SortOrder
   paddleProductIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
   paddleProductIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
-  paddlePriceIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
-  paddlePriceIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleMonthlyPriceIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleMonthlyPriceIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleYearlyPriceIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleYearlyPriceIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   users?: Prisma.UserOrderByRelationAggregateInput
@@ -373,6 +404,7 @@ export type PlanWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PlanWhereInput | Prisma.PlanWhereInput[]
   description?: Prisma.StringNullableFilter<"Plan"> | string | null
   priceMonthlyCents?: Prisma.IntFilter<"Plan"> | number
+  priceYearlyCents?: Prisma.IntFilter<"Plan"> | number
   isDefault?: Prisma.BoolFilter<"Plan"> | boolean
   isActive?: Prisma.BoolFilter<"Plan"> | boolean
   features?: Prisma.StringNullableFilter<"Plan"> | string | null
@@ -383,8 +415,10 @@ export type PlanWhereUniqueInput = Prisma.AtLeast<{
   maxSeats?: Prisma.IntFilter<"Plan"> | number
   paddleProductIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
   paddleProductIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
-  paddlePriceIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
-  paddlePriceIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.StringNullableFilter<"Plan"> | string | null
+  paddleYearlyPriceIdProduction?: Prisma.StringNullableFilter<"Plan"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plan"> | Date | string
   users?: Prisma.UserListRelationFilter
@@ -397,6 +431,7 @@ export type PlanOrderByWithAggregationInput = {
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   priceMonthlyCents?: Prisma.SortOrder
+  priceYearlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -407,8 +442,10 @@ export type PlanOrderByWithAggregationInput = {
   maxSeats?: Prisma.SortOrder
   paddleProductIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
   paddleProductIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
-  paddlePriceIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
-  paddlePriceIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleMonthlyPriceIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleMonthlyPriceIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleYearlyPriceIdSandbox?: Prisma.SortOrderInput | Prisma.SortOrder
+  paddleYearlyPriceIdProduction?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PlanCountOrderByAggregateInput
@@ -427,6 +464,7 @@ export type PlanScalarWhereWithAggregatesInput = {
   slug?: Prisma.StringWithAggregatesFilter<"Plan"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
   priceMonthlyCents?: Prisma.IntWithAggregatesFilter<"Plan"> | number
+  priceYearlyCents?: Prisma.IntWithAggregatesFilter<"Plan"> | number
   isDefault?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   isActive?: Prisma.BoolWithAggregatesFilter<"Plan"> | boolean
   features?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
@@ -437,8 +475,10 @@ export type PlanScalarWhereWithAggregatesInput = {
   maxSeats?: Prisma.IntWithAggregatesFilter<"Plan"> | number
   paddleProductIdSandbox?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
   paddleProductIdProduction?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
-  paddlePriceIdSandbox?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
-  paddlePriceIdProduction?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
+  paddleYearlyPriceIdProduction?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Plan"> | Date | string
 }
@@ -449,6 +489,7 @@ export type PlanCreateInput = {
   slug: string
   description?: string | null
   priceMonthlyCents?: number
+  priceYearlyCents?: number
   isDefault?: boolean
   isActive?: boolean
   features?: string | null
@@ -459,8 +500,10 @@ export type PlanCreateInput = {
   maxSeats?: number
   paddleProductIdSandbox?: string | null
   paddleProductIdProduction?: string | null
-  paddlePriceIdSandbox?: string | null
-  paddlePriceIdProduction?: string | null
+  paddleMonthlyPriceIdSandbox?: string | null
+  paddleMonthlyPriceIdProduction?: string | null
+  paddleYearlyPriceIdSandbox?: string | null
+  paddleYearlyPriceIdProduction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutPlanInput
@@ -473,6 +516,7 @@ export type PlanUncheckedCreateInput = {
   slug: string
   description?: string | null
   priceMonthlyCents?: number
+  priceYearlyCents?: number
   isDefault?: boolean
   isActive?: boolean
   features?: string | null
@@ -483,8 +527,10 @@ export type PlanUncheckedCreateInput = {
   maxSeats?: number
   paddleProductIdSandbox?: string | null
   paddleProductIdProduction?: string | null
-  paddlePriceIdSandbox?: string | null
-  paddlePriceIdProduction?: string | null
+  paddleMonthlyPriceIdSandbox?: string | null
+  paddleMonthlyPriceIdProduction?: string | null
+  paddleYearlyPriceIdSandbox?: string | null
+  paddleYearlyPriceIdProduction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutPlanInput
@@ -497,6 +543,7 @@ export type PlanUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceYearlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -507,8 +554,10 @@ export type PlanUpdateInput = {
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
   paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutPlanNestedInput
@@ -521,6 +570,7 @@ export type PlanUncheckedUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceYearlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -531,8 +581,10 @@ export type PlanUncheckedUpdateInput = {
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
   paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutPlanNestedInput
@@ -545,6 +597,7 @@ export type PlanCreateManyInput = {
   slug: string
   description?: string | null
   priceMonthlyCents?: number
+  priceYearlyCents?: number
   isDefault?: boolean
   isActive?: boolean
   features?: string | null
@@ -555,8 +608,10 @@ export type PlanCreateManyInput = {
   maxSeats?: number
   paddleProductIdSandbox?: string | null
   paddleProductIdProduction?: string | null
-  paddlePriceIdSandbox?: string | null
-  paddlePriceIdProduction?: string | null
+  paddleMonthlyPriceIdSandbox?: string | null
+  paddleMonthlyPriceIdProduction?: string | null
+  paddleYearlyPriceIdSandbox?: string | null
+  paddleYearlyPriceIdProduction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -567,6 +622,7 @@ export type PlanUpdateManyMutationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceYearlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -577,8 +633,10 @@ export type PlanUpdateManyMutationInput = {
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
   paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -589,6 +647,7 @@ export type PlanUncheckedUpdateManyInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceYearlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -599,8 +658,10 @@ export type PlanUncheckedUpdateManyInput = {
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
   paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -616,6 +677,7 @@ export type PlanCountOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
   priceMonthlyCents?: Prisma.SortOrder
+  priceYearlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrder
@@ -626,14 +688,17 @@ export type PlanCountOrderByAggregateInput = {
   maxSeats?: Prisma.SortOrder
   paddleProductIdSandbox?: Prisma.SortOrder
   paddleProductIdProduction?: Prisma.SortOrder
-  paddlePriceIdSandbox?: Prisma.SortOrder
-  paddlePriceIdProduction?: Prisma.SortOrder
+  paddleMonthlyPriceIdSandbox?: Prisma.SortOrder
+  paddleMonthlyPriceIdProduction?: Prisma.SortOrder
+  paddleYearlyPriceIdSandbox?: Prisma.SortOrder
+  paddleYearlyPriceIdProduction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type PlanAvgOrderByAggregateInput = {
   priceMonthlyCents?: Prisma.SortOrder
+  priceYearlyCents?: Prisma.SortOrder
   historyPerTool?: Prisma.SortOrder
   maxSeats?: Prisma.SortOrder
 }
@@ -644,6 +709,7 @@ export type PlanMaxOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
   priceMonthlyCents?: Prisma.SortOrder
+  priceYearlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrder
@@ -654,8 +720,10 @@ export type PlanMaxOrderByAggregateInput = {
   maxSeats?: Prisma.SortOrder
   paddleProductIdSandbox?: Prisma.SortOrder
   paddleProductIdProduction?: Prisma.SortOrder
-  paddlePriceIdSandbox?: Prisma.SortOrder
-  paddlePriceIdProduction?: Prisma.SortOrder
+  paddleMonthlyPriceIdSandbox?: Prisma.SortOrder
+  paddleMonthlyPriceIdProduction?: Prisma.SortOrder
+  paddleYearlyPriceIdSandbox?: Prisma.SortOrder
+  paddleYearlyPriceIdProduction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -666,6 +734,7 @@ export type PlanMinOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
   priceMonthlyCents?: Prisma.SortOrder
+  priceYearlyCents?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   features?: Prisma.SortOrder
@@ -676,14 +745,17 @@ export type PlanMinOrderByAggregateInput = {
   maxSeats?: Prisma.SortOrder
   paddleProductIdSandbox?: Prisma.SortOrder
   paddleProductIdProduction?: Prisma.SortOrder
-  paddlePriceIdSandbox?: Prisma.SortOrder
-  paddlePriceIdProduction?: Prisma.SortOrder
+  paddleMonthlyPriceIdSandbox?: Prisma.SortOrder
+  paddleMonthlyPriceIdProduction?: Prisma.SortOrder
+  paddleYearlyPriceIdSandbox?: Prisma.SortOrder
+  paddleYearlyPriceIdProduction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type PlanSumOrderByAggregateInput = {
   priceMonthlyCents?: Prisma.SortOrder
+  priceYearlyCents?: Prisma.SortOrder
   historyPerTool?: Prisma.SortOrder
   maxSeats?: Prisma.SortOrder
 }
@@ -729,6 +801,7 @@ export type PlanCreateWithoutUsersInput = {
   slug: string
   description?: string | null
   priceMonthlyCents?: number
+  priceYearlyCents?: number
   isDefault?: boolean
   isActive?: boolean
   features?: string | null
@@ -739,8 +812,10 @@ export type PlanCreateWithoutUsersInput = {
   maxSeats?: number
   paddleProductIdSandbox?: string | null
   paddleProductIdProduction?: string | null
-  paddlePriceIdSandbox?: string | null
-  paddlePriceIdProduction?: string | null
+  paddleMonthlyPriceIdSandbox?: string | null
+  paddleMonthlyPriceIdProduction?: string | null
+  paddleYearlyPriceIdSandbox?: string | null
+  paddleYearlyPriceIdProduction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   limits?: Prisma.PlanToolLimitCreateNestedManyWithoutPlanInput
@@ -752,6 +827,7 @@ export type PlanUncheckedCreateWithoutUsersInput = {
   slug: string
   description?: string | null
   priceMonthlyCents?: number
+  priceYearlyCents?: number
   isDefault?: boolean
   isActive?: boolean
   features?: string | null
@@ -762,8 +838,10 @@ export type PlanUncheckedCreateWithoutUsersInput = {
   maxSeats?: number
   paddleProductIdSandbox?: string | null
   paddleProductIdProduction?: string | null
-  paddlePriceIdSandbox?: string | null
-  paddlePriceIdProduction?: string | null
+  paddleMonthlyPriceIdSandbox?: string | null
+  paddleMonthlyPriceIdProduction?: string | null
+  paddleYearlyPriceIdSandbox?: string | null
+  paddleYearlyPriceIdProduction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   limits?: Prisma.PlanToolLimitUncheckedCreateNestedManyWithoutPlanInput
@@ -791,6 +869,7 @@ export type PlanUpdateWithoutUsersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceYearlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -801,8 +880,10 @@ export type PlanUpdateWithoutUsersInput = {
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
   paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   limits?: Prisma.PlanToolLimitUpdateManyWithoutPlanNestedInput
@@ -814,6 +895,7 @@ export type PlanUncheckedUpdateWithoutUsersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceYearlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -824,8 +906,10 @@ export type PlanUncheckedUpdateWithoutUsersInput = {
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
   paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   limits?: Prisma.PlanToolLimitUncheckedUpdateManyWithoutPlanNestedInput
@@ -837,6 +921,7 @@ export type PlanCreateWithoutLimitsInput = {
   slug: string
   description?: string | null
   priceMonthlyCents?: number
+  priceYearlyCents?: number
   isDefault?: boolean
   isActive?: boolean
   features?: string | null
@@ -847,8 +932,10 @@ export type PlanCreateWithoutLimitsInput = {
   maxSeats?: number
   paddleProductIdSandbox?: string | null
   paddleProductIdProduction?: string | null
-  paddlePriceIdSandbox?: string | null
-  paddlePriceIdProduction?: string | null
+  paddleMonthlyPriceIdSandbox?: string | null
+  paddleMonthlyPriceIdProduction?: string | null
+  paddleYearlyPriceIdSandbox?: string | null
+  paddleYearlyPriceIdProduction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutPlanInput
@@ -860,6 +947,7 @@ export type PlanUncheckedCreateWithoutLimitsInput = {
   slug: string
   description?: string | null
   priceMonthlyCents?: number
+  priceYearlyCents?: number
   isDefault?: boolean
   isActive?: boolean
   features?: string | null
@@ -870,8 +958,10 @@ export type PlanUncheckedCreateWithoutLimitsInput = {
   maxSeats?: number
   paddleProductIdSandbox?: string | null
   paddleProductIdProduction?: string | null
-  paddlePriceIdSandbox?: string | null
-  paddlePriceIdProduction?: string | null
+  paddleMonthlyPriceIdSandbox?: string | null
+  paddleMonthlyPriceIdProduction?: string | null
+  paddleYearlyPriceIdSandbox?: string | null
+  paddleYearlyPriceIdProduction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutPlanInput
@@ -899,6 +989,7 @@ export type PlanUpdateWithoutLimitsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceYearlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -909,8 +1000,10 @@ export type PlanUpdateWithoutLimitsInput = {
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
   paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutPlanNestedInput
@@ -922,6 +1015,7 @@ export type PlanUncheckedUpdateWithoutLimitsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceMonthlyCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceYearlyCents?: Prisma.IntFieldUpdateOperationsInput | number
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   features?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -932,8 +1026,10 @@ export type PlanUncheckedUpdateWithoutLimitsInput = {
   maxSeats?: Prisma.IntFieldUpdateOperationsInput | number
   paddleProductIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paddleProductIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paddlePriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleMonthlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdSandbox?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleYearlyPriceIdProduction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutPlanNestedInput
@@ -985,6 +1081,7 @@ export type PlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   slug?: boolean
   description?: boolean
   priceMonthlyCents?: boolean
+  priceYearlyCents?: boolean
   isDefault?: boolean
   isActive?: boolean
   features?: boolean
@@ -995,8 +1092,10 @@ export type PlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   maxSeats?: boolean
   paddleProductIdSandbox?: boolean
   paddleProductIdProduction?: boolean
-  paddlePriceIdSandbox?: boolean
-  paddlePriceIdProduction?: boolean
+  paddleMonthlyPriceIdSandbox?: boolean
+  paddleMonthlyPriceIdProduction?: boolean
+  paddleYearlyPriceIdSandbox?: boolean
+  paddleYearlyPriceIdProduction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
@@ -1010,6 +1109,7 @@ export type PlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   slug?: boolean
   description?: boolean
   priceMonthlyCents?: boolean
+  priceYearlyCents?: boolean
   isDefault?: boolean
   isActive?: boolean
   features?: boolean
@@ -1020,8 +1120,10 @@ export type PlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   maxSeats?: boolean
   paddleProductIdSandbox?: boolean
   paddleProductIdProduction?: boolean
-  paddlePriceIdSandbox?: boolean
-  paddlePriceIdProduction?: boolean
+  paddleMonthlyPriceIdSandbox?: boolean
+  paddleMonthlyPriceIdProduction?: boolean
+  paddleYearlyPriceIdSandbox?: boolean
+  paddleYearlyPriceIdProduction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["plan"]>
@@ -1032,6 +1134,7 @@ export type PlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   slug?: boolean
   description?: boolean
   priceMonthlyCents?: boolean
+  priceYearlyCents?: boolean
   isDefault?: boolean
   isActive?: boolean
   features?: boolean
@@ -1042,8 +1145,10 @@ export type PlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   maxSeats?: boolean
   paddleProductIdSandbox?: boolean
   paddleProductIdProduction?: boolean
-  paddlePriceIdSandbox?: boolean
-  paddlePriceIdProduction?: boolean
+  paddleMonthlyPriceIdSandbox?: boolean
+  paddleMonthlyPriceIdProduction?: boolean
+  paddleYearlyPriceIdSandbox?: boolean
+  paddleYearlyPriceIdProduction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["plan"]>
@@ -1054,6 +1159,7 @@ export type PlanSelectScalar = {
   slug?: boolean
   description?: boolean
   priceMonthlyCents?: boolean
+  priceYearlyCents?: boolean
   isDefault?: boolean
   isActive?: boolean
   features?: boolean
@@ -1064,13 +1170,15 @@ export type PlanSelectScalar = {
   maxSeats?: boolean
   paddleProductIdSandbox?: boolean
   paddleProductIdProduction?: boolean
-  paddlePriceIdSandbox?: boolean
-  paddlePriceIdProduction?: boolean
+  paddleMonthlyPriceIdSandbox?: boolean
+  paddleMonthlyPriceIdProduction?: boolean
+  paddleYearlyPriceIdSandbox?: boolean
+  paddleYearlyPriceIdProduction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "historyPerTool" | "allowsOwnKeys" | "allowsMultipleSessions" | "maxSeats" | "paddleProductIdSandbox" | "paddleProductIdProduction" | "paddlePriceIdSandbox" | "paddlePriceIdProduction" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
+export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "priceMonthlyCents" | "priceYearlyCents" | "isDefault" | "isActive" | "features" | "isFeatured" | "historyPerTool" | "allowsOwnKeys" | "allowsMultipleSessions" | "maxSeats" | "paddleProductIdSandbox" | "paddleProductIdProduction" | "paddleMonthlyPriceIdSandbox" | "paddleMonthlyPriceIdProduction" | "paddleYearlyPriceIdSandbox" | "paddleYearlyPriceIdProduction" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
 export type PlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Plan$usersArgs<ExtArgs>
   limits?: boolean | Prisma.Plan$limitsArgs<ExtArgs>
@@ -1091,6 +1199,7 @@ export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     slug: string
     description: string | null
     priceMonthlyCents: number
+    priceYearlyCents: number
     isDefault: boolean
     isActive: boolean
     features: string | null
@@ -1101,8 +1210,10 @@ export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     maxSeats: number
     paddleProductIdSandbox: string | null
     paddleProductIdProduction: string | null
-    paddlePriceIdSandbox: string | null
-    paddlePriceIdProduction: string | null
+    paddleMonthlyPriceIdSandbox: string | null
+    paddleMonthlyPriceIdProduction: string | null
+    paddleYearlyPriceIdSandbox: string | null
+    paddleYearlyPriceIdProduction: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["plan"]>
@@ -1535,6 +1646,7 @@ export interface PlanFieldRefs {
   readonly slug: Prisma.FieldRef<"Plan", 'String'>
   readonly description: Prisma.FieldRef<"Plan", 'String'>
   readonly priceMonthlyCents: Prisma.FieldRef<"Plan", 'Int'>
+  readonly priceYearlyCents: Prisma.FieldRef<"Plan", 'Int'>
   readonly isDefault: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly isActive: Prisma.FieldRef<"Plan", 'Boolean'>
   readonly features: Prisma.FieldRef<"Plan", 'String'>
@@ -1545,8 +1657,10 @@ export interface PlanFieldRefs {
   readonly maxSeats: Prisma.FieldRef<"Plan", 'Int'>
   readonly paddleProductIdSandbox: Prisma.FieldRef<"Plan", 'String'>
   readonly paddleProductIdProduction: Prisma.FieldRef<"Plan", 'String'>
-  readonly paddlePriceIdSandbox: Prisma.FieldRef<"Plan", 'String'>
-  readonly paddlePriceIdProduction: Prisma.FieldRef<"Plan", 'String'>
+  readonly paddleMonthlyPriceIdSandbox: Prisma.FieldRef<"Plan", 'String'>
+  readonly paddleMonthlyPriceIdProduction: Prisma.FieldRef<"Plan", 'String'>
+  readonly paddleYearlyPriceIdSandbox: Prisma.FieldRef<"Plan", 'String'>
+  readonly paddleYearlyPriceIdProduction: Prisma.FieldRef<"Plan", 'String'>
   readonly createdAt: Prisma.FieldRef<"Plan", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Plan", 'DateTime'>
 }

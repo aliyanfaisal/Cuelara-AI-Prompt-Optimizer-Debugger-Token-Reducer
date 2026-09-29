@@ -18,6 +18,7 @@ export interface PlanRow {
   slug: string;
   description: string | null;
   priceMonthlyCents: number;
+  priceYearlyCents: number;
   isDefault: boolean;
   isActive: boolean;
   features: string;
@@ -26,8 +27,10 @@ export interface PlanRow {
   allowsMultipleSessions: boolean;
   maxSeats: number;
   historyPerTool: number;
-  paddlePriceIdSandbox: string | null;
-  paddlePriceIdProduction: string | null;
+  paddleMonthlyPriceIdSandbox: string | null;
+  paddleMonthlyPriceIdProduction: string | null;
+  paddleYearlyPriceIdSandbox: string | null;
+  paddleYearlyPriceIdProduction: string | null;
   createdAt: string;
   userCount: number;
   limits: { tool: string; dailyLimit: number; teamDailyLimit: number | null }[];
@@ -45,6 +48,7 @@ export async function getPlans(): Promise<PlanRow[]> {
     slug: p.slug,
     description: p.description,
     priceMonthlyCents: p.priceMonthlyCents,
+    priceYearlyCents: p.priceYearlyCents,
     isDefault: p.isDefault,
     isActive: p.isActive,
     features: p.features ?? "",
@@ -53,8 +57,10 @@ export async function getPlans(): Promise<PlanRow[]> {
     allowsMultipleSessions: p.allowsMultipleSessions,
     maxSeats: p.maxSeats,
     historyPerTool: p.historyPerTool,
-    paddlePriceIdSandbox: p.paddlePriceIdSandbox,
-    paddlePriceIdProduction: p.paddlePriceIdProduction,
+    paddleMonthlyPriceIdSandbox: p.paddleMonthlyPriceIdSandbox,
+    paddleMonthlyPriceIdProduction: p.paddleMonthlyPriceIdProduction,
+    paddleYearlyPriceIdSandbox: p.paddleYearlyPriceIdSandbox,
+    paddleYearlyPriceIdProduction: p.paddleYearlyPriceIdProduction,
     createdAt: p.createdAt.toISOString(),
     userCount: p._count.users,
     limits: p.limits.map((l) => ({ tool: l.tool, dailyLimit: l.dailyLimit, teamDailyLimit: l.teamDailyLimit })),
@@ -88,6 +94,7 @@ export async function createPlan(data: {
   name: string;
   description: string;
   priceMonthlyCents: number;
+  priceYearlyCents: number;
   isDefault: boolean;
   isActive: boolean;
   features: string;
@@ -96,8 +103,10 @@ export async function createPlan(data: {
   allowsMultipleSessions: boolean;
   maxSeats: number;
   historyPerTool: number;
-  paddlePriceIdSandbox: string;
-  paddlePriceIdProduction: string;
+  paddleMonthlyPriceIdSandbox: string;
+  paddleMonthlyPriceIdProduction: string;
+  paddleYearlyPriceIdSandbox: string;
+  paddleYearlyPriceIdProduction: string;
   limits: PlanLimitInput[];
 }) {
   await assertAdmin();
@@ -105,6 +114,9 @@ export async function createPlan(data: {
   if (!name) return { error: "Plan name is required." };
   if (!Number.isFinite(data.priceMonthlyCents) || data.priceMonthlyCents < 0) {
     return { error: "Monthly price must be a non-negative number." };
+  }
+  if (!Number.isFinite(data.priceYearlyCents) || data.priceYearlyCents < 0) {
+    return { error: "Yearly price must be a non-negative number." };
   }
   if (!Number.isInteger(data.historyPerTool) || data.historyPerTool < 1 || data.historyPerTool > 1000) {
     return { error: "History per tool must be a whole number from 1 to 1000." };
@@ -124,6 +136,7 @@ export async function createPlan(data: {
           slug,
           description: data.description.trim() || null,
           priceMonthlyCents: Math.round(data.priceMonthlyCents),
+          priceYearlyCents: Math.round(data.priceYearlyCents),
           isDefault: data.isDefault,
           isActive: data.isActive,
           features: data.features.trim() || null,
@@ -132,8 +145,10 @@ export async function createPlan(data: {
           allowsMultipleSessions: data.allowsMultipleSessions,
           maxSeats: Math.max(0, Math.min(1000, Math.floor(data.maxSeats) || 0)),
           historyPerTool: Math.floor(data.historyPerTool),
-          paddlePriceIdSandbox: data.paddlePriceIdSandbox.trim() || null,
-          paddlePriceIdProduction: data.paddlePriceIdProduction.trim() || null,
+          paddleMonthlyPriceIdSandbox: data.paddleMonthlyPriceIdSandbox.trim() || null,
+          paddleMonthlyPriceIdProduction: data.paddleMonthlyPriceIdProduction.trim() || null,
+          paddleYearlyPriceIdSandbox: data.paddleYearlyPriceIdSandbox.trim() || null,
+          paddleYearlyPriceIdProduction: data.paddleYearlyPriceIdProduction.trim() || null,
           limits: { create: clean },
         },
       });
@@ -155,6 +170,7 @@ export async function updatePlan(
     name: string;
     description: string;
     priceMonthlyCents: number;
+    priceYearlyCents: number;
     isDefault: boolean;
     isActive: boolean;
     features: string;
@@ -163,8 +179,10 @@ export async function updatePlan(
     allowsMultipleSessions: boolean;
     maxSeats: number;
     historyPerTool: number;
-    paddlePriceIdSandbox: string;
-    paddlePriceIdProduction: string;
+    paddleMonthlyPriceIdSandbox: string;
+    paddleMonthlyPriceIdProduction: string;
+    paddleYearlyPriceIdSandbox: string;
+    paddleYearlyPriceIdProduction: string;
     limits: PlanLimitInput[];
   }
 ) {
@@ -173,6 +191,9 @@ export async function updatePlan(
   if (!name) return { error: "Plan name is required." };
   if (!Number.isFinite(data.priceMonthlyCents) || data.priceMonthlyCents < 0) {
     return { error: "Monthly price must be a non-negative number." };
+  }
+  if (!Number.isFinite(data.priceYearlyCents) || data.priceYearlyCents < 0) {
+    return { error: "Yearly price must be a non-negative number." };
   }
   if (!Number.isInteger(data.historyPerTool) || data.historyPerTool < 1 || data.historyPerTool > 1000) {
     return { error: "History per tool must be a whole number from 1 to 1000." };
@@ -190,6 +211,7 @@ export async function updatePlan(
           name,
           description: data.description.trim() || null,
           priceMonthlyCents: Math.round(data.priceMonthlyCents),
+          priceYearlyCents: Math.round(data.priceYearlyCents),
           isDefault: data.isDefault,
           isActive: data.isActive,
           features: data.features.trim() || null,
@@ -198,8 +220,10 @@ export async function updatePlan(
           allowsMultipleSessions: data.allowsMultipleSessions,
           maxSeats: Math.max(0, Math.min(1000, Math.floor(data.maxSeats) || 0)),
           historyPerTool: Math.floor(data.historyPerTool),
-          paddlePriceIdSandbox: data.paddlePriceIdSandbox.trim() || null,
-          paddlePriceIdProduction: data.paddlePriceIdProduction.trim() || null,
+          paddleMonthlyPriceIdSandbox: data.paddleMonthlyPriceIdSandbox.trim() || null,
+          paddleMonthlyPriceIdProduction: data.paddleMonthlyPriceIdProduction.trim() || null,
+          paddleYearlyPriceIdSandbox: data.paddleYearlyPriceIdSandbox.trim() || null,
+          paddleYearlyPriceIdProduction: data.paddleYearlyPriceIdProduction.trim() || null,
         },
       });
       // Simplest consistent way to sync the limit set: replace it wholesale.

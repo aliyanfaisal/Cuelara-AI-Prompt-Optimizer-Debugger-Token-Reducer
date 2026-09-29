@@ -407,6 +407,8 @@ model Plan {
   slug                   String   @unique
   description            String?
   priceMonthlyCents      Int      @default(0)
+  // 0 = yearly billing isn't offered for this plan (monthly only).
+  priceYearlyCents       Int      @default(0)
   isDefault              Boolean  @default(false)
   isActive               Boolean  @default(true)
   // Shown on the public /pricing page: one feature per line, and whether to highlight the tier.
@@ -420,15 +422,18 @@ model Plan {
   allowsMultipleSessions Boolean  @default(false)
   // How many people (including the manager) a team workspace on this plan can hold. 0 = the plan can't create a team.
   maxSeats               Int      @default(0)
-  // Paddle's id for this plan's Product and its current monthly recurring Price. Set either by hand (create them
-  // in the Paddle dashboard/API and paste the price id in) or by the "Sync to Paddle" button in /admin/plans,
-  // which creates/updates them via the API. Sandbox and production are separate Paddle accounts, so each has its
-  // own ids; whichever pair is read depends on the environment currently live in /admin/settings Payments tab.
-  // Null on the free/default plan, which has no checkout.
-  paddleProductIdSandbox    String?
-  paddleProductIdProduction String?
-  paddlePriceIdSandbox      String?
-  paddlePriceIdProduction   String?
+  // Paddle's id for this plan's Product and its current monthly + yearly recurring Prices (yearly ids are
+  // null if priceYearlyCents is 0). Set either by hand (create them in the Paddle dashboard/API and paste
+  // the price id in) or by the "Sync to Paddle" button in /admin/plans, which creates/updates them via the
+  // API. Sandbox and production are separate Paddle accounts, so each has its own ids; whichever pair is
+  // read depends on the environment currently live in /admin/settings Payments tab. All null on the
+  // free/default plan, which has no checkout.
+  paddleProductIdSandbox          String?
+  paddleProductIdProduction       String?
+  paddleMonthlyPriceIdSandbox     String?
+  paddleMonthlyPriceIdProduction  String?
+  paddleYearlyPriceIdSandbox      String?
+  paddleYearlyPriceIdProduction   String?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
 
