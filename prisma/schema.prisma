@@ -459,6 +459,17 @@ model ContactMessage {
   @@index([email, createdAt])
 }
 
+// An email address collected through a newsletter signup form (footer, blog CTA, ...).
+model NewsletterSubscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  source         String    @default("footer") // where the signup happened, e.g. "footer" or "blog"
+  unsubscribedAt DateTime? // null while subscribed; set instead of deleting the row
+  createdAt      DateTime  @default(now())
+
+  @@index([unsubscribedAt, createdAt])
+}
+
 // One row per tool a plan overrides the default authenticated daily limit for.
 // A tool the plan doesn't list falls back to that tool's normal authenticated limit.
 model PlanToolLimit {

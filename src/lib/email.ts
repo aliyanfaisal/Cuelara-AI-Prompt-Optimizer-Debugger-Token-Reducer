@@ -2,7 +2,7 @@ import "server-only";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
 
-export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "contact", "error-alert", "team-invite"] as const;
+export const EMAIL_TYPES = ["activation", "password-reset", "plan-change", "contact", "error-alert", "team-invite", "newsletter"] as const;
 export type EmailType = (typeof EMAIL_TYPES)[number];
 
 let transporter: nodemailer.Transporter | null = null;
@@ -232,4 +232,17 @@ export async function sendContactReceiptEmail(data: ContactEmailData): Promise<v
   );
   const text = `We got your message\n\nHi ${data.name}, thanks for reaching out. We will reply by email as soon as we can.\n\nYour message:\n${data.message}${textFooter()}`;
   await sendEmail({ type: "contact", to: data.email, subject: "We received your message", html, text });
+}
+
+/** Confirms a newsletter signup and gives the person an unsubscribe link tied to their subscriber id. */
+export async function sendNewsletterWelcomeEmail(data: { email: string; subscriberId: string }): Promise<void> {
+  const base = process.env.NEXTAUTH_URL || "https://cuelara.com";
+  const unsubscribeUrl = `${base}/api/newsletter/unsubscribe?id=${encodeURIComponent(data.subscriberId)}`;
+  const html = emailShell(
+    "You're subscribed",
+    `<p>Thanks for subscribing to the Cuelara newsletter. You'll get prompt engineering tips, token optimization tricks, and platform updates about once a month.</p>
+     <p style="color:#71717a;font-size:12px;">Didn't sign up for this? <a href="${unsubscribeUrl}" style="color:#71717a;">Unsubscribe here</a>.</p>`
+  );
+  const text = `Thanks for subscribing to the Cuelara newsletter. You'll get prompt engineering tips, token optimization tricks, and platform updates about once a month.\n\nDidn't sign up for this? Unsubscribe: ${unsubscribeUrl}${textFooter()}`;
+  await sendEmail({ type: "newsletter", to: data.email, subject: "You're subscribed to the Cuelara newsletter", html, text });
 }

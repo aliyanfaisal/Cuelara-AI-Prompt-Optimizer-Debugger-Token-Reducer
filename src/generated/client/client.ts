@@ -167,6 +167,11 @@ export type PersonalAccessToken = Prisma.PersonalAccessTokenModel
  */
 export type ContactMessage = Prisma.ContactMessageModel
 /**
+ * Model NewsletterSubscriber
+ * 
+ */
+export type NewsletterSubscriber = Prisma.NewsletterSubscriberModel
+/**
  * Model PlanToolLimit
  * 
  */
