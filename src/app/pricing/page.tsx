@@ -87,6 +87,9 @@ export default async function PricingPage({ searchParams }: { searchParams: Prom
           <div className="mx-auto mb-14 max-w-2xl text-center">
             <h1 className="mb-4 text-4xl font-black tracking-tight text-foreground md:text-5xl">Simple, honest pricing</h1>
             <p className="text-lg text-muted-foreground">Start free with every tool. Upgrade when you need higher daily limits.</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              If you&apos;re unhappy with a paid plan, contact us within 7 days of your first payment for that plan and we&apos;ll issue a full refund, no questions asked.
+            </p>
           </div>
 
           {plans.length === 0 ? (

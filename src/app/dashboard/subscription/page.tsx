@@ -62,6 +62,9 @@ export default async function SubscriptionPage() {
       <div>
         <h2 className="text-xl font-bold text-foreground">Subscription</h2>
         <p className="text-sm text-muted-foreground">Your current plan and the other plans you can move to.</p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          If you&apos;re unhappy with a paid plan, contact us within 7 days of your first payment for that plan and we&apos;ll issue a full refund, no questions asked.
+        </p>
       </div>
 
       <section className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
