@@ -20,8 +20,20 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  cardExpiryMonth: number | null
+  cardExpiryYear: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  cardExpiryMonth: number | null
+  cardExpiryYear: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -38,6 +50,10 @@ export type UserMinAggregateOutputType = {
   paddleSubscriptionId: string | null
   subscriptionStatus: string | null
   currentPeriodEnd: Date | null
+  cardBrand: string | null
+  cardLast4: string | null
+  cardExpiryMonth: number | null
+  cardExpiryYear: number | null
   activeSessionId: string | null
 }
 
@@ -55,6 +71,10 @@ export type UserMaxAggregateOutputType = {
   paddleSubscriptionId: string | null
   subscriptionStatus: string | null
   currentPeriodEnd: Date | null
+  cardBrand: string | null
+  cardLast4: string | null
+  cardExpiryMonth: number | null
+  cardExpiryYear: number | null
   activeSessionId: string | null
 }
 
@@ -72,10 +92,24 @@ export type UserCountAggregateOutputType = {
   paddleSubscriptionId: number
   subscriptionStatus: number
   currentPeriodEnd: number
+  cardBrand: number
+  cardLast4: number
+  cardExpiryMonth: number
+  cardExpiryYear: number
   activeSessionId: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  cardExpiryMonth?: true
+  cardExpiryYear?: true
+}
+
+export type UserSumAggregateInputType = {
+  cardExpiryMonth?: true
+  cardExpiryYear?: true
+}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -91,6 +125,10 @@ export type UserMinAggregateInputType = {
   paddleSubscriptionId?: true
   subscriptionStatus?: true
   currentPeriodEnd?: true
+  cardBrand?: true
+  cardLast4?: true
+  cardExpiryMonth?: true
+  cardExpiryYear?: true
   activeSessionId?: true
 }
 
@@ -108,6 +146,10 @@ export type UserMaxAggregateInputType = {
   paddleSubscriptionId?: true
   subscriptionStatus?: true
   currentPeriodEnd?: true
+  cardBrand?: true
+  cardLast4?: true
+  cardExpiryMonth?: true
+  cardExpiryYear?: true
   activeSessionId?: true
 }
 
@@ -125,6 +167,10 @@ export type UserCountAggregateInputType = {
   paddleSubscriptionId?: true
   subscriptionStatus?: true
   currentPeriodEnd?: true
+  cardBrand?: true
+  cardLast4?: true
+  cardExpiryMonth?: true
+  cardExpiryYear?: true
   activeSessionId?: true
   _all?: true
 }
@@ -167,6 +213,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -197,6 +255,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -215,8 +275,14 @@ export type UserGroupByOutputType = {
   paddleSubscriptionId: string | null
   subscriptionStatus: string | null
   currentPeriodEnd: Date | null
+  cardBrand: string | null
+  cardLast4: string | null
+  cardExpiryMonth: number | null
+  cardExpiryYear: number | null
   activeSessionId: string | null
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -253,11 +319,16 @@ export type UserWhereInput = {
   paddleSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
   subscriptionStatus?: Prisma.StringNullableFilter<"User"> | string | null
   currentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  cardBrand?: Prisma.StringNullableFilter<"User"> | string | null
+  cardLast4?: Prisma.StringNullableFilter<"User"> | string | null
+  cardExpiryMonth?: Prisma.IntNullableFilter<"User"> | number | null
+  cardExpiryYear?: Prisma.IntNullableFilter<"User"> | number | null
   activeSessionId?: Prisma.StringNullableFilter<"User"> | string | null
   roles?: Prisma.RoleListRelationFilter
   plan?: Prisma.XOR<Prisma.PlanNullableScalarRelationFilter, Prisma.PlanWhereInput> | null
   apiKeys?: Prisma.ApiKeyListRelationFilter
   modelConfig?: Prisma.XOR<Prisma.UserModelConfigNullableScalarRelationFilter, Prisma.UserModelConfigWhereInput> | null
+  paymentTransactions?: Prisma.PaymentTransactionListRelationFilter
   workspaceMemberships?: Prisma.WorkspaceMemberListRelationFilter
   sentInvites?: Prisma.WorkspaceInviteListRelationFilter
   savedPrompts?: Prisma.SavedPromptListRelationFilter
@@ -285,11 +356,16 @@ export type UserOrderByWithRelationInput = {
   paddleSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
   subscriptionStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  cardBrand?: Prisma.SortOrderInput | Prisma.SortOrder
+  cardLast4?: Prisma.SortOrderInput | Prisma.SortOrder
+  cardExpiryMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  cardExpiryYear?: Prisma.SortOrderInput | Prisma.SortOrder
   activeSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   roles?: Prisma.RoleOrderByRelationAggregateInput
   plan?: Prisma.PlanOrderByWithRelationInput
   apiKeys?: Prisma.ApiKeyOrderByRelationAggregateInput
   modelConfig?: Prisma.UserModelConfigOrderByWithRelationInput
+  paymentTransactions?: Prisma.PaymentTransactionOrderByRelationAggregateInput
   workspaceMemberships?: Prisma.WorkspaceMemberOrderByRelationAggregateInput
   sentInvites?: Prisma.WorkspaceInviteOrderByRelationAggregateInput
   savedPrompts?: Prisma.SavedPromptOrderByRelationAggregateInput
@@ -320,11 +396,16 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   paddleSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
   subscriptionStatus?: Prisma.StringNullableFilter<"User"> | string | null
   currentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  cardBrand?: Prisma.StringNullableFilter<"User"> | string | null
+  cardLast4?: Prisma.StringNullableFilter<"User"> | string | null
+  cardExpiryMonth?: Prisma.IntNullableFilter<"User"> | number | null
+  cardExpiryYear?: Prisma.IntNullableFilter<"User"> | number | null
   activeSessionId?: Prisma.StringNullableFilter<"User"> | string | null
   roles?: Prisma.RoleListRelationFilter
   plan?: Prisma.XOR<Prisma.PlanNullableScalarRelationFilter, Prisma.PlanWhereInput> | null
   apiKeys?: Prisma.ApiKeyListRelationFilter
   modelConfig?: Prisma.XOR<Prisma.UserModelConfigNullableScalarRelationFilter, Prisma.UserModelConfigWhereInput> | null
+  paymentTransactions?: Prisma.PaymentTransactionListRelationFilter
   workspaceMemberships?: Prisma.WorkspaceMemberListRelationFilter
   sentInvites?: Prisma.WorkspaceInviteListRelationFilter
   savedPrompts?: Prisma.SavedPromptListRelationFilter
@@ -352,10 +433,16 @@ export type UserOrderByWithAggregationInput = {
   paddleSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
   subscriptionStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  cardBrand?: Prisma.SortOrderInput | Prisma.SortOrder
+  cardLast4?: Prisma.SortOrderInput | Prisma.SortOrder
+  cardExpiryMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  cardExpiryYear?: Prisma.SortOrderInput | Prisma.SortOrder
   activeSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -375,6 +462,10 @@ export type UserScalarWhereWithAggregatesInput = {
   paddleSubscriptionId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   subscriptionStatus?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   currentPeriodEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  cardBrand?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  cardLast4?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  cardExpiryMonth?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
+  cardExpiryYear?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
   activeSessionId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
@@ -391,11 +482,16 @@ export type UserCreateInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -423,10 +519,15 @@ export type UserUncheckedCreateInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -453,11 +554,16 @@ export type UserUpdateInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -485,10 +591,15 @@ export type UserUncheckedUpdateInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -516,6 +627,10 @@ export type UserCreateManyInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
 }
 
@@ -532,6 +647,10 @@ export type UserUpdateManyMutationInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -549,6 +668,10 @@ export type UserUncheckedUpdateManyInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -576,7 +699,16 @@ export type UserCountOrderByAggregateInput = {
   paddleSubscriptionId?: Prisma.SortOrder
   subscriptionStatus?: Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrder
+  cardBrand?: Prisma.SortOrder
+  cardLast4?: Prisma.SortOrder
+  cardExpiryMonth?: Prisma.SortOrder
+  cardExpiryYear?: Prisma.SortOrder
   activeSessionId?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  cardExpiryMonth?: Prisma.SortOrder
+  cardExpiryYear?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -593,6 +725,10 @@ export type UserMaxOrderByAggregateInput = {
   paddleSubscriptionId?: Prisma.SortOrder
   subscriptionStatus?: Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrder
+  cardBrand?: Prisma.SortOrder
+  cardLast4?: Prisma.SortOrder
+  cardExpiryMonth?: Prisma.SortOrder
+  cardExpiryYear?: Prisma.SortOrder
   activeSessionId?: Prisma.SortOrder
 }
 
@@ -610,7 +746,16 @@ export type UserMinOrderByAggregateInput = {
   paddleSubscriptionId?: Prisma.SortOrder
   subscriptionStatus?: Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrder
+  cardBrand?: Prisma.SortOrder
+  cardLast4?: Prisma.SortOrder
+  cardExpiryMonth?: Prisma.SortOrder
+  cardExpiryYear?: Prisma.SortOrder
   activeSessionId?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  cardExpiryMonth?: Prisma.SortOrder
+  cardExpiryYear?: Prisma.SortOrder
 }
 
 export type UserListRelationFilter = {
@@ -817,6 +962,20 @@ export type UserUpdateOneRequiredWithoutPersonalAccessTokensNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPersonalAccessTokensInput, Prisma.UserUpdateWithoutPersonalAccessTokensInput>, Prisma.UserUncheckedUpdateWithoutPersonalAccessTokensInput>
 }
 
+export type UserCreateNestedOneWithoutPaymentTransactionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentTransactionsInput, Prisma.UserUncheckedCreateWithoutPaymentTransactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentTransactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPaymentTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentTransactionsInput, Prisma.UserUncheckedCreateWithoutPaymentTransactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentTransactionsInput
+  upsert?: Prisma.UserUpsertWithoutPaymentTransactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPaymentTransactionsInput, Prisma.UserUpdateWithoutPaymentTransactionsInput>, Prisma.UserUncheckedUpdateWithoutPaymentTransactionsInput>
+}
+
 export type UserCreateNestedOneWithoutWorkspacesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspacesInput, Prisma.UserUncheckedCreateWithoutWorkspacesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspacesInput
@@ -900,10 +1059,15 @@ export type UserCreateWithoutApiKeysInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -931,9 +1095,14 @@ export type UserUncheckedCreateWithoutApiKeysInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -976,10 +1145,15 @@ export type UserUpdateWithoutApiKeysInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -1007,9 +1181,14 @@ export type UserUncheckedUpdateWithoutApiKeysInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1036,10 +1215,15 @@ export type UserCreateWithoutModelConfigInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -1067,9 +1251,14 @@ export type UserUncheckedCreateWithoutModelConfigInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -1112,10 +1301,15 @@ export type UserUpdateWithoutModelConfigInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -1143,9 +1337,14 @@ export type UserUncheckedUpdateWithoutModelConfigInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1172,11 +1371,16 @@ export type UserCreateWithoutAccountsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -1203,10 +1407,15 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -1248,11 +1457,16 @@ export type UserUpdateWithoutAccountsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -1279,10 +1493,15 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1308,11 +1527,16 @@ export type UserCreateWithoutSessionsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -1339,10 +1563,15 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -1384,11 +1613,16 @@ export type UserUpdateWithoutSessionsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -1415,10 +1649,15 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1444,10 +1683,15 @@ export type UserCreateWithoutRolesInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -1475,9 +1719,14 @@ export type UserUncheckedCreateWithoutRolesInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -1529,6 +1778,10 @@ export type UserScalarWhereInput = {
   paddleSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
   subscriptionStatus?: Prisma.StringNullableFilter<"User"> | string | null
   currentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  cardBrand?: Prisma.StringNullableFilter<"User"> | string | null
+  cardLast4?: Prisma.StringNullableFilter<"User"> | string | null
+  cardExpiryMonth?: Prisma.IntNullableFilter<"User"> | number | null
+  cardExpiryYear?: Prisma.IntNullableFilter<"User"> | number | null
   activeSessionId?: Prisma.StringNullableFilter<"User"> | string | null
 }
 
@@ -1545,11 +1798,16 @@ export type UserCreateWithoutActivationTokensInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -1576,10 +1834,15 @@ export type UserUncheckedCreateWithoutActivationTokensInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -1621,11 +1884,16 @@ export type UserUpdateWithoutActivationTokensInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -1652,10 +1920,15 @@ export type UserUncheckedUpdateWithoutActivationTokensInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1681,11 +1954,16 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -1712,10 +1990,15 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -1757,11 +2040,16 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -1788,10 +2076,15 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1817,10 +2110,15 @@ export type UserCreateWithoutPlanInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -1847,10 +2145,15 @@ export type UserUncheckedCreateWithoutPlanInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -1903,11 +2206,16 @@ export type UserCreateWithoutToolRunsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -1934,10 +2242,15 @@ export type UserUncheckedCreateWithoutToolRunsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -1979,11 +2292,16 @@ export type UserUpdateWithoutToolRunsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -2010,10 +2328,15 @@ export type UserUncheckedUpdateWithoutToolRunsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2039,11 +2362,16 @@ export type UserCreateWithoutPersonalAccessTokensInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -2070,10 +2398,15 @@ export type UserUncheckedCreateWithoutPersonalAccessTokensInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -2115,11 +2448,16 @@ export type UserUpdateWithoutPersonalAccessTokensInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -2146,6 +2484,166 @@ export type UserUncheckedUpdateWithoutPersonalAccessTokensInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPaymentTransactionsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
+  activeSessionId?: string | null
+  roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
+  plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
+  personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
+  activeSessionId?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
+  personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPaymentTransactionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPaymentTransactionsInput, Prisma.UserUncheckedCreateWithoutPaymentTransactionsInput>
+}
+
+export type UserUpsertWithoutPaymentTransactionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPaymentTransactionsInput, Prisma.UserUncheckedUpdateWithoutPaymentTransactionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPaymentTransactionsInput, Prisma.UserUncheckedCreateWithoutPaymentTransactionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPaymentTransactionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPaymentTransactionsInput, Prisma.UserUncheckedUpdateWithoutPaymentTransactionsInput>
+}
+
+export type UserUpdateWithoutPaymentTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
+  plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
+  personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
@@ -2160,6 +2658,7 @@ export type UserUncheckedUpdateWithoutPersonalAccessTokensInput = {
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
+  personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWorkspacesInput = {
@@ -2175,11 +2674,16 @@ export type UserCreateWithoutWorkspacesInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -2206,10 +2710,15 @@ export type UserUncheckedCreateWithoutWorkspacesInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -2251,11 +2760,16 @@ export type UserUpdateWithoutWorkspacesInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -2282,10 +2796,15 @@ export type UserUncheckedUpdateWithoutWorkspacesInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2311,11 +2830,16 @@ export type UserCreateWithoutWorkspaceMembershipsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -2342,10 +2866,15 @@ export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2387,11 +2916,16 @@ export type UserUpdateWithoutWorkspaceMembershipsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -2418,10 +2952,15 @@ export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2447,11 +2986,16 @@ export type UserCreateWithoutSentInvitesInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -2478,10 +3022,15 @@ export type UserUncheckedCreateWithoutSentInvitesInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2523,11 +3072,16 @@ export type UserUpdateWithoutSentInvitesInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -2554,10 +3108,15 @@ export type UserUncheckedUpdateWithoutSentInvitesInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2583,11 +3142,16 @@ export type UserCreateWithoutSavedPromptsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -2614,10 +3178,15 @@ export type UserUncheckedCreateWithoutSavedPromptsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2659,11 +3228,16 @@ export type UserUpdateWithoutSavedPromptsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -2690,10 +3264,15 @@ export type UserUncheckedUpdateWithoutSavedPromptsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2719,11 +3298,16 @@ export type UserCreateWithoutPromptsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
   plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
@@ -2750,10 +3334,15 @@ export type UserUncheckedCreateWithoutPromptsInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
   modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
@@ -2795,11 +3384,16 @@ export type UserUpdateWithoutPromptsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -2826,10 +3420,15 @@ export type UserUncheckedUpdateWithoutPromptsInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2855,10 +3454,15 @@ export type UserUpdateWithoutRolesInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -2886,9 +3490,14 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2916,6 +3525,10 @@ export type UserUncheckedUpdateManyWithoutRolesInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -2932,6 +3545,10 @@ export type UserCreateManyPlanInput = {
   paddleSubscriptionId?: string | null
   subscriptionStatus?: string | null
   currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
   activeSessionId?: string | null
 }
 
@@ -2948,10 +3565,15 @@ export type UserUpdateWithoutPlanInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
@@ -2978,10 +3600,15 @@ export type UserUncheckedUpdateWithoutPlanInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
   modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
   workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
@@ -3008,6 +3635,10 @@ export type UserUncheckedUpdateManyWithoutPlanInput = {
   paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -3019,6 +3650,7 @@ export type UserUncheckedUpdateManyWithoutPlanInput = {
 export type UserCountOutputType = {
   roles: number
   apiKeys: number
+  paymentTransactions: number
   workspaceMemberships: number
   sentInvites: number
   savedPrompts: number
@@ -3035,6 +3667,7 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | UserCountOutputTypeCountRolesArgs
   apiKeys?: boolean | UserCountOutputTypeCountApiKeysArgs
+  paymentTransactions?: boolean | UserCountOutputTypeCountPaymentTransactionsArgs
   workspaceMemberships?: boolean | UserCountOutputTypeCountWorkspaceMembershipsArgs
   sentInvites?: boolean | UserCountOutputTypeCountSentInvitesArgs
   savedPrompts?: boolean | UserCountOutputTypeCountSavedPromptsArgs
@@ -3070,6 +3703,13 @@ export type UserCountOutputTypeCountRolesArgs<ExtArgs extends runtime.Types.Exte
  */
 export type UserCountOutputTypeCountApiKeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ApiKeyWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPaymentTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentTransactionWhereInput
 }
 
 /**
@@ -3164,11 +3804,16 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   paddleSubscriptionId?: boolean
   subscriptionStatus?: boolean
   currentPeriodEnd?: boolean
+  cardBrand?: boolean
+  cardLast4?: boolean
+  cardExpiryMonth?: boolean
+  cardExpiryYear?: boolean
   activeSessionId?: boolean
   roles?: boolean | Prisma.User$rolesArgs<ExtArgs>
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
   apiKeys?: boolean | Prisma.User$apiKeysArgs<ExtArgs>
   modelConfig?: boolean | Prisma.User$modelConfigArgs<ExtArgs>
+  paymentTransactions?: boolean | Prisma.User$paymentTransactionsArgs<ExtArgs>
   workspaceMemberships?: boolean | Prisma.User$workspaceMembershipsArgs<ExtArgs>
   sentInvites?: boolean | Prisma.User$sentInvitesArgs<ExtArgs>
   savedPrompts?: boolean | Prisma.User$savedPromptsArgs<ExtArgs>
@@ -3197,6 +3842,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   paddleSubscriptionId?: boolean
   subscriptionStatus?: boolean
   currentPeriodEnd?: boolean
+  cardBrand?: boolean
+  cardLast4?: boolean
+  cardExpiryMonth?: boolean
+  cardExpiryYear?: boolean
   activeSessionId?: boolean
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -3215,6 +3864,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   paddleSubscriptionId?: boolean
   subscriptionStatus?: boolean
   currentPeriodEnd?: boolean
+  cardBrand?: boolean
+  cardLast4?: boolean
+  cardExpiryMonth?: boolean
+  cardExpiryYear?: boolean
   activeSessionId?: boolean
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -3233,15 +3886,20 @@ export type UserSelectScalar = {
   paddleSubscriptionId?: boolean
   subscriptionStatus?: boolean
   currentPeriodEnd?: boolean
+  cardBrand?: boolean
+  cardLast4?: boolean
+  cardExpiryMonth?: boolean
+  cardExpiryYear?: boolean
   activeSessionId?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "password" | "isActive" | "createdAt" | "planId" | "paddleCustomerId" | "paddleSubscriptionId" | "subscriptionStatus" | "currentPeriodEnd" | "activeSessionId", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "password" | "isActive" | "createdAt" | "planId" | "paddleCustomerId" | "paddleSubscriptionId" | "subscriptionStatus" | "currentPeriodEnd" | "cardBrand" | "cardLast4" | "cardExpiryMonth" | "cardExpiryYear" | "activeSessionId", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | Prisma.User$rolesArgs<ExtArgs>
   plan?: boolean | Prisma.User$planArgs<ExtArgs>
   apiKeys?: boolean | Prisma.User$apiKeysArgs<ExtArgs>
   modelConfig?: boolean | Prisma.User$modelConfigArgs<ExtArgs>
+  paymentTransactions?: boolean | Prisma.User$paymentTransactionsArgs<ExtArgs>
   workspaceMemberships?: boolean | Prisma.User$workspaceMembershipsArgs<ExtArgs>
   sentInvites?: boolean | Prisma.User$sentInvitesArgs<ExtArgs>
   savedPrompts?: boolean | Prisma.User$savedPromptsArgs<ExtArgs>
@@ -3269,6 +3927,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     plan: Prisma.$PlanPayload<ExtArgs> | null
     apiKeys: Prisma.$ApiKeyPayload<ExtArgs>[]
     modelConfig: Prisma.$UserModelConfigPayload<ExtArgs> | null
+    paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
     workspaceMemberships: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
     sentInvites: Prisma.$WorkspaceInvitePayload<ExtArgs>[]
     savedPrompts: Prisma.$SavedPromptPayload<ExtArgs>[]
@@ -3295,6 +3954,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     paddleSubscriptionId: string | null
     subscriptionStatus: string | null
     currentPeriodEnd: Date | null
+    cardBrand: string | null
+    cardLast4: string | null
+    cardExpiryMonth: number | null
+    cardExpiryYear: number | null
     activeSessionId: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -3694,6 +4357,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   plan<T extends Prisma.User$planArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$planArgs<ExtArgs>>): Prisma.Prisma__PlanClient<runtime.Types.Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   apiKeys<T extends Prisma.User$apiKeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$apiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApiKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   modelConfig<T extends Prisma.User$modelConfigArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$modelConfigArgs<ExtArgs>>): Prisma.Prisma__UserModelConfigClient<runtime.Types.Result.GetResult<Prisma.$UserModelConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  paymentTransactions<T extends Prisma.User$paymentTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workspaceMemberships<T extends Prisma.User$workspaceMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workspaceMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sentInvites<T extends Prisma.User$sentInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sentInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   savedPrompts<T extends Prisma.User$savedPromptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$savedPromptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedPromptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3747,6 +4411,10 @@ export interface UserFieldRefs {
   readonly paddleSubscriptionId: Prisma.FieldRef<"User", 'String'>
   readonly subscriptionStatus: Prisma.FieldRef<"User", 'String'>
   readonly currentPeriodEnd: Prisma.FieldRef<"User", 'DateTime'>
+  readonly cardBrand: Prisma.FieldRef<"User", 'String'>
+  readonly cardLast4: Prisma.FieldRef<"User", 'String'>
+  readonly cardExpiryMonth: Prisma.FieldRef<"User", 'Int'>
+  readonly cardExpiryYear: Prisma.FieldRef<"User", 'Int'>
   readonly activeSessionId: Prisma.FieldRef<"User", 'String'>
 }
     
@@ -4232,6 +4900,30 @@ export type User$modelConfigArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   include?: Prisma.UserModelConfigInclude<ExtArgs> | null
   where?: Prisma.UserModelConfigWhereInput
+}
+
+/**
+ * User.paymentTransactions
+ */
+export type User$paymentTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PaymentTransaction
+   */
+  select?: Prisma.PaymentTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PaymentTransaction
+   */
+  omit?: Prisma.PaymentTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentTransactionInclude<ExtArgs> | null
+  where?: Prisma.PaymentTransactionWhereInput
+  orderBy?: Prisma.PaymentTransactionOrderByWithRelationInput | Prisma.PaymentTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentTransactionScalarFieldEnum | Prisma.PaymentTransactionScalarFieldEnum[]
 }
 
 /**

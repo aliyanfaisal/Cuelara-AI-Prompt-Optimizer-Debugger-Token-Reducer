@@ -60,14 +60,16 @@ export async function getPaddleClient(): Promise<Paddle | null> {
   return new Paddle(apiKey, { environment: environment === "production" ? Environment.production : Environment.sandbox });
 }
 
-// Paddle-hosted links for a subscription: updating the card on file and self-serve cancellation.
-// Null if Paddle isn't configured or the subscription can't be found (e.g. already canceled).
-export async function getSubscriptionManagementUrls(subscriptionId: string): Promise<{ updatePaymentMethod: string | null; cancel: string } | null> {
+// A transaction id for updating the card on a subscription: opening Paddle.js's checkout overlay
+// with this id (Checkout.open({ transactionId })) shows Paddle's card form inline on our own page,
+// instead of sending the customer to a Paddle-hosted URL. Null if Paddle isn't configured or the
+// subscription can't be found (e.g. already canceled).
+export async function getPaymentMethodChangeTransactionId(subscriptionId: string): Promise<string | null> {
   const paddle = await getPaddleClient();
   if (!paddle) return null;
   try {
-    const subscription = await paddle.subscriptions.get(subscriptionId);
-    return subscription.managementUrls;
+    const transaction = await paddle.subscriptions.getPaymentMethodChangeTransaction(subscriptionId);
+    return transaction.id;
   } catch {
     return null;
   }

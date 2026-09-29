@@ -337,11 +337,19 @@ model User {
   // End of the current billing period on the active subscription; used to show "renews/ends on" in the dashboard.
   currentPeriodEnd     DateTime?
 
+  // Non-sensitive summary of the card on file, from the most recent successful Paddle transaction's
+  // payment method details — Paddle holds the actual card, we only ever see brand/last4/expiry.
+  cardBrand       String?
+  cardLast4       String?
+  cardExpiryMonth Int?
+  cardExpiryYear  Int?
+
   // The one login (JWT "sid") currently allowed to act as this user; see src/lib/auth.ts.
   activeSessionId String?
 
   apiKeys     ApiKey[]
   modelConfig UserModelConfig?
+  paymentTransactions PaymentTransaction[]
 
   workspaceMemberships WorkspaceMember[]
   sentInvites          WorkspaceInvite[]
@@ -498,6 +506,25 @@ model PlanToolLimit {
   teamDailyLimit Int?
 
   @@unique([planId, tool])
+}
+
+// One row per Paddle transaction (a single charge — the initial subscription payment, or one
+// recurring renewal) for a user, synced from webhook events. Shown as payment history in the
+// dashboard; the actual invoice/tax records stay with Paddle as merchant of record.
+model PaymentTransaction {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paddleTransactionId String    @unique
+  // Paddle's transaction.status: "draft" | "ready" | "billed" | "paid" | "completed" | "canceled" | "past_due"
+  status              String
+  amountCents         Int
+  currencyCode        String
+  billedAt            DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([userId, createdAt])
 }
 
 model VerificationToken {

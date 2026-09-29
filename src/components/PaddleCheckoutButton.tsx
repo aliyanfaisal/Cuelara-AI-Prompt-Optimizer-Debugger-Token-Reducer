@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { initializePaddle, type Paddle } from "@paddle/paddle-js";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { usePaddleInstance } from "@/hooks/usePaddleInstance";
+import type { PaddleEnvironment } from "@/lib/paddle";
 
 export default function PaddleCheckoutButton({
   priceId,
@@ -15,21 +16,14 @@ export default function PaddleCheckoutButton({
 }: {
   priceId: string;
   clientToken: string;
-  environment: "sandbox" | "production";
+  environment: PaddleEnvironment;
   userId: string;
   userEmail: string;
   className?: string;
   children: React.ReactNode;
 }) {
-  const [paddle, setPaddle] = useState<Paddle>();
+  const paddle = usePaddleInstance(clientToken, environment);
   const [isOpening, setIsOpening] = useState(false);
-
-  useEffect(() => {
-    if (!clientToken) return;
-    initializePaddle({ environment, token: clientToken }).then((instance) => {
-      if (instance) setPaddle(instance);
-    });
-  }, [clientToken, environment]);
 
   function openCheckout() {
     if (!paddle) return;

@@ -177,6 +177,11 @@ export type NewsletterSubscriber = Prisma.NewsletterSubscriberModel
  */
 export type PlanToolLimit = Prisma.PlanToolLimitModel
 /**
+ * Model PaymentTransaction
+ * 
+ */
+export type PaymentTransaction = Prisma.PaymentTransactionModel
+/**
  * Model VerificationToken
  * 
  */

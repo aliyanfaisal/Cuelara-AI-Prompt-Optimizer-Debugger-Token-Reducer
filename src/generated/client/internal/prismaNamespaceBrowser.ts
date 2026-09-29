@@ -78,6 +78,7 @@ export const ModelName = {
   ContactMessage: 'ContactMessage',
   NewsletterSubscriber: 'NewsletterSubscriber',
   PlanToolLimit: 'PlanToolLimit',
+  PaymentTransaction: 'PaymentTransaction',
   VerificationToken: 'VerificationToken',
   Workspace: 'Workspace',
   WorkspaceMember: 'WorkspaceMember',
@@ -351,6 +352,10 @@ export const UserScalarFieldEnum = {
   paddleSubscriptionId: 'paddleSubscriptionId',
   subscriptionStatus: 'subscriptionStatus',
   currentPeriodEnd: 'currentPeriodEnd',
+  cardBrand: 'cardBrand',
+  cardLast4: 'cardLast4',
+  cardExpiryMonth: 'cardExpiryMonth',
+  cardExpiryYear: 'cardExpiryYear',
   activeSessionId: 'activeSessionId'
 } as const
 
@@ -476,6 +481,21 @@ export const PlanToolLimitScalarFieldEnum = {
 } as const
 
 export type PlanToolLimitScalarFieldEnum = (typeof PlanToolLimitScalarFieldEnum)[keyof typeof PlanToolLimitScalarFieldEnum]
+
+
+export const PaymentTransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  paddleTransactionId: 'paddleTransactionId',
+  status: 'status',
+  amountCents: 'amountCents',
+  currencyCode: 'currencyCode',
+  billedAt: 'billedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentTransactionScalarFieldEnum = (typeof PaymentTransactionScalarFieldEnum)[keyof typeof PaymentTransactionScalarFieldEnum]
 
 
 export const VerificationTokenScalarFieldEnum = {
