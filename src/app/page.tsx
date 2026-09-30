@@ -283,7 +283,7 @@ export default function Home() {
             className="text-center mb-12 md:mb-16"
           >
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">Write it. Feed it. Design it.</h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Eight focused, fully-working tools: optimize prompts, extract the context that matters from large documents, turn any website into a design prompt, and debug, score, compress and cost-check the result.</p>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">Nine focused, fully-working tools: optimize prompts, extract the context that matters from large documents, turn any website into a design prompt, and debug, score, compress and cost-check the result.</p>
           </motion.div>
 
           <motion.div
@@ -696,8 +696,8 @@ function PromptDemo() {
               type="button"
               onClick={() => setCurrentIndex(idx)}
               className={`shrink-0 text-xs font-mono px-3 py-1 rounded-md transition-all duration-300 ${idx === currentIndex
-                  ? "bg-background shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                ? "bg-background shadow-sm text-foreground"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
             >
               {example.file}
