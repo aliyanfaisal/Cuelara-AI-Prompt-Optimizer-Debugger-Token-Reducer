@@ -217,14 +217,46 @@
     if (!field || !field.isConnected) return hideAll();
     const r = field.getBoundingClientRect();
     if (r.bottom < 0 || r.top > innerHeight || r.width === 0) return (fab.hidden = true), closeMenu();
-    const x = Math.max(8, Math.min(r.right - BTN - 8, innerWidth - BTN - 8));
     // Tall boxes get the button in the bottom corner; a one-line box gets it centred on the right edge.
     const wantY = r.height >= 64 ? r.bottom - BTN - 8 : r.top + (r.height - BTN) / 2;
     const y = Math.max(8, Math.min(wantY, innerHeight - BTN - 8));
+    const x = clearOfControls(r, Math.max(8, Math.min(r.right - BTN - 12, innerWidth - BTN - 8)), y);
     fab.hidden = false;
     fab.style.cssText = `position:fixed;left:${x}px;top:${y}px;`;
     if (menuOpen) positionMenu(x, y);
     if (!toast.hidden) positionToast(x, y);
+  }
+
+  const INTERACTIVE = "button, a[href], input, select, textarea, summary, [role='button'], [role='link'], [role='menuitem'], [contenteditable]:not([contenteditable='false'])";
+
+  // The page's own controls (a send button, an attach icon…) often sit on top of the right edge of its text box.
+  // Returns the first interactive element, other than the field itself, found under the button's footprint.
+  function controlUnder(el, x, y) {
+    if (typeof document.elementsFromPoint !== "function") return null;
+    const points = [[x + 3, y + BTN / 2], [x + BTN / 2, y + BTN / 2], [x + BTN - 3, y + BTN / 2], [x + BTN / 2, y + 3], [x + BTN / 2, y + BTN - 3]];
+    for (const [px, py] of points) {
+      for (const hit of document.elementsFromPoint(px, py)) {
+        if (hit === host || hit === document.documentElement || hit === document.body) continue;
+        const control = hit.closest ? hit.closest(INTERACTIVE) : null;
+        if (control && control !== el && !control.contains(el) && !el.contains(control)) return control;
+        if (control === el || (control && (control.contains(el) || el.contains(control)))) break; // the field itself: fine
+        break; // topmost real element is plain content: nothing to avoid here
+      }
+    }
+    return null;
+  }
+
+  function clearOfControls(r, startX, y) {
+    let x = startX;
+    for (let i = 0; i < 6; i++) {
+      const control = controlUnder(field, x, y);
+      if (!control) return x;
+      const cr = control.getBoundingClientRect();
+      const next = cr.left - BTN - 8;
+      if (next < r.left + 8) return startX; // no room to the left: stay put rather than jump around
+      x = next;
+    }
+    return x;
   }
 
   function positionMenu(x, y) {
@@ -557,6 +589,8 @@
       if (field) place();
     });
   };
+  // Sites add controls as you type (a send button that only appears once there is text), so re-check the spot then too.
+  on(document, "input", () => setTimeout(reposition, 120), { capture: true });
   on(window, "scroll", reposition, { capture: true, passive: true });
   on(window, "resize", reposition);
   if (typeof ResizeObserver === "function") {
