@@ -213,10 +213,35 @@
     if (!host.isConnected) document.documentElement.appendChild(host);
   }
 
+  /**
+   * The part of the field the user can actually see: its box clipped by every scrolling / overflow-hidden ancestor and
+   * by the viewport. A chat box that grows and scrolls inside its container has a bounding box far taller than what is
+   * shown, and anchoring to that would drag the button along with the scrolling text.
+   */
+  function visibleRect(el) {
+    const own = el.getBoundingClientRect();
+    let left = own.left, top = own.top, right = own.right, bottom = own.bottom;
+    for (let p = el.parentElement; p && p !== document.documentElement; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      if (/auto|scroll|hidden|clip/.test(`${cs.overflow} ${cs.overflowX} ${cs.overflowY}`)) {
+        const pr = p.getBoundingClientRect();
+        left = Math.max(left, pr.left);
+        top = Math.max(top, pr.top);
+        right = Math.min(right, pr.right);
+        bottom = Math.min(bottom, pr.bottom);
+      }
+    }
+    left = Math.max(left, 0);
+    top = Math.max(top, 0);
+    right = Math.min(right, innerWidth);
+    bottom = Math.min(bottom, innerHeight);
+    return { left, top, right, bottom, width: Math.max(0, right - left), height: Math.max(0, bottom - top) };
+  }
+
   function place() {
     if (!field || !field.isConnected) return hideAll();
-    const r = field.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > innerHeight || r.width === 0) return (fab.hidden = true), closeMenu();
+    const r = visibleRect(field);
+    if (r.width === 0 || r.height === 0) return (fab.hidden = true), closeMenu();
     // Tall boxes get the button in the bottom corner; a one-line box gets it centred on the right edge.
     const wantY = r.height >= 64 ? r.bottom - BTN - 8 : r.top + (r.height - BTN) / 2;
     const y = Math.max(8, Math.min(wantY, innerHeight - BTN - 8));

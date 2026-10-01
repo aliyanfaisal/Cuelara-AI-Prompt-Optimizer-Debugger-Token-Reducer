@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Cuelara – AI Prompt Tools",
   "short_name": "Cuelara",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Optimize, build, compress, format and debug prompts right inside AI chat boxes, and turn any website into a design prompt.",
   "minimum_chrome_version": "111",
   "permissions": [
