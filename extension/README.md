@@ -3,7 +3,7 @@
 Prompt tools inside AI chat boxes, plus Site to Prompt. Plain Manifest V3 JavaScript, no build step.
 
 ## What it does
-- **Field widget** (`content/widget.js`): a small button on multi-line text boxes with Optimize, Build, Compress, Format and Debug. Nothing is read or sent until the user picks a tool. It writes the result back through the page's own editor (paste event, then `insertText`, then clipboard) and offers Undo.
+- **Field widget** (`content/widget.js`): a small button on multi-line text boxes with Optimize, Build, Compress, Format and Debug. Nothing is read or sent until the user picks a tool. A field is noticed on focus, click or typing; if auto-detection misses it, the popup's "Choose a text box" starts a picker (`cuelara:pick`) where the user clicks the box. It writes the result back through the page's own editor (paste event, then `insertText`, then clipboard) and offers Undo.
 - **Popup** (`popup.html` / `popup.js` / `popup.css`): usage and plan, all Cuelara tools (each with its own screen), a compact Site to Prompt card, per-site controls, and a dismissible "Get started" card.
 - **Site to Prompt**: `collector.js` is injected into the analysed page and only measures. Interpretation lives server-side in `src/lib/site-to-prompt/aggregate.ts`, so analysis changes never need an extension update.
 - **Accounts**: "Connect" opens `/extension/connect` on cuelara.com; the user approves there and the page hands a personal access token to the extension through `bridge.js` (checked against a one-time `state`). The extension works anonymously with the free limits when not connected.

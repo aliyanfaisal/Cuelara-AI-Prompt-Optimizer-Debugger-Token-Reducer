@@ -182,9 +182,25 @@ async function useOnPage(tool) {
   if (!pong) return setStatus("tool", "error", "Cuelara can't run on this page.");
   const res = await tabMessage({ type: "cuelara:run", tool: tool.id });
   if (!res) return setStatus("tool", "error", "The page didn't respond. Reload it and try again.");
+  if (res.picking) return setStatus("tool", "ok", "Now click the text box on the page and type your prompt. The Cuelara button will appear next to it.");
   if (!res.ok) return setStatus("tool", "error", res.error || "Something went wrong.");
   setStatus("tool", "ok", res.note ? `Done — your prompt was replaced. ${res.note}.` : "Done — your prompt was replaced.");
   refresh();
+}
+
+// Lets the user point at the text box when automatic detection can't find it (or the popup took focus off it).
+async function pickField(area) {
+  const info = siteInfo();
+  if (info.kind === "unsupported") return setStatus(area, "error", info.reason);
+  if (info.kind === "blocked") return setStatus(area, "error", `Cuelara is turned off on ${info.domain}. Turn it back on first.`);
+  let pong = await tabMessage({ type: "cuelara:ping" });
+  if (!pong) {
+    if (!(await injectWidget())) return setStatus(area, "error", "Cuelara can't run on this page.");
+    pong = await tabMessage({ type: "cuelara:ping" });
+  }
+  const res = pong ? await tabMessage({ type: "cuelara:pick" }) : null;
+  if (!res || !res.ok) return setStatus(area, "error", "Cuelara can't run on this page.");
+  setStatus(area, "ok", "Now click the text box you want to use on the page, then type your prompt.");
 }
 
 async function activateHere() {
@@ -250,7 +266,7 @@ function helpCard() {
     h(
       "ol",
       {},
-      step(1, "Click into a chat box", "On ChatGPT, Claude, Gemini and other AI sites, a small Cuelara button appears in the corner of the box you’re typing in."),
+      step(1, "Click into a chat box", "On ChatGPT, Claude, Gemini and other AI sites, a small Cuelara button appears next to the box you’re typing in. Don’t see it? Reload the tab, or open this popup and press “Choose a text box”."),
       step(2, "Pick a tool", "Choose Optimize, Build, Compress, Format or Debug. Your prompt is replaced right in the box, and Undo is one click away."),
       step(3, "Using another website?", "Open this popup there and press “Use on this page”, or “Always allow” to have it ready next time."),
       step(4, "Want more uses?", "Connect your account for your plan’s higher limits. Nothing is sent until you pick a tool.")
@@ -355,15 +371,16 @@ function siteCard() {
     inactive: ["", `Not active on ${info.host}`, "Cuelara only runs here when you ask it to."],
   }[info.kind];
 
+  const pick = h("button", { class: "btn secondary sm", type: "button", onclick: () => pickField("site") }, "Choose a text box");
   let actions;
   if (info.kind === "inactive") {
-    actions = h("div", { class: "row" }, h("button", { class: "btn secondary sm", type: "button", onclick: activateHere }, "Use on this page"), h("button", { class: "btn secondary sm", type: "button", onclick: () => alwaysAllow(info) }, "Always allow"));
+    actions = h("div", { class: "row" }, h("button", { class: "btn secondary sm", type: "button", onclick: activateHere }, "Use on this page"), h("button", { class: "btn secondary sm", type: "button", onclick: () => alwaysAllow(info) }, "Always allow"), pick);
   } else if (info.kind === "blocked") {
     actions = h("button", { class: "btn secondary sm", type: "button", onclick: () => clearRule(info.domain) }, "Turn back on");
   } else if (info.kind === "allowed") {
-    actions = h("div", { class: "row" }, h("button", { class: "btn secondary sm", type: "button", onclick: () => clearRule(info.domain) }, "Stop allowing"), h("button", { class: "btn secondary sm danger", type: "button", onclick: () => setRule(info.domain, "block") }, icon("ban"), "Block"));
+    actions = h("div", { class: "row" }, pick, h("button", { class: "btn secondary sm", type: "button", onclick: () => clearRule(info.domain) }, "Stop allowing"), h("button", { class: "btn secondary sm danger", type: "button", onclick: () => setRule(info.domain, "block") }, icon("ban"), "Block"));
   } else {
-    actions = h("button", { class: "btn secondary sm danger", type: "button", onclick: () => setRule(info.domain, "block") }, icon("ban"), "Don’t run on this site");
+    actions = h("div", { class: "row" }, pick, h("button", { class: "btn secondary sm danger", type: "button", onclick: () => setRule(info.domain, "block") }, icon("ban"), "Don’t run here"));
   }
 
   return h(
@@ -413,7 +430,8 @@ function toolView() {
           h("span", { class: "eyebrow", text: "On this page" }),
           h("p", { class: "muted", text: blockedReason || "Click into a text box on the page, type your prompt, then press the button." }),
           statusLine("tool"),
-          h("button", { class: "btn primary", type: "button", disabled: !!blockedReason || busy, onclick: () => useOnPage(tool) }, `Use ${tool.title} on this page`))
+          h("button", { class: "btn primary", type: "button", disabled: !!blockedReason || busy, onclick: () => useOnPage(tool) }, `Use ${tool.title} on this page`),
+          h("button", { class: "btn secondary sm", type: "button", disabled: !!blockedReason || busy, onclick: () => pickField("tool") }, "Can’t find it? Choose the text box"))
       : null,
     h("button", { class: "btn secondary", type: "button", onclick: () => openOnWeb(tool.page) }, tool.text ? "Open on Cuelara" : `Open ${tool.title} on Cuelara`, icon("out")),
     footerView()

@@ -47,8 +47,9 @@
       const hint = [el.getAttribute("aria-label"), el.getAttribute("placeholder"), el.getAttribute("name"), el.id, el.getAttribute("type")].filter(Boolean).join(" ");
       if (NEVER.test(hint)) return false;
     }
+    // Chat editors often render as one ~24px line inside a padded container, so the height bar is low.
     const r = el.getBoundingClientRect();
-    return r.width >= 180 && r.height >= 32;
+    return r.width >= 150 && r.height >= 18;
   }
 
   // Single-line <input>s are never offered: chat boxes are multi-line, and inputs are mostly names, searches and logins.
@@ -176,6 +177,14 @@
     color: var(--text); font-size: 12.5px; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,.25); display: flex; gap: 10px; align-items: center; }
   .toast.error { border-color: var(--danger); }
   .toast button { border: 0; background: none; font-weight: 700; font-size: 12.5px; color: var(--accent); padding: 0; }
+  .pickbar { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 12px; border: 1px solid var(--accent); background: var(--bg); color: var(--text);
+    box-shadow: 0 10px 30px rgba(0,0,0,.3); font-size: 13px; max-width: calc(100vw - 24px); }
+  .pickbar.nudge { animation: nudge .3s; }
+  @keyframes nudge { 25% { transform: translateX(calc(-50% - 6px)); } 75% { transform: translateX(calc(-50% + 6px)); } }
+  .pickbar button { border: 1px solid var(--border); background: none; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+  .pickbar button:hover { background: var(--hover); }
+  .hl { position: fixed; pointer-events: none !important; border: 2px solid var(--accent); border-radius: 8px; background: rgba(192,38,211,.08); }
   [hidden] { display: none !important; }
 </style>
 <div class="layer" id="layer">
@@ -184,12 +193,19 @@
   </button>
   <div class="menu" id="menu" role="menu" hidden></div>
   <div class="toast" id="toast" role="status" hidden></div>
+  <div class="hl" id="hl" hidden></div>
+  <div class="pickbar" id="pickbar" role="status" hidden>
+    <span id="picktext">Click the text box you want to use</span>
+    <button type="button" id="pickcancel">Cancel</button>
+  </div>
 </div>`;
 
   const layer = shadow.getElementById("layer");
   const fab = shadow.getElementById("fab");
   const menu = shadow.getElementById("menu");
   const toast = shadow.getElementById("toast");
+  const hl = shadow.getElementById("hl");
+  const pickbar = shadow.getElementById("pickbar");
   // Keep the page's text selection and caret where they are when our controls are pressed.
   on(layer, "mousedown", (e) => e.preventDefault(), { capture: true });
 
@@ -202,7 +218,9 @@
     const r = field.getBoundingClientRect();
     if (r.bottom < 0 || r.top > innerHeight || r.width === 0) return (fab.hidden = true), closeMenu();
     const x = Math.max(8, Math.min(r.right - BTN - 8, innerWidth - BTN - 8));
-    const y = Math.max(8, Math.min(r.bottom - BTN - 8, innerHeight - BTN - 8));
+    // Tall boxes get the button in the bottom corner; a one-line box gets it centred on the right edge.
+    const wantY = r.height >= 64 ? r.bottom - BTN - 8 : r.top + (r.height - BTN) / 2;
+    const y = Math.max(8, Math.min(wantY, innerHeight - BTN - 8));
     fab.hidden = false;
     fab.style.cssText = `position:fixed;left:${x}px;top:${y}px;`;
     if (menuOpen) positionMenu(x, y);
@@ -391,10 +409,103 @@
   }
 
   function destroy() {
+    stopPicking();
     ac.abort();
     clearTimeout(toastTimer);
     host.remove();
     delete window.__cuelaraWidget;
+  }
+
+  // ---------------------------------------------------------------- choosing a field by hand
+
+  let picking = null; // { tool } while waiting for the user to click a text box
+  let pickAc = null;
+
+  // Lenient on purpose: the user pointed at it, so only passwords are refused.
+  function pickable(node) {
+    if (!(node instanceof Element) || node.closest("#cuelara-root")) return null;
+    const direct = node.closest("textarea, input, [contenteditable]:not([contenteditable='false']), [role='textbox']");
+    let el = direct;
+    if (!el && node.getBoundingClientRect) {
+      // A click on the padding around a field: look for the field inside a reasonably small container.
+      const r = node.getBoundingClientRect();
+      if (r.width < 900 && r.height < 400) el = node.querySelector("textarea, [contenteditable]:not([contenteditable='false']), [role='textbox']");
+    }
+    if (!el) return null;
+    if (el instanceof HTMLInputElement) {
+      const type = (el.getAttribute("type") || "text").toLowerCase();
+      if (!["text", "search"].includes(type)) return null;
+    }
+    if (el.disabled || el.readOnly) return null;
+    if (!(el instanceof HTMLTextAreaElement) && !(el instanceof HTMLInputElement) && el.isContentEditable) return rootEditable(el);
+    return el;
+  }
+
+  function stopPicking() {
+    picking = null;
+    if (pickAc) pickAc.abort();
+    pickAc = null;
+    pickbar.hidden = true;
+    hl.hidden = true;
+  }
+
+  function startPick(tool) {
+    if (picking) return;
+    mount();
+    closeMenu();
+    hideToast();
+    picking = { tool: tool || null };
+    pickAc = new AbortController();
+    const onPick = (type, fn, opts) => document.addEventListener(type, fn, { ...opts, capture: true, signal: pickAc.signal });
+    shadow.getElementById("picktext").textContent = tool ? "Click the text box you want to use, then type your prompt" : "Click the text box you want to use";
+    pickbar.hidden = false;
+
+    onPick("mousemove", (e) => {
+      const el = pickable(e.composedPath ? e.composedPath()[0] : e.target);
+      if (!el) return void (hl.hidden = true);
+      const r = el.getBoundingClientRect();
+      hl.style.cssText = `left:${r.left - 2}px;top:${r.top - 2}px;width:${r.width + 4}px;height:${r.height + 4}px;`;
+      hl.hidden = false;
+    }, { passive: true });
+
+    onPick("click", (e) => {
+      const target = e.composedPath ? e.composedPath()[0] : e.target;
+      if (target instanceof Node && host.contains(target)) return;
+      const el = pickable(target);
+      if (!el) {
+        // Not a text box: don't let the click follow a link or press a button while picking.
+        e.preventDefault();
+        e.stopPropagation();
+        pickbar.classList.remove("nudge");
+        void pickbar.offsetWidth;
+        pickbar.classList.add("nudge");
+        return;
+      }
+      const tool = picking.tool;
+      stopPicking();
+      choose(el, tool);
+    });
+
+    onPick("keydown", (e) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        stopPicking();
+      }
+    });
+  }
+
+  on(shadow.getElementById("pickcancel"), "click", stopPicking);
+
+  // The user picked this field by hand: attach the widget to it even if auto-detection wouldn't have.
+  function choose(el, tool) {
+    attach(el);
+    try {
+      el.focus();
+    } catch {
+      // Some editors refuse programmatic focus; the click already focused it.
+    }
+    if (tool && getText(el).trim()) return void runOnField(tool, el);
+    showToast("Selected. Type your prompt, then press the Cuelara button and pick a tool.");
   }
 
   // ---------------------------------------------------------------- wiring
@@ -408,11 +519,16 @@
     place();
   }
 
-  on(document, "focusin", (e) => {
+  // A field is noticed when it gets focus, is clicked, or the user starts typing in it — so a script injected after the
+  // user already clicked into the box (from the popup, or on a page opened before the install) still finds it.
+  const consider = (e) => {
+    if (picking) return;
     const target = e.composedPath ? e.composedPath()[0] : e.target;
+    if (field && field.isConnected && target instanceof Node && (target === field || field.contains(target))) return; // already attached
     const el = candidateFrom(target);
     if (el) attach(el);
-  }, { capture: true });
+  };
+  for (const type of ["focusin", "pointerdown", "keydown", "input"]) on(document, type, consider, { capture: true });
 
   on(document, "focusout", () => {
     // Wait for focus to settle: clicking our own button must not hide it.
@@ -460,10 +576,19 @@
       sendResponse({ ok: true, hasField: !!(lastField && lastField.isConnected) });
       return false;
     }
+    if (message.type === "cuelara:pick") {
+      startPick(null);
+      sendResponse({ ok: true, picking: true });
+      return false;
+    }
     if (message.type === "cuelara:run" && TOOLS.some((t) => t.id === message.tool)) {
-      const el = lastField && lastField.isConnected ? lastField : null;
+      // Opening the popup takes focus off the page, so fall back to whatever the page last had focused.
+      let el = lastField && lastField.isConnected ? lastField : null;
+      if (!el && document.activeElement) el = candidateFrom(document.activeElement);
       if (!el) {
-        sendResponse({ ok: false, error: "Click into a text box on the page first, then try again." });
+        // Nothing detected: let the user point at the box instead of failing.
+        startPick(message.tool);
+        sendResponse({ ok: true, picking: true });
         return false;
       }
       field = el;

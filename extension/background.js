@@ -129,8 +129,9 @@ async function completeConnect(state, token, tabId) {
   if (!connect || connect.state !== state || Date.now() > connect.expiresAt || !TOKEN_PATTERN.test(token)) return { ok: false };
 
   await setToken(token);
-  await refreshAccount().catch(() => {});
-  await syncRules();
+  // Answer the page straight away: it only waits a few seconds for this reply, and loading the account and syncing the
+  // site rules (two network calls) is not something it needs to wait for. The popup picks the results up from storage.
+  Promise.all([refreshAccount().catch(() => {}), syncRules()]).catch(() => {});
   if (tabId !== undefined) setTimeout(() => chrome.tabs.remove(tabId).catch(() => {}), 2500);
   return { ok: true };
 }
