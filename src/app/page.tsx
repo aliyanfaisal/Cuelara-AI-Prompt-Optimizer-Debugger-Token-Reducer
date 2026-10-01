@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { WandSparkles, ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2, FileText, Palette } from "lucide-react";
+import { WandSparkles, ArrowRight, Zap, Code2, ShieldCheck, Sparkles, Terminal, ChevronDown, CheckCircle2, FileText, Palette, Puzzle, LayoutList } from "lucide-react";
 
 export default function Home() {
   return (
@@ -417,7 +417,91 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. FAQ Section */}
+      {/* 5. Browser Extension */}
+      <section className="w-full py-16 md:py-32 relative z-10 border-b border-border bg-muted/10 overflow-hidden">
+        <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-fuchsia-500/20 bg-fuchsia-500/10 px-3 py-1 text-xs font-bold text-fuchsia-600 dark:text-fuchsia-400">
+                <Puzzle className="h-3.5 w-3.5" /> Browser extension
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">Improve your prompt without leaving the chat</h2>
+              <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed">
+                The Cuelara extension adds a small button to the chat box on ChatGPT, Claude, Gemini and other AI sites. Pick a tool and your prompt is rewritten in place. It also turns any website into a design prompt.
+              </p>
+              <ul className="space-y-2.5 mb-8">
+                {[
+                  "Optimize, build, compress, format and debug prompts in one click",
+                  "Nothing is sent until you choose a tool",
+                  "Works without an account; connect one for your plan's higher limits",
+                  "Turn it off for any site you like",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-foreground/90">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-fuchsia-500" /> {item}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  href="/extension"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-fuchsia-600 px-7 text-sm font-bold text-white shadow-lg transition-all hover:bg-fuchsia-700 hover:scale-105 active:scale-95"
+                >
+                  Get the extension
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+                <Link href="/extension#how" className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                  See how it works
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Illustration: a chat box with the Cuelara tool menu open */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="relative mx-auto w-full max-w-md pb-2"
+              aria-hidden="true"
+            >
+              <div className="absolute -inset-6 rounded-[2rem] bg-fuchsia-500/10 blur-3xl pointer-events-none" />
+              <div className="relative rounded-2xl border border-border bg-card p-4 shadow-xl">
+                <div className="mb-3 flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-rose-400/70" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+                </div>
+                <div className="relative rounded-xl border border-border bg-background p-4 pb-12 text-sm text-muted-foreground">
+                  write a blog post about coffee, make it good
+                  <span className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-lg bg-fuchsia-600 text-white shadow-md">
+                    <Puzzle className="h-4 w-4" />
+                  </span>
+                </div>
+                <div className="ml-auto mt-3 w-52 rounded-xl border border-border bg-card p-1.5 shadow-lg">
+                  {[
+                    { name: "Optimize", icon: Code2, color: "text-primary" },
+                    { name: "Build", icon: WandSparkles, color: "text-orange-500" },
+                    { name: "Compress", icon: Zap, color: "text-amber-500" },
+                    { name: "Format", icon: LayoutList, color: "text-sky-500" },
+                    { name: "Debug", icon: ShieldCheck, color: "text-rose-500" },
+                  ].map((tool, i) => (
+                    <div key={tool.name} className={`flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-foreground ${i === 0 ? "bg-muted" : ""}`}>
+                      <tool.icon className={`h-3.5 w-3.5 ${tool.color}`} /> {tool.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. FAQ Section */}
       <section className="w-full py-16 md:py-32 relative z-10 border-b border-border bg-background">
         <div className="container mx-auto px-4 md:px-8 max-w-4xl">
           <motion.div
@@ -463,6 +547,10 @@ export default function Home() {
               answer="Site to Prompt measures a real, rendered website (its colors, fonts, spacing, layout, sections and tech stack) and writes a prompt that lets an AI UI builder like v0 or Bolt, an assistant like Claude or ChatGPT, or an image model like Midjourney recreate that design."
             />
             <FaqItem
+              question="Is there a browser extension?"
+              answer="Yes. The Cuelara extension adds a button to the chat box on popular AI sites so you can optimize, build, compress, format or debug a prompt in place, and it powers Site to Prompt. Nothing is sent until you pick a tool. Get it from the Browser Extension page."
+            />
+            <FaqItem
               question="Can I use Cuelara to write prompts from scratch?"
               answer="Yes! Prompt Optimizer takes your loose ideas — even a single rough sentence — and structures them into a professional, production-ready prompt. You can also explore our Cookbook for pre-made, highly optimized templates."
             />
@@ -486,7 +574,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Final CTA */}
+      {/* 7. Final CTA */}
       <section className="w-full py-16 md:py-32 relative z-10 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-[300px] bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
