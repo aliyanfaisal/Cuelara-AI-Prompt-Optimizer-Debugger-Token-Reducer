@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
   const caller = await resolveCaller(req);
   if ("error" in caller) return corsJson({ error: caller.error }, { status: 401 });
-  const { subject, isFreeCaller } = caller;
+  const { subject } = caller;
 
   const limit = await getPromptBuilderLimit(subject);
   if (await hasReachedDailyLimit(subject.subjectKey, "prompt-builder", limit)) {
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       return corsJson({ error: "The AI did not return a usable result. Please try again." }, { status: 502 });
     }
     await consumeDailyLimit(subject.subjectKey, "prompt-builder");
-    return corsJson({ prompt: isFreeCaller ? `${built}\n\n— Built by Cuelara.com` : built });
+    return corsJson({ prompt: built });
   } catch (error) {
     const { error: message, status } = apiErrorResponse(error, ROUTE, "Something went wrong while building the prompt.");
     return corsJson({ error: message }, { status });

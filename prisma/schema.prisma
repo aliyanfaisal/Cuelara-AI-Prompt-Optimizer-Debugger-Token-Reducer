@@ -363,6 +363,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   toolRuns            ToolRun[]
   personalAccessTokens PersonalAccessToken[]
+  extensionSiteRules   ExtensionSiteRule[]
 
   @@index([planId])
   @@index([paddleSubscriptionId])
@@ -467,11 +468,27 @@ model PersonalAccessToken {
   userId     String
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   label      String    @default("MCP")
+  // "mcp" = created by hand at /dashboard/mcp; "extension" = minted when a browser extension is connected.
+  kind       String    @default("mcp")
   tokenHash  String    @unique
   lastUsedAt DateTime?
   createdAt  DateTime  @default(now())
 
-  @@index([userId])
+  @@index([userId, kind])
+}
+
+// A site the Cuelara browser extension must never run on ("block") or may always run on ("allow"),
+// synced to every browser the user connects. `domain` is a bare registrable-style host ("example.com");
+// a rule covers that host and all of its subdomains.
+model ExtensionSiteRule {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain    String
+  mode      String // "block" | "allow"
+  createdAt DateTime @default(now())
+
+  @@unique([userId, domain])
 }
 
 // A message submitted through the public /contact form or the floating support widget.

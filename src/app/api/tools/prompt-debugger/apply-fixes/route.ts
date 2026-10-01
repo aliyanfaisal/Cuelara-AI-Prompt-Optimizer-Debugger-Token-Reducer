@@ -3,28 +3,12 @@ import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToda
 import { isGenAITimeout } from "@/lib/genai-timeout";
 import { getPromptDebuggerLimit } from "@/lib/prompt-debugger/limits";
 import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
-import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
-import { buildTextGenerationChain } from "@/lib/model-chain";
+import { AllProvidersExhaustedError } from "@/lib/llm-generate";
+import { applyFixes } from "@/lib/prompt-debugger/audit";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 import { reportError } from "@/lib/error-report";
 
 const TOOL = "prompt-debugger";
-
-function buildRewritePrompt(rawInput: string, fixes: string[]): string {
-  return `You are an expert prompt engineer. Rewrite the prompt below into one clean, coherent, production-ready prompt that fully incorporates every fix listed.
-
-Do NOT just bolt the fixes on as a list of separate sentences at the end — integrate each one naturally into the prompt's existing structure and wording. Merge overlapping or related fixes into a single clause instead of repeating yourself, remove anything that becomes redundant once a fix is applied, and keep the result reading like one prompt a person would actually write, not a patchwork.
-
-ORIGINAL PROMPT:
-"""
-${rawInput}
-"""
-
-FIXES TO INCORPORATE:
-${fixes.map((fix) => `- ${fix}`).join("\n")}
-
-Return only the rewritten prompt text — no meta-commentary, no explanation of what changed, no markdown fences.`;
-}
 
 export async function POST(req: Request) {
   try {
@@ -52,9 +36,7 @@ export async function POST(req: Request) {
 
     let rewritten: string;
     try {
-      const chain = await buildTextGenerationChain();
-      const attempt = await generateWithFallback(chain, buildRewritePrompt(rawInput.trim(), fixes), TOOL);
-      rewritten = attempt.text.trim();
+      rewritten = await applyFixes(rawInput, fixes);
     } catch (error) {
       if (error instanceof NoApiKeysConfiguredError) {
         return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });

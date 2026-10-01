@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
   const caller = await resolveCaller(req);
   if ("error" in caller) return corsJson({ error: caller.error }, { status: 401 });
-  const { subject, isFreeCaller } = caller;
+  const { subject } = caller;
 
   const limit = await getPromptOptimizerLimit(subject);
   if (await hasReachedDailyLimit(subject.subjectKey, "prompt-optimizer", limit)) {
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       return corsJson({ error: "The AI did not return a result. Please try again." }, { status: 502 });
     }
     await consumeDailyLimit(subject.subjectKey, "prompt-optimizer");
-    return corsJson({ optimized: isFreeCaller ? `${optimized}\n\n— Optimized by Cuelara.com` : optimized });
+    return corsJson({ optimized: optimized });
   } catch (error) {
     const { error: message, status } = apiErrorResponse(error, ROUTE, "Something went wrong while optimizing the prompt.");
     return corsJson({ error: message }, { status });

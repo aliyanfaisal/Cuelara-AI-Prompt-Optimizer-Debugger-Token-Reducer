@@ -2,67 +2,15 @@ import { NextResponse } from "next/server";
 import { getRequestSubject, hasReachedDailyLimit, consumeDailyLimit, getUsedToday } from "@/lib/rate-limit";
 import { isGenAITimeout } from "@/lib/genai-timeout";
 import { getPromptFormatterLimit } from "@/lib/prompt-formatter/limits";
-import {
-  isFormatStyle,
-  isIndentSize,
-  FORMAT_GUIDANCE,
-  indentToSpaces,
-  type FormatStyle,
-  type IndentSize,
-} from "@/lib/prompt-formatter/constants";
+import { isFormatStyle, isIndentSize } from "@/lib/prompt-formatter/constants";
+import { formatPrompt } from "@/lib/prompt-formatter/format";
 import { NoApiKeysConfiguredError, isRetryableProviderError, isRequestTooLargeForProvider } from "@/lib/api-keys";
-import { generateWithFallback, AllProvidersExhaustedError } from "@/lib/llm-generate";
-import { buildTextGenerationChain } from "@/lib/model-chain";
+import { AllProvidersExhaustedError } from "@/lib/llm-generate";
 import { HIGH_DEMAND_MESSAGE } from "@/lib/error-messages";
 import { saveToolRun, titleFrom } from "@/lib/history";
 import { reportError } from "@/lib/error-report";
 
 const TOOL = "prompt-formatter";
-
-function buildFormatPrompt(rawInput: string, format: FormatStyle): string {
-  return `You are an expert prompt engineer. Reorganize the messy, unstructured prompt below into clean semantic sections — a system role, the primary task, explicit constraints, and the expected output format.
-
-Use ONLY the user's actual content: preserve every real instruction, requirement, and detail from the input. Do not invent new requirements, do not add filler, and do not drop anything the user actually asked for. Where the input doesn't state a section explicitly (e.g. no system role given), infer a minimal, sensible one directly from the context of the task — never a generic placeholder unrelated to the input.
-
-RAW PROMPT:
-"""
-${rawInput}
-"""
-
-OUTPUT FORMAT: ${FORMAT_GUIDANCE[format]}
-
-Return ONLY the formatted result — no markdown code fences around it, no explanation, no commentary before or after.`;
-}
-
-function stripFences(text: string): string {
-  const trimmed = text.trim();
-  const fenced = trimmed.match(/^```(?:\w+)?\s*([\s\S]*?)```$/);
-  return (fenced ? fenced[1] : trimmed).trim();
-}
-
-function extractJsonObject(text: string): string {
-  const stripped = stripFences(text);
-  const start = stripped.indexOf("{");
-  const end = stripped.lastIndexOf("}");
-  if (start === -1 || end === -1 || end < start) return stripped;
-  return stripped.slice(start, end + 1);
-}
-
-function finalizeOutput(rawText: string, format: FormatStyle, indent: IndentSize): string | null {
-  const text = rawText.trim();
-  if (!text) return null;
-
-  if (format === "JSON (API Ready)") {
-    try {
-      const parsed = JSON.parse(extractJsonObject(text));
-      return JSON.stringify(parsed, null, indentToSpaces(indent));
-    } catch {
-      return null;
-    }
-  }
-
-  return stripFences(text);
-}
 
 export async function POST(req: Request) {
   try {
@@ -96,11 +44,15 @@ export async function POST(req: Request) {
 
     let formatted: string | null = null;
     try {
-      const chain = await buildTextGenerationChain();
-      const attempt = await generateWithFallback(chain, buildFormatPrompt(trimmedInput, format), TOOL);
-      formatted = finalizeOutput(attempt.text, format, indent);
+      formatted = await formatPrompt(trimmedInput, format, indent);
+    } catch (error) {
+      if (error instanceof NoApiKeysConfiguredError) {
+        return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
+      }
+      throw error;
+    }
 
-      if (!formatted) {
+    if (!formatted) {
         // The model didn't return a clean, parseable result — one retry with a sharper reminder.
         const retry = await generateWithFallback(
           chain,

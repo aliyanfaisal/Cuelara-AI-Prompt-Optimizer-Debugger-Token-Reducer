@@ -7,23 +7,23 @@ import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { markdownProseClass } from "@/components/markdown/prose";
 
 export const metadata: Metadata = {
-  title: "Prompt Optimizer API — Cuelara",
-  description: "POST /api/v1/optimize-prompt — turn a rough idea into a structured prompt as a plain JSON REST endpoint, from your own server or app.",
+  title: "Prompt Formatter API — Cuelara",
+  description: "POST /api/v1/format-prompt — reorganize a messy prompt into clean Markdown, XML or JSON sections as a plain JSON REST endpoint.",
 };
 
 function content(base: string): string {
-  return `**\`POST /api/v1/optimize-prompt\`** turns a rough, messy request into a complete, structured, ready-to-paste prompt — adds role anchoring, explicit steps, negative constraints, and an output format tailored to the mode you pick.
+  return `**\`POST /api/v1/format-prompt\`** reorganizes a messy, unstructured prompt into clean semantic sections — a system role, the task, constraints, and the expected output format — without adding or dropping any of your actual instructions.
 
 ## Request
 
 \`\`\`bash
-curl -X POST ${base}/api/v1/optimize-prompt \\
+curl -X POST ${base}/api/v1/format-prompt \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \\
   -d '{
-    "text": "build me a login page",
-    "mode": "Coding",
-    "level": "Detailed"
+    "text": "write a blog post about coffee, friendly tone, under 500 words, no emojis",
+    "format": "Markdown (Standard)",
+    "indent": "2 Spaces"
   }'
 \`\`\`
 
@@ -31,14 +31,14 @@ The \`Authorization\` header is optional — omit it to call anonymously (lower 
 
 ## Body
 
-- \`text\` (string, required) — the rough idea or request to turn into a full prompt.
-- \`mode\` (string, optional) — \`"General"\` (default), \`"Coding"\`, \`"Writing"\`, \`"Business"\`, or \`"Research"\`.
-- \`level\` (string, optional) — \`"Concise"\`, \`"Balanced"\` (default), \`"Detailed"\`, or \`"Comprehensive"\`.
+- \`text\` (string, required, up to 20,000 characters) — the prompt to reorganize.
+- \`format\` (string, optional) — \`"Markdown (Standard)"\` (default), \`"XML (Claude-Optimized)"\`, or \`"JSON (API Ready)"\`.
+- \`indent\` (string, optional) — \`"2 Spaces"\` (default), \`"4 Spaces"\`, or \`"Tabs"\`. Only applies to the JSON format.
 
 ## Response
 
 \`\`\`json
-{ "optimized": "### ROLE\\nYou are a Senior Frontend Engineer...\\n\\n### TASK\\n..." }
+{ "formatted": "### System Role\\nYou are a friendly blog writer...\\n\\n### Task\\n..." }
 \`\`\`
 
 ## Errors
@@ -47,7 +47,7 @@ The \`Authorization\` header is optional — omit it to call anonymously (lower 
 
 ## Limits
 
-Anonymous calls share the same free daily limit as the website's Prompt Optimizer, keyed by IP. Signed-in calls use your own account's plan limits instead. See the [API overview](/docs/api) for auth and CORS details.
+Anonymous calls share the same free daily limit as the website's Prompt Formatter, keyed by IP. Signed-in calls use your own account's plan limits instead. See the [API overview](/docs/api) for auth and CORS details.
 `;
 }
 
@@ -62,8 +62,8 @@ export default function Page() {
           <Code2 className="h-5 w-5" />
         </div>
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">Prompt Optimizer</h1>
-          <p className="text-sm text-muted-foreground">Structure rough ideas via a plain REST endpoint.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">Prompt Formatter</h1>
+          <p className="text-sm text-muted-foreground">Clean up messy prompts via a plain REST endpoint.</p>
         </div>
       </div>
       <div className={markdownProseClass}>

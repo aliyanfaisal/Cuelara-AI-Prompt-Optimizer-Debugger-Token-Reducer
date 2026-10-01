@@ -2,12 +2,13 @@ import Link from "next/link";
 import { getSessionUser } from "@/lib/session-user";
 import { listPersonalAccessTokens } from "@/lib/personal-access-tokens";
 import { McpTokensManager } from "./McpTokensManager";
+import { ConnectedBrowsers } from "./ConnectedBrowsers";
 
 export const metadata = { title: "MCP Tokens" };
 
 export default async function McpTokensPage() {
   const user = (await getSessionUser())!;
-  const tokens = await listPersonalAccessTokens(user.id);
+  const [tokens, browsers] = await Promise.all([listPersonalAccessTokens(user.id), listPersonalAccessTokens(user.id, "extension")]);
 
   return (
     <div className="space-y-6">
@@ -22,6 +23,7 @@ export default async function McpTokensPage() {
         </p>
       </div>
       <McpTokensManager initial={tokens} />
+      <ConnectedBrowsers initial={browsers} />
     </div>
   );
 }

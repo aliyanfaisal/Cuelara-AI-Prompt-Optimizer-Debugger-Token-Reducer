@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft, ArrowRight, Code2, Zap, WandSparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Code2, ShieldCheck, Terminal, Zap, WandSparkles } from "lucide-react";
 import { siteUrl } from "@/lib/blog";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { markdownProseClass } from "@/components/markdown/prose";
@@ -15,6 +15,8 @@ const TOOLS = [
   { slug: "token-optimizer", name: "Token Optimizer", endpoint: "POST /api/v1/compress-prompt", description: "Compress verbose prompts, verified against a real tokenizer.", icon: Zap, iconClassName: "text-amber-500" },
   { slug: "prompt-optimizer", name: "Prompt Optimizer", endpoint: "POST /api/v1/optimize-prompt", description: "Turn a rough idea into a complete, structured prompt.", icon: Code2, iconClassName: "text-primary" },
   { slug: "prompt-builder", name: "Prompt Builder", endpoint: "POST /api/v1/build-prompt", description: "Build a ready-to-paste prompt for a specific target model.", icon: WandSparkles, iconClassName: "text-orange-500" },
+  { slug: "prompt-formatter", name: "Prompt Formatter", endpoint: "POST /api/v1/format-prompt", description: "Reorganize a messy prompt into clean Markdown, XML or JSON sections.", icon: Terminal, iconClassName: "text-sky-500" },
+  { slug: "prompt-debugger", name: "Prompt Debugger", endpoint: "POST /api/v1/debug-prompt", description: "Audit a prompt for silent-failure weaknesses and apply the fixes.", icon: ShieldCheck, iconClassName: "text-rose-500" },
 ];
 
 function content(base: string): string {
@@ -24,7 +26,7 @@ This is the same underlying service as the [MCP server](/docs/mcp) — same auth
 
 ## Authentication
 
-Without a token, calls are anonymous — rate-limited by IP, same as a visitor to the website, and the output gets a "by Cuelara.com" line appended.
+Without a token, calls are anonymous — rate-limited by IP, same as a visitor to the website.
 
 Generate a personal token from [/dashboard/mcp](/dashboard/mcp) (the same tokens work for both the API and MCP) and send it as a bearer token:
 
@@ -35,7 +37,7 @@ curl -X POST ${base}/api/v1/compress-prompt \\
   -d '{"text": "Could you please help me write a Python script that..."}'
 \`\`\`
 
-Signed-in calls use your own account's daily limit, and paid-plan output skips the attribution line.
+Signed-in calls use your own account's daily limit.
 
 ## CORS
 

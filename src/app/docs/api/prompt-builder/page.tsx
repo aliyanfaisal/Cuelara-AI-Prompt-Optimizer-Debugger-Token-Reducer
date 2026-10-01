@@ -27,7 +27,7 @@ curl -X POST ${base}/api/v1/build-prompt \\
   }'
 \`\`\`
 
-The \`Authorization\` header is optional — omit it to call anonymously (lower rate limit, output includes a "Built by Cuelara.com" line). Get a token from [/dashboard/mcp](/dashboard/mcp).
+The \`Authorization\` header is optional — omit it to call anonymously (lower rate limit). Get a token from [/dashboard/mcp](/dashboard/mcp).
 
 ## Body
 

@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
   const caller = await resolveCaller(req);
   if ("error" in caller) return corsJson({ error: caller.error }, { status: 401 });
-  const { subject, isFreeCaller } = caller;
+  const { subject } = caller;
 
   const limit = await getTokenOptimizerLimit(subject);
   if (await hasReachedDailyLimit(subject.subjectKey, "token-optimizer", limit)) {
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     await consumeDailyLimit(subject.subjectKey, "token-optimizer");
     const savedPercent = originalTokens > 0 ? Math.max(0, Math.round((1 - compressedTokens / originalTokens) * 100)) : 0;
     return corsJson({
-      compressed: isFreeCaller ? `${compressed}\n\n— Compressed by Cuelara.com` : compressed,
+      compressed: compressed,
       originalTokens,
       compressedTokens,
       savedPercent,
