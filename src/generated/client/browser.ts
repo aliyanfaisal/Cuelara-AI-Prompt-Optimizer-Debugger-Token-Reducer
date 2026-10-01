@@ -138,6 +138,11 @@ export type ToolRun = Prisma.ToolRunModel
  */
 export type PersonalAccessToken = Prisma.PersonalAccessTokenModel
 /**
+ * Model ExtensionSiteRule
+ * 
+ */
+export type ExtensionSiteRule = Prisma.ExtensionSiteRuleModel
+/**
  * Model ContactMessage
  * 
  */

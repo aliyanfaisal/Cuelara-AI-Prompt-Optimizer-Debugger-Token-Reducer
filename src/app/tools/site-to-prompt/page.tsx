@@ -8,7 +8,7 @@ import {
   Wand2, WandSparkles, ChevronDown, Code2, Terminal, BookOpen,
 } from "lucide-react";
 import { TARGETS, type Target } from "@/lib/site-to-prompt/constants";
-import { EXTENSION_VERSION, EXTENSION_ZIP_URL } from "@/lib/site-to-prompt/extension-version";
+import { ExtensionInstall } from "@/components/extension/ExtensionInstall";
 import { pingExtension, analyseWithExtension, takePendingAnalysis } from "@/lib/site-to-prompt/extension-bridge";
 import type { DesignDna } from "@/lib/site-to-prompt/types";
 import { TimedProgress, type ProgressStep } from "@/components/tools/TimedProgress";
@@ -18,7 +18,6 @@ import { PromptOutputViewer, PromptViewToggle, type PromptViewMode } from "@/com
 import { SaveToWorkspaceButton } from "@/components/tools/SaveToWorkspaceButton";
 import { useSavedRun, SavedRunBanner } from "@/components/tools/useSavedRun";
 
-const EXTENSION_URL = process.env.NEXT_PUBLIC_EXTENSION_URL || "";
 type Stage = "idle" | "analysing" | "analysed" | "generating" | "done";
 
 // Expected durations, measured on real pages: long build prompts (UI builder / code assistant) take
@@ -123,7 +122,6 @@ export default function SiteToPromptPage() {
   const [error, setError] = useState<string | null>(null);
   const [usage, setUsage] = useState<Usage | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [copiedLink, setCopiedLink] = useState(false);
   const pendingChecked = useRef(false);
   const dnaRef = useRef<HTMLDivElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
@@ -338,44 +336,7 @@ export default function SiteToPromptPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              {EXTENSION_URL && (
-                <a href={EXTENSION_URL} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-xs font-semibold shadow-sm">
-                  <Puzzle className="w-3.5 h-3.5" /> Add to Chrome
-                </a>
-              )}
-              <a href={EXTENSION_ZIP_URL} download
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold shadow-sm ${
-                  EXTENSION_URL ? "border border-border bg-background hover:bg-muted text-foreground" : "bg-fuchsia-600 hover:bg-fuchsia-700 text-white"}`}>
-                <Download className="w-3.5 h-3.5" /> Download extension v{EXTENSION_VERSION} (.zip)
-              </a>
-            </div>
-
-            <div className="w-full rounded-xl border border-border bg-muted/20 p-4 md:p-5">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">Install in 4 steps (Chrome, Edge, Brave)</h3>
-              <ol className="space-y-2.5 text-xs text-muted-foreground leading-relaxed list-decimal pl-4 marker:font-bold marker:text-fuchsia-500">
-                <li>Download the zip above and <strong className="text-foreground">unzip it</strong> to a folder you&apos;ll keep (don&apos;t delete it afterwards).</li>
-                <li>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span>Open <code className="px-1.5 py-0.5 rounded bg-muted text-foreground">chrome://extensions</code> in a new tab (Edge: <code className="px-1.5 py-0.5 rounded bg-muted text-foreground">edge://extensions</code>).</span>
-                    <button
-                      onClick={() => { navigator.clipboard.writeText("chrome://extensions"); setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000); }}
-                      className="flex items-center gap-1 px-2 py-1 rounded-md border border-border bg-background hover:bg-muted text-[11px] font-semibold text-foreground cursor-pointer">
-                      {copiedLink ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy link</>}
-                    </button>
-                  </div>
-                </li>
-                <li>Turn on <strong className="text-foreground">Developer mode</strong> (top-right switch).</li>
-                <li>Click <strong className="text-foreground">Load unpacked</strong> and choose the unzipped folder. Then pin the extension from the puzzle-piece menu so its icon is easy to click.</li>
-              </ol>
-              <p className="text-[11px] text-muted-foreground mt-3 flex items-center gap-1.5">
-                <RefreshCcw className="w-3 h-3 animate-spin shrink-0" /> This page unlocks automatically as soon as the extension is installed.
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-1.5">
-                Chrome may show a &ldquo;developer mode extensions&rdquo; notice when it starts — that&apos;s normal for extensions installed this way. To update later, download the new zip, replace the folder&apos;s files, and press the reload icon on the extension card.
-              </p>
-            </div>
+            <ExtensionInstall showUnlockNote />
           </div>
         ) : (
           <>

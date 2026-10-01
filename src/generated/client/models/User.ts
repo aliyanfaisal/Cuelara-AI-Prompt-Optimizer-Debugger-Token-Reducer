@@ -340,6 +340,7 @@ export type UserWhereInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
   toolRuns?: Prisma.ToolRunListRelationFilter
   personalAccessTokens?: Prisma.PersonalAccessTokenListRelationFilter
+  extensionSiteRules?: Prisma.ExtensionSiteRuleListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -377,6 +378,7 @@ export type UserOrderByWithRelationInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenOrderByRelationAggregateInput
   toolRuns?: Prisma.ToolRunOrderByRelationAggregateInput
   personalAccessTokens?: Prisma.PersonalAccessTokenOrderByRelationAggregateInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -417,6 +419,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
   toolRuns?: Prisma.ToolRunListRelationFilter
   personalAccessTokens?: Prisma.PersonalAccessTokenListRelationFilter
+  extensionSiteRules?: Prisma.ExtensionSiteRuleListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -503,6 +506,7 @@ export type UserCreateInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -539,6 +543,7 @@ export type UserUncheckedCreateInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -575,6 +580,7 @@ export type UserUpdateInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -611,6 +617,7 @@ export type UserUncheckedUpdateInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -962,6 +969,20 @@ export type UserUpdateOneRequiredWithoutPersonalAccessTokensNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPersonalAccessTokensInput, Prisma.UserUpdateWithoutPersonalAccessTokensInput>, Prisma.UserUncheckedUpdateWithoutPersonalAccessTokensInput>
 }
 
+export type UserCreateNestedOneWithoutExtensionSiteRulesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExtensionSiteRulesInput, Prisma.UserUncheckedCreateWithoutExtensionSiteRulesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExtensionSiteRulesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutExtensionSiteRulesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExtensionSiteRulesInput, Prisma.UserUncheckedCreateWithoutExtensionSiteRulesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExtensionSiteRulesInput
+  upsert?: Prisma.UserUpsertWithoutExtensionSiteRulesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExtensionSiteRulesInput, Prisma.UserUpdateWithoutExtensionSiteRulesInput>, Prisma.UserUncheckedUpdateWithoutExtensionSiteRulesInput>
+}
+
 export type UserCreateNestedOneWithoutPaymentTransactionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentTransactionsInput, Prisma.UserUncheckedCreateWithoutPaymentTransactionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentTransactionsInput
@@ -1079,6 +1100,7 @@ export type UserCreateWithoutApiKeysInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutApiKeysInput = {
@@ -1114,6 +1136,7 @@ export type UserUncheckedCreateWithoutApiKeysInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutApiKeysInput = {
@@ -1165,6 +1188,7 @@ export type UserUpdateWithoutApiKeysInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApiKeysInput = {
@@ -1200,6 +1224,7 @@ export type UserUncheckedUpdateWithoutApiKeysInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutModelConfigInput = {
@@ -1235,6 +1260,7 @@ export type UserCreateWithoutModelConfigInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutModelConfigInput = {
@@ -1270,6 +1296,7 @@ export type UserUncheckedCreateWithoutModelConfigInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutModelConfigInput = {
@@ -1321,6 +1348,7 @@ export type UserUpdateWithoutModelConfigInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutModelConfigInput = {
@@ -1356,6 +1384,7 @@ export type UserUncheckedUpdateWithoutModelConfigInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1391,6 +1420,7 @@ export type UserCreateWithoutAccountsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1426,6 +1456,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1477,6 +1508,7 @@ export type UserUpdateWithoutAccountsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1512,6 +1544,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1547,6 +1580,7 @@ export type UserCreateWithoutSessionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1582,6 +1616,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1633,6 +1668,7 @@ export type UserUpdateWithoutSessionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1668,6 +1704,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRolesInput = {
@@ -1703,6 +1740,7 @@ export type UserCreateWithoutRolesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRolesInput = {
@@ -1738,6 +1776,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRolesInput = {
@@ -1818,6 +1857,7 @@ export type UserCreateWithoutActivationTokensInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutActivationTokensInput = {
@@ -1853,6 +1893,7 @@ export type UserUncheckedCreateWithoutActivationTokensInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutActivationTokensInput = {
@@ -1904,6 +1945,7 @@ export type UserUpdateWithoutActivationTokensInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutActivationTokensInput = {
@@ -1939,6 +1981,7 @@ export type UserUncheckedUpdateWithoutActivationTokensInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPasswordResetTokensInput = {
@@ -1974,6 +2017,7 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -2009,6 +2053,7 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -2060,6 +2105,7 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -2095,6 +2141,7 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPlanInput = {
@@ -2130,6 +2177,7 @@ export type UserCreateWithoutPlanInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPlanInput = {
@@ -2165,6 +2213,7 @@ export type UserUncheckedCreateWithoutPlanInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPlanInput = {
@@ -2226,6 +2275,7 @@ export type UserCreateWithoutToolRunsInput = {
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutToolRunsInput = {
@@ -2261,6 +2311,7 @@ export type UserUncheckedCreateWithoutToolRunsInput = {
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutToolRunsInput = {
@@ -2312,6 +2363,7 @@ export type UserUpdateWithoutToolRunsInput = {
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutToolRunsInput = {
@@ -2347,6 +2399,7 @@ export type UserUncheckedUpdateWithoutToolRunsInput = {
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPersonalAccessTokensInput = {
@@ -2382,6 +2435,7 @@ export type UserCreateWithoutPersonalAccessTokensInput = {
   activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPersonalAccessTokensInput = {
@@ -2417,6 +2471,7 @@ export type UserUncheckedCreateWithoutPersonalAccessTokensInput = {
   activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPersonalAccessTokensInput = {
@@ -2468,6 +2523,7 @@ export type UserUpdateWithoutPersonalAccessTokensInput = {
   activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPersonalAccessTokensInput = {
@@ -2503,6 +2559,167 @@ export type UserUncheckedUpdateWithoutPersonalAccessTokensInput = {
   activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutExtensionSiteRulesInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
+  activeSessionId?: string | null
+  roles?: Prisma.RoleCreateNestedManyWithoutUsersInput
+  plan?: Prisma.PlanCreateNestedOneWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionCreateNestedManyWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptCreateNestedManyWithoutAuthorInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
+  personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutExtensionSiteRulesInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  planId?: string | null
+  paddleCustomerId?: string | null
+  paddleSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  currentPeriodEnd?: Date | string | null
+  cardBrand?: string | null
+  cardLast4?: string | null
+  cardExpiryMonth?: number | null
+  cardExpiryYear?: number | null
+  activeSessionId?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutUsersInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutUserInput
+  modelConfig?: Prisma.UserModelConfigUncheckedCreateNestedOneWithoutUserInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  savedPrompts?: Prisma.SavedPromptUncheckedCreateNestedManyWithoutAuthorInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
+  prompts?: Prisma.PromptUncheckedCreateNestedManyWithoutUserInput
+  activationTokens?: Prisma.ActivationTokenUncheckedCreateNestedManyWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
+  personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutExtensionSiteRulesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutExtensionSiteRulesInput, Prisma.UserUncheckedCreateWithoutExtensionSiteRulesInput>
+}
+
+export type UserUpsertWithoutExtensionSiteRulesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutExtensionSiteRulesInput, Prisma.UserUncheckedUpdateWithoutExtensionSiteRulesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutExtensionSiteRulesInput, Prisma.UserUncheckedCreateWithoutExtensionSiteRulesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutExtensionSiteRulesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutExtensionSiteRulesInput, Prisma.UserUncheckedUpdateWithoutExtensionSiteRulesInput>
+}
+
+export type UserUpdateWithoutExtensionSiteRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUpdateManyWithoutUsersNestedInput
+  plan?: Prisma.PlanUpdateOneWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUpdateManyWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUpdateManyWithoutAuthorNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
+  personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutExtensionSiteRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paddleSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cardBrand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardExpiryMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cardExpiryYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  activeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutUsersNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutUserNestedInput
+  modelConfig?: Prisma.UserModelConfigUncheckedUpdateOneWithoutUserNestedInput
+  paymentTransactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  sentInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  savedPrompts?: Prisma.SavedPromptUncheckedUpdateManyWithoutAuthorNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
+  prompts?: Prisma.PromptUncheckedUpdateManyWithoutUserNestedInput
+  activationTokens?: Prisma.ActivationTokenUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
+  personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPaymentTransactionsInput = {
@@ -2538,6 +2755,7 @@ export type UserCreateWithoutPaymentTransactionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
@@ -2573,6 +2791,7 @@ export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPaymentTransactionsInput = {
@@ -2624,6 +2843,7 @@ export type UserUpdateWithoutPaymentTransactionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
@@ -2659,6 +2879,7 @@ export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWorkspacesInput = {
@@ -2694,6 +2915,7 @@ export type UserCreateWithoutWorkspacesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWorkspacesInput = {
@@ -2729,6 +2951,7 @@ export type UserUncheckedCreateWithoutWorkspacesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWorkspacesInput = {
@@ -2780,6 +3003,7 @@ export type UserUpdateWithoutWorkspacesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkspacesInput = {
@@ -2815,6 +3039,7 @@ export type UserUncheckedUpdateWithoutWorkspacesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWorkspaceMembershipsInput = {
@@ -2850,6 +3075,7 @@ export type UserCreateWithoutWorkspaceMembershipsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -2885,6 +3111,7 @@ export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -2936,6 +3163,7 @@ export type UserUpdateWithoutWorkspaceMembershipsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -2971,6 +3199,7 @@ export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSentInvitesInput = {
@@ -3006,6 +3235,7 @@ export type UserCreateWithoutSentInvitesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSentInvitesInput = {
@@ -3041,6 +3271,7 @@ export type UserUncheckedCreateWithoutSentInvitesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSentInvitesInput = {
@@ -3092,6 +3323,7 @@ export type UserUpdateWithoutSentInvitesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSentInvitesInput = {
@@ -3127,6 +3359,7 @@ export type UserUncheckedUpdateWithoutSentInvitesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSavedPromptsInput = {
@@ -3162,6 +3395,7 @@ export type UserCreateWithoutSavedPromptsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSavedPromptsInput = {
@@ -3197,6 +3431,7 @@ export type UserUncheckedCreateWithoutSavedPromptsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSavedPromptsInput = {
@@ -3248,6 +3483,7 @@ export type UserUpdateWithoutSavedPromptsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSavedPromptsInput = {
@@ -3283,6 +3519,7 @@ export type UserUncheckedUpdateWithoutSavedPromptsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPromptsInput = {
@@ -3318,6 +3555,7 @@ export type UserCreateWithoutPromptsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPromptsInput = {
@@ -3353,6 +3591,7 @@ export type UserUncheckedCreateWithoutPromptsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   toolRuns?: Prisma.ToolRunUncheckedCreateNestedManyWithoutUserInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedCreateNestedManyWithoutUserInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPromptsInput = {
@@ -3404,6 +3643,7 @@ export type UserUpdateWithoutPromptsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPromptsInput = {
@@ -3439,6 +3679,7 @@ export type UserUncheckedUpdateWithoutPromptsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpdateWithoutRolesInput = {
@@ -3474,6 +3715,7 @@ export type UserUpdateWithoutRolesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRolesInput = {
@@ -3509,6 +3751,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutRolesInput = {
@@ -3585,6 +3828,7 @@ export type UserUpdateWithoutPlanInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPlanInput = {
@@ -3620,6 +3864,7 @@ export type UserUncheckedUpdateWithoutPlanInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   toolRuns?: Prisma.ToolRunUncheckedUpdateManyWithoutUserNestedInput
   personalAccessTokens?: Prisma.PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput
+  extensionSiteRules?: Prisma.ExtensionSiteRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutPlanInput = {
@@ -3662,6 +3907,7 @@ export type UserCountOutputType = {
   passwordResetTokens: number
   toolRuns: number
   personalAccessTokens: number
+  extensionSiteRules: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3679,6 +3925,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
   toolRuns?: boolean | UserCountOutputTypeCountToolRunsArgs
   personalAccessTokens?: boolean | UserCountOutputTypeCountPersonalAccessTokensArgs
+  extensionSiteRules?: boolean | UserCountOutputTypeCountExtensionSiteRulesArgs
 }
 
 /**
@@ -3789,6 +4036,13 @@ export type UserCountOutputTypeCountPersonalAccessTokensArgs<ExtArgs extends run
   where?: Prisma.PersonalAccessTokenWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountExtensionSiteRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExtensionSiteRuleWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3825,6 +4079,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
   toolRuns?: boolean | Prisma.User$toolRunsArgs<ExtArgs>
   personalAccessTokens?: boolean | Prisma.User$personalAccessTokensArgs<ExtArgs>
+  extensionSiteRules?: boolean | Prisma.User$extensionSiteRulesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3911,6 +4166,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
   toolRuns?: boolean | Prisma.User$toolRunsArgs<ExtArgs>
   personalAccessTokens?: boolean | Prisma.User$personalAccessTokensArgs<ExtArgs>
+  extensionSiteRules?: boolean | Prisma.User$extensionSiteRulesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3939,6 +4195,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
     toolRuns: Prisma.$ToolRunPayload<ExtArgs>[]
     personalAccessTokens: Prisma.$PersonalAccessTokenPayload<ExtArgs>[]
+    extensionSiteRules: Prisma.$ExtensionSiteRulePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4369,6 +4626,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   passwordResetTokens<T extends Prisma.User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   toolRuns<T extends Prisma.User$toolRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$toolRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ToolRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   personalAccessTokens<T extends Prisma.User$personalAccessTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$personalAccessTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PersonalAccessTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  extensionSiteRules<T extends Prisma.User$extensionSiteRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$extensionSiteRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExtensionSiteRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5188,6 +5446,30 @@ export type User$personalAccessTokensArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.PersonalAccessTokenScalarFieldEnum | Prisma.PersonalAccessTokenScalarFieldEnum[]
+}
+
+/**
+ * User.extensionSiteRules
+ */
+export type User$extensionSiteRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExtensionSiteRule
+   */
+  select?: Prisma.ExtensionSiteRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExtensionSiteRule
+   */
+  omit?: Prisma.ExtensionSiteRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExtensionSiteRuleInclude<ExtArgs> | null
+  where?: Prisma.ExtensionSiteRuleWhereInput
+  orderBy?: Prisma.ExtensionSiteRuleOrderByWithRelationInput | Prisma.ExtensionSiteRuleOrderByWithRelationInput[]
+  cursor?: Prisma.ExtensionSiteRuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExtensionSiteRuleScalarFieldEnum | Prisma.ExtensionSiteRuleScalarFieldEnum[]
 }
 
 /**

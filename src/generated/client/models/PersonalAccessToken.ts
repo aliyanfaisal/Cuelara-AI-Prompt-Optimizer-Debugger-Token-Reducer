@@ -28,6 +28,7 @@ export type PersonalAccessTokenMinAggregateOutputType = {
   id: string | null
   userId: string | null
   label: string | null
+  kind: string | null
   tokenHash: string | null
   lastUsedAt: Date | null
   createdAt: Date | null
@@ -37,6 +38,7 @@ export type PersonalAccessTokenMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   label: string | null
+  kind: string | null
   tokenHash: string | null
   lastUsedAt: Date | null
   createdAt: Date | null
@@ -46,6 +48,7 @@ export type PersonalAccessTokenCountAggregateOutputType = {
   id: number
   userId: number
   label: number
+  kind: number
   tokenHash: number
   lastUsedAt: number
   createdAt: number
@@ -57,6 +60,7 @@ export type PersonalAccessTokenMinAggregateInputType = {
   id?: true
   userId?: true
   label?: true
+  kind?: true
   tokenHash?: true
   lastUsedAt?: true
   createdAt?: true
@@ -66,6 +70,7 @@ export type PersonalAccessTokenMaxAggregateInputType = {
   id?: true
   userId?: true
   label?: true
+  kind?: true
   tokenHash?: true
   lastUsedAt?: true
   createdAt?: true
@@ -75,6 +80,7 @@ export type PersonalAccessTokenCountAggregateInputType = {
   id?: true
   userId?: true
   label?: true
+  kind?: true
   tokenHash?: true
   lastUsedAt?: true
   createdAt?: true
@@ -157,6 +163,7 @@ export type PersonalAccessTokenGroupByOutputType = {
   id: string
   userId: string
   label: string
+  kind: string
   tokenHash: string
   lastUsedAt: Date | null
   createdAt: Date
@@ -187,6 +194,7 @@ export type PersonalAccessTokenWhereInput = {
   id?: Prisma.StringFilter<"PersonalAccessToken"> | string
   userId?: Prisma.StringFilter<"PersonalAccessToken"> | string
   label?: Prisma.StringFilter<"PersonalAccessToken"> | string
+  kind?: Prisma.StringFilter<"PersonalAccessToken"> | string
   tokenHash?: Prisma.StringFilter<"PersonalAccessToken"> | string
   lastUsedAt?: Prisma.DateTimeNullableFilter<"PersonalAccessToken"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonalAccessToken"> | Date | string
@@ -197,6 +205,7 @@ export type PersonalAccessTokenOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   lastUsedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -211,6 +220,7 @@ export type PersonalAccessTokenWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PersonalAccessTokenWhereInput | Prisma.PersonalAccessTokenWhereInput[]
   userId?: Prisma.StringFilter<"PersonalAccessToken"> | string
   label?: Prisma.StringFilter<"PersonalAccessToken"> | string
+  kind?: Prisma.StringFilter<"PersonalAccessToken"> | string
   lastUsedAt?: Prisma.DateTimeNullableFilter<"PersonalAccessToken"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonalAccessToken"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -220,6 +230,7 @@ export type PersonalAccessTokenOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   lastUsedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -235,6 +246,7 @@ export type PersonalAccessTokenScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"PersonalAccessToken"> | string
   userId?: Prisma.StringWithAggregatesFilter<"PersonalAccessToken"> | string
   label?: Prisma.StringWithAggregatesFilter<"PersonalAccessToken"> | string
+  kind?: Prisma.StringWithAggregatesFilter<"PersonalAccessToken"> | string
   tokenHash?: Prisma.StringWithAggregatesFilter<"PersonalAccessToken"> | string
   lastUsedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PersonalAccessToken"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PersonalAccessToken"> | Date | string
@@ -243,6 +255,7 @@ export type PersonalAccessTokenScalarWhereWithAggregatesInput = {
 export type PersonalAccessTokenCreateInput = {
   id?: string
   label?: string
+  kind?: string
   tokenHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -253,6 +266,7 @@ export type PersonalAccessTokenUncheckedCreateInput = {
   id?: string
   userId: string
   label?: string
+  kind?: string
   tokenHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -261,6 +275,7 @@ export type PersonalAccessTokenUncheckedCreateInput = {
 export type PersonalAccessTokenUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -271,6 +286,7 @@ export type PersonalAccessTokenUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -280,6 +296,7 @@ export type PersonalAccessTokenCreateManyInput = {
   id?: string
   userId: string
   label?: string
+  kind?: string
   tokenHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -288,6 +305,7 @@ export type PersonalAccessTokenCreateManyInput = {
 export type PersonalAccessTokenUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -297,6 +315,7 @@ export type PersonalAccessTokenUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -316,6 +335,7 @@ export type PersonalAccessTokenCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   lastUsedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -325,6 +345,7 @@ export type PersonalAccessTokenMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   lastUsedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -334,6 +355,7 @@ export type PersonalAccessTokenMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   lastUsedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -384,6 +406,7 @@ export type PersonalAccessTokenUncheckedUpdateManyWithoutUserNestedInput = {
 export type PersonalAccessTokenCreateWithoutUserInput = {
   id?: string
   label?: string
+  kind?: string
   tokenHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -392,6 +415,7 @@ export type PersonalAccessTokenCreateWithoutUserInput = {
 export type PersonalAccessTokenUncheckedCreateWithoutUserInput = {
   id?: string
   label?: string
+  kind?: string
   tokenHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -430,6 +454,7 @@ export type PersonalAccessTokenScalarWhereInput = {
   id?: Prisma.StringFilter<"PersonalAccessToken"> | string
   userId?: Prisma.StringFilter<"PersonalAccessToken"> | string
   label?: Prisma.StringFilter<"PersonalAccessToken"> | string
+  kind?: Prisma.StringFilter<"PersonalAccessToken"> | string
   tokenHash?: Prisma.StringFilter<"PersonalAccessToken"> | string
   lastUsedAt?: Prisma.DateTimeNullableFilter<"PersonalAccessToken"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonalAccessToken"> | Date | string
@@ -438,6 +463,7 @@ export type PersonalAccessTokenScalarWhereInput = {
 export type PersonalAccessTokenCreateManyUserInput = {
   id?: string
   label?: string
+  kind?: string
   tokenHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -446,6 +472,7 @@ export type PersonalAccessTokenCreateManyUserInput = {
 export type PersonalAccessTokenUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -454,6 +481,7 @@ export type PersonalAccessTokenUpdateWithoutUserInput = {
 export type PersonalAccessTokenUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -462,6 +490,7 @@ export type PersonalAccessTokenUncheckedUpdateWithoutUserInput = {
 export type PersonalAccessTokenUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -473,6 +502,7 @@ export type PersonalAccessTokenSelect<ExtArgs extends runtime.Types.Extensions.I
   id?: boolean
   userId?: boolean
   label?: boolean
+  kind?: boolean
   tokenHash?: boolean
   lastUsedAt?: boolean
   createdAt?: boolean
@@ -483,6 +513,7 @@ export type PersonalAccessTokenSelectCreateManyAndReturn<ExtArgs extends runtime
   id?: boolean
   userId?: boolean
   label?: boolean
+  kind?: boolean
   tokenHash?: boolean
   lastUsedAt?: boolean
   createdAt?: boolean
@@ -493,6 +524,7 @@ export type PersonalAccessTokenSelectUpdateManyAndReturn<ExtArgs extends runtime
   id?: boolean
   userId?: boolean
   label?: boolean
+  kind?: boolean
   tokenHash?: boolean
   lastUsedAt?: boolean
   createdAt?: boolean
@@ -503,12 +535,13 @@ export type PersonalAccessTokenSelectScalar = {
   id?: boolean
   userId?: boolean
   label?: boolean
+  kind?: boolean
   tokenHash?: boolean
   lastUsedAt?: boolean
   createdAt?: boolean
 }
 
-export type PersonalAccessTokenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "label" | "tokenHash" | "lastUsedAt" | "createdAt", ExtArgs["result"]["personalAccessToken"]>
+export type PersonalAccessTokenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "label" | "kind" | "tokenHash" | "lastUsedAt" | "createdAt", ExtArgs["result"]["personalAccessToken"]>
 export type PersonalAccessTokenInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -528,6 +561,7 @@ export type $PersonalAccessTokenPayload<ExtArgs extends runtime.Types.Extensions
     id: string
     userId: string
     label: string
+    kind: string
     tokenHash: string
     lastUsedAt: Date | null
     createdAt: Date
@@ -958,6 +992,7 @@ export interface PersonalAccessTokenFieldRefs {
   readonly id: Prisma.FieldRef<"PersonalAccessToken", 'String'>
   readonly userId: Prisma.FieldRef<"PersonalAccessToken", 'String'>
   readonly label: Prisma.FieldRef<"PersonalAccessToken", 'String'>
+  readonly kind: Prisma.FieldRef<"PersonalAccessToken", 'String'>
   readonly tokenHash: Prisma.FieldRef<"PersonalAccessToken", 'String'>
   readonly lastUsedAt: Prisma.FieldRef<"PersonalAccessToken", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"PersonalAccessToken", 'DateTime'>

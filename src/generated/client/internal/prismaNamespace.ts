@@ -421,6 +421,7 @@ export const ModelName = {
   Plan: 'Plan',
   ToolRun: 'ToolRun',
   PersonalAccessToken: 'PersonalAccessToken',
+  ExtensionSiteRule: 'ExtensionSiteRule',
   ContactMessage: 'ContactMessage',
   NewsletterSubscriber: 'NewsletterSubscriber',
   PlanToolLimit: 'PlanToolLimit',
@@ -448,7 +449,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "contentView" | "reaction" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "personalAccessToken" | "contactMessage" | "newsletterSubscriber" | "planToolLimit" | "paymentTransaction" | "verificationToken" | "workspace" | "workspaceMember" | "workspaceInvite" | "savedPrompt" | "prompt" | "rateLimitBucket" | "errorLog"
+    modelProps: "setting" | "apiKey" | "userModelConfig" | "apiCallLog" | "emailLog" | "toolUsageDaily" | "extractedDocument" | "extractedDocumentChunk" | "blogPost" | "blogCategory" | "blogTag" | "cookbookCategory" | "cookbookPrompt" | "contentView" | "reaction" | "account" | "session" | "user" | "role" | "activationToken" | "passwordResetToken" | "plan" | "toolRun" | "personalAccessToken" | "extensionSiteRule" | "contactMessage" | "newsletterSubscriber" | "planToolLimit" | "paymentTransaction" | "verificationToken" | "workspace" | "workspaceMember" | "workspaceInvite" | "savedPrompt" | "prompt" | "rateLimitBucket" | "errorLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2228,6 +2229,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ExtensionSiteRule: {
+      payload: Prisma.$ExtensionSiteRulePayload<ExtArgs>
+      fields: Prisma.ExtensionSiteRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExtensionSiteRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExtensionSiteRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>
+        }
+        findFirst: {
+          args: Prisma.ExtensionSiteRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExtensionSiteRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>
+        }
+        findMany: {
+          args: Prisma.ExtensionSiteRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>[]
+        }
+        create: {
+          args: Prisma.ExtensionSiteRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>
+        }
+        createMany: {
+          args: Prisma.ExtensionSiteRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExtensionSiteRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>[]
+        }
+        delete: {
+          args: Prisma.ExtensionSiteRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>
+        }
+        update: {
+          args: Prisma.ExtensionSiteRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.ExtensionSiteRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExtensionSiteRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExtensionSiteRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.ExtensionSiteRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtensionSiteRulePayload>
+        }
+        aggregate: {
+          args: Prisma.ExtensionSiteRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExtensionSiteRule>
+        }
+        groupBy: {
+          args: Prisma.ExtensionSiteRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtensionSiteRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExtensionSiteRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtensionSiteRuleCountAggregateOutputType> | number
+        }
+      }
+    }
     ContactMessage: {
       payload: Prisma.$ContactMessagePayload<ExtArgs>
       fields: Prisma.ContactMessageFieldRefs
@@ -3491,12 +3566,24 @@ export const PersonalAccessTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   label: 'label',
+  kind: 'kind',
   tokenHash: 'tokenHash',
   lastUsedAt: 'lastUsedAt',
   createdAt: 'createdAt'
 } as const
 
 export type PersonalAccessTokenScalarFieldEnum = (typeof PersonalAccessTokenScalarFieldEnum)[keyof typeof PersonalAccessTokenScalarFieldEnum]
+
+
+export const ExtensionSiteRuleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  domain: 'domain',
+  mode: 'mode',
+  createdAt: 'createdAt'
+} as const
+
+export type ExtensionSiteRuleScalarFieldEnum = (typeof ExtensionSiteRuleScalarFieldEnum)[keyof typeof ExtensionSiteRuleScalarFieldEnum]
 
 
 export const ContactMessageScalarFieldEnum = {
@@ -3998,6 +4085,7 @@ export type GlobalOmitConfig = {
   plan?: Prisma.PlanOmit
   toolRun?: Prisma.ToolRunOmit
   personalAccessToken?: Prisma.PersonalAccessTokenOmit
+  extensionSiteRule?: Prisma.ExtensionSiteRuleOmit
   contactMessage?: Prisma.ContactMessageOmit
   newsletterSubscriber?: Prisma.NewsletterSubscriberOmit
   planToolLimit?: Prisma.PlanToolLimitOmit

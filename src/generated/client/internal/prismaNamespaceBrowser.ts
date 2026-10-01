@@ -75,6 +75,7 @@ export const ModelName = {
   Plan: 'Plan',
   ToolRun: 'ToolRun',
   PersonalAccessToken: 'PersonalAccessToken',
+  ExtensionSiteRule: 'ExtensionSiteRule',
   ContactMessage: 'ContactMessage',
   NewsletterSubscriber: 'NewsletterSubscriber',
   PlanToolLimit: 'PlanToolLimit',
@@ -441,12 +442,24 @@ export const PersonalAccessTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   label: 'label',
+  kind: 'kind',
   tokenHash: 'tokenHash',
   lastUsedAt: 'lastUsedAt',
   createdAt: 'createdAt'
 } as const
 
 export type PersonalAccessTokenScalarFieldEnum = (typeof PersonalAccessTokenScalarFieldEnum)[keyof typeof PersonalAccessTokenScalarFieldEnum]
+
+
+export const ExtensionSiteRuleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  domain: 'domain',
+  mode: 'mode',
+  createdAt: 'createdAt'
+} as const
+
+export type ExtensionSiteRuleScalarFieldEnum = (typeof ExtensionSiteRuleScalarFieldEnum)[keyof typeof ExtensionSiteRuleScalarFieldEnum]
 
 
 export const ContactMessageScalarFieldEnum = {

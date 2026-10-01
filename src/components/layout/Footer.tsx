@@ -100,6 +100,7 @@ export function Footer() {
             <Link href="/cookbook" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Prompt Cookbook</Link>
             <Link href="/blog" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Blog</Link>
             <Link href="/docs" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">API Documentation</Link>
+            <Link href="/extension" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Browser Extension</Link>
             <Link href="/pricing" className="text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all">Pricing</Link>
           </div>
           

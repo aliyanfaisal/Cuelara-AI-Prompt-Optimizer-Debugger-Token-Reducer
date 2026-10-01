@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useSession } from "next-auth/react";
 import { TOOL_USAGE_CHANGED_EVENT } from "@/lib/tool-usage-events";
+import { ExtensionPromo } from "@/components/extension/ExtensionPromo";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, WandSparkles, Zap, Code2, ShieldCheck,
@@ -238,6 +239,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
                   </Link>
                 );
               })}
+              <ExtensionPromo />
             </div>
           </motion.aside>
         )}
@@ -386,6 +388,8 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
                   <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-pulse shrink-0" />
                   <span>More tools coming...</span>
                 </div>
+
+                <ExtensionPromo />
               </div>
 
               {/* Upgrade Promo Footer */}
