@@ -48,7 +48,9 @@ describe("PromptOutputViewer", () => {
     );
 
     assert.match(html, /bg-\[#0d1117\]/);
-    assert.match(html, /&lt;instruction&gt;Do something&lt;\/instruction&gt;/);
+    // The highlighter wraps each token in its own <span>, so compare the visible text rather than the raw markup.
+    const visibleText = html.replace(/<[^>]*>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    assert.ok(visibleText.includes("<instruction>Do something</instruction>"));
   });
 
   it("renders streaming indicator when isStreaming is true", () => {

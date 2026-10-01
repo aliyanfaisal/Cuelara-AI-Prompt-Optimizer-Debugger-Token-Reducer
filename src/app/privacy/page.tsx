@@ -92,7 +92,32 @@ Our providers may process information in countries other than your own. Where th
 
 We may update this policy from time to time. When we make a meaningful change we will update the date at the top of this page and, where appropriate, tell you by email or on the site.
 
-## 13. Contact
+## 13. The Cuelara browser extension
+
+The Cuelara browser extension adds Cuelara's tools to the text boxes of AI chat sites and lets you turn a website into a design prompt. This section covers what it does with your information. The rest of this policy applies to it as well.
+
+### What it reads and sends
+
+- **Your prompt, only when you choose a tool.** The extension does not read or send what you type in the background. When you pick a tool (Optimize, Build, Compress, Format or Debug), it sends the text in that one box to Cuelara, which passes it to the AI providers in section 5 and returns the result. Results from the extension are not saved to your tool history. The text is not kept after the request, beyond the service logs described in section 2.
+- **Fields it ignores.** It does not offer itself in password, payment card, one-time-code or search fields, or in single-line inputs.
+- **Site to Prompt.** When you press Analyse, the extension measures the page you chose: colors, fonts, sizes, spacing, the detected tech stack, the page title and a few headings. It reads the page's linked stylesheets only to extract design-token names. It never reads form fields or cookies. For a site you open from cuelara.com, it asks for your permission first and drops that permission when the analysis ends.
+- **No browsing history.** The extension does not record, collect or send the pages you visit.
+
+### What it stores
+
+- **In your browser:** your sign-in token if you connect an account, a cached copy of your plan and daily usage, your list of sites where Cuelara is blocked or always allowed, and whether you dismissed the "Get started" card.
+- **On your account, if you connect:** the sites you blocked or allowed, so they follow you to other browsers, and the extension's access token (stored only as a one-way hash). You can see your connected browsers and disconnect any of them under Dashboard → MCP Tokens, or with "Disconnect" in the extension.
+- **Without an account:** the extension works with the free daily limits, counted by a one-way hash of your IP address as described in section 2.
+
+### Where it runs and why it needs access
+
+The extension runs by itself on a list of popular AI sites (for example ChatGPT, Claude and Gemini). On any other site it does nothing until you click its icon, and you can choose "Always allow" for a site. You can turn it off for any site, and blocking a domain also blocks its subdomains. A blocked site never loads the extension at all. The extension needs access to those AI sites to place its button next to the text box and to put the result back in it. Its only network destination is cuelara.com.
+
+### Limited use
+
+We use information received through the extension only to provide and improve the features described above. We do not sell it, use it for advertising, use it to determine creditworthiness or lending, or transfer it except to the providers in section 5 to deliver the result you asked for. People do not read it unless you ask us to look at a problem, we need to for security, or the law requires it. The extension's use of information follows the Chrome Web Store User Data Policy, including its Limited Use requirements.
+
+## 14. Contact
 
 Questions or requests about privacy: use our [contact form](/contact).
 `;
@@ -101,7 +126,7 @@ export default function PrivacyPage() {
   return (
     <LegalDocument
       title="Privacy Policy"
-      updated="September 25, 2026"
+      updated="October 2, 2026"
       intro="We keep this policy short and specific. It describes what Cuelara actually collects and does today, including the history we keep for signed-in users."
       markdown={CONTENT}
     />

@@ -63,6 +63,10 @@ const STEPS = [
     dir: '20260929120000_indexing_submitted_at',
     isApplied: `select 1 from information_schema.columns where table_name = 'BlogPost' and column_name = 'indexingSubmittedAt'`,
   },
+  {
+    dir: '20261001000000_extension_support',
+    isApplied: `select 1 from information_schema.tables where table_name = 'ExtensionSiteRule'`,
+  },
 ];
 
 async function main() {
