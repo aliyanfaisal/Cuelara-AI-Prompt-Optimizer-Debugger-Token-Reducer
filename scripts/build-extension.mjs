@@ -4,9 +4,23 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, readdirSync, rmSync } from "node:fs";
 import path from "node:path";
+import { AI_SITE_MATCHES } from "../extension/lib/ai-sites.js";
 
 const root = path.resolve(import.meta.dirname, "..");
-const { version } = JSON.parse(readFileSync(path.join(root, "extension/manifest.json"), "utf8"));
+const manifest = JSON.parse(readFileSync(path.join(root, "extension/manifest.json"), "utf8"));
+const { version } = manifest;
+
+// The built-in AI site list (extension/lib/ai-sites.js) must be exactly what the manifest asks Chrome for, or the
+// store listing and the widget would disagree about where the extension is allowed to run.
+const declared = new Set(manifest.host_permissions);
+const missing = AI_SITE_MATCHES.filter((m) => !declared.has(m));
+const extra = [...declared].filter((m) => !AI_SITE_MATCHES.includes(m) && !/^https?:\/\/(www\.)?(cuelara\.com|localhost:3000)\/\*$/.test(m));
+if (missing.length || extra.length) {
+  console.error("extension/manifest.json host_permissions is out of sync with extension/lib/ai-sites.js");
+  if (missing.length) console.error("  missing:", missing.join(", "));
+  if (extra.length) console.error("  unexpected:", extra.join(", "));
+  process.exit(1);
+}
 const zipName = `cuelara-extension-v${version}.zip`;
 
 for (const f of readdirSync(path.join(root, "public"))) {

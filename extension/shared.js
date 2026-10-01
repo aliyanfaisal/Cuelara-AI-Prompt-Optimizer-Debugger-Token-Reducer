@@ -1,15 +1,12 @@
 import { collectPageSamples, listCrossOriginSheets, preparePage } from "./collector.js";
+import { CUELARA_ORIGINS, getApiBase } from "./lib/config.js";
 
-export const TOOL_URL = "https://cuelara.com/tools/site-to-prompt";
+export const TOOL_PATH = "/tools/site-to-prompt";
 export const TOOL_MATCH_PATTERNS = [
   "https://cuelara.com/tools/site-to-prompt*",
   "https://www.cuelara.com/tools/site-to-prompt*",
   "http://localhost:3000/tools/site-to-prompt*",
 ];
-export const CUELARA_ORIGINS = ["https://cuelara.com", "https://www.cuelara.com", "http://localhost:3000"];
-// Must mirror manifest.json's content_scripts "matches" — used to find tabs that were already
-// open (and so never got bridge.js) when the extension is installed or updated.
-export const BRIDGE_MATCH_PATTERNS = ["https://cuelara.com/*", "https://www.cuelara.com/*", "http://localhost:3000/*"];
 export const MEASURE_ERROR = "Couldn't read that page. It may be down, restricted by the browser, or still loading.";
 
 // Pages Chrome never lets extensions script, even with host access.
@@ -86,7 +83,8 @@ export async function measureTab(tabId) {
 }
 
 export async function openToolPage(withResult) {
-  const url = withResult ? `${TOOL_URL}?from=extension` : TOOL_URL;
+  const toolUrl = `${await getApiBase()}${TOOL_PATH}`;
+  const url = withResult ? `${toolUrl}?from=extension` : toolUrl;
   // Reuse an already-open tool tab instead of piling up new ones.
   const existing = await chrome.tabs.query({ url: TOOL_MATCH_PATTERNS });
   if (existing.length > 0 && existing[0].id !== undefined) {

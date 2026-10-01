@@ -16,6 +16,12 @@ window.addEventListener("message", (event) => {
       .sendMessage({ type: "takePending" })
       .then((res) => reply({ type: "pending", pending: res ? res.pending : null }))
       .catch(() => reply({ type: "pending", pending: null }));
+  } else if (msg.type === "connect" && typeof msg.state === "string" && typeof msg.token === "string") {
+    // The account-connect page hands over the freshly minted token; the service worker checks the one-time state.
+    chrome.runtime
+      .sendMessage({ type: "connect", state: msg.state, token: msg.token })
+      .then((res) => reply({ type: "connected", ok: !!(res && res.ok) }))
+      .catch(() => reply({ type: "connected", ok: false }));
   } else if (msg.type === "analyse" && typeof msg.url === "string") {
     chrome.runtime
       .sendMessage({ type: "analyse", url: msg.url })
