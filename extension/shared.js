@@ -2,11 +2,7 @@ import { collectPageSamples, listCrossOriginSheets, preparePage } from "./collec
 import { CUELARA_ORIGINS, getApiBase } from "./lib/config.js";
 
 export const TOOL_PATH = "/tools/site-to-prompt";
-export const TOOL_MATCH_PATTERNS = [
-  "https://cuelara.com/tools/site-to-prompt*",
-  "https://www.cuelara.com/tools/site-to-prompt*",
-  "http://localhost:3000/tools/site-to-prompt*",
-];
+export const TOOL_MATCH_PATTERNS = CUELARA_ORIGINS.map((origin) => `${origin}${TOOL_PATH}*`);
 export const MEASURE_ERROR = "Couldn't read that page. It may be down, restricted by the browser, or still loading.";
 
 // Pages Chrome never lets extensions script, even with host access.

@@ -2,7 +2,8 @@
 // src/lib/site-to-prompt/extension-version.ts, so the download link changes with every release
 // and no browser/CDN cache can keep serving an old zip.
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, readdirSync, rmSync } from "node:fs";
+import { cpSync, mkdtempSync, readFileSync, writeFileSync, readdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { AI_SITE_MATCHES } from "../extension/lib/ai-sites.js";
 
@@ -23,12 +24,47 @@ if (missing.length || extra.length) {
 }
 const zipName = `cuelara-extension-v${version}.zip`;
 
-for (const f of readdirSync(path.join(root, "public"))) {
-  if (/^cuelara-extension.*\.zip$/.test(f)) rmSync(path.join(root, "public", f));
+// The folder in the repo (extension/) is the development build: it also talks to http://localhost:3000. What ships — the
+// zip users download and the one uploaded to the Chrome Web Store — is a production copy with every localhost
+// reference removed, built in a temporary folder so the development files stay untouched.
+const stage = mkdtempSync(path.join(tmpdir(), "cuelara-ext-"));
+try {
+  cpSync(path.join(root, "extension"), stage, { recursive: true, filter: (src) => !/(^|\/)(README\.md|\.DS_Store)$/.test(src) });
+
+  const isLocal = (value) => /localhost|127\.0\.0\.1/.test(value);
+  const prod = JSON.parse(readFileSync(path.join(stage, "manifest.json"), "utf8"));
+  prod.host_permissions = prod.host_permissions.filter((m) => !isLocal(m));
+  for (const script of prod.content_scripts || []) script.matches = script.matches.filter((m) => !isLocal(m));
+  writeFileSync(path.join(stage, "manifest.json"), JSON.stringify(prod, null, 2) + "\n");
+
+  const configPath = path.join(stage, "lib/config.js");
+  const config = readFileSync(configPath, "utf8");
+  const devBlock = /\/\/ dev-only:start[\s\S]*?\/\/ dev-only:end/;
+  if (!devBlock.test(config)) throw new Error("extension/lib/config.js lost its dev-only block");
+  writeFileSync(configPath, config.replace(devBlock, "const DEV_ORIGINS = [];"));
+
+  // Nothing local may survive in any shipped file.
+  const leftovers = [];
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (/\.(js|json|html|css)$/.test(entry.name) && isLocal(readFileSync(full, "utf8"))) leftovers.push(path.relative(stage, full));
+    }
+  };
+  walk(stage);
+  if (leftovers.length) {
+    console.error("The production build still mentions localhost in:", leftovers.join(", "));
+    process.exit(1);
+  }
+
+  for (const f of readdirSync(path.join(root, "public"))) {
+    if (/^cuelara-extension.*\.zip$/.test(f)) rmSync(path.join(root, "public", f));
+  }
+  execFileSync("zip", ["-qr", path.join(root, "public", zipName), "."], { cwd: stage });
+} finally {
+  rmSync(stage, { recursive: true, force: true });
 }
-execFileSync("zip", ["-qr", path.join(root, "public", zipName), ".", "-x", "README.md", "-x", "*.DS_Store"], {
-  cwd: path.join(root, "extension"),
-});
 
 writeFileSync(
   path.join(root, "src/lib/site-to-prompt/extension-version.ts"),

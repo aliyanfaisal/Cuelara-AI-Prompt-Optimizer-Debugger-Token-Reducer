@@ -2,7 +2,7 @@ import { MEASURE_ERROR, measureTab, parseWebUrl } from "./shared.js";
 import { BRIDGE_MATCH_PATTERNS, getApiBase, isCuelaraOrigin } from "./lib/config.js";
 import { ApiError, disconnectAccount, getMe, runTool } from "./lib/api.js";
 import { removeRule, saveRule, syncRules } from "./lib/rules.js";
-import { clearAccount, getAccountCache, getRules, getToken, setAccountCache, setToken } from "./lib/storage.js";
+import { clearAccount, getAccountCache, getConsent, getRules, getToken, setAccountCache, setConsent, setToken } from "./lib/storage.js";
 
 const LOAD_TIMEOUT_MS = 20000;
 const SETTLE_MS = 1500;
@@ -149,11 +149,13 @@ async function refreshAccount() {
 }
 
 async function getState() {
-  return { connected: !!(await getToken()), account: await getAccountCache(), rules: await getRules() };
+  return { connected: !!(await getToken()), account: await getAccountCache(), rules: await getRules(), consent: await getConsent() };
 }
 
 async function handleRunTool(toolId, text) {
   if (typeof toolId !== "string" || typeof text !== "string" || !text.trim()) return { ok: false, error: "There's no text to work with." };
+  // Nothing leaves the browser until the user has seen where it goes and agreed (see the notice in the widget).
+  if (!(await getConsent())) return { ok: false, code: "CONSENT_REQUIRED", error: "Please review how Cuelara handles your text first." };
   try {
     const result = await runTool(toolId, text);
     refreshAccount().catch(() => {}); // keeps the remaining-uses count current
@@ -238,6 +240,10 @@ const FROM_EXTENSION_PAGE = {
     return getState();
   },
   startConnect: () => startConnect(),
+  acceptConsent: async () => {
+    await setConsent();
+    return { ok: true };
+  },
   disconnect: async () => {
     await disconnectAccount();
     return getState();
@@ -259,6 +265,10 @@ const FROM_EXTENSION_PAGE = {
 
 const FROM_WIDGET = {
   runTool: (m) => handleRunTool(m.tool, m.text),
+  acceptConsent: async () => {
+    await setConsent();
+    return { ok: true };
+  },
   getState: () => getState(),
   // The widget may only block the site it is running on, never allow or remove rules.
   blockThisSite: async (m, sender) => {

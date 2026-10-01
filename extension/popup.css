@@ -132,3 +132,8 @@ footer a:hover { text-decoration: underline; }
 .help b { font-size: 12.5px; }
 .help p { margin-top: 1px; line-height: 1.45; }
 footer .links { display: flex; gap: 12px; }
+
+/* Notices */
+.notice { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent-soft); }
+.notice b { font-size: 12.5px; }
+.notice p { line-height: 1.45; }

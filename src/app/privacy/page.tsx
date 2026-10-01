@@ -98,9 +98,9 @@ The Cuelara browser extension adds Cuelara's tools to the text boxes of AI chat 
 
 ### What it reads and sends
 
-- **Your prompt, only when you choose a tool.** The extension does not read or send what you type in the background. When you pick a tool (Optimize, Build, Compress, Format or Debug), it sends the text in that one box to Cuelara, which passes it to the AI providers in section 5 and returns the result. Results from the extension are not saved to your tool history. The text is not kept after the request, beyond the service logs described in section 2.
+- **Your prompt, only when you choose a tool.** The extension does not read or send what you type in the background. The first time you use a tool it shows a notice explaining where your text goes and asks you to confirm; it sends nothing until you do. When you pick a tool (Optimize, Build, Compress, Format or Debug), it sends the text in that one box to Cuelara, which passes it to the AI providers in section 5 and returns the result. Results from the extension are not saved to your tool history. The text is not kept after the request, beyond the service logs described in section 2.
 - **Fields it ignores.** It does not offer itself in password, payment card, one-time-code or search fields, or in single-line inputs.
-- **Site to Prompt.** When you press Analyse, the extension measures the page you chose: colors, fonts, sizes, spacing, the detected tech stack, the page title and a few headings. It reads the page's linked stylesheets only to extract design-token names. It never reads form fields or cookies. For a site you open from cuelara.com, it asks for your permission first and drops that permission when the analysis ends.
+- **Site to Prompt.** The first time you press Analyse, the extension shows a notice and asks you to continue. It then measures the page you chose: colors, fonts, sizes, spacing, the detected tech stack, the page title and a few headings. It reads the page's linked stylesheets only to extract design-token names. It never reads form fields or cookies. For a site you open from cuelara.com, it asks for your permission first and drops that permission when the analysis ends.
 - **No browsing history.** The extension does not record, collect or send the pages you visit.
 
 ### What it stores

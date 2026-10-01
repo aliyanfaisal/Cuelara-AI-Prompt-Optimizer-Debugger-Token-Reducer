@@ -177,6 +177,19 @@
     color: var(--text); font-size: 12.5px; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,.25); display: flex; gap: 10px; align-items: center; }
   .toast.error { border-color: var(--danger); }
   .toast button { border: 0; background: none; font-weight: 700; font-size: 12.5px; color: var(--accent); padding: 0; }
+  .consent { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(420px, calc(100vw - 24px)); padding: 20px;
+    border-radius: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); box-shadow: 0 20px 60px rgba(0,0,0,.4); font-size: 13px; line-height: 1.5; }
+  .consent h2 { margin: 0 0 8px; font-size: 16px; }
+  .consent p { margin: 0 0 8px; }
+  .consent ul { margin: 0 0 10px; padding-left: 18px; color: var(--muted); }
+  .consent .warn { color: var(--muted); font-size: 12px; }
+  .consent .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  .consent .actions button { border: 1px solid var(--border); background: none; border-radius: 10px; padding: 8px 14px; font-weight: 600; font-size: 13px; }
+  .consent .actions button:hover { background: var(--hover); }
+  .consent .actions .primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .consent .actions .primary:hover { filter: brightness(1.08); background: var(--accent); }
+  .consent a { color: var(--accent); font-size: 12px; }
+  .note { padding: 2px 8px 0; font-size: 10.5px; line-height: 1.4; color: var(--muted); }
   .pickbar { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px;
     padding: 10px 14px; border-radius: 12px; border: 1px solid var(--accent); background: var(--bg); color: var(--text);
     box-shadow: 0 10px 30px rgba(0,0,0,.3); font-size: 13px; max-width: calc(100vw - 24px); }
@@ -193,6 +206,21 @@
   </button>
   <div class="menu" id="menu" role="menu" hidden></div>
   <div class="toast" id="toast" role="status" hidden></div>
+  <div class="consent" id="consent" role="dialog" aria-modal="true" aria-labelledby="consent-title" hidden>
+    <h2 id="consent-title">Before you use Cuelara here</h2>
+    <p>When you choose a tool, the text in the box is sent to Cuelara and processed by AI providers (such as Google, OpenAI, Anthropic, xAI, Groq and OpenRouter) to write the result.</p>
+    <ul>
+      <li>Nothing is sent until you choose a tool.</li>
+      <li>Password, payment and search fields are ignored.</li>
+      <li>Results from the extension aren’t saved to your history.</li>
+    </ul>
+    <p class="warn">Please don’t use it for passwords or other highly sensitive information.</p>
+    <a href="https://cuelara.com/privacy" target="_blank" rel="noopener noreferrer">Read the privacy policy</a>
+    <div class="actions">
+      <button type="button" id="consent-no">Not now</button>
+      <button type="button" id="consent-yes" class="primary">I understand, continue</button>
+    </div>
+  </div>
   <div class="hl" id="hl" hidden></div>
   <div class="pickbar" id="pickbar" role="status" hidden>
     <span id="picktext">Click the text box you want to use</span>
@@ -205,6 +233,7 @@
   const menu = shadow.getElementById("menu");
   const toast = shadow.getElementById("toast");
   const hl = shadow.getElementById("hl");
+  const consentBox = shadow.getElementById("consent");
   const pickbar = shadow.getElementById("pickbar");
   // Keep the page's text selection and caret where they are when our controls are pressed.
   on(layer, "mousedown", (e) => e.preventDefault(), { capture: true });
@@ -376,7 +405,10 @@
     block.className = "link";
     block.textContent = "Don’t show on this site";
     block.addEventListener("click", blockSite);
-    foot.append(connect, block);
+    const note = document.createElement("div");
+    note.className = "note";
+    note.textContent = "Your text is sent to Cuelara only when you pick a tool.";
+    foot.append(connect, block, note);
     menu.append(foot);
   }
 
@@ -407,6 +439,38 @@
     if (menuOpen) renderMenu();
   }
 
+  // ---------------------------------------------------------------- first-use notice
+
+  let consentResolve = null;
+
+  function closeConsent(accepted) {
+    consentBox.hidden = true;
+    const done = consentResolve;
+    consentResolve = null;
+    if (done) done(accepted);
+  }
+
+  on(shadow.getElementById("consent-yes"), "click", () => closeConsent(true));
+  on(shadow.getElementById("consent-no"), "click", () => closeConsent(false));
+
+  /** True once the user has agreed to how their text is handled; asks the first time a tool is used. */
+  async function ensureConsent() {
+    await loadState();
+    if (state && state.consent) return true;
+    closeMenu();
+    hideToast();
+    mount();
+    const accepted = await new Promise((resolve) => {
+      consentResolve = resolve;
+      consentBox.hidden = false;
+      shadow.getElementById("consent-yes").focus();
+    });
+    if (!accepted) return false;
+    await send({ type: "acceptConsent" });
+    state = { ...(state || {}), consent: true };
+    return true;
+  }
+
   // ---------------------------------------------------------------- actions
 
   async function runOnField(toolId, el) {
@@ -419,6 +483,7 @@
       return { ok: false, error: "The text box is empty." };
     }
     closeMenu();
+    if (!(await ensureConsent())) return { ok: false, error: "Cuelara needs your OK before it sends any text." };
     setBusy(true);
     const res = await send({ type: "runTool", tool: toolId, text: original });
     setBusy(false);
@@ -603,7 +668,8 @@
     if (menuOpen && !e.composedPath().includes(host)) closeMenu();
   }, { capture: true });
   on(document, "keydown", (e) => {
-    if (e.key === "Escape" && menuOpen) closeMenu();
+    if (e.key === "Escape" && consentResolve) closeConsent(false);
+    else if (e.key === "Escape" && menuOpen) closeMenu();
   }, { capture: true });
 
   let frame = 0;

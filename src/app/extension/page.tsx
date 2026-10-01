@@ -31,7 +31,9 @@ const STEPS = [
 ];
 
 const FACTS = [
-  { q: "When is my text sent?", a: "Only when you pick a tool from the menu. Cuelara never reads or sends what you type in the background, and it ignores password, payment and search fields." },
+  { q: "When is my text sent, and where does it go?", a: "Only when you pick a tool from the menu, and the first time the extension asks you to confirm. The text in that one box goes to Cuelara, which passes it to AI providers (such as Google, OpenAI, Anthropic, xAI, Groq and OpenRouter) to write the result. Results from the extension are not saved to your history. Cuelara never reads or sends what you type in the background, and it ignores password, payment and search fields." },
+  { q: "What does Site to Prompt read?", a: "Only when you press Analyse: the page’s colors, fonts, sizes and spacing, its title and a few headings. It never reads form fields, cookies or your browsing history. For a site you open from cuelara.com, the extension asks your permission first and drops that access when the analysis ends." },
+  { q: "Does it see my password?", a: "No. Connecting an account happens on cuelara.com. The extension receives a separate access token that only works for Cuelara’s tools, and you can disconnect any browser from your dashboard." },
   { q: "Which sites does it run on?", a: "It starts on about 50 popular AI tools. On any other site it stays off until you click the Cuelara icon, and you can choose to always allow a site." },
   { q: "Can I turn it off for a site?", a: "Yes. Use “Don’t show on this site” in the menu, or the switch in the popup. Blocking a domain also blocks its subdomains, and the choice follows your account to every browser you connect." },
   { q: "Do I need an account?", a: "No. You get the free daily limits without one. Connect your account to use your plan’s limits and see your usage in the popup." },

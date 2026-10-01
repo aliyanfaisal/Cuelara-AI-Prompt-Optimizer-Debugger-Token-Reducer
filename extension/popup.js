@@ -77,6 +77,8 @@ const state = {
   toolId: null,
   menuOpen: false,
   showHelp: false,
+  consent: false,
+  analyseNotice: false,
   status: {}, // { [area]: { kind: "busy" | "error" | "ok" | "info", text } }
 };
 
@@ -87,6 +89,7 @@ function applyState(next) {
   state.connected = !!next.connected;
   state.account = next.account || null;
   state.rules = Array.isArray(next.rules) ? next.rules : [];
+  state.consent = !!next.consent;
 }
 
 function setStatus(area, kind, text) {
@@ -233,7 +236,18 @@ async function clearRule(domain) {
   setStatus("site", "info", "");
 }
 
-async function analyse() {
+// Reading a page's design sends measurements to Cuelara, so the first time it asks (the same one-time agreement as the
+// text tools, shown here in the popup).
+async function analyse(confirmed = false) {
+  if (!state.consent && !confirmed) {
+    state.analyseNotice = true;
+    return render();
+  }
+  if (!state.consent) {
+    await send({ type: "acceptConsent" });
+    state.consent = true;
+  }
+  state.analyseNotice = false;
   setStatus("analyse", "busy", "Measuring the page…");
   try {
     const raw = await measureTab(state.tab.id);
@@ -269,7 +283,7 @@ function helpCard() {
       step(1, "Click into a chat box", "On ChatGPT, Claude, Gemini and other AI sites, a small Cuelara button appears next to the box you’re typing in. Don’t see it? Reload the tab, or open this popup and press “Choose a text box”."),
       step(2, "Pick a tool", "Choose Optimize, Build, Compress, Format or Debug. Your prompt is replaced right in the box, and Undo is one click away."),
       step(3, "Using another website?", "Open this popup there and press “Use on this page”, or “Always allow” to have it ready next time."),
-      step(4, "Want more uses?", "Connect your account for your plan’s higher limits. Nothing is sent until you pick a tool.")
+      step(4, "Your text stays put until you choose", "Nothing is sent until you pick a tool, and you’ll be asked to confirm the first time. Connect your account for your plan’s higher limits.")
     )
   );
 }
@@ -355,8 +369,19 @@ function siteToPromptCard() {
     h("div", { class: "card-title", style: "margin:0" }, h("span", { class: "eyebrow", text: "Site to Prompt" }), h("button", { class: "btn secondary sm", type: "button", onclick: () => ((openToolPage(false)), window.close()) }, "Open", icon("out"))),
     h("div", { class: "site-head" }, icon("palette"), h("span", { class: "host", text: url ? url.hostname : "Not a website" })),
     reason ? h("p", { class: "muted", text: reason }) : null,
+    state.analyseNotice
+      ? h(
+          "div",
+          { class: "notice" },
+          h("b", { text: "Before you analyse this page" }),
+          h("p", { class: "muted", text: "Cuelara will measure this page’s colors, fonts, sizes and spacing, plus its title and a few headings, and send those measurements to Cuelara to write your prompt. It never reads form fields or cookies, and nothing is sent until you continue." }),
+          h("div", { class: "row" },
+            h("button", { class: "btn secondary sm", type: "button", onclick: () => ((state.analyseNotice = false), render()) }, "Cancel"),
+            h("button", { class: "btn primary sm", type: "button", onclick: () => analyse(true) }, "Continue"))
+        )
+      : null,
     statusLine("analyse"),
-    h("button", { class: "btn primary", type: "button", disabled: !!reason || busy, onclick: analyse }, "Analyse this page")
+    state.analyseNotice ? null : h("button", { class: "btn primary", type: "button", disabled: !!reason || busy, onclick: () => analyse() }, "Analyse this page")
   );
 }
 
@@ -402,6 +427,7 @@ function homeView() {
     h("div", { class: "list" }, h("span", { class: "eyebrow", text: "Tools" }), CATALOG.map(toolRow)),
     siteToPromptCard(),
     siteCard(),
+    dataDetails(),
     footerView()
   );
 }
@@ -434,7 +460,22 @@ function toolView() {
           h("button", { class: "btn secondary sm", type: "button", disabled: !!blockedReason || busy, onclick: () => pickField("tool") }, "Can’t find it? Choose the text box"))
       : null,
     h("button", { class: "btn secondary", type: "button", onclick: () => openOnWeb(tool.page) }, tool.text ? "Open on Cuelara" : `Open ${tool.title} on Cuelara`, icon("out")),
+    tool.text ? dataDetails() : null,
     footerView()
+  );
+}
+
+function dataDetails() {
+  return h(
+    "details",
+    {},
+    h("summary", { text: "What gets sent?" }),
+    h(
+      "p",
+      { class: "muted" },
+      "Only when you pick a tool, the text in that one box is sent to Cuelara, which passes it to AI providers (such as Google, OpenAI, Anthropic, xAI, Groq and OpenRouter) to write the result. It isn’t saved to your history. Password, payment and search fields are ignored."
+    ),
+    h("p", { class: "muted" }, "Site to Prompt sends style measurements of the page you choose (colors, fonts, spacing, title and a few headings), only when you press Analyse. Cuelara never reads your browsing history, cookies or form fields.")
   );
 }
 

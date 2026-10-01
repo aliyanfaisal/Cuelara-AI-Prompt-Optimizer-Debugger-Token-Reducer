@@ -62,6 +62,11 @@ export function ConnectExtension({ state, account }: { state: string; account: s
             <p className="mb-6 text-sm text-muted-foreground">
               Let the extension in this browser use <strong className="text-foreground">{account}</strong>: your plan&rsquo;s daily limits and your saved site settings. You can disconnect it any time from the extension or your dashboard.
             </p>
+            <ul className="mb-6 space-y-1.5 text-left text-xs text-muted-foreground">
+              <li>&bull; The extension never sees your password. It gets a separate access token that only works for Cuelara&rsquo;s tools.</li>
+              <li>&bull; It can run the tools and read or change your site settings. It can&rsquo;t change your account, plan or billing.</li>
+              <li>&bull; Your text is sent to Cuelara only when you pick a tool in the extension.</li>
+            </ul>
             {error && <p role="alert" className="mb-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
             <button
               type="button"

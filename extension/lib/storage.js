@@ -43,3 +43,18 @@ export async function getPendingDeletes() {
 export async function setPendingDeletes(domains) {
   await chrome.storage.local.set({ pendingDeletes: domains });
 }
+
+/**
+ * The user's one-time acknowledgement that text they send through a tool goes to Cuelara and its AI providers.
+ * Stored with a version so a future change to what is sent can ask again.
+ */
+export const NOTICE_VERSION = 1;
+
+export async function getConsent() {
+  const { noticeAccepted } = await chrome.storage.local.get("noticeAccepted");
+  return noticeAccepted === NOTICE_VERSION;
+}
+
+export async function setConsent() {
+  await chrome.storage.local.set({ noticeAccepted: NOTICE_VERSION });
+}

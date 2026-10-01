@@ -3,7 +3,7 @@
 Prompt tools inside AI chat boxes, plus Site to Prompt. Plain Manifest V3 JavaScript, no build step.
 
 ## What it does
-- **Field widget** (`content/widget.js`): a small button on multi-line text boxes with Optimize, Build, Compress, Format and Debug. Nothing is read or sent until the user picks a tool. A field is noticed on focus, click or typing; if auto-detection misses it, the popup's "Choose a text box" starts a picker (`cuelara:pick`) where the user clicks the box. It writes the result back through the page's own editor (paste event, then `insertText`, then clipboard) and offers Undo.
+- **Field widget** (`content/widget.js`): a small button on multi-line text boxes with Optimize, Build, Compress, Format and Debug. Nothing is read or sent until the user picks a tool, and the first time a one-time notice (shown in the page, `NOTICE_VERSION` in `lib/storage.js`) explains where the text goes; the background worker refuses `runTool` until it is accepted. Bump `NOTICE_VERSION` if what is sent ever changes. A field is noticed on focus, click or typing; if auto-detection misses it, the popup's "Choose a text box" starts a picker (`cuelara:pick`) where the user clicks the box. It writes the result back through the page's own editor (paste event, then `insertText`, then clipboard) and offers Undo.
 - **Popup** (`popup.html` / `popup.js` / `popup.css`): usage and plan, all Cuelara tools (each with its own screen), a compact Site to Prompt card, per-site controls, and a dismissible "Get started" card.
 - **Site to Prompt**: `collector.js` is injected into the analysed page and only measures. Interpretation lives server-side in `src/lib/site-to-prompt/aggregate.ts`, so analysis changes never need an extension update.
 - **Accounts**: "Connect" opens `/extension/connect` on cuelara.com; the user approves there and the page hands a personal access token to the extension through `bridge.js` (checked against a one-time `state`). The extension works anonymously with the free limits when not connected.
@@ -21,6 +21,9 @@ Prompt tools inside AI chat boxes, plus Site to Prompt. Plain Manifest V3 JavaSc
 ## Try it locally
 1. `npm run dev`, then open `chrome://extensions`, enable Developer mode, **Load unpacked** → this folder.
 2. To point it at the local server, run `chrome.storage.local.set({ devBase: "http://localhost:3000" })` in the service worker's console.
+
+## Development build vs shipped build
+`extension/` is the **development** build: it also trusts `http://localhost:3000` (manifest `host_permissions` and the bridge `matches`, plus the `dev-only` block in `lib/config.js`). `npm run build:extension` packages a **production** copy with every localhost reference removed and fails if any survive, so the zip on the site and the one uploaded to the Chrome Web Store never mention localhost. Keep dev-only settings inside the `// dev-only:start` / `// dev-only:end` block or the manifest, and derive anything else from `CUELARA_ORIGINS`.
 
 ## Releasing
 1. Bump `version` in `manifest.json` (the zip's file name carries it, so browsers never reuse an old download).
