@@ -53,22 +53,6 @@ export async function POST(req: Request) {
     }
 
     if (!formatted) {
-        // The model didn't return a clean, parseable result — one retry with a sharper reminder.
-        const retry = await generateWithFallback(
-          chain,
-          `${buildFormatPrompt(trimmedInput, format)}\n\nReturn ONLY the raw formatted result. No markdown fences, no leading or trailing text.`,
-          TOOL
-        );
-        formatted = finalizeOutput(retry.text, format, indent);
-      }
-    } catch (error) {
-      if (error instanceof NoApiKeysConfiguredError) {
-        return NextResponse.json({ error: "AI service is not configured. Please contact support." }, { status: 500 });
-      }
-      throw error;
-    }
-
-    if (!formatted) {
       return NextResponse.json({ error: "The AI did not return a usable result. Please try again." }, { status: 502 });
     }
 
